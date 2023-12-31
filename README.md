@@ -1,1 +1,1 @@
-# Mineiro-OSINT-Extractor
+# Mineiro OSINT Extractor
