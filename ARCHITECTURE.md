@@ -72,3 +72,42 @@ This classifies the **observed digital footprint**, not personality, profession,
 
 ## Growth model
 New catalog packs should declare source, license, attribution, verification date and maintainer. Large untracked copy/paste imports should not be merged.
+
+
+## v1.3 Registry Layer
+
+```text
+catalog packs
+    |
+    v
+Mineiro Registry
+    |
+    +--> taxonomy
+    +--> detector reliability
+    +--> provenance
+    +--> license status
+    +--> evidence capabilities
+    |
+    +--> Registry API
+    |
+    +--> Detector Bench
+            |
+            +--> TP / TN / FP / FN
+            +--> precision
+            +--> recall
+            +--> false-positive rate
+            +--> availability
+            +--> benchmark score
+```
+
+### API
+
+- `GET /api/registry/stats`
+- `GET /api/registry/detectors`
+- `POST /api/registry/benchmark`
+
+O benchmark recebe observações rotuladas e calcula métricas localmente. Não precisa armazenar usernames reais.
+
+### Colab
+
+A mesma aplicação Node/React roda em Google Colab. O notebook oficial instala dependências, valida o Registry, inicia o servidor e usa o proxy do Colab para abrir a interface.
