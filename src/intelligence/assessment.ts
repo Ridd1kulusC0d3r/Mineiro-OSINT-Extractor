@@ -145,6 +145,18 @@ function buildEvidence(
         category: r.category,
         url: r.url,
         status: r.status,
+        statusCode: r.statusCode,
+        responseTimeMs: r.responseTimeMs,
+        capturedMetadata: r.metadata ? {
+          displayName: r.metadata.displayName,
+          location: r.metadata.location,
+          organization: r.metadata.organization,
+          publicProjects: r.metadata.publicProjects,
+          extractedLinks: r.metadata.extractedLinks,
+          accountCreatedAt: r.metadata.accountCreatedAt,
+          firstPublicEvidenceAt: r.metadata.firstPublicEvidenceAt,
+          avatarHash: r.metadata.avatarHash,
+        } : undefined,
         detectorConfidence: detector,
         observationConfidence: observation,
         correlationConfidence: correlation,
@@ -236,10 +248,12 @@ function buildContradictions(results: ScanResult[]): string[] {
   const displayNames = new Set(found.map((r) => r.metadata?.displayName?.trim().toLowerCase()).filter(Boolean));
   const locations = new Set(found.map((r) => r.metadata?.location?.trim().toLowerCase()).filter(Boolean));
   const organizations = new Set(found.map((r) => r.metadata?.organization?.trim().toLowerCase()).filter(Boolean));
+  const avatarHashes = new Set(found.map((r) => r.metadata?.avatarHash?.trim().toLowerCase()).filter(Boolean));
 
   if (displayNames.size > 1) contradictions.push('Public display names differ across observed profiles.');
   if (locations.size > 1) contradictions.push('Public location fields differ across observed profiles.');
   if (organizations.size > 1) contradictions.push('Public organization fields differ across observed profiles.');
+  if (avatarHashes.size > 1) contradictions.push('Public avatar hashes differ across observed profiles; visual identity correlation should be reduced until independently resolved.');
   const weakFound = found.filter((r) => (r.detectorReliability ?? 0) < 60 || (r.confidenceScore ?? 0) < 55);
   if (weakFound.length) contradictions.push(`${weakFound.length} positive result(s) rely on weak detector or observation confidence.`);
   return contradictions;
