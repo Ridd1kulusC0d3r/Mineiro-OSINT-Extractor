@@ -339,7 +339,7 @@ export default function App() {
     const scanResult = await scanTargetCore(cleanTarget, targetType, activeCfg, false);
 
     setIsScanning(false);
-    addLog(`=== SCAN COMPLETE: ${scanResult.foundCount} VERIFIED PROFILES LOCATED (${scanResult.uncertainCount} UNCERTAIN WAF) ===`, 'success');
+    addLog(`=== SCAN COMPLETE: ${scanResult.foundCount} FOUND RESULTS (${scanResult.uncertainCount} UNCERTAIN) ===`, 'success');
 
     // Save successful scan to local persistence cache (last 5 scans)
     if (!abortRef.current && scanResult.totalScanned > 0) {
@@ -384,7 +384,7 @@ export default function App() {
     if (activeCfg.enableAutoAiProfile && scanResult.foundCount > 0) {
       fetchAiProfile(cleanTarget, scanResult.results.filter((r) => r.status === 'found'));
     } else if (!activeCfg.enableAutoAiProfile && scanResult.foundCount > 0) {
-      addLog(`[FAST SCAN] AI profiling saved to on-demand. Click 'Generate AI Dossier' on Dashboard anytime.`, 'info');
+      addLog(`[SCAN] AI synthesis remains opt-in. Generate a dossier only when analytically useful.`, 'info');
     }
   };
 
