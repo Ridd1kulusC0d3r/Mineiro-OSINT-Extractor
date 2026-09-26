@@ -1,0 +1,39 @@
+name: Feature request
+description: Proponha uma melhoria de produto, análise ou engenharia
+title: "[feature] "
+labels: ["enhancement"]
+body:
+  - type: input
+    id: problem
+    attributes:
+      label: Problema que precisa ser resolvido
+      placeholder: "Hoje é difícil..."
+    validations:
+      required: true
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Fluxo atual
+      description: O que o analista faz hoje?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposta
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Critério de aceite
+      description: Como saberemos que a melhoria funcionou?
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Escopo
+      options:
+        - label: A proposta usa apenas fontes públicas ou dados sintéticos.
+          required: true
+        - label: A proposta não depende de contornar autenticação, CAPTCHA ou controles de acesso.
+          required: true
