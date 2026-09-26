@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mineiro Username Extractor — Manual v1.3.2</title>
+<style>
+:root{--bg:#050505;--panel:#0b0b0b;--panel2:#111;--text:#f5f5f5;--muted:#a3a3a3;--line:#2a2a2a;--strong:#fff;--invert:#050505;--shadow:0 18px 50px rgba(0,0,0,.35)}
+html[data-theme="light"]{--bg:#f7f7f7;--panel:#fff;--panel2:#f0f0f0;--text:#111;--muted:#555;--line:#ccc;--strong:#000;--invert:#fff;--shadow:0 16px 45px rgba(0,0,0,.10)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.62}
+a{color:var(--strong);text-decoration-thickness:1px;text-underline-offset:3px}code,pre,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.sidebar{position:fixed;inset:0 auto 0 0;width:290px;background:var(--panel);border-right:1px solid var(--line);padding:22px;overflow:auto;z-index:20}
+.brand{display:flex;gap:12px;align-items:center;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:16px}.mark{width:54px;height:54px;border:2px solid var(--strong);display:grid;place-items:center;font-size:30px;font-weight:900;letter-spacing:-4px}.brand b{display:block;letter-spacing:.12em;font-size:13px}.brand small{color:var(--muted)}
+.nav a{display:block;padding:7px 9px;margin:2px 0;border-left:2px solid transparent;color:var(--muted);text-decoration:none;font-size:12px}.nav a.active{border-color:var(--strong);color:var(--strong);background:var(--panel2)}
+.controls{display:flex;gap:8px;margin-top:18px}.controls button,.top-actions button,.copy{background:transparent;color:var(--text);border:1px solid var(--line);padding:8px 10px;cursor:pointer;font-weight:700}.controls button:hover,.top-actions button:hover,.copy:hover{border-color:var(--strong)}
+main{margin-left:290px;max-width:1250px;padding:42px 54px 90px}.section{padding:38px 0;border-bottom:1px solid var(--line)}h1{font-size:clamp(34px,6vw,72px);line-height:1.02;letter-spacing:-.045em;margin:12px 0 18px}h2{font-size:28px;letter-spacing:-.02em;margin:0 0 18px}h3{font-size:17px;margin:26px 0 8px}.eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}.lead{font-size:20px;max-width:850px;color:var(--muted)}.hero{min-height:76vh;display:flex;flex-direction:column;justify-content:center}.hero-logo{display:flex;align-items:center;gap:20px}.hero-logo .mark{width:92px;height:92px;font-size:48px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.card{background:var(--panel);border:1px solid var(--line);padding:18px;border-radius:10px}.card strong{display:block;font-size:14px}.card p{color:var(--muted);margin:6px 0 0}.callout{border:1px solid var(--line);border-left:4px solid var(--strong);padding:14px 16px;margin:16px 0;background:var(--panel)}.callout b{margin-right:8px}
+pre{background:#000;color:#f5f5f5;border:1px solid #333;padding:16px;overflow:auto;border-radius:8px;position:relative}.codewrap{position:relative}.copy{position:absolute;right:8px;top:8px;background:#111;color:white;border-color:#444;font-size:11px;z-index:2}
+.tabs{border:1px solid var(--line);border-radius:10px;overflow:hidden}.tabbar{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--line);background:var(--panel2)}.tabbar button{background:transparent;border:0;border-right:1px solid var(--line);color:var(--muted);padding:12px 16px;cursor:pointer;font-weight:700}.tabbar button.active{background:var(--strong);color:var(--invert)}.tab{display:none;padding:20px}.tab.active{display:block}
+.figure{margin:22px 0}.figure svg{width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px}.caption{font-size:12px;color:var(--muted);margin-top:8px}.markers{margin:8px 0 0;padding-left:22px;color:var(--muted);font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--strong);background:var(--panel2)}td{color:var(--muted)}
+.badge{display:inline-block;border:1px solid var(--line);padding:3px 7px;font-size:10px;text-transform:uppercase;letter-spacing:.08em}.top-actions{position:fixed;right:18px;bottom:18px;display:flex;gap:8px;z-index:30}.top-actions button{background:var(--panel);box-shadow:var(--shadow)}
+details{border:1px solid var(--line);padding:14px 16px;background:var(--panel);border-radius:8px}details+details{margin-top:10px}summary{cursor:pointer;font-weight:800}
+svg text{font-family:Inter,Arial,sans-serif;fill:var(--text)}svg .box{fill:var(--panel2);stroke:var(--line);stroke-width:1.5}svg .arrow{stroke:var(--strong);stroke-width:2;fill:none;marker-end:url(#arrow)}svg .muted{fill:var(--muted)}svg .num{fill:var(--strong)}svg .numtext{fill:var(--invert);font-weight:900}
+.footer{padding-top:30px;color:var(--muted);font-size:12px}
+@media(max-width:900px){.sidebar{position:static;width:auto;height:auto}.nav{display:none}main{margin-left:0;padding:26px 18px}.grid,.grid3{grid-template-columns:1fr}.hero{min-height:auto;padding-top:20px}.top-actions{bottom:10px;right:10px}}
+@media print{.sidebar,.top-actions,.copy,.tabbar{display:none!important}main{margin:0;max-width:none;padding:0;color:#000}.section{break-inside:avoid;border-color:#ccc}body{background:white;color:black}.card,.callout,details{background:white;border-color:#bbb}pre{white-space:pre-wrap}.tab{display:block!important;padding:10px 0}.tabs{border:0}a{color:black}.figure svg{background:white}}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="brand"><div class="mark">M</div><div><b>MINEIRO</b><small>USERNAME EXTRACTOR · v1.3.2</small></div></div>
+  <nav class="nav" id="nav">
+    <a href="#capa">01 · Capa</a><a href="#o-que-e">02 · O que é</a><a href="#como-funciona">03 · Como funciona</a>
+    <a href="#jornada">04 · Jornada</a><a href="#legenda">05 · Legenda visual</a><a href="#instalacao">06 · Instalação</a>
+    <a href="#primeiro-uso">07 · Primeiro uso</a><a href="#dia-a-dia">08 · Uso no dia a dia</a><a href="#relatorios">09 · Relatórios</a>
+    <a href="#problemas">10 · Solução de problemas</a><a href="#etica">11 · Ética e LGPD</a><a href="#glossario">12 · Glossário</a><a href="#tecnica">13 · Seção técnica</a>
+  </nav>
+  <div class="controls"><button id="theme-toggle">Tema</button><button onclick="window.print()">Imprimir</button></div>
+</aside>
+<main>
+<section id="capa" class="section hero">
+  <div class="eyebrow">Manual oficial · 26/09/2026</div>
+  <div class="hero-logo"><div class="mark">M</div><div><h1>MINEIRO<br>USERNAME EXTRACTOR</h1></div></div>
+  <p class="lead">Encontre sinais públicos associados a um username, compare detectores por confiabilidade e organize a pegada digital observada sem transformar hipótese em certeza.</p>
+  <div class="grid3">
+    <div class="card"><strong>985 detectores no Registry</strong><p>Catálogo modular e versionado.</p></div>
+    <div class="card"><strong>7.880 checks lógicos</strong><p>Até oito sinais de evidência por detector.</p></div>
+    <div class="card"><strong>Colab pronto</strong><p>Notebook com instalação, validação e abertura da interface.</p></div>
+  </div>
+  <div class="callout"><b>⚠️ Atenção</b>Use somente informações publicamente acessíveis e finalidades legítimas. Um resultado “FOUND” não prova que duas contas pertencem à mesma pessoa.</div>
+</section>
+
+<section id="o-que-e" class="section">
+<h2>O que é e para que serve</h2>
+<p>O Mineiro Username Extractor é uma ferramenta de OSINT, isto é, investigação usando fontes abertas e públicas. Você fornece um username. A ferramenta consulta endpoints públicos catalogados, observa sinais técnicos da resposta e classifica o resultado.</p>
+<div class="grid">
+<div class="card"><strong>Resolve</strong><p>Organiza buscas repetitivas, registra onde um username pode aparecer e mostra a qualidade do detector usado.</p></div>
+<div class="card"><strong>Não faz</strong><p>Não invade contas, não quebra senhas, não acessa conteúdo privado e não prova identidade civil.</p></div>
+</div>
+<p><b>Exemplo:</b> você pesquisa um identificador sintético de laboratório. O Mineiro verifica os serviços selecionados, separa resultados encontrados, ausentes e incertos e apresenta uma distribuição por tipo de plataforma.</p>
+</section>
+
+<section id="como-funciona" class="section">
+<h2>Como funciona</h2>
+<div class="figure">
+<svg id="svg-flow" viewBox="0 0 1000 250" role="img" aria-label="Fluxo do username até o relatório">
+<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="currentColor"/></marker></defs>
+<rect class="box" x="30" y="75" width="160" height="90" rx="10"/><text x="110" y="112" text-anchor="middle" font-weight="700">USERNAME</text><text class="muted" x="110" y="136" text-anchor="middle" font-size="12">entrada</text>
+<path class="arrow" d="M190 120 H250"/><text class="muted" x="220" y="105" text-anchor="middle" font-size="11">seleciona</text>
+<rect class="box" x="250" y="75" width="180" height="90" rx="10"/><text x="340" y="112" text-anchor="middle" font-weight="700">REGISTRY</text><text class="muted" x="340" y="136" text-anchor="middle" font-size="12">detectores</text>
+<path class="arrow" d="M430 120 H490"/><text class="muted" x="460" y="105" text-anchor="middle" font-size="11">consulta</text>
+<rect class="box" x="490" y="75" width="180" height="90" rx="10"/><text x="580" y="112" text-anchor="middle" font-weight="700">PROBE</text><text class="muted" x="580" y="136" text-anchor="middle" font-size="12">HTTP + sinais</text>
+<path class="arrow" d="M670 120 H730"/><text class="muted" x="700" y="105" text-anchor="middle" font-size="11">classifica</text>
+<rect class="box" x="730" y="75" width="240" height="90" rx="10"/><text x="850" y="108" text-anchor="middle" font-weight="700">RESULTADO</text><text class="muted" x="850" y="133" text-anchor="middle" font-size="12">found · absent · uncertain</text>
+</svg>
+<div class="caption">Figura 1 — Fluxo principal do Mineiro. Diagrama ilustrativo.</div>
+</div>
+<p>O Registry escolhe os detectores. O Probe faz a consulta pública. O Evidence Engine observa status HTTP, redirects e outros sinais disponíveis. A interface mostra o resultado e a confiabilidade do detector separadamente.</p>
+</section>
+
+<section id="jornada" class="section">
+<h2>Jornada do usuário</h2>
+<div class="figure">
+<svg id="svg-journey" viewBox="0 0 1000 300" role="img" aria-label="Jornada do download ao resultado">
+<defs><marker id="arrow2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="currentColor"/></marker></defs>
+<g><circle class="num" cx="85" cy="85" r="24"/><text class="numtext" x="85" y="91" text-anchor="middle">1</text><text x="85" y="135" text-anchor="middle" font-weight="700">Baixe</text></g>
+<path class="arrow" style="marker-end:url(#arrow2)" d="M120 85 H220"/>
+<g><circle class="num" cx="260" cy="85" r="24"/><text class="numtext" x="260" y="91" text-anchor="middle">2</text><text x="260" y="135" text-anchor="middle" font-weight="700">Instale</text></g>
+<path class="arrow" style="marker-end:url(#arrow2)" d="M295 85 H395"/>
+<g><circle class="num" cx="435" cy="85" r="24"/><text class="numtext" x="435" y="91" text-anchor="middle">3</text><text x="435" y="135" text-anchor="middle" font-weight="700">Valide</text></g>
+<path class="arrow" style="marker-end:url(#arrow2)" d="M470 85 H570"/>
+<g><circle class="num" cx="610" cy="85" r="24"/><text class="numtext" x="610" y="91" text-anchor="middle">4</text><text x="610" y="135" text-anchor="middle" font-weight="700">Pesquise</text></g>
+<path class="arrow" style="marker-end:url(#arrow2)" d="M645 85 H745"/>
+<g><circle class="num" cx="785" cy="85" r="24"/><text class="numtext" x="785" y="91" text-anchor="middle">5</text><text x="785" y="135" text-anchor="middle" font-weight="700">Revise</text></g>
+<path class="arrow" style="marker-end:url(#arrow2)" d="M820 85 H890"/>
+<g><circle class="num" cx="925" cy="85" r="24"/><text class="numtext" x="925" y="91" text-anchor="middle">6</text><text x="925" y="135" text-anchor="middle" font-weight="700">Exporte</text></g>
+<text class="muted" x="500" y="225" text-anchor="middle">Comece pela demo sintética antes de usar dados reais.</text>
+</svg>
+<div class="caption">Figura 2 — Jornada recomendada. Diagrama ilustrativo.</div>
+</div>
+</section>
+
+<section id="legenda" class="section">
+<h2>Legenda visual</h2>
+<div class="figure">
+<svg id="svg-legend" viewBox="0 0 1000 250" role="img" aria-label="Legenda de estados e marcadores">
+<rect class="box" x="40" y="55" width="210" height="130" rx="10"/><text x="145" y="92" text-anchor="middle" font-weight="800">FOUND</text><text class="muted" x="145" y="120" text-anchor="middle">sinal de presença</text><text class="muted" x="145" y="145" text-anchor="middle">não prova identidade</text>
+<rect class="box" x="275" y="55" width="210" height="130" rx="10"/><text x="380" y="92" text-anchor="middle" font-weight="800">ABSENT</text><text class="muted" x="380" y="120" text-anchor="middle">ausência observada</text><text class="muted" x="380" y="145" text-anchor="middle">naquele momento</text>
+<rect class="box" x="510" y="55" width="210" height="130" rx="10"/><text x="615" y="92" text-anchor="middle" font-weight="800">UNCERTAIN</text><text class="muted" x="615" y="120" text-anchor="middle">resposta inconclusiva</text><text class="muted" x="615" y="145" text-anchor="middle">valide manualmente</text>
+<rect class="box" x="745" y="55" width="210" height="130" rx="10"/><text x="850" y="92" text-anchor="middle" font-weight="800">RELIABILITY</text><text class="muted" x="850" y="120" text-anchor="middle">qualidade do detector</text><text class="muted" x="850" y="145" text-anchor="middle">não reputação do site</text>
+</svg>
+<div class="caption">Figura 3 — Legenda dos estados. Diagrama ilustrativo.</div>
+</div>
+</section>
+
+<section id="instalacao" class="section">
+<h2>Instalação passo a passo</h2>
+<p>Use o Node.js 22 LTS. Node.js é o programa que executa o servidor do Mineiro. npm é o gerenciador que instala as dependências.</p>
+<div class="tabs">
+<div class="tabbar"><button class="active" data-tab="windows">Windows</button><button data-tab="macos">macOS</button><button data-tab="linux">Linux</button><button data-tab="colab">Google Colab</button></div>
+<div class="tab active" id="windows">
+<h3>Windows</h3><ol><li>Instale o Node.js 22 LTS.</li><li>Baixe o repositório.</li><li>Clique duas vezes em <code>Iniciar-Mineiro.bat</code>.</li></ol>
+<div class="callout"><b>✅ Deu certo</b>O terminal mostra “ready” e o navegador abre <code>http://localhost:3000</code>.</div>
+<div class="callout"><b>❌ Erro comum</b>“node não foi encontrado” indica que o Node.js não está instalado ou não entrou no PATH.</div>
+</div>
+<div class="tab" id="macos">
+<h3>macOS</h3><ol><li>Instale o Node.js 22 LTS.</li><li>Abra o Terminal na pasta do projeto.</li><li>Libere o lançador.</li></ol>
+<div class="codewrap"><button class="copy">copiar</button><pre>chmod +x Iniciar-Mineiro.command
+./Iniciar-Mineiro.command</pre></div>
+<div class="callout"><b>✅ Deu certo</b>O navegador abre a interface após o servidor iniciar.</div>
+</div>
+<div class="tab" id="linux">
+<h3>Linux</h3><ol><li>Instale o Node.js 22 LTS.</li><li>Abra o terminal na pasta.</li><li>Execute o lançador.</li></ol>
+<div class="codewrap"><button class="copy">copiar</button><pre>chmod +x iniciar-mineiro.sh
+./iniciar-mineiro.sh</pre></div>
+<div class="callout"><b>💡 Dica</b>Se não houver ambiente gráfico, abra manualmente o endereço mostrado no terminal.</div>
+</div>
+<div class="tab" id="colab">
+<h3>Google Colab</h3><ol><li>Abra <code>notebooks/Mineiro_One_Click_Colab.ipynb</code> no Colab.</li><li>Execute a célula “Preparar Mineiro”.</li><li>Execute “Abrir interface”.</li></ol>
+<div class="callout"><b>✅ Deu certo</b>A interface abre usando o proxy do Colab.</div>
+<div class="callout"><b>❌ Erro comum</b>Se aparecer “host is not allowed”, atualize para v1.3.1 ou posterior. A correção já inclui o domínio interno do Colab na allow-list do Vite.</div>
+</div>
+</div>
+
+<div class="figure">
+<svg viewBox="0 0 1000 360" role="img" aria-label="Ilustração da tela principal anotada">
+<rect x="25" y="20" width="950" height="320" rx="12" fill="#050505" stroke="#555"/>
+<rect x="45" y="40" width="910" height="56" fill="#111" stroke="#333"/><text x="72" y="74" fill="#fff" font-weight="800">M  MINEIRO USERNAME EXTRACTOR</text>
+<rect x="45" y="118" width="620" height="54" fill="#0b0b0b" stroke="#444"/><text x="65" y="151" fill="#aaa">@username</text>
+<rect x="685" y="118" width="270" height="54" fill="#fff"/><text x="820" y="151" fill="#050505" text-anchor="middle" font-weight="800">START SCAN</text>
+<rect x="45" y="194" width="280" height="120" fill="#0b0b0b" stroke="#333"/><text x="65" y="225" fill="#fff">REGISTRY</text><text x="65" y="251" fill="#aaa">985 detectores</text>
+<rect x="345" y="194" width="280" height="120" fill="#0b0b0b" stroke="#333"/><text x="365" y="225" fill="#fff">RESULTS</text><text x="365" y="251" fill="#aaa">found · uncertain · absent</text>
+<rect x="645" y="194" width="310" height="120" fill="#0b0b0b" stroke="#333"/><text x="665" y="225" fill="#fff">RELIABILITY</text><text x="665" y="251" fill="#aaa">qualidade do detector</text>
+<circle cx="648" cy="128" r="16" fill="#fff"/><text x="648" y="134" text-anchor="middle" fill="#000" font-weight="900">①</text>
+<circle cx="935" cy="205" r="16" fill="#fff"/><text x="935" y="211" text-anchor="middle" fill="#000" font-weight="900">②</text>
+<circle cx="335" cy="300" r="16" fill="#fff"/><text x="335" y="306" text-anchor="middle" fill="#000" font-weight="900">③</text>
+<text x="500" y="334" text-anchor="middle" fill="#777" font-size="11">ILUSTRAÇÃO · interface simplificada</text>
+</svg>
+<div class="caption">Figura 4 — Tela principal anotada. Ilustração fiel ao fluxo geral.</div>
+<ol class="markers"><li>Campo de username.</li><li>Ação de início da varredura.</li><li>Painéis de Registry, resultados e confiabilidade.</li></ol>
+</div>
+</section>
+
+<section id="primeiro-uso" class="section">
+<h2>Primeiro uso guiado</h2>
+<p>Comece pela demo. Ela usa dados sintéticos e não consulta pessoas reais.</p>
+<ol><li>Abra um terminal na pasta.</li><li>Instale as dependências.</li></ol>
+<div class="codewrap"><button class="copy">copiar</button><pre>npm install</pre></div>
+<ol start="3"><li>Execute a demo.</li></ol>
+<div class="codewrap"><button class="copy">copiar</button><pre>npm run demo</pre></div>
+<div class="callout"><b>✅ Deu certo</b>O terminal termina com <code>[PASS] Demo sintética validada com sucesso.</code></div>
+<div class="figure">
+<svg viewBox="0 0 1000 310" role="img" aria-label="Ilustração do terminal da demo anotada">
+<rect x="25" y="20" width="950" height="270" rx="12" fill="#000" stroke="#444"/>
+<text x="55" y="65" fill="#f5f5f5" font-family="monospace">Mineiro synthetic Detector Bench demo</text>
+<text x="55" y="100" fill="#aaa" font-family="monospace">github   benchmarkScore: 100</text>
+<text x="55" y="130" fill="#aaa" font-family="monospace">gitlab   benchmarkScore: 83</text>
+<text x="55" y="180" fill="#fff" font-family="monospace">[PASS] Demo sintética validada com sucesso.</text>
+<circle cx="890" cy="170" r="17" fill="#fff"/><text x="890" y="176" text-anchor="middle" fill="#000" font-weight="900">①</text>
+<circle cx="430" cy="94" r="17" fill="#fff"/><text x="430" y="100" text-anchor="middle" fill="#000" font-weight="900">②</text>
+<text x="500" y="275" text-anchor="middle" fill="#777" font-size="11">ILUSTRAÇÃO</text>
+</svg>
+<div class="caption">Figura 5 — Resultado esperado da demo. Ilustração.</div>
+<ol class="markers"><li>PASS confirma que o cálculo bateu com o resultado esperado.</li><li>Os scores pertencem a detectores sinteticamente avaliados, não a pessoas.</li></ol>
+</div>
+</section>
+
+<section id="dia-a-dia" class="section">
+<h2>Uso no dia a dia</h2>
+<div class="grid">
+<div class="card"><strong>Cenário 1 · Verificação rápida</strong><p>Objetivo: testar poucos serviços conhecidos. Use Quick. Revise apenas FOUND e UNCERTAIN.</p></div>
+<div class="card"><strong>Cenário 2 · Investigação acadêmica</strong><p>Objetivo: observar distribuição por categoria. Use Standard e registre data e contexto.</p></div>
+<div class="card"><strong>Cenário 3 · Threat intelligence autorizada</strong><p>Objetivo: localizar presença pública de um alias conhecido. Use Deep somente quando houver justificativa.</p></div>
+<div class="card"><strong>Cenário 4 · Auditoria do Registry</strong><p>Objetivo: revisar detectores. Rode <code>npm run registry:validate</code> e <code>npm run registry:stats</code>.</p></div>
+</div>
+<div class="callout"><b>⚠️ Atenção</b>Evite usar um único username para concluir identidade, profissão, intenção, personalidade ou risco. Correlação exige evidência independente.</div>
+</section>
+
+<section id="relatorios" class="section">
+<h2>Gerando e lendo relatórios</h2>
+<p>Depois de uma varredura, use a opção de exportação da interface. O relatório reúne resultados, categorias e metadados de evidência disponíveis na sessão.</p>
+<table><thead><tr><th>Campo</th><th>Como interpretar</th></tr></thead><tbody>
+<tr><td>FOUND</td><td>O detector observou sinais compatíveis com presença. Faça validação manual quando a conclusão for importante.</td></tr>
+<tr><td>UNCERTAIN</td><td>O serviço respondeu de forma inconclusiva, por exemplo por proteção, rate limit ou comportamento inesperado.</td></tr>
+<tr><td>Detector Reliability</td><td>Qualidade esperada da regra de detecção. Não é reputação do serviço nem probabilidade de identidade.</td></tr>
+<tr><td>Evidence Checks</td><td>Sinais lógicos extraídos da resposta, como status, redirect, URL final e soft-404.</td></tr>
+<tr><td>Digital Footprint</td><td>Distribuição dos resultados por categoria. Descreve presença observada, não personalidade.</td></tr>
+</tbody></table>
+<div class="figure">
+<svg viewBox="0 0 1000 350" role="img" aria-label="Ilustração de relatório anotado">
+<rect x="25" y="20" width="950" height="310" rx="12" fill="#fafafa" stroke="#333"/>
+<text x="55" y="60" fill="#111" font-weight="900">MINEIRO · DOSSIER</text>
+<line x1="55" y1="78" x2="945" y2="78" stroke="#bbb"/>
+<text x="55" y="112" fill="#111">Target: synthetic_demo</text>
+<text x="55" y="145" fill="#555">FOUND  4   ·   UNCERTAIN  1   ·   ABSENT  45</text>
+<rect x="55" y="175" width="400" height="110" fill="#fff" stroke="#bbb"/><text x="75" y="208" fill="#111" font-weight="700">Detector Reliability</text><text x="75" y="240" fill="#555">GitHub 92/100 · HIGH</text>
+<rect x="485" y="175" width="460" height="110" fill="#fff" stroke="#bbb"/><text x="505" y="208" fill="#111" font-weight="700">Evidence</text><text x="505" y="240" fill="#555">7/8 logical checks</text>
+<circle cx="438" cy="186" r="16" fill="#111"/><text x="438" y="192" text-anchor="middle" fill="#fff" font-weight="900">①</text>
+<circle cx="925" cy="186" r="16" fill="#111"/><text x="925" y="192" text-anchor="middle" fill="#fff" font-weight="900">②</text>
+<text x="500" y="316" text-anchor="middle" fill="#777" font-size="11">ILUSTRAÇÃO</text>
+</svg>
+<div class="caption">Figura 6 — Leitura de relatório. Ilustração.</div>
+<ol class="markers"><li>Score do detector.</li><li>Quantidade de sinais de evidência observados.</li></ol>
+</div>
+</section>
+
+<section id="problemas" class="section">
+<h2>Solução de problemas</h2>
+<table><thead><tr><th>Sintoma</th><th>Causa provável</th><th>Como resolver</th></tr></thead><tbody>
+<tr><td><code>node: command not found</code></td><td>Node.js ausente</td><td>Instale Node.js 22 LTS e reabra o terminal.</td></tr>
+<tr><td><code>npm: command not found</code></td><td>npm ausente ou PATH incompleto</td><td>Reinstale Node.js com npm.</td></tr>
+<tr><td>Porta 3000 em uso</td><td>Outro processo já usa a porta</td><td>Encerre a instância anterior e reinicie o Mineiro.</td></tr>
+<tr><td>Colab “host is not allowed”</td><td>Versão anterior à correção</td><td>Atualize para v1.3.1+ com <code>git pull</code>.</td></tr>
+<tr><td>Muitos UNCERTAIN</td><td>Proteção, rate limit ou rede instável</td><td>Reduza escopo, espere e valide manualmente. Não aumente agressivamente a concorrência.</td></tr>
+<tr><td>Caracteres estranhos</td><td>Terminal sem UTF-8</td><td>Use terminal moderno configurado para UTF-8.</td></tr>
+<tr><td>Username vazio/inválido</td><td>Entrada incompleta</td><td>Digite somente o identificador aceito pelo serviço. Remova espaços extras.</td></tr>
+<tr><td>Resultado FOUND parece errado</td><td>Soft-404 ou regra fraca</td><td>Veja Reliability e Evidence Checks. Abra a URL e confirme manualmente.</td></tr>
+<tr><td><code>npm install</code> falha</td><td>Rede, proxy ou cache</td><td>Confirme internet, limpe cache apenas se necessário e tente novamente.</td></tr>
+<tr><td>macOS bloqueia o lançador</td><td>Arquivo sem permissão de execução</td><td>Rode <code>chmod +x Iniciar-Mineiro.command</code>.</td></tr>
+</tbody></table>
+</section>
+
+<section id="etica" class="section">
+<h2>Boas práticas, ética e LGPD</h2>
+<p>A LGPD regula o tratamento de dados pessoais no Brasil. Informação pública não deixa automaticamente de ser dado pessoal. O uso deve ter finalidade legítima, ser proporcional e reduzir coleta desnecessária.</p>
+<div class="grid">
+<div class="card"><strong>Minimização</strong><p>Colete apenas o necessário para a finalidade declarada.</p></div>
+<div class="card"><strong>Finalidade</strong><p>Registre por que a investigação existe e quem está autorizado.</p></div>
+<div class="card"><strong>Guarda</strong><p>Defina prazo de retenção. Não acumule dossiês sem necessidade.</p></div>
+<div class="card"><strong>Descarte</strong><p>Elimine resultados quando a finalidade terminar, respeitando obrigações legais.</p></div>
+<div class="card"><strong>Cadeia de custódia</strong><p>Registre data, ferramenta, versão e método quando o resultado tiver valor probatório.</p></div>
+<div class="card"><strong>Limites</strong><p>Não use o Mineiro para assédio, vigilância indevida, invasão, autenticação ou obtenção de conteúdo privado.</p></div>
+</div>
+<div class="callout"><b>⚠️ Atenção</b>Este manual é orientação técnica geral, não parecer jurídico. Organizações devem alinhar uso com sua assessoria jurídica e políticas internas.</div>
+</section>
+
+<section id="glossario" class="section">
+<h2>Glossário</h2>
+<table><tbody>
+<tr><th>API</th><td>Interface que permite a programas trocar dados de forma estruturada.</td></tr>
+<tr><th>Colab</th><td>Ambiente de notebooks executado em uma máquina virtual do Google.</td></tr>
+<tr><th>Detector</th><td>Regra usada pelo Mineiro para verificar um serviço.</td></tr>
+<tr><th>Evidence Check</th><td>Teste lógico extraído de uma resposta, como status HTTP ou URL final.</td></tr>
+<tr><th>HTTP</th><td>Protocolo usado por navegadores e servidores para trocar conteúdo web.</td></tr>
+<tr><th>LGPD</th><td>Lei Geral de Proteção de Dados Pessoais do Brasil.</td></tr>
+<tr><th>Node.js</th><td>Ambiente que executa JavaScript fora do navegador.</td></tr>
+<tr><th>npm</th><td>Gerenciador de pacotes usado para instalar dependências Node.js.</td></tr>
+<tr><th>OSINT</th><td>Inteligência de fontes abertas: coleta e análise de informações publicamente acessíveis.</td></tr>
+<tr><th>Proxy</th><td>Intermediário de rede. No Colab, permite abrir a aplicação que roda dentro da VM.</td></tr>
+<tr><th>Rate limit</th><td>Limite imposto por um serviço à quantidade de requisições em certo período.</td></tr>
+<tr><th>Registry</th><td>Inventário versionado dos detectores conhecidos pelo Mineiro.</td></tr>
+<tr><th>Reliability</th><td>Estimativa da qualidade da regra de detecção.</td></tr>
+<tr><th>Soft-404</th><td>Página de “não encontrado” que responde tecnicamente como sucesso HTTP.</td></tr>
+<tr><th>Vite</th><td>Ferramenta usada para servir e compilar a interface web.</td></tr>
+</tbody></table>
+</section>
+
+<section id="tecnica" class="section">
+<h2>Seção técnica</h2>
+<details open><summary>Arquitetura</summary>
+<div class="figure">
+<svg id="svg-architecture" viewBox="0 0 1000 360" role="img" aria-label="Arquitetura técnica">
+<defs><marker id="arrow3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="currentColor"/></marker></defs>
+<rect class="box" x="50" y="40" width="200" height="75" rx="10"/><text x="150" y="75" text-anchor="middle" font-weight="800">React UI</text><text class="muted" x="150" y="96" text-anchor="middle" font-size="11">browser</text>
+<path class="arrow" style="marker-end:url(#arrow3)" d="M250 78 H350"/>
+<rect class="box" x="350" y="40" width="220" height="75" rx="10"/><text x="460" y="75" text-anchor="middle" font-weight="800">Express API</text><text class="muted" x="460" y="96" text-anchor="middle" font-size="11">server.ts</text>
+<path class="arrow" style="marker-end:url(#arrow3)" d="M570 78 H670"/>
+<rect class="box" x="670" y="40" width="260" height="75" rx="10"/><text x="800" y="75" text-anchor="middle" font-weight="800">Public Services</text><text class="muted" x="800" y="96" text-anchor="middle" font-size="11">HTTP endpoints</text>
+<rect class="box" x="180" y="205" width="210" height="75" rx="10"/><text x="285" y="240" text-anchor="middle" font-weight="800">Registry</text><text class="muted" x="285" y="261" text-anchor="middle" font-size="11">985 detectors</text>
+<rect class="box" x="430" y="205" width="210" height="75" rx="10"/><text x="535" y="240" text-anchor="middle" font-weight="800">Evidence Engine</text><text class="muted" x="535" y="261" text-anchor="middle" font-size="11">8 logical checks</text>
+<rect class="box" x="680" y="205" width="210" height="75" rx="10"/><text x="785" y="240" text-anchor="middle" font-weight="800">Detector Bench</text><text class="muted" x="785" y="261" text-anchor="middle" font-size="11">quality metrics</text>
+<path class="arrow" style="marker-end:url(#arrow3)" d="M285 205 V145 H430"/><path class="arrow" style="marker-end:url(#arrow3)" d="M535 205 V145"/><path class="arrow" style="marker-end:url(#arrow3)" d="M785 205 V145 H570"/>
+</svg>
+<div class="caption">Figura 7 — Arquitetura técnica. Diagrama inline.</div>
+</div>
+</details>
+<details><summary>Estrutura de pastas</summary><pre>src/
+  components/
+  data/catalog-packs/
+  registry/
+scripts/
+demo/
+notebooks/
+server.ts
+MANUAL.html
+COMECE-AQUI.md</pre></details>
+<details><summary>Comandos principais</summary><pre>npm run dev
+npm run build
+npm run lint
+npm run registry:validate
+npm run registry:stats
+npm run demo
+npm run manual:validate</pre></details>
+<details><summary>Como estender</summary><p>Adicione novos detectores aos packs, informe categoria, tipo, padrão de URL, método, status de proveniência e dados de licença. Execute o validador antes de abrir um Pull Request.</p></details>
+<details><summary>Resumo de testes</summary><p>Consulte <code>RELATORIO-DE-TESTES.md</code>. O CI verifica instalação, Registry, TypeScript, build, demo e estrutura do manual. Testes não executados em um sistema específico são declarados como tal.</p></details>
+<h3>Itens [VERIFICAR]</h3><p>Nenhum item pendente marcado com <code>[VERIFICAR]</code> nesta edição.</p>
+</section>
+<div class="footer">Mineiro Username Extractor v1.3.2 · documentação em preto e branco · evidência acima de suposição.</div>
+</main>
+<div class="top-actions"><button id="voltar-topo" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ topo</button></div>
+<script>
+const root=document.documentElement;
+document.getElementById('theme-toggle').addEventListener('click',()=>{root.dataset.theme=root.dataset.theme==='dark'?'light':'dark';localStorage.setItem('mineiro-manual-theme',root.dataset.theme)});
+const saved=localStorage.getItem('mineiro-manual-theme');if(saved)root.dataset.theme=saved;
+document.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{
+ const tabs=btn.closest('.tabs');tabs.querySelectorAll('[data-tab]').forEach(b=>b.classList.remove('active'));tabs.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');tabs.querySelector('#'+btn.dataset.tab).classList.add('active');
+}));
+document.querySelectorAll('.copy').forEach(btn=>btn.addEventListener('click',async()=>{const txt=btn.parentElement.querySelector('pre').innerText;await navigator.clipboard.writeText(txt);const old=btn.textContent;btn.textContent='copiado';setTimeout(()=>btn.textContent=old,1200)}));
+const links=[...document.querySelectorAll('.nav a')];const sections=links.map(a=>document.querySelector(a.getAttribute('href'))).filter(Boolean);
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){links.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id))}})},{rootMargin:'-25% 0px -65% 0px'});
+sections.forEach(s=>obs.observe(s));
+</script>
+</body></html>

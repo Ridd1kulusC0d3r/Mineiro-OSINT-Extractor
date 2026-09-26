@@ -1,0 +1,30 @@
+{
+  "github": {
+    "detectorId": "github",
+    "samples": 4,
+    "truePositive": 2,
+    "trueNegative": 2,
+    "falsePositive": 0,
+    "falseNegative": 0,
+    "inconclusive": 0,
+    "precision": 1,
+    "recall": 1,
+    "falsePositiveRate": 0,
+    "availability": 100,
+    "benchmarkScore": 100
+  },
+  "gitlab": {
+    "detectorId": "gitlab",
+    "samples": 4,
+    "truePositive": 1,
+    "trueNegative": 1,
+    "falsePositive": 0,
+    "falseNegative": 1,
+    "inconclusive": 1,
+    "precision": 1,
+    "recall": 0.5,
+    "falsePositiveRate": 0,
+    "availability": 75,
+    "benchmarkScore": 83
+  }
+}
