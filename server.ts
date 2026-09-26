@@ -827,7 +827,7 @@ async function evaluatePass1Entities(
   emailData: any,
   preferredModel?: string
 ): Promise<ExtractedEntities | null> {
-  const pass1Prompt = `You are the Pre-Profiling Entity Extraction Engine in Mineiro Username Extractor OSINT.
+  const pass1Prompt = `You are the Pre-Profiling Entity Extraction Engine in Mineiro Username Intelligence OSINT.
 Perform PASS 1 of a multi-pass evaluation on target "${target}" (${targetType}).
 
 Discovered Platforms & Profiles:
@@ -1013,7 +1013,7 @@ app.post('/api/intelligence/copilot', async (req, res) => {
   }
 });
 
-// AI-Powered Autonomous Profiling Engine (Mineiro Username Extractor Flagship Intelligence)
+// AI-Powered Autonomous Profiling Engine (Mineiro Username Intelligence Flagship Intelligence)
 app.post('/api/osint/profile', async (req, res) => {
   if (process.env.MINEIRO_ENABLE_LEGACY_PROFILE !== '1') {
     return res.status(410).json({
@@ -1073,7 +1073,7 @@ app.post('/api/osint/profile', async (req, res) => {
     );
 
     // Pass 2: Synthesize comprehensive forensic dossier with weighted Archetype mapping
-    const prompt = `You are the AI Intelligence Profiling Engine inside Mineiro Username Extractor, a unified high-grade open-source intelligence analysis system.
+    const prompt = `You are the AI Intelligence Profiling Engine inside Mineiro Username Intelligence, a unified high-grade open-source intelligence analysis system.
 Analyze the following target reconnaissance data and generate an actionable, comprehensive forensic OSINT dossier.
 
 Target: "${target}"
