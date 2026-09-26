@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.1] - 2026-09-26
+
+### Fixed
+- Google Colab proxy host is now explicitly allowed by Vite using `.codatalab-user-runtimes.internal`.
+- Registry-only detectors no longer enter direct username scans.
+- Discord is retained in the Registry without generating a placeholder validation warning.
+- Registry stats now distinguish scannable and registry-only detectors.
+- Colab notebook includes an update/recovery cell for older sessions.
+
+
 ## [1.3.0] - 2026-09-26
 
 ### Added
