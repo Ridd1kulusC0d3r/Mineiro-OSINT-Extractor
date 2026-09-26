@@ -25,13 +25,17 @@ jobs:
           base64 --decode .bootstrap/final-payload.b64 > /tmp/mineiro-final.tar.gz
           mkdir -p /tmp/mineiro-release
           tar -xzf /tmp/mineiro-final.tar.gz -C /tmp/mineiro-release
+          rm -rf /tmp/mineiro-release/.github
 
       - name: Replace release branch tree
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p /tmp/keep
+          if [ -d .github ]; then mv .github /tmp/keep/.github; fi
           find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
           cp -a /tmp/mineiro-release/. .
+          if [ -d /tmp/keep/.github ]; then mv /tmp/keep/.github .github; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
