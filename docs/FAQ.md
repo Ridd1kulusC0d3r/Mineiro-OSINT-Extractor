@@ -1,4 +1,4 @@
-# FAQ
+# Mineiro Username Intelligence · FAQ
 
 ## O Mineiro confirma identidade?
 Não. Ele observa presença pública e produz suporte de correlação. Identidade exige evidência independente.
