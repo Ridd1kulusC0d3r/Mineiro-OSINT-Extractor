@@ -15,7 +15,7 @@ interface HeaderProps {
   onReset: () => void;
   onOpenExport: () => void;
   onGoToDashboard?: () => void;
-  onOpenGeminiConfig?: () => void;
+  onOpenAiWorkspace?: () => void;
   onOpenBulkImport?: () => void;
   onOpenHistory?: () => void;
   onOpenShortcuts?: () => void;
@@ -32,7 +32,7 @@ export function Header({
   onReset,
   onOpenExport,
   onGoToDashboard,
-  onOpenGeminiConfig,
+  onOpenAiWorkspace,
   onOpenBulkImport,
   onOpenHistory,
   cachedScansCount = 0,
@@ -111,10 +111,10 @@ export function Header({
               )}
             </button>
           )}
-          {onOpenGeminiConfig && (
+          {onOpenAiWorkspace && (
             <button
               type="button"
-              onClick={onOpenGeminiConfig}
+              onClick={onOpenAiWorkspace}
               className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-[#9aa1aa] hover:bg-[#14181b] hover:text-[#f2f3f4]"
             >
               <BrainCircuit className="h-3.5 w-3.5" />
