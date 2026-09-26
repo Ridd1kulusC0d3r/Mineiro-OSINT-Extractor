@@ -178,7 +178,7 @@ export function DashboardView({
               </span>
             </div>
             <p className="text-xs text-[#A3A3A3]">
-              Consolidated reconnaissance synthesis across unified databases (the local Mineiro platform catalog).
+              Evidence-oriented synthesis across the local Mineiro Registry and optional analysis modules.
             </p>
           </div>
 
@@ -209,7 +209,7 @@ export function DashboardView({
         <div className="space-y-2">
           <div className="text-[10px] text-[#A3A3A3] uppercase tracking-widest flex items-center gap-1.5">
             <Database className="w-3 h-3 text-[#FFFFFF]" />
-            Active Unified Intelligence Sources (4,000+ Unique Endpoints Unfolded)
+            Mineiro Registry & Analysis Modules
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
             {UNIFIED_DATABASES.map((db) => (
