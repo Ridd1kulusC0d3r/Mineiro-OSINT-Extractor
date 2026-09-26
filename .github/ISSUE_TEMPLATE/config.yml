@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentação
+    url: https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/docs/README.md
+    about: Consulte o guia antes de abrir uma issue.
+  - name: Security
+    url: https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/SECURITY.md
+    about: Leia a política antes de relatar uma vulnerabilidade.

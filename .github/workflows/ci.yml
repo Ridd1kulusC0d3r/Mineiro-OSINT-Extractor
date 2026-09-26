@@ -4,10 +4,23 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   validate:
+    name: Product validation
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: "true"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -17,32 +30,42 @@ jobs:
         with:
           node-version: 22
 
+      - name: Cache npm downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node22-npm-${{ hashFiles('package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node22-npm-
+
       - name: Install dependencies
-        run: npm install
+        run: npm install --prefer-offline --no-audit --no-fund
 
       - name: Validate Registry
         run: npm run registry:validate
 
-      - name: Registry stats
-        run: npm run registry:stats
-
       - name: Type check
         run: npm run lint
 
-      - name: Run synthetic demo
+      - name: Synthetic detector demo
         run: npm run demo
 
-      - name: Run v1.4 intelligence smoke test
+      - name: Intelligence smoke test
         run: npm run intelligence:test
+
+      - name: Validate official Colab
+        run: npm run colab:validate
+
+      - name: Validate documentation surface
+        run: npm run docs:validate
 
       - name: Validate offline manual
         run: npm run manual:validate
 
-      - name: Validate Linux launcher syntax
-        run: bash -n iniciar-mineiro.sh
+      - name: Validate launchers
+        run: |
+          bash -n iniciar-mineiro.sh
+          bash -n Iniciar-Mineiro.command
 
-      - name: Validate macOS launcher syntax
-        run: bash -n Iniciar-Mineiro.command
-
-      - name: Build
+      - name: Build production bundle
         run: npm run build
