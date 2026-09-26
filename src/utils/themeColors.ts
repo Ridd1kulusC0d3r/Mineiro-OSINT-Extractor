@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import { MINEIRO_PALETTE } from './mineiroPalette';
 
 /**
- * Mineiro Username Extractor — Monochrome UI
+ * Mineiro Username Intelligence — Monochrome UI
  * Cores autorizadas:
  * Ink: #050505 | Ink 2: #0A0A0A | Line: #2A2A2A
  * Texto: #F5F5F5 | Texto 2: #A3A3A3 | Texto 3: #737373
