@@ -1,38 +1,42 @@
-# COMECE AQUI
+# Comece aqui
 
-## O que é
+O caminho mais curto para usar o Mineiro:
 
-O **Mineiro Username Extractor v1.3.2** verifica sinais públicos associados a um username, organiza resultados por tipo de plataforma e mostra a confiabilidade do detector usado.
+## Google Colab
 
-Ele não invade contas, não quebra senhas, não acessa conteúdo privado e não prova identidade civil.
+[▶ Abrir o notebook oficial](https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Official_Colab.ipynb)
 
-## Rode a demo em 3 passos
+Depois escolha **Runtime → Run all**.
 
-1. Instale **Node.js 22 LTS**.
-2. Abra um terminal nesta pasta e execute:
+## Local
+
+Pré-requisito: Node.js 22+.
 
 ```bash
-npm install
-npm run demo
+git clone https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor.git
+cd Mineiro-OSINT-Extractor
+npm install --no-audit --no-fund
+npm run dev
 ```
 
-3. Confirme:
+Abra `http://localhost:3000`.
 
-```text
-[PASS] Demo sintética validada com sucesso.
+## Antes do primeiro uso
+
+Leia:
+
+1. [docs/GETTING-STARTED.md](docs/GETTING-STARTED.md)
+2. [docs/USER-GUIDE.md](docs/USER-GUIDE.md)
+3. [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md)
+
+## Validação
+
+```bash
+npm run check
 ```
 
-## Abra a ferramenta
+Esse comando valida Registry, TypeScript, demo sintética, assessment, notebook oficial, documentação, manual e build.
 
-- **Windows:** clique em `Iniciar-Mineiro.bat`.
-- **macOS:** rode `chmod +x Iniciar-Mineiro.command` uma vez e depois abra o arquivo.
-- **Linux:** rode `chmod +x iniciar-mineiro.sh && ./iniciar-mineiro.sh`.
-- **Google Colab:** abra `notebooks/Mineiro_One_Click_Colab.ipynb`.
+## Regra essencial
 
-## Manual completo
-
-Abra `MANUAL.html` no navegador. Ele funciona offline.
-
-## Ajuda
-
-Abra uma Issue no repositório e informe sistema operacional, versão do Node, comando executado e mensagem de erro. Não publique chaves de API, cookies, tokens ou dados pessoais.
+`FOUND` é um achado público. Não é prova automática de identidade.
