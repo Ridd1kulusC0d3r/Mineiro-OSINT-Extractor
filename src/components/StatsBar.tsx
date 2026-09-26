@@ -1,8 +1,8 @@
-import { LayoutDashboard, LayoutGrid, Table, BrainCircuit, Terminal, Search, GitFork, FileSpreadsheet } from 'lucide-react';
+import { LayoutDashboard, LayoutGrid, Table, BrainCircuit, Terminal, Search, GitFork, FileSpreadsheet, FileSearch } from 'lucide-react';
 
 interface StatsBarProps {
-  activeView: 'dashboard' | 'grid' | 'table' | 'profile' | 'linkage' | 'terminal' | 'batch';
-  setActiveView: (view: 'dashboard' | 'grid' | 'table' | 'profile' | 'linkage' | 'terminal' | 'batch') => void;
+  activeView: 'intelligence' | 'dashboard' | 'grid' | 'table' | 'profile' | 'linkage' | 'terminal' | 'batch';
+  setActiveView: (view: 'intelligence' | 'dashboard' | 'grid' | 'table' | 'profile' | 'linkage' | 'terminal' | 'batch') => void;
   scannedCount: number;
   totalCount: number;
   foundCount: number;
@@ -78,6 +78,20 @@ export function StatsBar({
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5 pt-2 border-t border-[#2A2A2A]">
           {/* View Switchers */}
           <div className="flex items-center border border-[#2A2A2A] bg-[#0A0A0A] p-1 rounded-sm self-start flex-wrap gap-1 shadow-sm">
+            <button
+              id="view-intelligence-btn"
+              type="button"
+              onClick={() => setActiveView('intelligence')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase rounded-sm transition-all ${
+                activeView === 'intelligence'
+                  ? 'bg-[#FFFFFF] text-[#050505] font-bold shadow-sm'
+                  : 'text-[#A3A3A3] hover:text-[#F5F5F5] hover:bg-[#050505]'
+              }`}
+            >
+              <FileSearch className="w-3.5 h-3.5" />
+              Intelligence
+            </button>
+
             <button
               id="view-dashboard-btn"
               type="button"
