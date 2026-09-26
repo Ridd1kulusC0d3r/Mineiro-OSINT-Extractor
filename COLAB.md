@@ -106,3 +106,57 @@ Depois reinicie o servidor. Não é necessário usar `allowedHosts: true`.
 Discord permanece no Mineiro Registry para taxonomia e proveniência, mas é marcado como `registry-only`, porque não oferece um URL público estável no formato `/username` adequado a este mecanismo de enumeração.
 
 Por isso ele não entra em scans diretos e deixa de gerar o aviso de placeholder no validador.
+
+
+## v1.4 — Full Scan Progressivo
+
+Na v1.4, o modo Full foi otimizado para ambientes temporários como Google Colab.
+
+O fluxo agora é:
+
+```text
+984 detectores escaneáveis
+        |
+        v
+FASE 1 — DISCOVERY
+timeout curto
+concorrência limitada maior
+sem parsing de corpo
+        |
+        v
+FOUND / UNCERTAIN / RATE_LIMITED
+        |
+        v
+FASE 2 — VALIDATION
+concorrência menor
+Evidence Engine
+análise aprofundada somente dos candidatos
+```
+
+Isso evita aplicar inspeção profunda aos 984 detectores indiscriminadamente.
+
+### Importante
+
+- Endpoints protegidos permanecem `UNCERTAIN`.
+- O modo progressivo não tenta contornar WAF, CAPTCHA ou proteção equivalente.
+- Não repita Full Scan só para atualizar a interface. Use Quick/Standard durante desenvolvimento.
+- O relatório analítico continua disponível mesmo se parte da coleta ficar inconclusiva; a seção Collection Coverage mostra essa limitação.
+
+## Intelligence View no Colab
+
+Depois do scan, a v1.4 abre por padrão a nova **Intelligence View**.
+
+Ela apresenta:
+
+- Key Intelligence Judgments;
+- Collection Coverage;
+- Evidence Matrix;
+- Correlation Graph;
+- Hypotheses;
+- Contradictory Evidence;
+- Intelligence Gaps;
+- Pivots;
+- Stop Condition;
+- export HTML/JSON/Markdown/CSV.
+
+O relatório HTML é montado no navegador do próprio Colab/proxy e pode ser salvo localmente.
