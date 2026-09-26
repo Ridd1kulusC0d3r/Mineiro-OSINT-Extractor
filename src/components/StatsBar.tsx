@@ -42,7 +42,7 @@ export function StatsBar({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-[#A3A3A3] uppercase tracking-wider text-[11px]">ENGINE PROGRESS:</span>
+              <span className="text-[#A3A3A3] uppercase tracking-wider text-[11px]">COLLECTION:</span>
               <span className="font-bold text-[#F5F5F5] tabular-nums">{percent}%</span>
               <span className="text-[#737373] tabular-nums">({scannedCount}/{totalCount})</span>
             </div>
@@ -56,7 +56,7 @@ export function StatsBar({
 
           <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-[#0A0A0A] border border-[#2A2A2A]">
-              <span className="text-[#A3A3A3] text-[11px] uppercase">HITS:</span>
+              <span className="text-[#A3A3A3] text-[11px] uppercase">FOUND:</span>
               <span className="text-[#FFFFFF] font-bold tabular-nums">{foundCount}</span>
             </div>
             {uncertainCount > 0 && (
@@ -66,7 +66,7 @@ export function StatsBar({
               </div>
             )}
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-[#0A0A0A] border border-[#2A2A2A]">
-              <span className="text-[#A3A3A3] text-[11px] uppercase">HIT RATE:</span>
+              <span className="text-[#A3A3A3] text-[11px] uppercase">FOUND RATE:</span>
               <span className="text-[#F5F5F5] font-bold tabular-nums">
                 {totalCount > 0 ? ((foundCount / (scannedCount || 1)) * 100).toFixed(1) : 0}%
               </span>
@@ -210,7 +210,8 @@ export function StatsBar({
             )}
           </div>
 
-          {/* Local Search & Status Filter */}
+          {/* Local Search & Status Filter — hidden in the report workspace to reduce visual density */}
+          {activeView !== 'intelligence' && (
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative flex-1 sm:w-56">
               <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[#737373]" />
@@ -256,6 +257,7 @@ export function StatsBar({
               ))}
             </div>
           </div>
+          )}
         </div>
       </div>
     </div>
