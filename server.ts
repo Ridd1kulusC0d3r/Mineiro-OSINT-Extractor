@@ -8,6 +8,8 @@ import { GoogleGenAI } from '@google/genai';
 import { extractPlatformSignals } from './src/data/platformSignalExtractor';
 import { computeBehavioralProfile } from './src/data/behavioralEngine';
 import { evaluateThreatActorHeuristics } from './src/data/threatActorHeuristics';
+import { getRegistryStats, MINEIRO_REGISTRY } from './src/registry/registry';
+import { benchmarkRegistry } from './src/registry/bench';
 
 
 const TERMINAL_BANNER = String.raw`\n+------------------------------------------------------------------+\n|                                                                  |\n|   M   M  I  N   N  EEEEE  I  RRRR    OOO                       |\n|   MM MM  I  NN  N  E      I  R   R  O   O                      |\n|   M M M  I  N N N  EEEE   I  RRRR   O   O                      |\n|   M   M  I  N  NN  E      I  R  R   O   O                      |\n|   M   M  I  N   N  EEEEE  I  R   R   OOO                       |\n|                                                                  |\n|                USERNAME EXTRACTOR // OSINT                       |\n|                                                                  |\n|   [ probe ] -> [ classify ] -> [ correlate ] -> [ export ]      |\n|                                                                  |\n|   public signals only  |  evidence over assumptions              |\n+------------------------------------------------------------------+\n`;
@@ -128,7 +130,7 @@ function getGenAiClient(customApiKey?: string): { client: GoogleGenAI; isCustom:
       apiKey,
       httpOptions: {
         headers: {
-          'User-Agent': 'mineiro-username-extractor/1.2',
+          'User-Agent': 'mineiro-username-extractor/1.3',
         },
       },
     }),
@@ -141,13 +143,57 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     service: 'Mineiro Username Extractor Unified OSINT Engine',
-    version: '1.2.0',
+    version: '1.3.0',
     timestamp: new Date().toISOString(),
     geminiConfigured: Boolean(process.env.GEMINI_API_KEY),
     supportedDatabases: ['Mineiro Core (local direct probes)', 'Mineiro Username Extractor WAF Guard', 'Mineiro Username Extractor DNS & Email Recon'],
   });
 });
 
+
+// Mineiro Registry metadata API
+app.get('/api/registry/stats', (req, res) => {
+  res.json(getRegistryStats());
+});
+
+app.get('/api/registry/detectors', (req, res) => {
+  const category = typeof req.query.category === 'string' ? req.query.category : undefined;
+  const tier = typeof req.query.tier === 'string' ? req.query.tier : undefined;
+  const provenance = typeof req.query.provenance === 'string' ? req.query.provenance : undefined;
+
+  const filtered = MINEIRO_REGISTRY.filter((detector) => {
+    if (category && detector.category !== category) return false;
+    if (tier && detector.reliabilityTier !== tier) return false;
+    if (provenance && detector.provenanceStatus !== provenance) return false;
+    return true;
+  });
+
+  res.json({
+    count: filtered.length,
+    detectors: filtered,
+  });
+});
+
+app.post('/api/registry/benchmark', (req, res) => {
+  const observations = Array.isArray(req.body?.observations) ? req.body.observations : [];
+  if (observations.length > 10000) {
+    return res.status(400).json({ error: 'Maximum 10,000 benchmark observations per request' });
+  }
+
+  const requestedIds = Array.isArray(req.body?.detectorIds)
+    ? req.body.detectorIds.filter((id: unknown) => typeof id === 'string')
+    : MINEIRO_REGISTRY.map((detector) => detector.id);
+
+  const validIds = requestedIds.filter((id: string) =>
+    MINEIRO_REGISTRY.some((detector) => detector.id === id)
+  );
+
+  res.json({
+    detectors: validIds.length,
+    observations: observations.length,
+    metrics: benchmarkRegistry(validIds, observations),
+  });
+});
 
 // Real-time URL verification for OSINT checks (handling CORS & uncertainty model for WAF/TLS)
 app.post('/api/osint/verify', async (req, res) => {
@@ -191,7 +237,7 @@ app.post('/api/osint/verify', async (req, res) => {
       method: 'GET',
       signal: controller.signal,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 MineiroUsernameExtractor/1.2',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 MineiroUsernameExtractor/1.3',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.5',
       },
@@ -1249,7 +1295,7 @@ async function startServer() {
     const server = app.listen(PORT, '0.0.0.0', () => {
       console.log('\n' + TERMINAL_BANNER + '\n');
       console.log(`[ready] http://0.0.0.0:${PORT}`);
-      console.log('[mode] local-first OSINT probes | monochrome interface | v1.2.0');
+      console.log('[mode] local-first OSINT probes | monochrome interface | v1.3.0');
     });
 
     server.on('error', (err: NodeJS.ErrnoException) => {

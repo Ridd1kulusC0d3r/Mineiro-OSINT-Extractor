@@ -165,13 +165,13 @@ export const CATEGORY_LABELS: Record<string, { label: string; count: number; des
 };
 
 export const UNIFIED_DATABASES = [
-  { id: 'core_vector', name: 'Mineiro Username Extractor Core Directory', count: `${PLATFORMS_DATABASE.length}+`, focus: 'Multi-Service Endpoint Directory', badge: 'Active' },
-  { id: 'waf_guard', name: 'WAF & Anti-Bot Heuristics', count: 'Active', focus: 'Rate-limit / edge-protection detection and uncertainty flagging', badge: 'Active' },
-  { id: 'email_matrix', name: 'Email & MX Recon', count: 'Deep', focus: 'Domain MX, SPF, DMARC & Permutation Analysis', badge: 'Active' },
-  { id: 'correlation', name: 'Correlation Engine', count: 'Realtime', focus: 'Cross-Platform Moniker & Vector Linkage Analysis', badge: 'Active' },
-  { id: 'async_pipeline', name: 'Async Probing Pipeline', count: 'Concurrent', focus: 'Bounded concurrent HTTP dispatcher', badge: 'Active' },
-  { id: 'neural_profile', name: 'Optional AI Synthesis', count: 'AI Engine', focus: 'Optional summary of observed public signals', badge: 'Active' },
-];
+  { id: 'registry', name: 'Mineiro Registry', count: `${PLATFORMS_DATABASE.length}`, focus: 'Versioned detector inventory, taxonomy & provenance', badge: 'v1.3' },
+  { id: 'detector_bench', name: 'Detector Bench', count: 'Metrics', focus: 'Precision, recall, false positives & availability', badge: 'v1.3' },
+  { id: 'evidence_engine', name: 'Evidence Engine', count: `${OPTIONAL_EVIDENCE_CHECKS_COUNT}`, focus: 'Optional logical checks extracted from probe responses', badge: 'Active' },
+  { id: 'waf_guard', name: 'Edge Protection Guard', count: 'Adaptive', focus: 'Rate-limit / protection detection and uncertainty flagging', badge: 'Active' },
+  { id: 'email_matrix', name: 'Email & MX Recon', count: 'Optional', focus: 'Domain MX, SPF, DMARC & public avatar checks', badge: 'Active' },
+  { id: 'correlation', name: 'Correlation Engine', count: 'Local', focus: 'Cross-platform public-handle linkage analysis', badge: 'Active' },
+]
 
 export const DEMO_PRESETS = [
   {

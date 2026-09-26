@@ -30,6 +30,8 @@ export interface Platform {
   provenanceStatus?: 'verified' | 'legacy-audit-required' | 'external-attributed';
   licenseStatus?: string;
   optionalEvidenceChecks?: string[];
+  lastVerified?: string;
+  provenanceSource?: string;
 }
 
 export interface TargetMetadata {

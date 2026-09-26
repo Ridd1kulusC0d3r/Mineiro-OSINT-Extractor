@@ -4,19 +4,84 @@
 
 **Mineiro Username Extractor** é uma engine OSINT para enumeração de usernames, classificação da pegada digital e validação de evidências públicas.
 
-A v1.2 volta a preservar o catálogo amplo do projeto, mas deixa explícita a diferença entre **quantidade**, **confiabilidade do detector** e **proveniência**.
+A v1.3 transforma o catálogo em um **Registry versionado de detectores**, adiciona a base do **Detector Bench** e mantém explícita a diferença entre quantidade, confiabilidade do detector, evidência observada e proveniência.
 
-## Números da v1.2
+## Números da v1.3
 
-- **985 endpoints catalogados**
+- **985 detectores catalogados**
+- **17 packs modulares**
 - **8 categorias principais**
-- **8 evidence checks opcionais por endpoint**
+- **8 evidence checks opcionais por detector**
 - **até 7.880 checks lógicos** em uma varredura completa
-- score de confiabilidade do detector por site
+- Mineiro Registry com inventário, taxonomia e proveniência
+- Detector Bench com precision, recall, false-positive rate e availability
+- score de confiabilidade heurístico por detector
 - classificação por tipo de serviço
 - perfil de presença digital ponderado pela confiabilidade
+- execução suportada no Google Colab
 
 > 7.880 checks lógicos não significam 7.880 requisições extras. Vários sinais são extraídos de uma única resposta HTTP.
+
+## Google Colab
+
+A v1.3 inclui um notebook oficial:
+
+`notebooks/Mineiro_Username_Extractor_Colab.ipynb`
+
+Ele clona o projeto, instala dependências, valida o Registry, inicia o servidor e tenta abrir a interface pelo proxy do Colab.
+
+Consulte [COLAB.md](COLAB.md).
+
+## Mineiro Registry
+
+O catálogo é exposto como um registro de detectores versionados com:
+
+```text
+detector
+├── id
+├── category
+├── siteType
+├── URL pattern
+├── detection method
+├── detector reliability
+├── provenance status
+├── license status
+└── evidence checks
+```
+
+Consulte [REGISTRY.md](REGISTRY.md).
+
+## Detector Bench
+
+A v1.3 adiciona um motor separado para medir detectores com observações rotuladas:
+
+```text
+TP / TN / FP / FN
+        ↓
+precision
+recall
+false-positive rate
+availability
+        ↓
+benchmark score
+```
+
+Isso evita confundir o score heurístico do detector com desempenho empiricamente medido.
+
+## Compatibilidade
+
+### Local / Linux / macOS / Windows
+
+```bash
+git clone https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor.git
+cd Mineiro-OSINT-Extractor
+npm install
+npm run dev
+```
+
+### Colab
+
+Use o notebook em `notebooks/` ou siga [COLAB.md](COLAB.md).
 
 ## Pipeline
 
@@ -143,6 +208,8 @@ npm run dev
 ## Documentação
 
 - [Guia de uso](USER_GUIDE.md)
+- [Google Colab](COLAB.md)
+- [Mineiro Registry](REGISTRY.md)
 - [Arquitetura](ARCHITECTURE.md)
 - [Licenças e proveniência](LICENSES_AND_PROVENANCE.md)
 - [Política de proveniência](PROVENANCE.md)
@@ -152,7 +219,7 @@ npm run dev
 
 ## Proveniência do catálogo
 
-A base histórica ampla foi preservada em vez de descartada. Como nem toda entrada possui trilha de origem individual comprovada, a v1.2 marca o catálogo legado como `legacy-audit-required`.
+A base histórica ampla foi preservada em vez de descartada. Como nem toda entrada possui trilha de origem individual comprovada, a v1.3 marca o catálogo legado como `legacy-audit-required`.
 
 Consulte [LICENSES_AND_PROVENANCE.md](LICENSES_AND_PROVENANCE.md).
 
