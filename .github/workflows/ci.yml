@@ -29,5 +29,17 @@ jobs:
       - name: Type check
         run: npm run lint
 
+      - name: Run synthetic demo
+        run: npm run demo
+
+      - name: Validate offline manual
+        run: npm run manual:validate
+
+      - name: Validate Linux launcher syntax
+        run: bash -n iniciar-mineiro.sh
+
+      - name: Validate macOS launcher syntax
+        run: bash -n Iniciar-Mineiro.command
+
       - name: Build
         run: npm run build
