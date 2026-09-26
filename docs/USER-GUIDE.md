@@ -1,4 +1,6 @@
-# Guia de uso
+# Mineiro Username Intelligence · Guia de uso
+
+**OSINT Investigation Workbench**
 
 Este guia cobre o fluxo normal de uma investigação no Mineiro.
 
