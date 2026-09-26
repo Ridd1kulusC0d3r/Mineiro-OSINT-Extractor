@@ -17,8 +17,8 @@ export function GeminiConfigModal({
   selectedModel,
 }: GeminiConfigModalProps) {
   const [apiKeyInput, setApiKeyInput] = useState(personalKey);
-  const deprecated = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash', 'gemini-2.0-pro', 'gemini-2.5-flash'];
-  const initialModel = selectedModel && !deprecated.includes(selectedModel) ? selectedModel : 'gemini-3.8-flash';
+  const supportedModels = ['gemini-3.8-flash', 'gemini-3.7-flash', 'gemini-3.5-flash-lite', 'gemini-flash-latest'];
+  const initialModel = supportedModels.includes(selectedModel) ? selectedModel : 'gemini-3.8-flash';
   const [modelInput, setModelInput] = useState(initialModel);
   const [showKey, setShowKey] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
@@ -81,10 +81,10 @@ export function GeminiConfigModal({
             </div>
             <div>
               <h2 className="text-sm font-bold text-white uppercase tracking-wider">
-                Personal Gemini AI Integration
+                Gemini · Analyst Copilot
               </h2>
               <p className="text-[11px] text-neutral-400">
-                Connect your personal Google Gemini API Key for forensic AI profiling
+                Connect Gemini to the evidence-bounded Analyst Copilot
               </p>
             </div>
           </div>
@@ -103,7 +103,7 @@ export function GeminiConfigModal({
             <span>Privacy & Full Control</span>
           </div>
           <p className="text-neutral-400 text-[11px] leading-relaxed">
-            Your key is kept strictly in session memory and relayed securely via headers to the OSINT engine proxy. No credentials are stored or shared.
+            Your key is stored only in this browser's local storage and sent to the local Mineiro server for Gemini requests. Remove it at any time with Clear.
           </p>
           <a
             href="https://aistudio.google.com/app/apikey"
@@ -144,7 +144,7 @@ export function GeminiConfigModal({
               </button>
             </div>
             <p className="text-[10px] text-neutral-500">
-              If left blank, the system will fallback to the server environment key or the local heuristic engine.
+              If left blank, Mineiro uses GEMINI_API_KEY from the server environment when available. The deterministic assessment works without AI.
             </p>
           </div>
 
@@ -162,9 +162,10 @@ export function GeminiConfigModal({
               }}
               className="w-full bg-black border border-neutral-700 text-white px-3 py-2 text-xs font-mono focus:border-white focus:outline-none"
             >
-              <option value="gemini-3.8-flash">gemini-3.8-flash (Recommended • Ultra-fast & Stable)</option>
-              <option value="gemini-3.1-flash-lite">gemini-3.1-flash-lite (Flash Lite • Fast & Efficient)</option>
-              <option value="gemini-flash-latest">gemini-flash-latest (General Flash)</option>
+              <option value="gemini-3.8-flash">gemini-3.8-flash (Recommended · Stable)</option>
+              <option value="gemini-3.7-flash">gemini-3.7-flash (Stable fallback)</option>
+              <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (Fast / efficient)</option>
+              <option value="gemini-flash-latest">gemini-flash-latest (Latest alias)</option>
             </select>
           </div>
         </div>
