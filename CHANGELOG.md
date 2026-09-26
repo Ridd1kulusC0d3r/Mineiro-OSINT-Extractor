@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.3.2] - 2026-09-26
+
+### Added
+- One-click Google Colab notebook with Mineiro black-and-white visual identity.
+- Offline self-contained `MANUAL.html` with 13 guided sections, OS tabs, inline diagrams, annotated illustrations, theme toggle and print mode.
+- Two-click launchers for Windows, macOS and Linux.
+- Synthetic Detector Bench demo with deterministic expected output.
+- `COMECE-AQUI.md` for first-time users.
+- `RELATORIO-DE-TESTES.md` with explicit executed/not-executed status.
+- CI checks for documentation, demo and shell launcher syntax.
+
+### Changed
+- Package version bumped to 1.3.2.
+- README now prioritizes beginner onboarding and Google Colab.
+
+
 ## [1.3.1] - 2026-09-26
 
 ### Fixed
