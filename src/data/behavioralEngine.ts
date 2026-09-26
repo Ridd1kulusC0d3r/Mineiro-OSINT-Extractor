@@ -1,5 +1,5 @@
 /**
- * Advanced Behavioral & Archetype Forensic Engine for Mineiro Username Extractor OSINT
+ * Advanced Behavioral & Archetype Forensic Engine for Mineiro Username Intelligence OSINT
  * Computes objective, distribution-weighted archetypes and behavioral signals.
  * Strictly prevents false defaults to generic "tech professional" or bland catch-alls.
  * Provides granular, domain-specific archetypes cross-referenced with occupation data.
