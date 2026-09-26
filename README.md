@@ -2,13 +2,67 @@
 
 ![Mineiro Username Extractor](assets/mineiro-logo.png)
 
-**Mineiro Username Extractor** é uma engine OSINT para enumeração de usernames, classificação da pegada digital e validação de evidências públicas.
+**Mineiro Username Extractor** é um OSINT Intelligence Workbench para coleta pública de usernames, avaliação de evidências, correlação cautelosa e produção de relatórios analíticos.
 
-A v1.3 transforma o catálogo em um **Registry versionado de detectores**, adiciona a base do **Detector Bench** e mantém explícita a diferença entre quantidade, confiabilidade do detector, evidência observada e proveniência.
+A v1.4 separa **collection → evidence → correlation → assessment**, introduz uma Intelligence View editorial, exportação enriquecida, progressive full scan para Colab e um copiloto de IA opcional limitado à triagem de evidências.
 
 ## Comece em 1 minuto
 
-### Google Colab
+### Intelligence Workbench v1.4
+
+A tela principal deixa de ser um painel lotado de gráficos e passa a ser um relatório analítico navegável:
+
+```text
+01 Assessment
+02 Evidence
+03 Hypotheses
+04 Action / Pivots
+05 Gaps
+06 AI Assist
+07 Method
+```
+
+O motor gera deterministicamente:
+
+- Key Intelligence Judgments;
+- Collection Coverage;
+- Evidence Matrix;
+- Footprint Clusters;
+- hipóteses e hipótese alternativa;
+- evidência contraditória;
+- Intelligence Gaps;
+- pivôs priorizados;
+- Next Collection Plan;
+- Stop Condition.
+
+### Progressive Full Scan
+
+No full scan, a v1.4 usa duas fases:
+
+```text
+fast discovery across the registry
+              ↓
+FOUND / UNCERTAIN / RATE_LIMITED
+              ↓
+deeper validation + Evidence Engine
+```
+
+Isso reduz o gargalo do Colab sem aumentar agressivamente a coleta.
+
+### Relatório local enriquecido
+
+O usuário escolhe as seções antes de exportar:
+
+- HTML autocontido;
+- JSON analítico;
+- Markdown;
+- Evidence CSV.
+
+### AI Analyst Copilot
+
+A IA é opcional e trabalha sobre a avaliação já estruturada. Ela pode priorizar evidências, gaps, contradições e pivôs, mas a saída permanece `AI_SYNTHESIZED` e **não aumenta a confiança factual automaticamente**.
+
+## Google Colab
 
 A forma mais curta de testar o Mineiro sem instalar nada localmente é abrir o notebook pronto:
 
@@ -49,7 +103,7 @@ npm run demo
 
 A demo usa somente dados sintéticos e valida o Detector Bench sem consultar pessoas reais.
 
-## Números da v1.3
+## Números da v1.4
 
 - **985 detectores catalogados**
 - **17 packs modulares**
@@ -261,6 +315,9 @@ npm run dev
 - [Google Colab](COLAB.md)
 - [Mineiro Registry](REGISTRY.md)
 - [Arquitetura](ARCHITECTURE.md)
+- [Engenharia v1.4](docs/ENGINEERING-V1.4.md)
+- [Metodologia analítica](docs/INTELLIGENCE-METHODOLOGY.md)
+- [Reporting UX v1.4](docs/REPORTING-UX-V1.4.md)
 - [Licenças e proveniência](LICENSES_AND_PROVENANCE.md)
 - [Política de proveniência](PROVENANCE.md)
 - [Security Policy](SECURITY.md)

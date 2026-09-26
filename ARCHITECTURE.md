@@ -111,3 +111,71 @@ O benchmark recebe observações rotuladas e calcula métricas localmente. Não 
 ### Colab
 
 A mesma aplicação Node/React roda em Google Colab. O notebook oficial instala dependências, valida o Registry, inicia o servidor e usa o proxy do Colab para abrir a interface.
+
+
+## v1.4 Intelligence Workbench
+
+```text
+Target
+  |
+  v
+Progressive Collection
+  |
+  v
+Normalized ScanResult
+  |
+  +--> Evidence Engine
+  |       |
+  |       +--> detector confidence
+  |       +--> observation confidence
+  |
+  v
+Intelligence Assessment
+  |
+  +--> correlation support
+  +--> key judgments
+  +--> hypotheses
+  +--> contradictions
+  +--> gaps
+  +--> pivots
+  +--> collection plan
+  |
+  +--> Local Report Export
+  |
+  +--> Optional AI Analyst Copilot
+          |
+          +--> AI_SYNTHESIZED
+          +--> never raises factual confidence
+```
+
+### Progressive scan
+
+A full scan usa uma fase rápida de discovery com concorrência limitada maior. Apenas candidatos encontrados, incertos ou rate-limited seguem para validação aprofundada com Evidence Engine.
+
+A fase progressiva não usa retry para contornar proteção. Endpoints protegidos permanecem inconclusivos.
+
+### Presentation architecture
+
+```text
+IntelligenceReportView
+├── executive assessment
+├── collection health
+├── evidence matrix
+├── hypotheses / contradictions
+├── pivots
+├── gaps
+├── AI analyst
+└── methodology
+
+IntelligenceExportModal
+├── section selector
+├── HTML
+├── JSON
+├── Markdown
+└── CSV
+```
+
+Documentação detalhada:
+- `docs/ENGINEERING-V1.4.md`
+- `docs/INTELLIGENCE-METHODOLOGY.md`
+- `docs/REPORTING-UX-V1.4.md`
