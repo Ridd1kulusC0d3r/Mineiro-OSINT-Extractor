@@ -427,7 +427,7 @@ export default function App() {
           totalScanned: scanResult.totalScanned,
         });
         setCachedScans(getCachedInvestigations());
-        addLog(`[SNAPSHOT] Cryptographically signed snapshot sealed: ${snapshot.snapshotId} (SHA-256: ${snapshot.summaryHash.slice(0, 10)}...)`, 'success');
+        addLog(`[SNAPSHOT] Local integrity snapshot generated: ${snapshot.snapshotId} (SHA-256: ${snapshot.summaryHash.slice(0, 10)}...)`, 'success');
       } catch (snapErr) {
         console.warn('Could not auto-generate snapshot:', snapErr);
       }
@@ -683,7 +683,7 @@ export default function App() {
       const updatedCache = updateInvestigationInCache(targetHandle, targetType, { aiProfile: data });
       setCachedScans(updatedCache);
 
-      // Re-sign snapshot with updated AI profile data
+      // Refresh local integrity snapshot after optional AI synthesis
       try {
         await takeInvestigationSnapshot({
           target: targetHandle,
@@ -693,7 +693,7 @@ export default function App() {
           aiProfile: data,
         });
         setCachedScans(getCachedInvestigations());
-        addLog(`[SNAPSHOT] Investigation snapshot re-signed with AI intelligence dossier.`, 'info');
+        addLog(`[SNAPSHOT] Investigation integrity snapshot refreshed.`, 'info');
       } catch (err) {
         // ignore
       }
