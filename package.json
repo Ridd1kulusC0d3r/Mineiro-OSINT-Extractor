@@ -17,7 +17,8 @@
     "intelligence:test": "tsx scripts/intelligence-smoke.ts",
     "colab:validate": "node scripts/validate-colab.mjs",
     "docs:validate": "node scripts/validate-docs.mjs",
-    "check": "npm run registry:validate && npm run lint && npm run demo && npm run intelligence:test && npm run manual:validate && npm run colab:validate && npm run docs:validate && npm run build"
+    "check": "npm run brand:validate && npm run registry:validate && npm run lint && npm run demo && npm run intelligence:test && npm run manual:validate && npm run colab:validate && npm run docs:validate && npm run build",
+    "brand:validate": "node scripts/validate-brand.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
