@@ -1,4 +1,6 @@
-# Getting Started
+# Mineiro Username Intelligence · Getting Started
+
+**OSINT Investigation Workbench**
 
 Você precisa de uma destas duas coisas:
 
