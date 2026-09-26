@@ -1,4 +1,6 @@
-# Documentação do Mineiro
+# Mineiro Username Intelligence · Documentação
+
+**OSINT Investigation Workbench**
 
 Esta pasta é o ponto de entrada para quem quer **usar**, **operar**, **entender** ou **contribuir** com o Mineiro.
 
