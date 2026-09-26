@@ -9,7 +9,7 @@ Você precisa de uma destas duas coisas:
 
 Abra o notebook oficial:
 
-[▶ Mineiro Official Colab](https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Official_Colab.ipynb)
+[▶ Mineiro Username Intelligence Official Colab](https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Username_Intelligence_Colab.ipynb)
 
 No Colab:
 
