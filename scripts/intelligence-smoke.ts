@@ -60,12 +60,18 @@ const results: ScanResult[] = [
     confidenceScore: 94, detectorReliability: 88,
     checkedAt: '2026-09-26T18:00:04.000Z',
   },
+  {
+    id: '6', platformId: 'errored', platformName: 'Errored Endpoint', category: 'community',
+    url: 'https://example.test/error/demo', status: 'error',
+    confidenceScore: 0, detectorReliability: 70,
+    checkedAt: '2026-09-26T18:00:05.000Z',
+  },
 ];
 
 const assessment = buildIntelligenceAssessment(results, 'synthetic-demo', 'developer_footprint');
 
 if (assessment.intelligenceRequirement !== 'developer_footprint') throw new Error('requirement mismatch');
-if (assessment.collection.requested !== 5) throw new Error('requested coverage mismatch');
+if (assessment.collection.requested !== 6) throw new Error('requested coverage mismatch');
 if (assessment.collection.found !== 3) throw new Error('found coverage mismatch');
 if (assessment.collection.uncertain !== 1) throw new Error('uncertain coverage mismatch');
 if (!assessment.judgments.length) throw new Error('missing judgments');
