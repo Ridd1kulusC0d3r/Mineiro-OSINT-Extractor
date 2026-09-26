@@ -32,6 +32,7 @@ export interface Platform {
   optionalEvidenceChecks?: string[];
   lastVerified?: string;
   provenanceSource?: string;
+  scannable?: boolean;
 }
 
 export interface TargetMetadata {
