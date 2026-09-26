@@ -436,11 +436,8 @@ export default function App() {
     // Transition to the Results Dashboard after scan completes
     setActiveView('intelligence');
 
-    // Automatically trigger AI Profiling synthesis ONLY IF enabled in modular config
-    if (activeCfg.enableAutoAiProfile && scanResult.foundCount > 0) {
-      fetchAiProfile(cleanTarget, scanResult.results.filter((r) => r.status === 'found'));
-    } else if (!activeCfg.enableAutoAiProfile && scanResult.foundCount > 0) {
-      addLog(`[SCAN] AI synthesis remains opt-in. Generate a dossier only when analytically useful.`, 'info');
+    if (scanResult.foundCount > 0) {
+      addLog('[SCAN] AI analysis remains on-demand in the evidence-bounded Analyst Copilot.', 'info');
     }
   };
 
@@ -526,7 +523,7 @@ export default function App() {
         ...scanConfig,
         selectedCategory: options.category,
         concurrency: options.concurrency,
-        enableAutoAiProfile: options.autoAiProfile,
+        enableAutoAiProfile: false,
       };
 
       const probeResult = await scanTargetCore(
@@ -549,38 +546,8 @@ export default function App() {
         currentItem.status = 'completed';
       }
 
-      // Optional automated AI Profiling synthesis if hits were found
-      if (options.autoAiProfile && probeResult.foundCount > 0 && !skipTargetRef.current && !abortBatchRef.current) {
-        try {
-          const foundHits = probeResult.results.filter((r) => r.status === 'found');
-          const res = await fetch('/api/osint/profile', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              ...(personalGeminiKey ? { 'x-gemini-api-key': personalGeminiKey } : {}),
-            },
-            body: JSON.stringify({
-              target: currentItem.target,
-              targetType: currentItem.type,
-              foundPlatforms: foundHits.map((f) => ({
-                platformName: f.platformName,
-                category: f.category,
-                url: f.url,
-              })),
-              emailData: probeResult.emailData,
-              model: selectedGeminiModel,
-              customApiKey: personalGeminiKey || undefined,
-            }),
-          });
-          if (res.ok) {
-            const profileReport: AiProfileReport = await res.json();
-            currentItem.aiProfile = profileReport;
-            addLog(`[BATCH AI] Archetype synthesized for @${currentItem.target}: "${profileReport.archetype}"`, 'success');
-          }
-        } catch (err) {
-          // Continue gracefully
-        }
-      }
+      // Legacy automatic profiling is disabled in v1.4.1.
+      // Analysts can use the evidence-bounded Copilot after inspecting the target.
 
       setBulkBatch({ ...newBatch, currentIndex: idx });
       addLog(`<<< [BATCH ${idx + 1}/${newBatch.items.length}] Target @${currentItem.target} completed: ${currentItem.foundCount} hits located.`, 'success');
@@ -872,7 +839,7 @@ export default function App() {
         setActiveView('table');
         break;
       case 'view-profile':
-        setActiveView('profile');
+        setActiveView('intelligence');
         break;
       case 'view-linkage':
         setActiveView('linkage');
