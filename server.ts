@@ -13,7 +13,7 @@ import { benchmarkRegistry } from './src/registry/bench';
 import { buildAnalystCopilotPrompt } from './src/ai/analystCopilot';
 
 
-const TERMINAL_BANNER = `\n+------------------------------------------------------------------+\n|                                                                  |\n|   M   M  I  N   N  EEEEE  I  RRRR    OOO                       |\n|   MM MM  I  NN  N  E      I  R   R  O   O                      |\n|   M M M  I  N N N  EEEE   I  RRRR   O   O                      |\n|   M   M  I  N  NN  E      I  R  R   O   O                      |\n|   M   M  I  N   N  EEEEE  I  R   R   OOO                       |\n|                                                                  |\n|                USERNAME EXTRACTOR // OSINT                       |\n|                                                                  |\n|   [ probe ] -> [ classify ] -> [ correlate ] -> [ export ]      |\n|                                                                  |\n|   public signals only  |  evidence over assumptions              |\n+------------------------------------------------------------------+\n`;
+const TERMINAL_BANNER = `\n+------------------------------------------------------------------+\n|                                                                  |\n|   M   M  I  N   N  EEEEE  I  RRRR    OOO                       |\n|   MM MM  I  NN  N  E      I  R   R  O   O                      |\n|   M M M  I  N N N  EEEE   I  RRRR   O   O                      |\n|   M   M  I  N  NN  E      I  R  R   O   O                      |\n|   M   M  I  N   N  EEEEE  I  R   R   OOO                       |\n|                                                                  |\n|                USERNAME INTELLIGENCE // OSINT                       |\n|                                                                  |\n|   [ probe ] -> [ classify ] -> [ correlate ] -> [ export ]      |\n|                                                                  |\n|   public signals only  |  evidence over assumptions              |\n+------------------------------------------------------------------+\n`;
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
 
@@ -131,7 +131,7 @@ function getGenAiClient(customApiKey?: string): { client: GoogleGenAI; isCustom:
       apiKey,
       httpOptions: {
         headers: {
-          'User-Agent': 'mineiro-username-extractor/1.4.2',
+          'User-Agent': 'mineiro-username-intelligence/1.4.3',
         },
       },
     }),
@@ -143,11 +143,11 @@ function getGenAiClient(customApiKey?: string): { client: GoogleGenAI; isCustom:
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
-    service: 'Mineiro Username Extractor Unified OSINT Engine',
-    version: '1.4.2',
+    service: 'Mineiro Username Intelligence · OSINT Investigation Workbench',
+    version: '1.4.3',
     timestamp: new Date().toISOString(),
     geminiConfigured: Boolean(process.env.GEMINI_API_KEY),
-    supportedDatabases: ['Mineiro Core (local direct probes)', 'Mineiro Username Extractor WAF Guard', 'Mineiro Username Extractor DNS & Email Recon'],
+    supportedDatabases: ['Mineiro Core (local direct probes)', 'Mineiro Evidence Engine', 'Mineiro Public Recon'],
   });
 });
 
@@ -238,7 +238,7 @@ app.post('/api/osint/verify', async (req, res) => {
       method: 'GET',
       signal: controller.signal,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 MineiroUsernameExtractor/1.4.2',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 MineiroUsernameIntelligence/1.4.3',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.5',
       },
