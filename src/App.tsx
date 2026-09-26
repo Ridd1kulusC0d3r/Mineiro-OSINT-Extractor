@@ -33,6 +33,7 @@ import {
   CachedInvestigation
 } from './types';
 import { ParsedTarget } from './utils/csvParser';
+import type { IntelligenceRequirement } from './intelligence/types';
 import { 
   getCachedInvestigations, 
   saveInvestigationToCache, 
@@ -51,6 +52,7 @@ export default function App() {
   const [activeView, setActiveView] = useState<
     'intelligence' | 'dashboard' | 'grid' | 'table' | 'profile' | 'linkage' | 'terminal' | 'batch'
   >('intelligence');
+  const [intelligenceRequirement, setIntelligenceRequirement] = useState<IntelligenceRequirement>('account_correlation');
 
   // Local state persistence: last 5 cached investigations in localStorage
   const [cachedScans, setCachedScans] = useState<CachedInvestigation[]>(() => getCachedInvestigations());
@@ -432,7 +434,7 @@ export default function App() {
     }
 
     // Transition to the Results Dashboard after scan completes
-    setActiveView('dashboard');
+    setActiveView('intelligence');
 
     // Automatically trigger AI Profiling synthesis ONLY IF enabled in modular config
     if (activeCfg.enableAutoAiProfile && scanResult.foundCount > 0) {
@@ -446,7 +448,7 @@ export default function App() {
     abortRef.current = true;
     setIsScanning(false);
     addLog('Signal received: Halting running scan worker.', 'warn');
-    setActiveView('dashboard');
+    setActiveView('intelligence');
   };
 
   // Execute Bulk Target Batch Reconnaissance
@@ -635,7 +637,7 @@ export default function App() {
     }
     setEmailData(item.emailData || null);
     setAiProfile(item.aiProfile || null);
-    setActiveView('dashboard');
+    setActiveView('intelligence');
     addLog(`Loaded forensic dossier for batch target: @${item.target}`, 'info');
   };
 
@@ -721,7 +723,7 @@ export default function App() {
     setResults(cached.results || []);
     setEmailData(cached.emailData || null);
     setAiProfile(cached.aiProfile || null);
-    setActiveView('dashboard');
+    setActiveView('intelligence');
     addLog(`[CACHE RESTORE] Restored investigation for "${cached.target}" (${cached.foundCount} hits, cached on ${cached.formattedTime})`, 'success');
   };
 
@@ -745,7 +747,7 @@ export default function App() {
     setAiProfile(null);
     setEmailData(null);
     setLogs([]);
-    setActiveView('dashboard');
+    setActiveView('intelligence');
     addLog('Workspace reset. System in standby.', 'info');
   };
 
@@ -1004,6 +1006,8 @@ export default function App() {
             onViewTable={() => setActiveView('table')}
             aiApiKey={personalGeminiKey}
             aiModel={selectedGeminiModel}
+            requirement={intelligenceRequirement}
+            onRequirementChange={setIntelligenceRequirement}
           />
         )}
 
@@ -1153,6 +1157,7 @@ export default function App() {
         onClose={() => setIsExportOpen(false)}
         target={target}
         results={results}
+        requirement={intelligenceRequirement}
       />
 
       {/* Hidden printable report layout rendered when window.print() is called */}
