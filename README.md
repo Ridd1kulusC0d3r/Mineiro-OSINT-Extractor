@@ -4,36 +4,40 @@
 
 **Mineiro Username Extractor** é um OSINT Intelligence Workbench para coleta pública de usernames, avaliação de evidências, correlação cautelosa e produção de relatórios analíticos.
 
-A v1.4 separa **collection → evidence → correlation → assessment**, introduz uma Intelligence View editorial, exportação enriquecida, progressive full scan para Colab e um copiloto de IA opcional limitado à triagem de evidências.
+A v1.4.1 completa a separação **collection → evidence → correlation → hypotheses → contradictions → assessment → pivots → collection plan**, adiciona Intelligence Requirements, Source Quality, IPS, Analytic Ledger, grafo de correlação, provenance graph, timeline semântica e manifestos SHA-256 por export.
 
 ## Comece em 1 minuto
 
-### Intelligence Workbench v1.4
+### Intelligence Workbench v1.4.1
 
-A tela principal deixa de ser um painel lotado de gráficos e passa a ser um relatório analítico navegável:
+A tela principal é um relatório analítico de 22 capítulos:
 
 ```text
-01 Assessment
-02 Evidence
-03 Hypotheses
-04 Action / Pivots
-05 Gaps
-06 AI Assist
-07 Method
+01 Intelligence Requirement
+02 Executive Assessment
+03 Key Intelligence Judgments
+04 Collection Coverage
+05 High-Confidence Findings
+06 Evidence Matrix
+07 Digital Footprint Clusters
+08 Correlation Graph
+09 Identity Hypotheses
+10 Supporting Evidence + Analytic Ledger
+11 Contradictory Evidence
+12 Uncertain / Unresolved Findings
+13 Intelligence Gaps
+14 Intelligence Timeline
+15 High-Value Pivots
+16 Next Collection Plan
+17 Source & Detector Reliability
+18 Methodology
+19 Provenance
+20 Technical Appendix
+21 Integrity Snapshot
+22 Export Manifest
 ```
 
-O motor gera deterministicamente:
-
-- Key Intelligence Judgments;
-- Collection Coverage;
-- Evidence Matrix;
-- Footprint Clusters;
-- hipóteses e hipótese alternativa;
-- evidência contraditória;
-- Intelligence Gaps;
-- pivôs priorizados;
-- Next Collection Plan;
-- Stop Condition.
+O usuário escolhe o **Intelligence Requirement** antes da interpretação: username presence, account correlation, digital footprint, developer footprint, threat-research alias mapping ou brand-impersonation monitoring. A relevância dos findings e o IPS são recalculados para a pergunta selecionada.
 
 ### Progressive Full Scan
 
@@ -56,7 +60,12 @@ O usuário escolhe as seções antes de exportar:
 - HTML autocontido;
 - JSON analítico;
 - Markdown;
-- Evidence CSV.
+- Evidence CSV;
+- manifest JSON companheiro com SHA-256 do payload;
+- lista exata de seções incluídas/excluídas;
+- requisito de inteligência e formato.
+
+O hash verifica integridade do artefato. Não prova autoria, identidade ou cadeia de custódia legal.
 
 ### AI Analyst Copilot
 
@@ -103,7 +112,7 @@ npm run demo
 
 A demo usa somente dados sintéticos e valida o Detector Bench sem consultar pessoas reais.
 
-## Números da v1.4
+## Números da v1.4.1
 
 - **985 detectores catalogados**
 - **17 packs modulares**
@@ -121,7 +130,7 @@ A demo usa somente dados sintéticos e valida o Detector Bench sem consultar pes
 
 ## Google Colab
 
-A v1.3 inclui um notebook oficial:
+A v1.4.1 inclui notebook oficial:
 
 `notebooks/Mineiro_Username_Extractor_Colab.ipynb`
 
@@ -180,7 +189,7 @@ npm run dev
 
 Use o notebook em `notebooks/` ou siga [COLAB.md](COLAB.md).
 
-### Colab v1.3.2
+### Colab v1.4.1
 
 A configuração do Vite permite explicitamente o domínio interno do proxy do Google Colab sem usar `allowedHosts: true`. Detectores sem URL pública de username, como Discord, permanecem no Registry como `registry-only` e não entram em scans diretos.
 
@@ -282,8 +291,8 @@ Top 20, sem Evidence Engine.
 ### Standard
 Top 50, Evidence Engine ligado.
 
-### Deep
-Catálogo completo de 985 endpoints, Evidence Engine ligado, concorrência limitada e retry adaptativo.
+### Full / Deep
+Catálogo completo com **progressive scan**: discovery rápido em todo o Registry e validação aprofundada apenas de FOUND / UNCERTAIN / RATE_LIMITED. A fase progressiva não tenta contornar WAF ou CAPTCHA.
 
 A varredura completa é opcional. Serviços externos têm seus próprios limites e termos.
 

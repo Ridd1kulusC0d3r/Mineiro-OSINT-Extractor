@@ -179,3 +179,104 @@ Documentação detalhada:
 - `docs/ENGINEERING-V1.4.md`
 - `docs/INTELLIGENCE-METHODOLOGY.md`
 - `docs/REPORTING-UX-V1.4.md`
+
+
+## v1.4.1 Complete Intelligence Layer
+
+```text
+INTELLIGENCE REQUIREMENT
+          |
+          v
+COLLECTION
+          |
+          v
+NORMALIZED EVIDENCE
+          |
+          +--> Detector Confidence
+          +--> Observation Confidence
+          +--> Source Quality
+          +--> Provenance
+          |
+          v
+CORRELATION
+          |
+          +--> Correlation Graph
+          +--> SAME_DOMAIN / SAME_HANDLE
+          +--> Cross-cluster overlap
+          |
+          v
+HYPOTHESES
+          |
+          +--> Primary
+          +--> Cluster hypothesis
+          +--> Alternative hypothesis
+          |
+          v
+CONTRADICTIONS
+          |
+          v
+ASSESSMENT
+          |
+          +--> KIJ
+          +--> Analytic Ledger
+          +--> Known / Assessed / Unknown
+          |
+          v
+PIVOTS + COLLECTION PLAN
+          |
+          v
+REPORT + SHA-256 EXPORT MANIFEST
+```
+
+### Requirement-aware analysis
+
+O `IntelligenceRequirement` altera o peso de relevância do finding sem alterar o fato observado. O mesmo hit pode ter maior valor para `developer_footprint` e menor valor para `brand_impersonation`.
+
+### Graph model
+
+Node types:
+
+```text
+TARGET
+USERNAME
+EMAIL
+PROFILE
+PLATFORM
+DOMAIN
+PUBLIC_URL
+DISPLAY_NAME
+ORGANIZATION
+PUBLIC_PROJECT
+AVATAR_HASH
+```
+
+Edge types:
+
+```text
+USES
+LINKS_TO
+MENTIONS
+HOSTED_ON
+SAME_HANDLE
+SAME_DOMAIN
+REFERENCES
+OBSERVED_ON
+```
+
+Toda aresta mantém `confidence`, `provenance`, `evidenceId` e, quando disponível, `sourceUrl` e `observedAt`.
+
+### Provenance graph
+
+```text
+PRIMARY ──────> EVIDENCE ──────> DERIVED ASSESSMENT
+EXTERNAL ─────> EVIDENCE ──────> DERIVED ASSESSMENT
+AI_SYNTHESIZED ----------------> HYPOTHESIS ONLY
+```
+
+AI synthesis nunca altera automaticamente confidence factual.
+
+### Integrity
+
+O export calcula SHA-256 real sobre o payload antes da inserção do manifest. Cada formato gera um arquivo `.manifest.json` companheiro.
+
+O hash é uma verificação de integridade do conteúdo, não assinatura de autoria nem cadeia de custódia legal.

@@ -37,6 +37,11 @@ export interface Platform {
 
 export interface TargetMetadata {
   displayName?: string;
+  organization?: string;
+  publicProjects?: string[];
+  accountCreatedAt?: string;
+  firstPublicEvidenceAt?: string;
+  avatarHash?: string;
   bio?: string;
   location?: string;
   avatarUrl?: string;
@@ -70,6 +75,8 @@ export interface ScanResult {
   scanDepth?: 'fast' | 'deep'; // Depth level applied during individual probe
   metadata?: TargetMetadata;
   checkedAt?: string;
+  provenanceType?: 'PRIMARY' | 'EXTERNAL';
+  sourceObservedAt?: string;
 }
 
 export interface ScanSummaryMetrics {
@@ -277,11 +284,11 @@ export interface ModularScanConfig {
   enableAccountLinkage: boolean; // Cross-platform correlation
 }
 
-// Cryptographically-signed Investigation Snapshot
+// Local Investigation Integrity Snapshot
 export interface InvestigationSnapshot {
   snapshotId: string;
   timestamp: string; // ISO string
-  signature: string; // Cryptographic SHA-256 HMAC / signature string
+  signature: string; // Legacy field name: SHA-256 integrity seal, not an authorship signature
   summaryHash: string; // Canonical SHA-256 digest of findings
   target: string;
   targetType: 'username' | 'email';

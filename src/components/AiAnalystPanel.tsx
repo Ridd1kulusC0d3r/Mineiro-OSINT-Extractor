@@ -3,16 +3,18 @@ import { BrainCircuit, Loader2, Send, Sparkles } from 'lucide-react';
 import type { ScanResult } from '../types';
 import { buildIntelligenceAssessment } from '../intelligence/assessment';
 import type { AnalystCopilotOutput } from '../ai/analystCopilot';
+import type { IntelligenceRequirement } from '../intelligence/types';
 
 interface AiAnalystPanelProps {
   target: string;
   results: ScanResult[];
   apiKey?: string;
   model?: string;
+  requirement?: IntelligenceRequirement;
 }
 
-export function AiAnalystPanel({ target, results, apiKey, model }: AiAnalystPanelProps) {
-  const assessment = useMemo(() => buildIntelligenceAssessment(results), [results]);
+export function AiAnalystPanel({ target, results, apiKey, model, requirement = 'account_correlation' }: AiAnalystPanelProps) {
+  const assessment = useMemo(() => buildIntelligenceAssessment(results, target || 'target', requirement), [results, target, requirement]);
   const [question, setQuestion] = useState('');
   const [output, setOutput] = useState<(AnalystCopilotOutput & { modelUsed?: string }) | null>(null);
   const [isLoading, setIsLoading] = useState(false);

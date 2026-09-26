@@ -33,6 +33,7 @@ import {
   CachedInvestigation
 } from './types';
 import { ParsedTarget } from './utils/csvParser';
+import type { IntelligenceRequirement } from './intelligence/types';
 import { 
   getCachedInvestigations, 
   saveInvestigationToCache, 
@@ -51,6 +52,7 @@ export default function App() {
   const [activeView, setActiveView] = useState<
     'intelligence' | 'dashboard' | 'grid' | 'table' | 'profile' | 'linkage' | 'terminal' | 'batch'
   >('intelligence');
+  const [intelligenceRequirement, setIntelligenceRequirement] = useState<IntelligenceRequirement>('account_correlation');
 
   // Local state persistence: last 5 cached investigations in localStorage
   const [cachedScans, setCachedScans] = useState<CachedInvestigation[]>(() => getCachedInvestigations());
@@ -425,20 +427,17 @@ export default function App() {
           totalScanned: scanResult.totalScanned,
         });
         setCachedScans(getCachedInvestigations());
-        addLog(`[SNAPSHOT] Cryptographically signed snapshot sealed: ${snapshot.snapshotId} (SHA-256: ${snapshot.summaryHash.slice(0, 10)}...)`, 'success');
+        addLog(`[SNAPSHOT] Local integrity snapshot generated: ${snapshot.snapshotId} (SHA-256: ${snapshot.summaryHash.slice(0, 10)}...)`, 'success');
       } catch (snapErr) {
         console.warn('Could not auto-generate snapshot:', snapErr);
       }
     }
 
     // Transition to the Results Dashboard after scan completes
-    setActiveView('dashboard');
+    setActiveView('intelligence');
 
-    // Automatically trigger AI Profiling synthesis ONLY IF enabled in modular config
-    if (activeCfg.enableAutoAiProfile && scanResult.foundCount > 0) {
-      fetchAiProfile(cleanTarget, scanResult.results.filter((r) => r.status === 'found'));
-    } else if (!activeCfg.enableAutoAiProfile && scanResult.foundCount > 0) {
-      addLog(`[SCAN] AI synthesis remains opt-in. Generate a dossier only when analytically useful.`, 'info');
+    if (scanResult.foundCount > 0) {
+      addLog('[SCAN] AI analysis remains on-demand in the evidence-bounded Analyst Copilot.', 'info');
     }
   };
 
@@ -446,7 +445,7 @@ export default function App() {
     abortRef.current = true;
     setIsScanning(false);
     addLog('Signal received: Halting running scan worker.', 'warn');
-    setActiveView('dashboard');
+    setActiveView('intelligence');
   };
 
   // Execute Bulk Target Batch Reconnaissance
@@ -524,7 +523,7 @@ export default function App() {
         ...scanConfig,
         selectedCategory: options.category,
         concurrency: options.concurrency,
-        enableAutoAiProfile: options.autoAiProfile,
+        enableAutoAiProfile: false,
       };
 
       const probeResult = await scanTargetCore(
@@ -547,38 +546,8 @@ export default function App() {
         currentItem.status = 'completed';
       }
 
-      // Optional automated AI Profiling synthesis if hits were found
-      if (options.autoAiProfile && probeResult.foundCount > 0 && !skipTargetRef.current && !abortBatchRef.current) {
-        try {
-          const foundHits = probeResult.results.filter((r) => r.status === 'found');
-          const res = await fetch('/api/osint/profile', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              ...(personalGeminiKey ? { 'x-gemini-api-key': personalGeminiKey } : {}),
-            },
-            body: JSON.stringify({
-              target: currentItem.target,
-              targetType: currentItem.type,
-              foundPlatforms: foundHits.map((f) => ({
-                platformName: f.platformName,
-                category: f.category,
-                url: f.url,
-              })),
-              emailData: probeResult.emailData,
-              model: selectedGeminiModel,
-              customApiKey: personalGeminiKey || undefined,
-            }),
-          });
-          if (res.ok) {
-            const profileReport: AiProfileReport = await res.json();
-            currentItem.aiProfile = profileReport;
-            addLog(`[BATCH AI] Archetype synthesized for @${currentItem.target}: "${profileReport.archetype}"`, 'success');
-          }
-        } catch (err) {
-          // Continue gracefully
-        }
-      }
+      // Legacy automatic profiling is disabled in v1.4.1.
+      // Analysts can use the evidence-bounded Copilot after inspecting the target.
 
       setBulkBatch({ ...newBatch, currentIndex: idx });
       addLog(`<<< [BATCH ${idx + 1}/${newBatch.items.length}] Target @${currentItem.target} completed: ${currentItem.foundCount} hits located.`, 'success');
@@ -635,7 +604,7 @@ export default function App() {
     }
     setEmailData(item.emailData || null);
     setAiProfile(item.aiProfile || null);
-    setActiveView('dashboard');
+    setActiveView('intelligence');
     addLog(`Loaded forensic dossier for batch target: @${item.target}`, 'info');
   };
 
@@ -681,7 +650,7 @@ export default function App() {
       const updatedCache = updateInvestigationInCache(targetHandle, targetType, { aiProfile: data });
       setCachedScans(updatedCache);
 
-      // Re-sign snapshot with updated AI profile data
+      // Refresh local integrity snapshot after optional AI synthesis
       try {
         await takeInvestigationSnapshot({
           target: targetHandle,
@@ -691,7 +660,7 @@ export default function App() {
           aiProfile: data,
         });
         setCachedScans(getCachedInvestigations());
-        addLog(`[SNAPSHOT] Investigation snapshot re-signed with AI intelligence dossier.`, 'info');
+        addLog(`[SNAPSHOT] Investigation integrity snapshot refreshed.`, 'info');
       } catch (err) {
         // ignore
       }
@@ -721,7 +690,7 @@ export default function App() {
     setResults(cached.results || []);
     setEmailData(cached.emailData || null);
     setAiProfile(cached.aiProfile || null);
-    setActiveView('dashboard');
+    setActiveView('intelligence');
     addLog(`[CACHE RESTORE] Restored investigation for "${cached.target}" (${cached.foundCount} hits, cached on ${cached.formattedTime})`, 'success');
   };
 
@@ -745,7 +714,7 @@ export default function App() {
     setAiProfile(null);
     setEmailData(null);
     setLogs([]);
-    setActiveView('dashboard');
+    setActiveView('intelligence');
     addLog('Workspace reset. System in standby.', 'info');
   };
 
@@ -870,7 +839,7 @@ export default function App() {
         setActiveView('table');
         break;
       case 'view-profile':
-        setActiveView('profile');
+        setActiveView('intelligence');
         break;
       case 'view-linkage':
         setActiveView('linkage');
@@ -1004,6 +973,8 @@ export default function App() {
             onViewTable={() => setActiveView('table')}
             aiApiKey={personalGeminiKey}
             aiModel={selectedGeminiModel}
+            requirement={intelligenceRequirement}
+            onRequirementChange={setIntelligenceRequirement}
           />
         )}
 
@@ -1153,6 +1124,7 @@ export default function App() {
         onClose={() => setIsExportOpen(false)}
         target={target}
         results={results}
+        requirement={intelligenceRequirement}
       />
 
       {/* Hidden printable report layout rendered when window.print() is called */}

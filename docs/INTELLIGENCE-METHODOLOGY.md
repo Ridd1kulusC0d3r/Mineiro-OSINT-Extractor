@@ -113,3 +113,78 @@ Tipos conceituais:
 - AI_SYNTHESIZED: produzido pelo copiloto.
 
 Toda saída de IA deve continuar distinguível das camadas observadas e derivadas.
+
+
+## Intelligence Requirements
+
+Antes da interpretação, o analista escolhe a pergunta:
+
+- Username presence
+- Public account correlation
+- Digital footprint mapping
+- Developer footprint
+- Threat research alias mapping
+- Brand impersonation monitoring
+
+O requisito muda **relevância e prioridade**, nunca o fato observado.
+
+## Source Quality
+
+```text
+A  public evidence with strong detector/observation support and richer self-declared metadata
+B  strong stable public platform evidence
+C  usable evidence requiring corroboration
+D  weak or inconclusive observation
+E  structurally weak or unverified signal
+```
+
+Source Quality não é Detector Reliability.
+
+## Intelligence Priority Score
+
+O IPS prioriza findings, não pessoas.
+
+A implementação pondera:
+
+```text
+evidence quality
+correlation support
+novelty
+requirement relevance
+```
+
+## Analytic Ledger
+
+Cada Key Intelligence Judgment recebe um entry `A-xxx` com:
+
+- claim;
+- confidence;
+- supporting evidence IDs;
+- contradictory evidence IDs;
+- generated timestamp;
+- DERIVED provenance.
+
+## Timeline semantics
+
+O sistema distingue, quando a fonte realmente fornece o dado:
+
+- SCAN_TIMESTAMP
+- ACCOUNT_CREATED
+- FIRST_PUBLIC_EVIDENCE
+- SOURCE_OBSERVED
+
+A ausência de um timestamp não é preenchida por inferência.
+
+## Integrity and export manifest
+
+Cada export gera um manifest separado com:
+
+- format;
+- target;
+- intelligence requirement;
+- included sections;
+- excluded sections;
+- SHA-256 do payload;
+- hash scope: `payload-before-manifest`.
+
+O hash comprova integridade do payload exportado. Não comprova autoria ou identidade.

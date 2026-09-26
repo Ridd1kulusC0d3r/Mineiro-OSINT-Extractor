@@ -68,8 +68,7 @@ export function ModularScanModal({
     const batches = Math.ceil(platformCount / localConfig.concurrency);
     const avgBatchDuration = localConfig.wafInspectionMode === 'fast' ? 0.35 : 0.65;
     const est = Math.max(1, Math.round(batches * avgBatchDuration * 10) / 10);
-    const aiExtra = localConfig.enableAutoAiProfile ? ' + ~3s IA' : '';
-    return `~${est}s${aiExtra}`;
+    return `~${est}s`;
   };
 
   const handleApplyPreset = (presetKey: ScanPreset) => {
@@ -78,14 +77,14 @@ export function ModularScanModal({
   };
 
   const handleSave = () => {
-    onSaveConfig(localConfig);
+    onSaveConfig({ ...localConfig, enableAutoAiProfile: false });
     onClose();
   };
 
   const handleStartNow = () => {
     onSaveConfig(localConfig);
     if (onStartScanWithConfig) {
-      onStartScanWithConfig(localConfig);
+      onStartScanWithConfig({ ...localConfig, enableAutoAiProfile: false });
     }
     onClose();
   };
@@ -523,7 +522,7 @@ export function ModularScanModal({
                       : 'bg-neutral-900 border-neutral-700 text-neutral-400 hover:text-white'
                   }`}
                 >
-                  {localConfig.enableAutoAiProfile ? '✨ Auto-Synthesize' : '⚡ On-Demand (Fast)'}
+                  'AI Copilot · On demand'
                 </button>
               </div>
             </div>
@@ -596,7 +595,7 @@ export function ModularScanModal({
               <div className="flex items-center gap-1.5">
                 <span className="text-neutral-500">AI:</span>
                 <span className={localConfig.enableAutoAiProfile ? 'text-neutral-400' : 'text-neutral-400'}>
-                  {localConfig.enableAutoAiProfile ? 'Auto (Post-scan)' : 'On demand'}
+                  'Copilot on demand'
                 </span>
               </div>
             </div>

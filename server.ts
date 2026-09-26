@@ -131,7 +131,7 @@ function getGenAiClient(customApiKey?: string): { client: GoogleGenAI; isCustom:
       apiKey,
       httpOptions: {
         headers: {
-          'User-Agent': 'mineiro-username-extractor/1.4',
+          'User-Agent': 'mineiro-username-extractor/1.4.1',
         },
       },
     }),
@@ -144,7 +144,7 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     service: 'Mineiro Username Extractor Unified OSINT Engine',
-    version: '1.4.0',
+    version: '1.4.1',
     timestamp: new Date().toISOString(),
     geminiConfigured: Boolean(process.env.GEMINI_API_KEY),
     supportedDatabases: ['Mineiro Core (local direct probes)', 'Mineiro Username Extractor WAF Guard', 'Mineiro Username Extractor DNS & Email Recon'],
@@ -238,7 +238,7 @@ app.post('/api/osint/verify', async (req, res) => {
       method: 'GET',
       signal: controller.signal,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 MineiroUsernameExtractor/1.4',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 MineiroUsernameExtractor/1.4.1',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.5',
       },
@@ -942,6 +942,13 @@ app.post('/api/intelligence/copilot', async (req, res) => {
 
 // AI-Powered Autonomous Profiling Engine (Mineiro Username Extractor Flagship Intelligence)
 app.post('/api/osint/profile', async (req, res) => {
+  if (process.env.MINEIRO_ENABLE_LEGACY_PROFILE !== '1') {
+    return res.status(410).json({
+      error: 'Legacy speculative profile endpoint is disabled by default in Mineiro v1.4.1.',
+      replacement: '/api/intelligence/copilot',
+      note: 'Use the evidence-bounded Analyst Copilot. AI synthesis cannot raise factual confidence by itself.',
+    });
+  }
   const { target, targetType = 'username', foundPlatforms = [], emailData = null, model, customApiKey } = req.body;
   const userHeaderKey = (req.headers['x-gemini-api-key'] as string) || customApiKey;
 
