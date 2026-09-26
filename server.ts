@@ -9,6 +9,7 @@ import { extractPlatformSignals } from './src/data/platformSignalExtractor';
 import { computeBehavioralProfile } from './src/data/behavioralEngine';
 import { evaluateThreatActorHeuristics } from './src/data/threatActorHeuristics';
 import { getRegistryStats, MINEIRO_REGISTRY } from './src/registry/registry';
+import { benchmarkRegistry } from './src/registry/bench';
 
 
 const TERMINAL_BANNER = String.raw`\n+------------------------------------------------------------------+\n|                                                                  |\n|   M   M  I  N   N  EEEEE  I  RRRR    OOO                       |\n|   MM MM  I  NN  N  E      I  R   R  O   O                      |\n|   M M M  I  N N N  EEEE   I  RRRR   O   O                      |\n|   M   M  I  N  NN  E      I  R  R   O   O                      |\n|   M   M  I  N   N  EEEEE  I  R   R   OOO                       |\n|                                                                  |\n|                USERNAME EXTRACTOR // OSINT                       |\n|                                                                  |\n|   [ probe ] -> [ classify ] -> [ correlate ] -> [ export ]      |\n|                                                                  |\n|   public signals only  |  evidence over assumptions              |\n+------------------------------------------------------------------+\n`;
@@ -170,6 +171,27 @@ app.get('/api/registry/detectors', (req, res) => {
   res.json({
     count: filtered.length,
     detectors: filtered,
+  });
+});
+
+app.post('/api/registry/benchmark', (req, res) => {
+  const observations = Array.isArray(req.body?.observations) ? req.body.observations : [];
+  if (observations.length > 10000) {
+    return res.status(400).json({ error: 'Maximum 10,000 benchmark observations per request' });
+  }
+
+  const requestedIds = Array.isArray(req.body?.detectorIds)
+    ? req.body.detectorIds.filter((id: unknown) => typeof id === 'string')
+    : MINEIRO_REGISTRY.map((detector) => detector.id);
+
+  const validIds = requestedIds.filter((id: string) =>
+    MINEIRO_REGISTRY.some((detector) => detector.id === id)
+  );
+
+  res.json({
+    detectors: validIds.length,
+    observations: observations.length,
+    metrics: benchmarkRegistry(validIds, observations),
   });
 });
 
