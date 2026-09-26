@@ -62,7 +62,7 @@ export function generateMarkdownReport({
 
   let md = `# 🛡️ OSINT Forensic Intelligence Report: @${target}\n\n`;
   md += `> **CONFIDENTIAL INVESTIGATION DOSSIER**  \n`;
-  md += `> **System:** Mineiro Username Extractor Unified OSINT Reconnaissance Suite  \n`;
+  md += `> **System:** Mineiro Username Intelligence Unified OSINT Reconnaissance Suite  \n`;
   md += `> **Generated:** ${timestamp} (${utcDate})  \n`;
   md += `> **Case Reference ID:** \`${caseId}\`  \n\n`;
   md += `---\n\n`;
@@ -319,7 +319,7 @@ export function generateMarkdownReport({
   }
 
   md += `---\n\n`;
-  md += `*Report generated securely by Mineiro Username Extractor OSINT Suite • Open Source Intelligence Forensics*\n`;
+  md += `*Report generated securely by Mineiro Username Intelligence OSINT Suite • Open Source Intelligence Forensics*\n`;
 
   return md;
 }
