@@ -6,6 +6,49 @@
 
 A v1.3 transforma o catálogo em um **Registry versionado de detectores**, adiciona a base do **Detector Bench** e mantém explícita a diferença entre quantidade, confiabilidade do detector, evidência observada e proveniência.
 
+## Comece em 1 minuto
+
+### Google Colab
+
+A forma mais curta de testar o Mineiro sem instalar nada localmente é abrir o notebook pronto:
+
+**[Mineiro One-Click Colab](https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_One_Click_Colab.ipynb)**
+
+O notebook possui identidade visual do projeto e executa:
+
+```text
+clone/update
+    ↓
+npm install
+    ↓
+Registry validation
+    ↓
+server
+    ↓
+Colab proxy
+    ↓
+Mineiro UI
+```
+
+### Computador local
+
+Leia primeiro [COMECE-AQUI.md](COMECE-AQUI.md). Depois abra [MANUAL.html](MANUAL.html) no navegador para o manual completo offline.
+
+Lançadores incluídos:
+
+- Windows: `Iniciar-Mineiro.bat`
+- macOS: `Iniciar-Mineiro.command`
+- Linux: `iniciar-mineiro.sh`
+
+### Demo segura
+
+```bash
+npm install
+npm run demo
+```
+
+A demo usa somente dados sintéticos e valida o Detector Bench sem consultar pessoas reais.
+
 ## Números da v1.3
 
 - **985 detectores catalogados**
@@ -83,7 +126,7 @@ npm run dev
 
 Use o notebook em `notebooks/` ou siga [COLAB.md](COLAB.md).
 
-### Colab v1.3.1
+### Colab v1.3.2
 
 A configuração do Vite permite explicitamente o domínio interno do proxy do Google Colab sem usar `allowedHosts: true`. Detectores sem URL pública de username, como Discord, permanecem no Registry como `registry-only` e não entram em scans diretos.
 
@@ -211,6 +254,9 @@ npm run dev
 
 ## Documentação
 
+- [Comece aqui](COMECE-AQUI.md)
+- [Manual completo offline](MANUAL.html)
+- [Relatório de testes](RELATORIO-DE-TESTES.md)
 - [Guia de uso](USER_GUIDE.md)
 - [Google Colab](COLAB.md)
 - [Mineiro Registry](REGISTRY.md)
