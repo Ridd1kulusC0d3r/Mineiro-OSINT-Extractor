@@ -1,7 +1,7 @@
 {
   "name": "mineiro-username-extractor",
   "private": false,
-  "version": "1.4.1",
+  "version": "1.4.2",
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
@@ -14,7 +14,10 @@
     "registry:validate": "tsx scripts/registry-validate.ts",
     "demo": "tsx scripts/demo-benchmark.ts",
     "manual:validate": "node scripts/validate-manual.mjs",
-    "intelligence:test": "tsx scripts/intelligence-smoke.ts"
+    "intelligence:test": "tsx scripts/intelligence-smoke.ts",
+    "colab:validate": "node scripts/validate-colab.mjs",
+    "docs:validate": "node scripts/validate-docs.mjs",
+    "check": "npm run registry:validate && npm run lint && npm run demo && npm run intelligence:test && npm run manual:validate && npm run colab:validate && npm run docs:validate && npm run build"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
@@ -42,5 +45,5 @@
     "typescript": "~5.8.2",
     "vite": "^6.2.3"
   },
-  "description": "Evidence-oriented OSINT intelligence workbench with explicit requirements, provenance, analytical ledger, correlation graph, integrity manifests and optional AI-assisted triage."
+  "description": "OSINT intelligence workbench for public-presence collection, evidence review, cautious correlation and auditable local reporting."
 }
