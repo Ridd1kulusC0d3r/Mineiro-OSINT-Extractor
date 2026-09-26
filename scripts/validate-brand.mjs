@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import path from 'node:path';
 
 const PRODUCT = 'Mineiro Username Intelligence';
 const SUBTITLE = 'OSINT Investigation Workbench';
@@ -28,14 +29,56 @@ if (pkg.name !== 'mineiro-username-intelligence') {
   throw new Error(`Unexpected package name: ${pkg.name}`);
 }
 
-const forbiddenCurrentBrand = [
-  ['src/components/Header.tsx', 'Mineiro Intel'],
-  ['index.html', 'Mineiro Username Extractor'],
+const forbidden = [
+  'Mineiro Username Extractor',
+  'MINEIRO USERNAME EXTRACTOR',
+  'Mineiro Intel',
+  'OSINT Intelligence Workbench',
+  'Mineiro_Official_Colab.ipynb',
+  'mineiro-username-extractor',
 ];
 
-for (const [file, token] of forbiddenCurrentBrand) {
-  const body = fs.readFileSync(file, 'utf8');
-  if (body.includes(token)) throw new Error(`${file} still contains legacy product name: ${token}`);
+const roots = ['src', 'docs', 'scripts', 'notebooks'];
+const rootFiles = [
+  'README.md',
+  'index.html',
+  'MANUAL.html',
+  'COLAB.md',
+  'COMECE-AQUI.md',
+  'USER_GUIDE.md',
+  'server.ts',
+  'Iniciar-Mineiro.bat',
+  'Iniciar-Mineiro.command',
+  'iniciar-mineiro.sh',
+];
+
+const textExtensions = new Set(['.ts','.tsx','.js','.mjs','.md','.html','.json','.ipynb','.sh','.bat','.command','.txt']);
+
+function collect(dir) {
+  const out = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...collect(full));
+    else if (textExtensions.has(path.extname(entry.name)) || entry.name.endsWith('.command')) out.push(full);
+  }
+  return out;
 }
 
-console.log('[PASS] Canonical product branding validated.');
+const activeFiles = [
+  ...rootFiles.filter((file) => fs.existsSync(file)),
+  ...roots.flatMap((root) => fs.existsSync(root) ? collect(root) : []),
+];
+
+const violations = [];
+for (const file of activeFiles) {
+  const body = fs.readFileSync(file, 'utf8');
+  for (const token of forbidden) {
+    if (body.includes(token)) violations.push(`${file}: ${token}`);
+  }
+}
+
+if (violations.length) {
+  throw new Error(`Legacy product branding remains on active surfaces:\n- ${violations.join('\n- ')}`);
+}
+
+console.log(`[PASS] Canonical product branding validated across ${activeFiles.length} active files.`);
