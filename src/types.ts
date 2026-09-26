@@ -37,6 +37,11 @@ export interface Platform {
 
 export interface TargetMetadata {
   displayName?: string;
+  organization?: string;
+  publicProjects?: string[];
+  accountCreatedAt?: string;
+  firstPublicEvidenceAt?: string;
+  avatarHash?: string;
   bio?: string;
   location?: string;
   avatarUrl?: string;
@@ -70,6 +75,8 @@ export interface ScanResult {
   scanDepth?: 'fast' | 'deep'; // Depth level applied during individual probe
   metadata?: TargetMetadata;
   checkedAt?: string;
+  provenanceType?: 'PRIMARY' | 'EXTERNAL';
+  sourceObservedAt?: string;
 }
 
 export interface ScanSummaryMetrics {
