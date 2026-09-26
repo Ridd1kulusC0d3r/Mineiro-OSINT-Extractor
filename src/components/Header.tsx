@@ -68,9 +68,9 @@ export function Header({
           </div>
           <div className="hidden min-w-0 sm:block">
             <div className="truncate text-[17px] font-semibold tracking-[-0.02em] text-[#f2f3f4]">
-              Mineiro Intel
+              Mineiro Username Intelligence
             </div>
-            <div className="truncate text-xs text-[#888f98]">OSINT Intelligence Workbench</div>
+            <div className="truncate text-xs text-[#888f98]">OSINT Investigation Workbench</div>
           </div>
         </button>
 
