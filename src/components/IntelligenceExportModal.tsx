@@ -114,7 +114,7 @@ export function IntelligenceExportModal({
               <div><div className="text-sm font-medium text-[#eff1f2]">Conteúdo do relatório</div><div className="mt-1 text-xs text-[#777f89]">{activeCount}/{labels.length} seções selecionadas</div></div>
               <div className="flex gap-2">
                 <button type="button" onClick={() => setSections(DEFAULT_INTELLIGENCE_EXPORT)} className="rounded-lg border border-[#30363c] px-3 py-2 text-xs text-[#aeb3b9] hover:text-white">Padrão</button>
-                <button type="button" onClick={() => setSections(Object.fromEntries(labels.map(([k]) => [k, true])) as IntelligenceExportSelection)} className="rounded-lg border border-[#30363c] px-3 py-2 text-xs text-[#aeb3b9] hover:text-white">Tudo</button>
+                <button type="button" onClick={() => setSections(Object.fromEntries(labels.map(([k]) => [k, true])) as unknown as IntelligenceExportSelection)} className="rounded-lg border border-[#30363c] px-3 py-2 text-xs text-[#aeb3b9] hover:text-white">Tudo</button>
               </div>
             </div>
 
