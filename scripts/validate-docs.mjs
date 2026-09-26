@@ -27,6 +27,7 @@ const surfaces = [
 ];
 
 const legacyNotebookNames = [
+  'Mineiro_Official_Colab.ipynb',
   'Mineiro_One_Click_Colab.ipynb',
   'Mineiro_Username_Extractor_Colab.ipynb',
 ];
