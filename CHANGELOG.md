@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.4.0] - 2026-09-26
+
+### Added
+- Intelligence Report workspace with editorial UX inspired by professional intelligence products.
+- Deterministic Intelligence Assessment layer.
+- Key Intelligence Judgments, Collection Coverage, Evidence Matrix and Footprint Clusters.
+- Explicit hypotheses, alternative hypothesis, contradictory evidence and Intelligence Gaps.
+- Prioritized pivots, Next Collection Plan and Stop Condition.
+- Selective local exports: enriched HTML, analytical JSON, Markdown and Evidence CSV.
+- Optional evidence-bounded AI Analyst Copilot with `AI_SYNTHESIZED` provenance.
+- Two-phase progressive full scan optimized for large Colab runs.
+- Deterministic v1.4 intelligence smoke test.
+- Software/data architecture and methodology documentation.
+
+### Changed
+- Intelligence report becomes the primary post-scan workspace.
+- Audit filters are hidden in the report view to reduce visual density.
+- Full scans use fast discovery before deeper candidate validation.
+- Progressive validation respects protection boundaries and does not retry blocked endpoints.
+- Package and server version bumped to 1.4.0.
+
+### Notes
+- Same username remains a lead, not identity proof.
+- AI synthesis never raises factual confidence by itself.
+- Legacy dashboard and detailed audit views remain available as drill-down surfaces.
+
+
 ## [1.3.2] - 2026-09-26
 
 ### Added
