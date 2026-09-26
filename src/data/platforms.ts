@@ -101,6 +101,9 @@ export const PLATFORMS_DATABASE: Platform[] = LEGACY_PLATFORM_CATALOG.map((platf
     provenanceStatus: 'legacy-audit-required',
     licenseStatus: 'project-legacy-unverified',
     optionalEvidenceChecks: EVIDENCE_CHECKS.map((check) => check.id),
+    // Some services (for example Discord) do not expose a public username-profile URL.
+    // Keep them in the Registry for taxonomy/provenance without pretending they are direct probes.
+    scannable: platform.id !== 'discord',
   };
 });
 
@@ -343,7 +346,7 @@ export function getPlatformsForScope(
     return [];
   }
 
-  let pool = PLATFORMS_DATABASE;
+  let pool = PLATFORMS_DATABASE.filter((p) => p.scannable !== false);
 
   // STRICT TARGET CLASSIFICATION:
   // When searching an email, do NOT scan all 1,000+ username-only platforms.
@@ -370,9 +373,9 @@ export function getPlatformsForScope(
 }
 
 export function getUsernamePlatformsCount(): number {
-  return PLATFORMS_DATABASE.filter(p => !p.targetType || p.targetType === 'username' || p.targetType === 'both').length;
+  return PLATFORMS_DATABASE.filter(p => p.scannable !== false && (!p.targetType || p.targetType === 'username' || p.targetType === 'both')).length;
 }
 
 export function getEmailPlatformsCount(): number {
-  return PLATFORMS_DATABASE.filter(p => p.targetType === 'email' || p.targetType === 'both').length;
+  return PLATFORMS_DATABASE.filter(p => p.scannable !== false && (p.targetType === 'email' || p.targetType === 'both')).length;
 }
