@@ -1,0 +1,39 @@
+name: Materialize documentation package
+
+on:
+  push:
+    branches:
+      - release/mineiro-v1.3.2-docs
+    paths:
+      - ".bootstrap/docs.zip.b64"
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout documentation branch
+        uses: actions/checkout@v4
+        with:
+          ref: release/mineiro-v1.3.2-docs
+          fetch-depth: 0
+
+      - name: Decode documentation package
+        shell: bash
+        run: |
+          set -euo pipefail
+          base64 --decode .bootstrap/docs.zip.b64 > /tmp/mineiro-docs.zip
+          unzip -o /tmp/mineiro-docs.zip -d .
+          rm -rf .bootstrap
+
+      - name: Commit materialized documentation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "docs: materialize v1.3.2 documentation package"
+          git push origin HEAD:release/mineiro-v1.3.2-docs
