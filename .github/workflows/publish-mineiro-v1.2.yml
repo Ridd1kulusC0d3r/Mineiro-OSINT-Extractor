@@ -24,8 +24,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .bootstrap/payload.part00 .bootstrap/payload.rest > /tmp/mineiro.tar.xz.b64
-          base64 --decode /tmp/mineiro.tar.xz.b64 > /tmp/mineiro.tar.xz
+          base64 --decode .bootstrap/payload.b64 > /tmp/mineiro.tar.xz
           mkdir -p /tmp/mineiro-release
           tar -xJf /tmp/mineiro.tar.xz -C /tmp/mineiro-release
 
