@@ -1,5 +1,32 @@
 # Changelog
 
+## [1.4.1] - 2026-09-26
+
+### Added
+- Intelligence Requirement selector with requirement-aware analytical relevance.
+- Complete 22-section intelligence report.
+- Known / Assessed / Unknown executive framing.
+- Source Quality grades A-E and requirement-aware Intelligence Priority Score.
+- Expanded correlation graph: username/email, profile, platform, domain, public URL, display name, organization, public project and optional avatar-hash entities.
+- Correlation relationships for USES, LINKS_TO, MENTIONS, HOSTED_ON, SAME_HANDLE, SAME_DOMAIN, REFERENCES and OBSERVED_ON.
+- Cross-cluster overlap based on independent shared public domains.
+- Semantic intelligence timeline separating scan time, account-created time, first-public-evidence time and source-observed time when those timestamps are actually available.
+- Provenance graph separating PRIMARY, DERIVED, EXTERNAL and AI_SYNTHESIZED layers.
+- Click-through Analytic Ledger evidence IDs.
+- Dedicated unresolved findings, source/detector reliability and technical appendix sections.
+- Real SHA-256 integrity snapshots without pseudo-hash fallback.
+- Companion export manifest with payload SHA-256 and included/excluded section inventory.
+
+### Changed
+- Legacy print dossier no longer includes speculative behavioral/threat-actor profiling; print output is evidence-assessment based.
+- Snapshot language now correctly describes integrity verification rather than authorship or legal chain of custody.
+- AI Analyst Copilot follows the selected Intelligence Requirement.
+- Post-scan navigation remains centered on the Intelligence Report.
+
+### Validation
+- Extended synthetic intelligence smoke test covers requirement weighting, provenance, cluster overlap, graph edges, semantic timeline and export SHA-256.
+
+
 ## [1.4.0] - 2026-09-26
 
 ### Added
