@@ -13,21 +13,32 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout documentation branch
+      - name: Checkout main
         uses: actions/checkout@v4
         with:
-          ref: release/mineiro-v1.3.2-docs
+          ref: main
           fetch-depth: 0
 
-      - name: Materialize documentation package
+      - name: Reconstruct documentation package
         shell: bash
         run: |
           set -euo pipefail
-          base64 --decode .bootstrap/docs.zip.b64 > /tmp/mineiro-docs.zip
+          cat .bootstrap/docs.part00 .bootstrap/docs.part01 .bootstrap/docs.part02 .bootstrap/docs.part03 .bootstrap/docs.part04 .bootstrap/docs.part05 > /tmp/mineiro-docs.b64
+          base64 --decode /tmp/mineiro-docs.b64 > /tmp/mineiro-docs.zip
+          unzip -t /tmp/mineiro-docs.zip
           unzip -o /tmp/mineiro-docs.zip -d .
           rm -rf .bootstrap
+
+      - name: Commit complete documentation
+        shell: bash
+        run: |
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "docs: materialize v1.3.2 documentation package"
-          git push origin HEAD:release/mineiro-v1.3.2-docs
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "docs: publish complete v1.3.2 documentation"
+          git push origin HEAD:main
