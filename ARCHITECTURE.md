@@ -1,0 +1,74 @@
+# Architecture
+
+## Objective
+Mineiro separates discovery, evidence evaluation and analyst interpretation.
+
+```text
+Target -> Catalog -> Probe Scheduler -> HTTP Response -> Evidence Engine
+                                             |              |
+                                             |              +-> confidence
+                                             +-> category profile / export
+```
+
+## Catalog model
+v1.2 retains **985 historical endpoints**. Every runtime platform receives:
+
+- `category`
+- `siteType`
+- `detectorReliability`
+- `reliabilityTier`
+- `provenanceStatus`
+- `licenseStatus`
+- `optionalEvidenceChecks`
+
+Historical entries remain available for coverage while provenance is progressively audited.
+
+## Evidence Engine
+A single HTTP response can yield up to eight logical checks:
+
+| Check | Purpose | Extra request |
+|---|---|---:|
+| Expected status | presence behavior | 0 |
+| Absence status | explicit negative evidence | 0 |
+| Redirect consistency | detect generic redirects | 0 |
+| Username in final URL | routing continuity | 0 |
+| Username in body | response token | 0 |
+| Canonical match | canonical consistency | 0 |
+| Soft-404 | detect generic error pages | 0 |
+| Edge protection | classify WAF/rate limiting | 0 |
+
+With 985 endpoints:
+
+```text
+985 x 8 = 7,880 optional evidence checks
+```
+
+This does not mean 7,880 extra network requests.
+
+## Two different scores
+
+### Detector reliability
+A maintained estimate of how dependable the site's detection rule is.
+
+### Result confidence
+Evidence observed during the current scan.
+
+Example:
+
+```text
+detector reliability = 91
+result confidence     = 84
+evidence              = probable
+```
+
+## Digital footprint classification
+Found endpoints contribute to observable service clusters. The dashboard aggregates approximately:
+
+```text
+result confidence x detector reliability
+```
+
+This classifies the **observed digital footprint**, not personality, profession, ideology or identity.
+
+## Growth model
+New catalog packs should declare source, license, attribution, verification date and maintainer. Large untracked copy/paste imports should not be merged.
