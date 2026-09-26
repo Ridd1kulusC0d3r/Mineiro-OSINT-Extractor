@@ -85,10 +85,10 @@ export function buildIntelligenceBundle(
       : undefined,
     evidence: sections.evidenceMatrix ? assessment.evidence : undefined,
     clusters: sections.footprintClusters ? assessment.clusters : undefined,
-    graph: sections.correlationGraph ? assessment.graph : undefined,
-    timeline: sections.timeline ? assessment.timeline : undefined,
+    graph: sections.correlationGraph ? a.graph : undefined,
+    timeline: sections.timeline ? a.timeline : undefined,
     reliabilityHeatmap: sections.reliabilityHeatmap ? assessment.reliabilityHeatmap : undefined,
-    analyticLedger: sections.analyticLedger ? assessment.analyticLedger : undefined,
+    analyticLedger: sections.analyticLedger ? a.analyticLedger : undefined,
     hypotheses: sections.hypotheses ? assessment.hypotheses : undefined,
     contradictions: sections.contradictions ? assessment.contradictoryEvidence : undefined,
     gaps: sections.gaps ? assessment.gaps : undefined,
@@ -153,21 +153,21 @@ export function generateIntelligenceMarkdown(
   }
   if (sections.correlationGraph) {
     lines.push('## Correlation Graph', '');
-    assessment.graph.edges.forEach((edge) => {
-      const source = assessment.graph.nodes.find((node) => node.id === edge.source)?.label || edge.source;
-      const targetNode = assessment.graph.nodes.find((node) => node.id === edge.target)?.label || edge.target;
+    a.graph.edges.forEach((edge) => {
+      const source = a.graph.nodes.find((node) => node.id === edge.source)?.label || edge.source;
+      const targetNode = a.graph.nodes.find((node) => node.id === edge.target)?.label || edge.target;
       lines.push(`- ${source} —[${edge.relationship} / ${edge.confidence}]→ ${targetNode}`);
     });
     lines.push('');
   }
   if (sections.timeline) {
     lines.push('## Observation Timeline', '');
-    assessment.timeline.forEach((event) => lines.push(`- ${event.observedAt} · ${event.platformName} · ${event.label}`));
+    a.timeline.forEach((event) => lines.push(`- ${event.observedAt} · ${event.platformName} · ${event.label}`));
     lines.push('');
   }
   if (sections.analyticLedger) {
     lines.push('## Analytic Ledger', '');
-    assessment.analyticLedger.forEach((entry) => {
+    a.analyticLedger.forEach((entry) => {
       lines.push(`### ${entry.id} — ${entry.confidence}`, entry.claim, '');
       lines.push(`Supporting evidence: ${entry.supportingEvidenceIds.join(', ') || 'none'}`);
       lines.push(`Contradictory evidence: ${entry.contradictoryEvidenceIds.join(', ') || 'none'}`, '');
