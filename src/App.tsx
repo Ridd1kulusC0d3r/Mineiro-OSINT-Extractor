@@ -1002,6 +1002,8 @@ export default function App() {
             results={results}
             onOpenExport={() => setIsExportOpen(true)}
             onViewTable={() => setActiveView('table')}
+            aiApiKey={personalGeminiKey}
+            aiModel={selectedGeminiModel}
           />
         )}
 
