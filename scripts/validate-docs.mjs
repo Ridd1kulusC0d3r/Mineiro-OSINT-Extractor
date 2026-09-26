@@ -8,7 +8,7 @@ const requiredFiles = [
   'docs/COLAB.md',
   'docs/TROUBLESHOOTING.md',
   'docs/FAQ.md',
-  'notebooks/Mineiro_Official_Colab.ipynb',
+  'notebooks/Mineiro_Username_Intelligence_Colab.ipynb',
   'ARCHITECTURE.md',
   'CONTRIBUTING.md',
   'SECURITY.md',
@@ -41,7 +41,7 @@ for (const file of surfaces) {
 }
 
 const readme = fs.readFileSync('README.md', 'utf8');
-if (!readme.includes('Mineiro_Official_Colab.ipynb')) {
+if (!readme.includes('Mineiro_Username_Intelligence_Colab.ipynb')) {
   throw new Error('README does not link the canonical Colab notebook.');
 }
 if (!readme.includes('docs/USER-GUIDE.md')) {
