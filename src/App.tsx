@@ -1159,7 +1159,7 @@ export default function App() {
       <footer className="border-t border-[#2A2A2A] bg-[#050505] py-5 font-mono text-xs text-[#A3A3A3]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-1">
           <div className="flex flex-wrap items-center justify-center gap-x-2 text-[#F5F5F5]">
-            <strong className="text-[#FFFFFF]">Mineiro Username Extractor UNIFIED OSINT ENGINE</strong>
+            <strong className="text-[#FFFFFF]">Mineiro Username Intelligence UNIFIED OSINT ENGINE</strong>
             <span className="text-[#737373]">//</span>
             <span className="text-[#A3A3A3]">LARGE LOCAL PLATFORM CATALOG</span>
             <span className="text-[#737373]">•</span>
