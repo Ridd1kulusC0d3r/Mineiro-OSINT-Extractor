@@ -3,12 +3,13 @@ import { Header } from './components/Header';
 import { TargetBar } from './components/TargetBar';
 import { StatsBar } from './components/StatsBar';
 import { DashboardView } from './components/DashboardView';
+import { IntelligenceReportView } from './components/IntelligenceReportView';
 import { PlatformGrid } from './components/PlatformGrid';
 import { PlatformTable } from './components/PlatformTable';
 import { AiProfileCard } from './components/AiProfileCard';
 import { EmailReconCard } from './components/EmailReconCard';
 import { TerminalLogs } from './components/TerminalLogs';
-import { ExportModal } from './components/ExportModal';
+import { IntelligenceExportModal } from './components/IntelligenceExportModal';
 import { DossierPrintView } from './components/DossierPrintView';
 import { GeminiConfigModal } from './components/GeminiConfigModal';
 import { AccountLinkageView } from './components/AccountLinkageView';
@@ -48,8 +49,8 @@ export default function App() {
   const [concurrency, setConcurrency] = useState<number>(16);
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [activeView, setActiveView] = useState<
-    'dashboard' | 'grid' | 'table' | 'profile' | 'linkage' | 'terminal' | 'batch'
-  >('dashboard');
+    'intelligence' | 'dashboard' | 'grid' | 'table' | 'profile' | 'linkage' | 'terminal' | 'batch'
+  >('intelligence');
 
   // Local state persistence: last 5 cached investigations in localStorage
   const [cachedScans, setCachedScans] = useState<CachedInvestigation[]>(() => getCachedInvestigations());
@@ -207,105 +208,158 @@ export default function App() {
     }
 
     const usernamePart = cleanTarget.includes('@') ? cleanTarget.split('@')[0] : cleanTarget;
-    const batchSize = Math.max(2, Math.min(configToUse.concurrency, 24));
-    const total = initialResults.length;
-    let currentIndex = 0;
     const currentResults = [...initialResults];
 
-    while (currentIndex < total) {
+    const shouldStop = async () => {
       if (isBulk) {
-        if (abortBatchRef.current) break;
+        if (abortBatchRef.current) return true;
         if (skipTargetRef.current) {
           addLog(`[BATCH] Skipped target @${cleanTarget} on operator instruction.`, 'warn');
-          break;
+          return true;
         }
         while (isBatchPausedRef.current) {
           await new Promise((r) => setTimeout(r, 400));
-          if (abortBatchRef.current) break;
+          if (abortBatchRef.current) return true;
         }
-      } else {
-        if (abortRef.current) {
-          addLog(`Scan aborted by analyst command.`, 'warn');
-          break;
-        }
+        return false;
       }
+      if (abortRef.current) {
+        addLog('Scan aborted by analyst command.', 'warn');
+        return true;
+      }
+      return false;
+    };
 
-      const batch = currentResults.slice(currentIndex, currentIndex + batchSize);
-      batch.forEach((item) => {
-        item.status = 'scanning';
-      });
-      setResults([...currentResults]);
+    const probeItems = async (
+      items: ScanResult[],
+      options: {
+        concurrency: number;
+        depth: 'fast' | 'deep';
+        timeoutMs: number;
+        evidence: boolean;
+        phaseLabel: string;
+      }
+    ) => {
+      const batchSize = Math.max(2, Math.min(options.concurrency, 24));
+      for (let index = 0; index < items.length; index += batchSize) {
+        if (await shouldStop()) break;
 
-      await Promise.all(
-        batch.map(async (item) => {
-          const platform = PLATFORMS_DATABASE.find((p) => p.id === item.platformId);
-          const targetUrl = item.url;
+        const batch = items.slice(index, index + batchSize);
+        batch.forEach((item) => { item.status = 'scanning'; });
+        setResults([...currentResults]);
 
-          try {
-            // Real server-side HTTP probe with modular parameters
-            const isDeep = configToUse.wafInspectionMode === 'deep';
-            const res = await fetch('/api/osint/verify', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                url: targetUrl,
-                platformId: item.platformId,
-                expectedStatus: platform?.expectedStatus || 200,
-                errorStatus: platform?.errorStatus || 404,
-                fastMode: !isDeep,
-                scanDepth: isDeep ? 'deep' : 'fast',
-                timeoutMs: configToUse.timeoutMs || (isDeep ? 6500 : 2500),
-                wafRetryStrategy: configToUse.wafRetryStrategy || (isDeep ? 'adaptive' : 'none'),
-                enableEvidenceChecks: configToUse.enableEvidenceChecks,
-                username: usernamePart,
-                detectorReliability: platform?.detectorReliability || 60,
-              }),
-            });
+        await Promise.all(
+          batch.map(async (item) => {
+            const platform = PLATFORMS_DATABASE.find((p) => p.id === item.platformId);
+            const targetUrl = item.url;
 
-            const data = await res.json();
-            item.status = data.status || 'not_found';
-            item.statusCode = data.statusCode;
-            item.responseTimeMs = data.responseTimeMs;
-            item.confidenceScore = data.confidenceScore || 0;
-            item.evidenceLevel = data.evidenceLevel;
-            item.evidenceSignals = data.evidenceSignals || [];
-            item.evidenceChecksPassed = data.evidenceChecksPassed;
-            item.evidenceChecksTotal = data.evidenceChecksTotal;
-            item.detectorReliability = data.detectorReliability ?? platform?.detectorReliability;
-            item.siteType = platform?.siteType;
-            item.reliabilityTier = platform?.reliabilityTier;
-            item.uncertainReason = data.uncertainReason;
-            item.wafRetried = data.wafRetried;
-            item.retryResolved = data.retryResolved;
-            item.wafStrategyApplied = data.wafStrategyApplied;
-            item.scanDepth = isDeep ? 'deep' : 'fast';
+            try {
+              const res = await fetch('/api/osint/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  url: targetUrl,
+                  platformId: item.platformId,
+                  expectedStatus: platform?.expectedStatus || 200,
+                  errorStatus: platform?.errorStatus || 404,
+                  fastMode: options.depth === 'fast',
+                  scanDepth: options.depth,
+                  timeoutMs: options.timeoutMs,
+                  // v1.4 respects protection boundaries: progressive validation does not attempt bypass retries.
+                  wafRetryStrategy: 'none',
+                  enableEvidenceChecks: options.evidence,
+                  username: usernamePart,
+                  detectorReliability: platform?.detectorReliability || 60,
+                }),
+              });
 
-            if (item.status === 'found') {
-              if (data.wafRetried && data.retryResolved) {
-                addLog(`FOUND (WAF RETRY OK): ${platform?.name || item.platformName} -> ${targetUrl} [${item.statusCode}] via Adaptive Retry`, 'success');
-              } else {
-                addLog(`FOUND: ${platform?.name || item.platformName} -> ${targetUrl} [${item.statusCode}]`, 'success');
+              const data = await res.json();
+              item.status = data.status || 'not_found';
+              item.statusCode = data.statusCode;
+              item.responseTimeMs = data.responseTimeMs;
+              item.confidenceScore = data.confidenceScore || 0;
+              item.evidenceLevel = data.evidenceLevel;
+              item.evidenceSignals = data.evidenceSignals || [];
+              item.evidenceChecksPassed = data.evidenceChecksPassed;
+              item.evidenceChecksTotal = data.evidenceChecksTotal;
+              item.detectorReliability = data.detectorReliability ?? platform?.detectorReliability;
+              item.siteType = platform?.siteType;
+              item.reliabilityTier = platform?.reliabilityTier;
+              item.uncertainReason = data.uncertainReason;
+              item.wafRetried = false;
+              item.retryResolved = false;
+              item.wafStrategyApplied = 'respect-protection-boundary';
+              item.scanDepth = options.depth;
+              item.checkedAt = new Date().toISOString();
+
+              if (item.status === 'found') {
+                addLog(`FOUND [${options.phaseLabel}]: ${platform?.name || item.platformName} -> ${targetUrl} [${item.statusCode}]`, 'success');
+              } else if (item.status === 'uncertain' || item.status === 'rate_limited') {
+                addLog(`${item.status.toUpperCase()} [${options.phaseLabel}]: ${item.platformName} [HTTP ${item.statusCode || 0}]`, 'warn');
               }
-            } else if (item.status === 'uncertain') {
-              if (data.wafRetried) {
-                addLog(`UNCERTAIN (PERSISTENT WAF): ${item.platformName} [HTTP ${item.statusCode || 403}] - Confirmed after Adaptive Retry`, 'warn');
-              } else {
-                addLog(`UNCERTAIN (WAF GUARD): ${item.platformName} [HTTP ${item.statusCode || 403}] - Protected Endpoint`, 'warn');
-              }
-            } else if (item.status === 'rate_limited') {
-              addLog(`RATE LIMIT: ${item.platformName} [HTTP ${item.statusCode || 429}]`, 'warn');
+            } catch (err: any) {
+              item.status = 'error';
+              item.statusCode = 0;
+              item.confidenceScore = 0;
+              item.uncertainReason = err?.message || 'Probe transport error';
             }
-          } catch (err: any) {
-            item.status = 'error';
-            item.statusCode = 0;
-            item.confidenceScore = 0;
-            item.uncertainReason = err?.message || 'Probe transport error';
-          }
-        })
+          })
+        );
+
+        setResults([...currentResults]);
+      }
+    };
+
+    const progressiveFullScan =
+      configToUse.platformScope === 'all' &&
+      configToUse.wafInspectionMode === 'deep' &&
+      currentResults.length > 100;
+
+    if (progressiveFullScan) {
+      const discoveryConcurrency = Math.max(14, Math.min(20, configToUse.concurrency * 3));
+      addLog(
+        `[PROGRESSIVE SCAN] Phase 1 discovery: ${currentResults.length} detectors at ${discoveryConcurrency}x concurrency, 2.5s cap.`,
+        'info'
       );
 
-      setResults([...currentResults]);
-      currentIndex += batchSize;
+      await probeItems(currentResults, {
+        concurrency: discoveryConcurrency,
+        depth: 'fast',
+        timeoutMs: Math.min(2500, configToUse.timeoutMs || 2500),
+        evidence: false,
+        phaseLabel: 'DISCOVERY',
+      });
+
+      if (!(await shouldStop())) {
+        const validationCandidates = currentResults.filter(
+          (item) =>
+            item.status === 'found' ||
+            item.status === 'uncertain' ||
+            item.status === 'rate_limited'
+        );
+
+        if (validationCandidates.length) {
+          addLog(
+            `[PROGRESSIVE SCAN] Phase 2 validation: ${validationCandidates.length} candidate(s) with Evidence Engine.`,
+            'info'
+          );
+          await probeItems(validationCandidates, {
+            concurrency: Math.max(4, Math.min(8, configToUse.concurrency)),
+            depth: 'deep',
+            timeoutMs: Math.min(5000, configToUse.timeoutMs || 5000),
+            evidence: true,
+            phaseLabel: 'VALIDATION',
+          });
+        }
+      }
+    } else {
+      await probeItems(currentResults, {
+        concurrency: configToUse.concurrency,
+        depth: configToUse.wafInspectionMode === 'deep' ? 'deep' : 'fast',
+        timeoutMs: configToUse.timeoutMs || (configToUse.wafInspectionMode === 'deep' ? 5000 : 2500),
+        evidence: configToUse.enableEvidenceChecks,
+        phaseLabel: configToUse.wafInspectionMode === 'deep' ? 'DEEP' : 'FAST',
+      });
     }
 
     const foundTotal = currentResults.filter((r) => r.status === 'found').length;
@@ -807,7 +861,7 @@ export default function App() {
         break;
       }
       case 'view-dashboard':
-        setActiveView('dashboard');
+        setActiveView('intelligence');
         break;
       case 'view-grid':
         setActiveView('grid');
@@ -856,7 +910,7 @@ export default function App() {
       <Header
         onReset={handleReset}
         onOpenExport={() => setIsExportOpen(true)}
-        onGoToDashboard={() => setActiveView('dashboard')}
+        onGoToDashboard={() => setActiveView('intelligence')}
         onOpenGeminiConfig={() => setIsGeminiModalOpen(true)}
         onOpenBulkImport={() => setIsBulkModalOpen(true)}
         onOpenHistory={() => setIsHistoryModalOpen(true)}
@@ -920,9 +974,9 @@ export default function App() {
       />
 
       {/* Main Investigation Canvas */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <main className={`flex-1 w-full py-6 space-y-6 ${activeView === 'intelligence' ? '' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'}`}>
         {/* Email Intelligence Card if email mode and active view is not dashboard or batch */}
-        {activeView !== 'dashboard' && activeView !== 'batch' && (targetType === 'email' || emailData || isEmailLoading) && (
+        {activeView !== 'dashboard' && activeView !== 'intelligence' && activeView !== 'batch' && (targetType === 'email' || emailData || isEmailLoading) && (
           <EmailReconCard data={emailData} isLoading={isEmailLoading} />
         )}
 
@@ -938,6 +992,16 @@ export default function App() {
             onInspectTarget={handleInspectTarget}
             onRemoveQueuedItem={handleRemoveQueuedItem}
             isScanning={isScanning}
+          />
+        )}
+
+        {/* View: Intelligence Assessment Workspace */}
+        {activeView === 'intelligence' && (
+          <IntelligenceReportView
+            target={target}
+            results={results}
+            onOpenExport={() => setIsExportOpen(true)}
+            onViewTable={() => setActiveView('table')}
           />
         )}
 
@@ -1082,14 +1146,11 @@ export default function App() {
       />
 
       {/* Export Dossier Modal (JSON, CSV, TXT, PDF) */}
-      <ExportModal
+      <IntelligenceExportModal
         isOpen={isExportOpen}
         onClose={() => setIsExportOpen(false)}
         target={target}
-        targetType={targetType}
         results={results}
-        aiProfile={aiProfile}
-        emailData={emailData}
       />
 
       {/* Hidden printable report layout rendered when window.print() is called */}

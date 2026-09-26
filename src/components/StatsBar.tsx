@@ -1,8 +1,8 @@
-import { LayoutDashboard, LayoutGrid, Table, BrainCircuit, Terminal, Search, GitFork, FileSpreadsheet } from 'lucide-react';
+import { LayoutDashboard, LayoutGrid, Table, BrainCircuit, Terminal, Search, GitFork, FileSpreadsheet, FileSearch } from 'lucide-react';
 
 interface StatsBarProps {
-  activeView: 'dashboard' | 'grid' | 'table' | 'profile' | 'linkage' | 'terminal' | 'batch';
-  setActiveView: (view: 'dashboard' | 'grid' | 'table' | 'profile' | 'linkage' | 'terminal' | 'batch') => void;
+  activeView: 'intelligence' | 'dashboard' | 'grid' | 'table' | 'profile' | 'linkage' | 'terminal' | 'batch';
+  setActiveView: (view: 'intelligence' | 'dashboard' | 'grid' | 'table' | 'profile' | 'linkage' | 'terminal' | 'batch') => void;
   scannedCount: number;
   totalCount: number;
   foundCount: number;
@@ -42,7 +42,7 @@ export function StatsBar({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-[#A3A3A3] uppercase tracking-wider text-[11px]">ENGINE PROGRESS:</span>
+              <span className="text-[#A3A3A3] uppercase tracking-wider text-[11px]">COLLECTION:</span>
               <span className="font-bold text-[#F5F5F5] tabular-nums">{percent}%</span>
               <span className="text-[#737373] tabular-nums">({scannedCount}/{totalCount})</span>
             </div>
@@ -56,7 +56,7 @@ export function StatsBar({
 
           <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-[#0A0A0A] border border-[#2A2A2A]">
-              <span className="text-[#A3A3A3] text-[11px] uppercase">HITS:</span>
+              <span className="text-[#A3A3A3] text-[11px] uppercase">FOUND:</span>
               <span className="text-[#FFFFFF] font-bold tabular-nums">{foundCount}</span>
             </div>
             {uncertainCount > 0 && (
@@ -66,7 +66,7 @@ export function StatsBar({
               </div>
             )}
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-sm bg-[#0A0A0A] border border-[#2A2A2A]">
-              <span className="text-[#A3A3A3] text-[11px] uppercase">HIT RATE:</span>
+              <span className="text-[#A3A3A3] text-[11px] uppercase">FOUND RATE:</span>
               <span className="text-[#F5F5F5] font-bold tabular-nums">
                 {totalCount > 0 ? ((foundCount / (scannedCount || 1)) * 100).toFixed(1) : 0}%
               </span>
@@ -78,6 +78,20 @@ export function StatsBar({
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5 pt-2 border-t border-[#2A2A2A]">
           {/* View Switchers */}
           <div className="flex items-center border border-[#2A2A2A] bg-[#0A0A0A] p-1 rounded-sm self-start flex-wrap gap-1 shadow-sm">
+            <button
+              id="view-intelligence-btn"
+              type="button"
+              onClick={() => setActiveView('intelligence')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase rounded-sm transition-all ${
+                activeView === 'intelligence'
+                  ? 'bg-[#FFFFFF] text-[#050505] font-bold shadow-sm'
+                  : 'text-[#A3A3A3] hover:text-[#F5F5F5] hover:bg-[#050505]'
+              }`}
+            >
+              <FileSearch className="w-3.5 h-3.5" />
+              Intelligence
+            </button>
+
             <button
               id="view-dashboard-btn"
               type="button"
@@ -196,7 +210,8 @@ export function StatsBar({
             )}
           </div>
 
-          {/* Local Search & Status Filter */}
+          {/* Local Search & Status Filter — hidden in the report workspace to reduce visual density */}
+          {activeView !== 'intelligence' && (
           <div className="flex flex-wrap items-center gap-2">
             <div className="relative flex-1 sm:w-56">
               <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[#737373]" />
@@ -242,6 +257,7 @@ export function StatsBar({
               ))}
             </div>
           </div>
+          )}
         </div>
       </div>
     </div>
