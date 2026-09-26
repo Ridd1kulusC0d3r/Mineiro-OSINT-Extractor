@@ -3,6 +3,7 @@ import { Header } from './components/Header';
 import { TargetBar } from './components/TargetBar';
 import { StatsBar } from './components/StatsBar';
 import { DashboardView } from './components/DashboardView';
+import { IntelligenceReportView } from './components/IntelligenceReportView';
 import { PlatformGrid } from './components/PlatformGrid';
 import { PlatformTable } from './components/PlatformTable';
 import { AiProfileCard } from './components/AiProfileCard';
@@ -48,8 +49,8 @@ export default function App() {
   const [concurrency, setConcurrency] = useState<number>(16);
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [activeView, setActiveView] = useState<
-    'dashboard' | 'grid' | 'table' | 'profile' | 'linkage' | 'terminal' | 'batch'
-  >('dashboard');
+    'intelligence' | 'dashboard' | 'grid' | 'table' | 'profile' | 'linkage' | 'terminal' | 'batch'
+  >('intelligence');
 
   // Local state persistence: last 5 cached investigations in localStorage
   const [cachedScans, setCachedScans] = useState<CachedInvestigation[]>(() => getCachedInvestigations());
@@ -807,7 +808,7 @@ export default function App() {
         break;
       }
       case 'view-dashboard':
-        setActiveView('dashboard');
+        setActiveView('intelligence');
         break;
       case 'view-grid':
         setActiveView('grid');
@@ -856,7 +857,7 @@ export default function App() {
       <Header
         onReset={handleReset}
         onOpenExport={() => setIsExportOpen(true)}
-        onGoToDashboard={() => setActiveView('dashboard')}
+        onGoToDashboard={() => setActiveView('intelligence')}
         onOpenGeminiConfig={() => setIsGeminiModalOpen(true)}
         onOpenBulkImport={() => setIsBulkModalOpen(true)}
         onOpenHistory={() => setIsHistoryModalOpen(true)}
@@ -920,9 +921,9 @@ export default function App() {
       />
 
       {/* Main Investigation Canvas */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <main className={`flex-1 w-full py-6 space-y-6 ${activeView === 'intelligence' ? '' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'}`}>
         {/* Email Intelligence Card if email mode and active view is not dashboard or batch */}
-        {activeView !== 'dashboard' && activeView !== 'batch' && (targetType === 'email' || emailData || isEmailLoading) && (
+        {activeView !== 'dashboard' && activeView !== 'intelligence' && activeView !== 'batch' && (targetType === 'email' || emailData || isEmailLoading) && (
           <EmailReconCard data={emailData} isLoading={isEmailLoading} />
         )}
 
@@ -938,6 +939,16 @@ export default function App() {
             onInspectTarget={handleInspectTarget}
             onRemoveQueuedItem={handleRemoveQueuedItem}
             isScanning={isScanning}
+          />
+        )}
+
+        {/* View: Intelligence Assessment Workspace */}
+        {activeView === 'intelligence' && (
+          <IntelligenceReportView
+            target={target}
+            results={results}
+            onOpenExport={() => setIsExportOpen(true)}
+            onViewTable={() => setActiveView('table')}
           />
         )}
 
