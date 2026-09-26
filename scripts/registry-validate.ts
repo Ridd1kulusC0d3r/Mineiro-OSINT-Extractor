@@ -10,8 +10,8 @@ for (const detector of MINEIRO_REGISTRY) {
   ids.add(detector.id);
 
   if (!detector.name.trim()) errors.push(`${detector.id}: empty name`);
-  if (!detector.urlPattern.includes('{username}') && !detector.urlPattern.includes('{email}')) {
-    warnings.push(`${detector.id}: URL pattern has no target placeholder`);
+  if (detector.scannable && !detector.urlPattern.includes('{username}') && !detector.urlPattern.includes('{email}')) {
+    warnings.push(`${detector.id}: scannable detector URL has no target placeholder`);
   }
   if (!/^https?:\/\//.test(detector.urlPattern)) {
     errors.push(`${detector.id}: URL pattern must be HTTP(S)`);

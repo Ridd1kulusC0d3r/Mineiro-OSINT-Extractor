@@ -79,3 +79,30 @@ Isso permite revisar packs, categorias e proveniência antes de enviar um Pull R
 ## Boas práticas
 
 Evite rodar Deep Scan repetidamente apenas para testar a interface. Para desenvolvimento, use Quick/Standard. O catálogo amplo existe para investigação legítima, não para gerar tráfego inútil contra centenas de serviços.
+
+
+## Erro "Blocked request. This host is not allowed"
+
+O proxy do Google Colab acessa a aplicação por um hostname interno no domínio:
+
+```text
+*.codatalab-user-runtimes.internal
+```
+
+A partir da v1.3.1, o Vite aceita especificamente esse domínio no `server.allowedHosts`.
+
+Se você clonou o repositório antes da correção, atualize:
+
+```bash
+%cd /content/Mineiro-OSINT-Extractor
+!git pull
+!npm install
+```
+
+Depois reinicie o servidor. Não é necessário usar `allowedHosts: true`.
+
+## Detector Discord
+
+Discord permanece no Mineiro Registry para taxonomia e proveniência, mas é marcado como `registry-only`, porque não oferece um URL público estável no formato `/username` adequado a este mecanismo de enumeração.
+
+Por isso ele não entra em scans diretos e deixa de gerar o aviso de placeholder no validador.

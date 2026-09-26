@@ -10,6 +10,8 @@ console.log(`Checks per detector:     ${stats.evidenceChecksPerDetector}`);
 console.log(`Average reliability:     ${stats.averageReliability}/100`);
 console.log(`Verified provenance:     ${stats.verifiedDetectors}`);
 console.log(`Pending provenance audit:${stats.auditRequiredDetectors}`);
+console.log(`Scannable detectors:      ${stats.scannableDetectors}`);
+console.log(`Registry-only detectors:  ${stats.registryOnlyDetectors}`);
 
 console.log('\nBy category');
 for (const item of stats.byCategory) {
