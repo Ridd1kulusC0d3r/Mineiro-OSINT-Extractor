@@ -1,7 +1,7 @@
 {
   "name": "mineiro-username-extractor",
   "private": false,
-  "version": "1.4.0",
+  "version": "1.4.1",
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
@@ -42,5 +42,5 @@
     "typescript": "~5.8.2",
     "vite": "^6.2.3"
   },
-  "description": "Evidence-oriented OSINT intelligence workbench with reliability scoring, analytical reporting, progressive scans and optional AI-assisted triage."
+  "description": "Evidence-oriented OSINT intelligence workbench with explicit requirements, provenance, analytical ledger, correlation graph, integrity manifests and optional AI-assisted triage."
 }
