@@ -1,5 +1,5 @@
 /**
- * Standalone Gemini AI OSINT Profiling Module for Mineiro Username Extractor
+ * Standalone Gemini AI OSINT Profiling Module for Mineiro Username Intelligence
  * Can be imported into any Node.js/TypeScript project or executed directly.
  * 
  * Usage in code:
@@ -110,7 +110,7 @@ export async function profileTargetWithGemini(options: ProfilerOptions): Promise
     ? platforms.map((p) => `- ${p.platformName} (${p.category}): ${p.url}`).join('\n')
     : 'None explicitly provided.';
 
-  const prompt = `You are the AI Intelligence Profiling Engine inside Mineiro Username Extractor, a unified OSINT analysis system.
+  const prompt = `You are the AI Intelligence Profiling Engine inside Mineiro Username Intelligence, a unified OSINT analysis system.
 Analyze the following target reconnaissance data and generate an actionable, forensic OSINT dossier with deep behavioral, timezone, language, occupation cross-referencing, threat actor heuristics, and granular archetype analysis.
 
 Target: "${target}"

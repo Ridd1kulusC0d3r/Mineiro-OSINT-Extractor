@@ -1,10 +1,12 @@
-# Google Colab oficial
+# Mineiro Username Intelligence · Google Colab oficial
+
+**OSINT Investigation Workbench**
 
 O notebook canônico do Mineiro é:
 
-**[`notebooks/Mineiro_Official_Colab.ipynb`](../notebooks/Mineiro_Official_Colab.ipynb)**
+**[`notebooks/Mineiro_Username_Intelligence_Colab.ipynb`](../notebooks/Mineiro_Username_Intelligence_Colab.ipynb)**
 
-[▶ Abrir no Google Colab](https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Official_Colab.ipynb)
+[▶ Abrir no Google Colab](https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Username_Intelligence_Colab.ipynb)
 
 ## O que ele faz
 

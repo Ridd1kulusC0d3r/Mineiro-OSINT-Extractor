@@ -264,12 +264,12 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
         </div>
       </div>
 
-      {/* Terminal Stream with Mineiro Username Extractor ASCII Background */}
+      {/* Terminal Stream with Mineiro Username Intelligence ASCII Background */}
       <div
         ref={scrollRef}
         className="relative flex-1 p-4 overflow-y-auto space-y-1.5 bg-[#050505] text-[#F5F5F5] select-text leading-relaxed font-mono"
       >
-        {/* Background Watermark: Mineiro Username Extractor ASCII Logo */}
+        {/* Background Watermark: Mineiro Username Intelligence ASCII Logo */}
         <div 
           className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden z-0" 
           aria-hidden="true"
@@ -282,7 +282,7 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
  ██║     ██║    ╚════╝██║╚██╔╝██║██╔══╝  
  ███████╗███████╗     ██║ ╚═╝ ██║███████╗
  ╚══════╝╚══════╝     ╚═╝     ╚═╝╚══════╝
-      [ Mineiro Username Extractor // UNIFIED OSINT ENGINE ]
+      [ Mineiro Username Intelligence // UNIFIED OSINT ENGINE ]
 `}
           </pre>
         </div>

@@ -1,5 +1,5 @@
 /**
- * Mineiro Username Extractor — monochrome identity system.
+ * Mineiro Username Intelligence — monochrome identity system.
  * Black, white and neutral grays only. Status is communicated by labels,
  * iconography, borders and patterns instead of semantic color.
  */

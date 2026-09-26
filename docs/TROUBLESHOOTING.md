@@ -1,4 +1,4 @@
-# Troubleshooting
+# Mineiro Username Intelligence · Troubleshooting
 
 ## Diagnóstico rápido
 

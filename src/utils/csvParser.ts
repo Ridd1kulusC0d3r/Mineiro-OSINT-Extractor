@@ -286,7 +286,7 @@ export function exportBatchToCsv(batch: BulkBatchState): void {
  */
 export function exportBatchToJson(batch: BulkBatchState): void {
   const payload = {
-    engine: 'Mineiro Username Extractor Unified OSINT Reconnaissance Engine',
+    engine: 'Mineiro Username Intelligence Unified OSINT Reconnaissance Engine',
     version: '3.0.0',
     batchId: batch.batchId,
     batchName: batch.name,

@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.4.3] - 2026-09-26
+
+### Brand
+- Product name standardized as **Mineiro Username Intelligence**.
+- Product subtitle standardized as **OSINT Investigation Workbench**.
+- Application header, browser metadata, server identity, package metadata, README, manual and Colab branding aligned.
+- Canonical notebook renamed to `Mineiro_Username_Intelligence_Colab.ipynb`.
+- Internal package renamed to `mineiro-username-intelligence`.
+- GitHub repository slug remains unchanged for compatibility with existing links and redirects.
+
+
 ## [1.4.2] - 2026-09-26
 
 ### Product

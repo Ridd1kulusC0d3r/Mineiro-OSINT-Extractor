@@ -1,20 +1,20 @@
-# Mineiro
+# Mineiro Username Intelligence
 
 <p align="center">
   <img src="assets/mineiro-logo.png" alt="Mineiro" width="220">
 </p>
 
-<p align="center"><strong>OSINT Intelligence Workbench para presença pública, evidência, correlação cautelosa e relatórios auditáveis.</strong></p>
+<p align="center"><strong>**OSINT Investigation Workbench** para presença pública de usernames, evidência, correlação cautelosa e relatórios auditáveis.</strong></p>
 
 <p align="center">
   <a href="https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/actions/workflows/ci.yml/badge.svg"></a>
-  <img alt="Version" src="https://img.shields.io/badge/version-1.4.2-111111">
+  <img alt="Version" src="https://img.shields.io/badge/version-1.4.3-111111">
   <img alt="Node" src="https://img.shields.io/badge/node-22%2B-111111">
   <img alt="License" src="https://img.shields.io/badge/code-MIT-111111">
 </p>
 
 <p align="center">
-  <a href="https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Official_Colab.ipynb"><strong>▶ Abrir no Google Colab</strong></a>
+  <a href="https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Username_Intelligence_Colab.ipynb"><strong>▶ Abrir no Google Colab</strong></a>
   &nbsp;·&nbsp;
   <a href="docs/GETTING-STARTED.md">Instalar localmente</a>
   &nbsp;·&nbsp;
@@ -59,7 +59,7 @@ Um `FOUND` é um achado. Não é prova automática de identidade.
 
 A forma mais rápida de testar o produto é o notebook oficial:
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Official_Colab.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Username_Intelligence_Colab.ipynb)
 
 Ele cuida de clone/update, dependências, validação do Registry, servidor, health check e abertura da interface pelo proxy do Colab.
 
@@ -243,4 +243,4 @@ O código original do Mineiro é MIT. O catálogo histórico possui entradas em 
 
 ---
 
-**Mineiro v1.4.2** · evidence first · local report generation · optional AI
+**Mineiro Username Intelligence v1.4.3** · OSINT Investigation Workbench · evidence first · local reporting

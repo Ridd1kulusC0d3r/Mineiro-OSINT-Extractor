@@ -1,6 +1,6 @@
 @echo off
 setlocal
-title Mineiro Username Extractor
+title Mineiro Username Intelligence
 where node >nul 2>&1
 if errorlevel 1 (
   echo [ERRO] Node.js nao foi encontrado.

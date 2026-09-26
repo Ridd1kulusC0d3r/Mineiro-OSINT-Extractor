@@ -1,4 +1,4 @@
-# RELATÓRIO DE TESTES — Mineiro v1.4.2
+# RELATÓRIO DE TESTES — Mineiro Username Intelligence v1.4.3
 
 Data: 26/09/2026
 
@@ -33,7 +33,7 @@ Data: 26/09/2026
 
 Além do build, a pipeline agora valida:
 
-- existência do notebook canônico `Mineiro_Official_Colab.ipynb`;
+- existência do notebook canônico `Mineiro_Username_Intelligence_Colab.ipynb`;
 - ausência de outputs salvos no notebook;
 - tokens obrigatórios do fluxo Colab;
 - ausência de referências aos notebooks legados nas páginas canônicas;
@@ -57,7 +57,7 @@ Além do build, a pipeline agora valida:
 
 **PASSOU** para a superfície de produto validada em GitHub Actions.
 
-A release v1.4.2 tem evidência automatizada para instalação, Registry, TypeScript, demo sintética, camada de inteligência, notebook oficial, documentação, manual, launchers shell e build.
+A release v1.4.3 tem evidência automatizada para instalação, Registry, TypeScript, demo sintética, camada de inteligência, notebook oficial, documentação, manual, launchers shell e build.
 
 Nenhum teste não executado foi promovido a PASSOU.
 

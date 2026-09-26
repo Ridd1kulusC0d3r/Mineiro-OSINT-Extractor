@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-const path = 'notebooks/Mineiro_Official_Colab.ipynb';
+const path = 'notebooks/Mineiro_Username_Intelligence_Colab.ipynb';
 if (!fs.existsSync(path)) throw new Error(`Missing canonical notebook: ${path}`);
 
 const notebook = JSON.parse(fs.readFileSync(path, 'utf8'));
@@ -14,7 +14,7 @@ const source = notebook.cells
   .join('');
 
 const required = [
-  'Mineiro Official Colab',
+  'Mineiro Username Intelligence Official Colab',
   'registry:validate',
   '/api/health',
   'google.colab.kernel.proxyPort',

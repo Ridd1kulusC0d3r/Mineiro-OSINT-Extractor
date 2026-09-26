@@ -2,7 +2,7 @@ import { getRegistryStats } from '../src/registry/registry';
 
 const stats = getRegistryStats();
 
-console.log('\nMineiro Registry v1.4.1');
+console.log('\nMineiro Registry v1.4.3');
 console.log('---------------------');
 console.log(`Detectors:               ${stats.totalDetectors}`);
 console.log(`Evidence checks:         ${stats.logicalEvidenceChecks}`);
