@@ -14,6 +14,7 @@ export interface RegistryDetector {
   licenseStatus: string;
   optionalEvidenceChecks: string[];
   lastVerified?: string;
+  scannable: boolean;
 }
 
 export interface RegistryBreakdownItem {
@@ -33,6 +34,8 @@ export interface RegistryStats {
   averageReliability: number;
   verifiedDetectors: number;
   auditRequiredDetectors: number;
+  scannableDetectors: number;
+  registryOnlyDetectors: number;
 }
 
 export interface DetectorBenchmarkObservation {
