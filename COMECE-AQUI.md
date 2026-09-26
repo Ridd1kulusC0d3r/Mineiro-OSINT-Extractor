@@ -4,7 +4,7 @@ O caminho mais curto para usar o Mineiro:
 
 ## Google Colab
 
-[▶ Abrir o notebook oficial](https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Official_Colab.ipynb)
+[▶ Abrir o notebook oficial](https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Username_Intelligence_Colab.ipynb)
 
 Depois escolha **Runtime → Run all**.
 
