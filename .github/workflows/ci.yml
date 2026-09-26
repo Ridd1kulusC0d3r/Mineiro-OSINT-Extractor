@@ -32,6 +32,9 @@ jobs:
       - name: Run synthetic demo
         run: npm run demo
 
+      - name: Run v1.4 intelligence smoke test
+        run: npm run intelligence:test
+
       - name: Validate offline manual
         run: npm run manual:validate
 
