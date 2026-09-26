@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.4.2] - 2026-09-26
+
+### Product
+- README redesigned as a concise product landing page.
+- Canonical documentation hub under `docs/`.
+- New Getting Started, User Guide, Colab guide, Troubleshooting and FAQ.
+- Single canonical Google Colab notebook: `notebooks/Mineiro_Official_Colab.ipynb`.
+- Legacy duplicate notebooks removed.
+- Support, roadmap, issue forms and Pull Request template added.
+
+### Colab
+- clone/update flow consolidated;
+- Node.js 22+ verification;
+- dependency installation with quieter/faster npm flags;
+- Registry validation during bootstrap;
+- process-safe server restart;
+- health polling before exposing the UI;
+- persistent session log at `/content/mineiro-server.log`;
+- direct Colab proxy URL;
+- optional synthetic validation cell.
+
+### Engineering
+- `npm run check` added as the canonical local quality gate.
+- CI now uses concurrency cancellation and npm download caching.
+- CI validates the canonical docs surface and official Colab notebook.
+- Package and server version aligned to 1.4.2.
+
+
 ## [1.4.1] - 2026-09-26
 
 ### Added
