@@ -2,6 +2,7 @@ import type { Category, ScanResult } from '../types';
 
 export type ConfidenceBand = 'HIGH' | 'MODERATE' | 'LOW';
 export type PriorityBand = 'HIGH' | 'MEDIUM' | 'LOW';
+export type SourceQualityGrade = 'A' | 'B' | 'C' | 'D' | 'E';
 
 export interface CollectionCoverage {
   requested: number;
@@ -26,6 +27,9 @@ export interface EvidenceAssessment {
   observationConfidence: number;
   correlationConfidence: number;
   analyticalValue: PriorityBand;
+  intelligencePriorityScore: number;
+  sourceQuality: SourceQualityGrade;
+  observedAt?: string;
   evidenceSignals: string[];
   whyItMatters: string;
 }
@@ -69,6 +73,46 @@ export interface KeyJudgment {
   basis: string;
 }
 
+export interface AnalyticLedgerEntry {
+  id: string;
+  claim: string;
+  confidence: ConfidenceBand;
+  supportingEvidenceIds: string[];
+  contradictoryEvidenceIds: string[];
+  generatedAt: string;
+}
+
+export interface IntelligenceTimelineEvent {
+  id: string;
+  observedAt: string;
+  type: 'SCAN_OBSERVATION' | 'PUBLIC_PROFILE_SIGNAL' | 'PUBLIC_LINK_SIGNAL';
+  platformName: string;
+  label: string;
+  evidenceId?: string;
+}
+
+export interface CorrelationGraphNode {
+  id: string;
+  type: 'TARGET' | 'PROFILE' | 'DOMAIN' | 'PUBLIC_URL';
+  label: string;
+}
+
+export interface CorrelationGraphEdge {
+  id: string;
+  source: string;
+  target: string;
+  relationship: 'SAME_HANDLE' | 'OBSERVED_ON' | 'LINKS_TO';
+  confidence: number;
+  evidenceId?: string;
+}
+
+export interface ReliabilityHeatmapCell {
+  category: string;
+  high: number;
+  medium: number;
+  low: number;
+}
+
 export interface IntelligenceAssessment {
   generatedAt: string;
   collection: CollectionCoverage;
@@ -83,4 +127,11 @@ export interface IntelligenceAssessment {
   collectionPlan: string[];
   stopCondition: string;
   sourceQualityNotes: string[];
+  analyticLedger: AnalyticLedgerEntry[];
+  timeline: IntelligenceTimelineEvent[];
+  graph: {
+    nodes: CorrelationGraphNode[];
+    edges: CorrelationGraphEdge[];
+  };
+  reliabilityHeatmap: ReliabilityHeatmapCell[];
 }
