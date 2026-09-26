@@ -10,9 +10,10 @@ import { computeBehavioralProfile } from './src/data/behavioralEngine';
 import { evaluateThreatActorHeuristics } from './src/data/threatActorHeuristics';
 import { getRegistryStats, MINEIRO_REGISTRY } from './src/registry/registry';
 import { benchmarkRegistry } from './src/registry/bench';
+import { buildAnalystCopilotPrompt } from './src/ai/analystCopilot';
 
 
-const TERMINAL_BANNER = String.raw`\n+------------------------------------------------------------------+\n|                                                                  |\n|   M   M  I  N   N  EEEEE  I  RRRR    OOO                       |\n|   MM MM  I  NN  N  E      I  R   R  O   O                      |\n|   M M M  I  N N N  EEEE   I  RRRR   O   O                      |\n|   M   M  I  N  NN  E      I  R  R   O   O                      |\n|   M   M  I  N   N  EEEEE  I  R   R   OOO                       |\n|                                                                  |\n|                USERNAME EXTRACTOR // OSINT                       |\n|                                                                  |\n|   [ probe ] -> [ classify ] -> [ correlate ] -> [ export ]      |\n|                                                                  |\n|   public signals only  |  evidence over assumptions              |\n+------------------------------------------------------------------+\n`;
+const TERMINAL_BANNER = `\n+------------------------------------------------------------------+\n|                                                                  |\n|   M   M  I  N   N  EEEEE  I  RRRR    OOO                       |\n|   MM MM  I  NN  N  E      I  R   R  O   O                      |\n|   M M M  I  N N N  EEEE   I  RRRR   O   O                      |\n|   M   M  I  N  NN  E      I  R  R   O   O                      |\n|   M   M  I  N   N  EEEEE  I  R   R   OOO                       |\n|                                                                  |\n|                USERNAME EXTRACTOR // OSINT                       |\n|                                                                  |\n|   [ probe ] -> [ classify ] -> [ correlate ] -> [ export ]      |\n|                                                                  |\n|   public signals only  |  evidence over assumptions              |\n+------------------------------------------------------------------+\n`;
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
 
@@ -130,7 +131,7 @@ function getGenAiClient(customApiKey?: string): { client: GoogleGenAI; isCustom:
       apiKey,
       httpOptions: {
         headers: {
-          'User-Agent': 'mineiro-username-extractor/1.3.1',
+          'User-Agent': 'mineiro-username-extractor/1.4',
         },
       },
     }),
@@ -143,7 +144,7 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     service: 'Mineiro Username Extractor Unified OSINT Engine',
-    version: '1.3.1',
+    version: '1.4.0',
     timestamp: new Date().toISOString(),
     geminiConfigured: Boolean(process.env.GEMINI_API_KEY),
     supportedDatabases: ['Mineiro Core (local direct probes)', 'Mineiro Username Extractor WAF Guard', 'Mineiro Username Extractor DNS & Email Recon'],
@@ -237,7 +238,7 @@ app.post('/api/osint/verify', async (req, res) => {
       method: 'GET',
       signal: controller.signal,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 MineiroUsernameExtractor/1.3.1',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 MineiroUsernameExtractor/1.4',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.5',
       },
@@ -872,6 +873,72 @@ Synthesize an authentic technical archetype reflecting their verified technical 
     archetypeDirective,
   };
 }
+
+// Evidence-bounded AI analyst copilot. This endpoint summarizes the local assessment;
+ // it does not collect new target data and cannot raise factual confidence on its own.
+app.post('/api/intelligence/copilot', async (req, res) => {
+  const { targetLabel = 'target', assessment, analystQuestion, model, customApiKey } = req.body || {};
+  const headerKey = (req.headers['x-gemini-api-key'] as string) || customApiKey;
+
+  if (!assessment || typeof assessment !== 'object') {
+    return res.status(400).json({ error: 'A local intelligence assessment is required.' });
+  }
+
+  const evidenceCount = Array.isArray(assessment.evidence) ? assessment.evidence.length : 0;
+  if (evidenceCount > 100) {
+    return res.status(400).json({ error: 'Copilot accepts at most 100 prioritized evidence records per request.' });
+  }
+
+  const clientInfo = getGenAiClient(headerKey);
+  if (!clientInfo) {
+    return res.status(503).json({
+      error: 'No Gemini API key is configured. The deterministic local assessment remains available without AI.',
+    });
+  }
+
+  const prompt = buildAnalystCopilotPrompt({
+    targetLabel: String(targetLabel).slice(0, 200),
+    assessment,
+    analystQuestion: typeof analystQuestion === 'string' ? analystQuestion.slice(0, 1000) : undefined,
+  });
+
+  const selectedModel = typeof model === 'string' && model.trim()
+    ? model.trim()
+    : 'gemini-3.8-flash';
+
+  try {
+    const response: any = await withTimeout(
+      clientInfo.client.models.generateContent({
+        model: selectedModel,
+        contents: prompt,
+        config: {
+          responseMimeType: 'application/json',
+          temperature: 0.2,
+        },
+      }),
+      12000
+    );
+
+    const parsed = parseCleanJson(response.text || '{}');
+    return res.json({
+      ...parsed,
+      modelUsed: selectedModel,
+      generatedAt: new Date().toISOString(),
+      provenance: {
+        type: 'AI_SYNTHESIZED',
+        factualConfidenceRaised: false,
+      },
+    });
+  } catch (err: any) {
+    return res.status(502).json({
+      error: err?.message || 'AI analyst request failed',
+      provenance: {
+        type: 'AI_SYNTHESIZED',
+        factualConfidenceRaised: false,
+      },
+    });
+  }
+});
 
 // AI-Powered Autonomous Profiling Engine (Mineiro Username Extractor Flagship Intelligence)
 app.post('/api/osint/profile', async (req, res) => {
