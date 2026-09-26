@@ -83,6 +83,10 @@ npm run dev
 
 Use o notebook em `notebooks/` ou siga [COLAB.md](COLAB.md).
 
+### Colab v1.3.1
+
+A configuração do Vite permite explicitamente o domínio interno do proxy do Google Colab sem usar `allowedHosts: true`. Detectores sem URL pública de username, como Discord, permanecem no Registry como `registry-only` e não entram em scans diretos.
+
 ## Pipeline
 
 ```text
