@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "note": "Synthetic example. No usernames or personal identifiers are stored.",
+  "observations": [
+    {
+      "detectorId": "github",
+      "expected": "present",
+      "observed": "found",
+      "timestamp": "2026-09-26T20:00:00Z",
+      "latencyMs": 180
+    },
+    {
+      "detectorId": "github",
+      "expected": "absent",
+      "observed": "not_found",
+      "timestamp": "2026-09-26T20:01:00Z",
+      "latencyMs": 165
+    },
+    {
+      "detectorId": "gitlab",
+      "expected": "present",
+      "observed": "found",
+      "timestamp": "2026-09-26T20:02:00Z",
+      "latencyMs": 240
+    },
+    {
+      "detectorId": "gitlab",
+      "expected": "absent",
+      "observed": "uncertain",
+      "timestamp": "2026-09-26T20:03:00Z",
+      "latencyMs": 6500
+    }
+  ]
+}
