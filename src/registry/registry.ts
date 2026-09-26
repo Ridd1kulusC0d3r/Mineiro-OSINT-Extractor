@@ -14,6 +14,7 @@ export const MINEIRO_REGISTRY: RegistryDetector[] = PLATFORMS_DATABASE.map((plat
   licenseStatus: platform.licenseStatus ?? 'project-legacy-unverified',
   optionalEvidenceChecks: platform.optionalEvidenceChecks ?? [],
   lastVerified: platform.lastVerified,
+  scannable: platform.scannable !== false,
 }));
 
 function breakdown(values: string[]): RegistryBreakdownItem[] {
@@ -49,6 +50,8 @@ export function getRegistryStats(): RegistryStats {
     auditRequiredDetectors: MINEIRO_REGISTRY.filter(
       (d) => d.provenanceStatus === 'legacy-audit-required'
     ).length,
+    scannableDetectors: MINEIRO_REGISTRY.filter((d) => d.scannable).length,
+    registryOnlyDetectors: MINEIRO_REGISTRY.filter((d) => !d.scannable).length,
   };
 }
 
