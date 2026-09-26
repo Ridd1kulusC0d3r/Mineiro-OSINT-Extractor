@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Mineiro Username Extractor — Manual v1.4.2</title>
+<title>Mineiro Username Intelligence — Manual v1.4.3</title>
 <style>
 :root{--bg:#050505;--panel:#0b0b0b;--panel2:#111;--text:#f5f5f5;--muted:#a3a3a3;--line:#2a2a2a;--strong:#fff;--invert:#050505;--shadow:0 18px 50px rgba(0,0,0,.35)}
 html[data-theme="light"]{--bg:#f7f7f7;--panel:#fff;--panel2:#f0f0f0;--text:#111;--muted:#555;--line:#ccc;--strong:#000;--invert:#fff;--shadow:0 16px 45px rgba(0,0,0,.10)}
@@ -29,7 +29,7 @@ svg text{font-family:Inter,Arial,sans-serif;fill:var(--text)}svg .box{fill:var(-
 </head>
 <body>
 <aside class="sidebar">
-  <div class="brand"><div class="mark">M</div><div><b>MINEIRO</b><small>USERNAME EXTRACTOR · v1.4.2</small></div></div>
+  <div class="brand"><div class="mark">M</div><div><b>MINEIRO</b><small>USERNAME INTELLIGENCE · v1.4.3</small></div></div>
   <nav class="nav" id="nav">
     <a href="#capa">01 · Capa</a><a href="#o-que-e">02 · O que é</a><a href="#como-funciona">03 · Como funciona</a>
     <a href="#jornada">04 · Jornada</a><a href="#legenda">05 · Legenda visual</a><a href="#instalacao">06 · Instalação</a>
@@ -53,7 +53,7 @@ svg text{font-family:Inter,Arial,sans-serif;fill:var(--text)}svg .box{fill:var(-
 
 <section id="o-que-e" class="section">
 <h2>O que é e para que serve</h2>
-<p>O Mineiro Username Extractor é uma ferramenta de OSINT, isto é, investigação usando fontes abertas e públicas. Você fornece um username. A ferramenta consulta endpoints públicos catalogados, observa sinais técnicos da resposta e classifica o resultado.</p>
+<p>O Mineiro Username Intelligence é uma ferramenta de OSINT, isto é, investigação usando fontes abertas e públicas. Você fornece um username. A ferramenta consulta endpoints públicos catalogados, observa sinais técnicos da resposta e classifica o resultado.</p>
 <div class="grid">
 <div class="card"><strong>Resolve</strong><p>Organiza buscas repetitivas, registra onde um username pode aparecer e mostra a qualidade do detector usado.</p></div>
 <div class="card"><strong>Não faz</strong><p>Não invade contas, não quebra senhas, não acessa conteúdo privado e não prova identidade civil.</p></div>
@@ -137,16 +137,16 @@ svg text{font-family:Inter,Arial,sans-serif;fill:var(--text)}svg .box{fill:var(-
 <div class="callout"><b>💡 Dica</b>Se não houver ambiente gráfico, abra manualmente o endereço mostrado no terminal.</div>
 </div>
 <div class="tab" id="colab">
-<h3>Google Colab</h3><ol><li>Abra <code>notebooks/Mineiro_Official_Colab.ipynb</code> no Colab.</li><li>Execute a célula “Preparar Mineiro”.</li><li>Execute “Abrir interface”.</li></ol>
+<h3>Google Colab</h3><ol><li>Abra <code>notebooks/Mineiro_Username_Intelligence_Colab.ipynb</code> no Colab.</li><li>Execute a célula “Preparar Mineiro”.</li><li>Execute “Abrir interface”.</li></ol>
 <div class="callout"><b>✅ Deu certo</b>A interface abre usando o proxy do Colab.</div>
-<div class="callout"><b>❌ Erro comum</b>Se aparecer “host is not allowed”, atualize para v1.4.2 ou posterior. A correção já inclui o domínio interno do Colab na allow-list do Vite.</div>
+<div class="callout"><b>❌ Erro comum</b>Se aparecer “host is not allowed”, atualize para v1.4.3 ou posterior. A correção já inclui o domínio interno do Colab na allow-list do Vite.</div>
 </div>
 </div>
 
 <div class="figure">
 <svg viewBox="0 0 1000 360" role="img" aria-label="Ilustração da tela principal anotada">
 <rect x="25" y="20" width="950" height="320" rx="12" fill="#050505" stroke="#555"/>
-<rect x="45" y="40" width="910" height="56" fill="#111" stroke="#333"/><text x="72" y="74" fill="#fff" font-weight="800">M  MINEIRO USERNAME EXTRACTOR</text>
+<rect x="45" y="40" width="910" height="56" fill="#111" stroke="#333"/><text x="72" y="74" fill="#fff" font-weight="800">M  MINEIRO USERNAME INTELLIGENCE</text>
 <rect x="45" y="118" width="620" height="54" fill="#0b0b0b" stroke="#444"/><text x="65" y="151" fill="#aaa">@username</text>
 <rect x="685" y="118" width="270" height="54" fill="#fff"/><text x="820" y="151" fill="#050505" text-anchor="middle" font-weight="800">START SCAN</text>
 <rect x="45" y="194" width="280" height="120" fill="#0b0b0b" stroke="#333"/><text x="65" y="225" fill="#fff">REGISTRY</text><text x="65" y="251" fill="#aaa">985 detectores</text>
@@ -231,7 +231,7 @@ svg text{font-family:Inter,Arial,sans-serif;fill:var(--text)}svg .box{fill:var(-
 <tr><td><code>node: command not found</code></td><td>Node.js ausente</td><td>Instale Node.js 22 LTS e reabra o terminal.</td></tr>
 <tr><td><code>npm: command not found</code></td><td>npm ausente ou PATH incompleto</td><td>Reinstale Node.js com npm.</td></tr>
 <tr><td>Porta 3000 em uso</td><td>Outro processo já usa a porta</td><td>Encerre a instância anterior e reinicie o Mineiro.</td></tr>
-<tr><td>Colab “host is not allowed”</td><td>Versão anterior à correção</td><td>Atualize para v1.4.2 com <code>git pull</code>.</td></tr>
+<tr><td>Colab “host is not allowed”</td><td>Versão anterior à correção</td><td>Atualize para v1.4.3 com <code>git pull</code>.</td></tr>
 <tr><td>Muitos UNCERTAIN</td><td>Proteção, rate limit ou rede instável</td><td>Reduza escopo, espere e valide manualmente. Não aumente agressivamente a concorrência.</td></tr>
 <tr><td>Caracteres estranhos</td><td>Terminal sem UTF-8</td><td>Use terminal moderno configurado para UTF-8.</td></tr>
 <tr><td>Username vazio/inválido</td><td>Entrada incompleta</td><td>Digite somente o identificador aceito pelo serviço. Remova espaços extras.</td></tr>
@@ -316,7 +316,7 @@ npm run manual:validate</pre></details>
 <details><summary>Resumo de testes</summary><p>Consulte <code>RELATORIO-DE-TESTES.md</code>. O CI verifica instalação, Registry, TypeScript, build, demo e estrutura do manual. Testes não executados em um sistema específico são declarados como tal.</p></details>
 <h3>Itens [VERIFICAR]</h3><p>Nenhum item pendente marcado com <code>[VERIFICAR]</code> nesta edição.</p>
 </section>
-<div class="footer">Mineiro Username Extractor v1.4.2 · documentação em preto e branco · evidência acima de suposição.</div>
+<div class="footer">Mineiro Username Intelligence v1.4.3 · documentação em preto e branco · evidência acima de suposição.</div>
 </main>
 <div class="top-actions"><button id="voltar-topo" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ topo</button></div>
 <script>
