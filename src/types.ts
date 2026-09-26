@@ -284,11 +284,11 @@ export interface ModularScanConfig {
   enableAccountLinkage: boolean; // Cross-platform correlation
 }
 
-// Cryptographically-signed Investigation Snapshot
+// Local Investigation Integrity Snapshot
 export interface InvestigationSnapshot {
   snapshotId: string;
   timestamp: string; // ISO string
-  signature: string; // Cryptographic SHA-256 HMAC / signature string
+  signature: string; // Legacy field name: SHA-256 integrity seal, not an authorship signature
   summaryHash: string; // Canonical SHA-256 digest of findings
   target: string;
   targetType: 'username' | 'email';
