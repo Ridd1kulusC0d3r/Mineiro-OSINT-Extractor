@@ -30,6 +30,7 @@ import { CategoryHeatMap } from './CategoryHeatMap';
 import { RiskMatrix2x2 } from './RiskMatrix2x2';
 import { BatchOverviewCard } from './BatchOverviewCard';
 import { PlatformFavicon } from './PlatformFavicon';
+import { RegistryOverview } from './RegistryOverview';
 import { useToast } from './Toast';
 import { 
   CATEGORY_COLORS, 
@@ -230,6 +231,8 @@ export function DashboardView({
           </div>
         </div>
       </div>
+
+      <RegistryOverview />
 
       {/* Batch Overview Card on Main Dashboard */}
       {bulkBatch && bulkBatch.items.length > 0 && (
