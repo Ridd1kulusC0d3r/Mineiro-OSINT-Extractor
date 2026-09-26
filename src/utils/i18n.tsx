@@ -146,7 +146,7 @@ export interface Translations {
 
 const translations: Record<Language, Translations> = {
   en: {
-    appTitle: 'Mineiro Username Extractor',
+    appTitle: 'Mineiro Username Intelligence',
     appSubtitle: 'Unified OSINT Reconnaissance Engine // Large Local Public-Endpoint Catalog',
     liveScan: 'ACTIVE SCAN',
     standby: 'STANDBY',
@@ -199,7 +199,7 @@ const translations: Record<Language, Translations> = {
     statTime: 'Elapsed Time',
     statRate: 'Speed',
 
-    consoleTitle: 'Mineiro Username Extractor RECON CONSOLE',
+    consoleTitle: 'Mineiro Username Intelligence RECON CONSOLE',
     consoleSubtitle: 'Real-time asynchronous forensic probe stream',
     consoleLive: 'LIVE',
     consoleIdle: 'IDLE',
@@ -280,7 +280,7 @@ const translations: Record<Language, Translations> = {
   },
 
   pt: {
-    appTitle: 'Mineiro Username Extractor',
+    appTitle: 'Mineiro Username Intelligence',
     appSubtitle: 'Motor Unificado de Reconhecimento OSINT // Catálogo Local Amplo de Endpoints Públicos',
     liveScan: 'VARREDURA ATIVA',
     standby: 'STANDBY',
@@ -294,7 +294,7 @@ const translations: Record<Language, Translations> = {
     themeHighContrast: 'Alto Contraste',
     apiKey: 'Chave Gemini AI',
     aboutEngine: 'Sobre a Arquitetura',
-    architecture: 'Arquitetura do Motor Mineiro Username Extractor OSINT',
+    architecture: 'Arquitetura do Motor Mineiro Username Intelligence OSINT',
 
     viewDashboard: 'Painel Geral',
     viewGrid: 'Grade de Perfis',
@@ -333,7 +333,7 @@ const translations: Record<Language, Translations> = {
     statTime: 'Tempo Decorrido',
     statRate: 'Velocidade',
 
-    consoleTitle: 'CONSOLE DE RECONHECIMENTO Mineiro Username Extractor',
+    consoleTitle: 'CONSOLE DE RECONHECIMENTO Mineiro Username Intelligence',
     consoleSubtitle: 'Fluxo forense em tempo real de sondas assíncronas',
     consoleLive: 'AO VIVO',
     consoleIdle: 'OCIOSO',
@@ -414,7 +414,7 @@ const translations: Record<Language, Translations> = {
   },
 
   es: {
-    appTitle: 'Mineiro Username Extractor',
+    appTitle: 'Mineiro Username Intelligence',
     appSubtitle: 'Motor Unificado de Reconocimiento OSINT // Catálogo Local Amplio de Endpoints Públicos',
     liveScan: 'ESCÁNER ACTIVO',
     standby: 'EN ESPERA',
@@ -428,7 +428,7 @@ const translations: Record<Language, Translations> = {
     themeHighContrast: 'Alto Contraste',
     apiKey: 'Clave Gemini AI',
     aboutEngine: 'Sobre la Arquitectura',
-    architecture: 'Arquitectura del Motor Mineiro Username Extractor OSINT',
+    architecture: 'Arquitectura del Motor Mineiro Username Intelligence OSINT',
 
     viewDashboard: 'Panel General',
     viewGrid: 'Cuadrícula de Perfiles',
@@ -467,7 +467,7 @@ const translations: Record<Language, Translations> = {
     statTime: 'Tiempo Transcurrido',
     statRate: 'Velocidad',
 
-    consoleTitle: 'CONSOLA DE RECONOCIMIENTO Mineiro Username Extractor',
+    consoleTitle: 'CONSOLA DE RECONOCIMIENTO Mineiro Username Intelligence',
     consoleSubtitle: 'Flujo forense en tiempo real de sondas asíncronas',
     consoleLive: 'EN VIVO',
     consoleIdle: 'INACTIVO',
