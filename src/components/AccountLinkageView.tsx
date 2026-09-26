@@ -1,22 +1,6 @@
-import { useState, useMemo } from 'react';
-import { 
-  GitFork, 
-  Search, 
-  Copy, 
-  Check, 
-  ExternalLink, 
-  Sparkles, 
-  ShieldAlert, 
-  Layers, 
-  Users, 
-  Mail, 
-  Compass, 
-  ArrowRight,
-  Info,
-  CheckCircle2,
-  AlertTriangle
-} from 'lucide-react';
-import { ScanResult, EmailReconData, AccountLinkageNode } from '../types';
+import { useMemo, useState } from 'react';
+import { Check, Copy, GitFork, Search } from 'lucide-react';
+import type { EmailReconData, ScanResult } from '../types';
 import { generateAccountLinkageDossier } from '../data/accountLinkage';
 
 interface AccountLinkageViewProps {
@@ -33,198 +17,109 @@ export function AccountLinkageView({
   onPivotScan,
 }: AccountLinkageViewProps) {
   const [copiedHandle, setCopiedHandle] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'all' | 'permutations' | 'emails' | 'peers'>('all');
+  const dossier = useMemo(
+    () => generateAccountLinkageDossier(target, results, emailData),
+    [target, results, emailData]
+  );
 
-  const dossier = useMemo(() => {
-    return generateAccountLinkageDossier(target, results, emailData);
-  }, [target, results, emailData]);
-
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
+  const handleCopy = async (text: string) => {
+    await navigator.clipboard.writeText(text);
     setCopiedHandle(text);
-    setTimeout(() => setCopiedHandle(null), 2000);
+    setTimeout(() => setCopiedHandle(null), 1500);
   };
 
+  const found = results.filter((r) => r.status === 'found').length;
+
   return (
-    <div className="space-y-6 font-mono">
-      {/* Top Banner / Concept Explainer */}
-      <div className="border border-neutral-800 bg-neutral-950 p-6 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-800 pb-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <GitFork className="w-5 h-5 text-white" />
-              <h2 className="text-sm sm:text-base font-bold text-white uppercase tracking-wider">
-                Account Linkage Theory & Mutation Forensics
-              </h2>
+    <section className="space-y-6">
+      <div className="rounded-[22px] border border-[#2b3035] bg-[#101316] p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <div className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-[#8d949d]">
+              <GitFork className="h-4 w-4" />
+              Username Linkage
             </div>
-            <p className="text-xs text-neutral-400 max-w-3xl">
-              Heuristic identity correlation modeling across delimiter variations, leetspeak substitutions, 
-              functional affixes, email anchors, and family/peer networks.
+            <h2 className="mt-3 text-2xl font-semibold tracking-[-0.035em] text-[#f3f4f5]">
+              Variantes parecidas como pivôs, não como identidade confirmada.
+            </h2>
+            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[#9097a0]">
+              O motor normaliza o identificador, gera mutações sintáticas conservadoras e calcula similaridade de string.
+              Uma variante continua sendo candidata até existir evidência pública independente.
             </p>
           </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-neutral-500 uppercase">Canonical Stem:</span>
-            <span className="px-2.5 py-1 border border-neutral-700 bg-black text-white font-bold text-xs tracking-wider">
-              {dossier.canonicalStem}
-            </span>
+          <div className="rounded-xl border border-[#343a40] px-3 py-2 text-xs text-[#b5bbc2]">
+            stem <span className="font-mono text-white">{dossier.canonicalStem}</span>
           </div>
         </div>
 
-        {/* Quick KPI stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
-          <div className="p-3 border border-neutral-800 bg-black">
-            <span className="text-[10px] text-neutral-500 uppercase block">Total Mutations</span>
-            <span className="text-xl font-bold text-white">{dossier.totalMutationsEvaluated}</span>
+        <div className="mt-6 grid gap-3 sm:grid-cols-3">
+          <div className="rounded-[16px] border border-[#282e33] p-4">
+            <div className="text-[10px] uppercase tracking-[0.14em] text-[#747c85]">Observed exact handle</div>
+            <div className="mt-2 text-2xl font-semibold text-[#f2f3f4]">{found}</div>
           </div>
-          <div className="p-3 border border-neutral-800 bg-black">
-            <span className="text-[10px] text-neutral-500 uppercase block">Handle Permutations</span>
-            <span className="text-xl font-bold text-neutral-400">{dossier.permutations.length}</span>
+          <div className="rounded-[16px] border border-[#282e33] p-4">
+            <div className="text-[10px] uppercase tracking-[0.14em] text-[#747c85]">Candidate variants</div>
+            <div className="mt-2 text-2xl font-semibold text-[#f2f3f4]">{dossier.permutations.length}</div>
           </div>
-          <div className="p-3 border border-neutral-800 bg-black">
-            <span className="text-[10px] text-neutral-500 uppercase block">Email Anchors</span>
-            <span className="text-xl font-bold text-neutral-400">{dossier.emailCorrelations.length}</span>
-          </div>
-          <div className="p-3 border border-neutral-800 bg-black">
-            <span className="text-[10px] text-neutral-500 uppercase block">Peer & Family Links</span>
-            <span className="text-xl font-bold text-neutral-400">{dossier.familyPeerCorrelations.length}</span>
+          <div className="rounded-[16px] border border-[#282e33] p-4">
+            <div className="text-[10px] uppercase tracking-[0.14em] text-[#747c85]">Promotion rule</div>
+            <div className="mt-2 text-sm text-[#a5abb2]">pivot + independent public evidence</div>
           </div>
         </div>
       </div>
 
-      {/* Behavioral Hypotheses Summary Box */}
-      <div className="border border-neutral-800 bg-neutral-950 p-5 space-y-3">
-        <div className="flex items-center gap-2 border-b border-neutral-800 pb-2.5">
-          <Compass className="w-4 h-4 text-white" />
-          <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-            Account Naming Behavioral Hypotheses
-          </h3>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-1">
-          {dossier.behavioralHypotheses.map((hyp, i) => (
-            <div key={i} className="p-3.5 border border-neutral-800 bg-black text-xs text-neutral-300 space-y-1">
-              <span className="text-[10px] text-neutral-500 uppercase block font-bold">
-                Hypothesis #{i + 1}
-              </span>
-              <p className="leading-relaxed font-sans text-neutral-300">
-                {hyp}
-              </p>
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {dossier.permutations.map((item) => (
+          <article key={item.id} className="rounded-[18px] border border-[#292f34] bg-[#0f1214] p-5">
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#747c85]">
+                  {item.mutationType}
+                </div>
+                <h3 className="mt-2 truncate text-lg font-medium text-[#f1f2f3]" title={item.label}>
+                  {item.label}
+                </h3>
+              </div>
+              <div className="rounded-lg border border-[#3b4249] px-2.5 py-1 font-mono text-xs text-[#d7dade]">
+                {item.similarityScore}%
+              </div>
             </div>
+
+            <p className="mt-3 text-sm leading-relaxed text-[#9299a2]">{item.reason}</p>
+            <p className="mt-3 border-l border-[#343a40] pl-3 text-xs leading-relaxed text-[#7f8790]">
+              {item.hypothesis}
+            </p>
+
+            <div className="mt-5 flex items-center justify-between border-t border-[#252a2f] pt-4">
+              <button
+                type="button"
+                onClick={() => handleCopy(item.label)}
+                className="inline-flex items-center gap-2 rounded-lg border border-[#30363c] px-3 py-2 text-xs text-[#9da4ac] hover:text-white"
+              >
+                {copiedHandle === item.label ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                {copiedHandle === item.label ? 'Copied' : 'Copy'}
+              </button>
+              <button
+                type="button"
+                onClick={() => onPivotScan(item.pivotHandle || item.label)}
+                className="inline-flex items-center gap-2 rounded-lg border border-[#505861] bg-[#171b1f] px-3 py-2 text-xs font-medium text-[#eef0f2] hover:bg-[#1d2226]"
+              >
+                <Search className="h-3.5 w-3.5" />
+                Pivot scan
+              </button>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      <div className="rounded-[18px] border border-[#292f34] bg-[#0f1214] p-5">
+        <div className="text-[10px] uppercase tracking-[0.14em] text-[#747c85]">Method notes</div>
+        <div className="mt-3 grid gap-3 md:grid-cols-3">
+          {dossier.behavioralHypotheses.map((note, index) => (
+            <p key={index} className="text-sm leading-relaxed text-[#9299a2]">{note}</p>
           ))}
         </div>
       </div>
-
-      {/* Filter Tabs */}
-      <div className="flex items-center border border-neutral-800 bg-black p-1 self-start flex-wrap gap-1">
-        <button
-          type="button"
-          onClick={() => setActiveTab('all')}
-          className={`px-3 py-1.5 text-xs uppercase transition-colors ${
-            activeTab === 'all' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white'
-          }`}
-        >
-          All Mutations ({dossier.totalMutationsEvaluated})
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('permutations')}
-          className={`px-3 py-1.5 text-xs uppercase transition-colors ${
-            activeTab === 'permutations' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white'
-          }`}
-        >
-          Username Permutations ({dossier.permutations.length})
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('emails')}
-          className={`px-3 py-1.5 text-xs uppercase transition-colors ${
-            activeTab === 'emails' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white'
-          }`}
-        >
-          Email Corroborations ({dossier.emailCorrelations.length})
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('peers')}
-          className={`px-3 py-1.5 text-xs uppercase transition-colors ${
-            activeTab === 'peers' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white'
-          }`}
-        >
-          Peer & Family Links ({dossier.familyPeerCorrelations.length})
-        </button>
-      </div>
-
-      {/* Grid of Linkage Nodes */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {(activeTab === 'all' || activeTab === 'permutations' ? dossier.permutations : [])
-          .concat(activeTab === 'all' || activeTab === 'emails' ? dossier.emailCorrelations : [])
-          .concat(activeTab === 'all' || activeTab === 'peers' ? dossier.familyPeerCorrelations : [])
-          .map((item) => {
-            const isEmail = item.category === 'email_variant';
-            const isPeer = item.category === 'associated_peer';
-
-            const badgeColor = isEmail
-              ? 'border-neutral-500/50 bg-neutral-950/40 text-neutral-300'
-              : isPeer
-              ? 'border-neutral-500/50 bg-neutral-950/40 text-neutral-300'
-              : 'border-neutral-500/50 bg-neutral-950/40 text-neutral-300';
-
-            return (
-              <div 
-                key={item.id}
-                className="border border-neutral-800 bg-neutral-950 p-4 flex flex-col justify-between space-y-3 hover:border-neutral-700 transition-colors"
-              >
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className={`px-2 py-0.5 border text-[10px] uppercase font-bold tracking-wider ${badgeColor}`}>
-                      {item.mutationType}
-                    </span>
-                    <div className="flex items-center gap-1.5 text-xs">
-                      <span className="text-neutral-500 text-[10px]">Similarity:</span>
-                      <span className="text-white font-bold">{item.similarityScore}%</span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-0.5">
-                    <h4 className="text-sm font-bold text-white tracking-wider truncate" title={item.label}>
-                      {item.label}
-                    </h4>
-                    <p className="text-[11px] text-neutral-400 font-sans leading-relaxed">
-                      {item.reason}
-                    </p>
-                  </div>
-
-                  <div className="p-2.5 border border-neutral-900 bg-black text-[11px] text-neutral-400 font-sans leading-relaxed">
-                    <span className="text-neutral-500 block text-[10px] font-mono uppercase mb-0.5 font-bold">
-                      Linkage Theory:
-                    </span>
-                    {item.hypothesis}
-                  </div>
-                </div>
-
-                <div className="pt-3 border-t border-neutral-900 flex items-center justify-between gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleCopy(item.label)}
-                    className="px-2.5 py-1.5 border border-neutral-800 bg-black text-neutral-400 hover:text-white text-[11px] inline-flex items-center gap-1.5 transition-colors"
-                  >
-                    {copiedHandle === item.label ? <Check className="w-3 h-3 text-neutral-400" /> : <Copy className="w-3 h-3" />}
-                    {copiedHandle === item.label ? 'Copied' : 'Copy'}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => onPivotScan(item.pivotHandle || item.label)}
-                    className="px-3 py-1.5 bg-white text-black font-bold uppercase text-[11px] hover:bg-neutral-200 inline-flex items-center gap-1.5 transition-colors tracking-wider"
-                  >
-                    <Search className="w-3 h-3" />
-                    Pivot Scan
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-      </div>
-    </div>
+    </section>
   );
 }

@@ -139,6 +139,87 @@ function getGenAiClient(customApiKey?: string): { client: GoogleGenAI; isCustom:
   };
 }
 
+const COPILOT_MODELS = [
+  'gemini-3.8-flash',
+  'gemini-3.7-flash',
+  'gemini-3.5-flash-lite',
+  'gemini-flash-latest',
+] as const;
+
+function normalizeCopilotModel(model?: unknown): string {
+  const requested = typeof model === 'string' ? model.trim() : '';
+  return requested || COPILOT_MODELS[0];
+}
+
+function classifyGeminiError(error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error || '');
+  if (/429|RESOURCE_EXHAUSTED|quota|rate limit/i.test(message)) return 'rate_limited';
+  if (/401|403|API key|permission|unauth/i.test(message)) return 'authentication';
+  if (/404|not found|model.*available/i.test(message)) return 'model_unavailable';
+  if (/503|UNAVAILABLE|high demand|timeout|timed out/i.test(message)) return 'temporary_unavailable';
+  return 'provider_error';
+}
+
+async function generateCopilotWithFallback(
+  client: GoogleGenAI,
+  prompt: string,
+  preferredModel?: unknown
+): Promise<{ parsed: any; modelUsed: string; attemptedModels: string[] }> {
+  const preferred = normalizeCopilotModel(preferredModel);
+  const candidates = [preferred, ...COPILOT_MODELS].filter((value, index, array) => array.indexOf(value) === index);
+  const attemptedModels: string[] = [];
+  const errors: string[] = [];
+
+  for (const modelName of candidates) {
+    attemptedModels.push(modelName);
+    try {
+      const response: any = await withTimeout(
+        client.models.generateContent({
+          model: modelName,
+          contents: prompt,
+          config: {
+            responseMimeType: 'application/json',
+            temperature: 0.2,
+          },
+        }),
+        15000
+      );
+
+      const parsed = parseCleanJson(response.text || '{}');
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        throw new Error('Provider returned an invalid JSON object.');
+      }
+
+      return { parsed, modelUsed: modelName, attemptedModels };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      const kind = classifyGeminiError(error);
+      errors.push(`${modelName}: ${kind}: ${message}`);
+
+      // Invalid credentials will fail identically for every model, so stop early.
+      if (kind === 'authentication') break;
+    }
+  }
+
+  throw new Error(`Gemini Copilot unavailable after ${attemptedModels.length} attempt(s). ${errors.join(' | ')}`);
+}
+
+app.get('/api/intelligence/copilot/status', (req, res) => {
+  const personalKey = typeof req.headers['x-gemini-api-key'] === 'string'
+    ? req.headers['x-gemini-api-key']
+    : '';
+  const personalConfigured = personalKey.trim().length > 10;
+  const serverConfigured = Boolean(process.env.GEMINI_API_KEY);
+
+  res.json({
+    configured: personalConfigured || serverConfigured,
+    source: personalConfigured ? 'personal' : serverConfigured ? 'server' : 'none',
+    defaultModel: COPILOT_MODELS[0],
+    supportedModels: [...COPILOT_MODELS],
+    provider: 'Google Gemini',
+  });
+});
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({
@@ -875,7 +956,7 @@ Synthesize an authentic technical archetype reflecting their verified technical 
 }
 
 // Evidence-bounded AI analyst copilot. This endpoint summarizes the local assessment;
- // it does not collect new target data and cannot raise factual confidence on its own.
+// it does not collect new target data and cannot raise factual confidence on its own.
 app.post('/api/intelligence/copilot', async (req, res) => {
   const { targetLabel = 'target', assessment, analystQuestion, model, customApiKey } = req.body || {};
   const headerKey = (req.headers['x-gemini-api-key'] as string) || customApiKey;
@@ -892,7 +973,9 @@ app.post('/api/intelligence/copilot', async (req, res) => {
   const clientInfo = getGenAiClient(headerKey);
   if (!clientInfo) {
     return res.status(503).json({
-      error: 'No Gemini API key is configured. The deterministic local assessment remains available without AI.',
+      error: 'Gemini is not configured. Add a personal API key in AI settings or configure GEMINI_API_KEY on the server.',
+      errorType: 'not_configured',
+      provenance: { type: 'AI_SYNTHESIZED', factualConfidenceRaised: false },
     });
   }
 
@@ -902,36 +985,23 @@ app.post('/api/intelligence/copilot', async (req, res) => {
     analystQuestion: typeof analystQuestion === 'string' ? analystQuestion.slice(0, 1000) : undefined,
   });
 
-  const selectedModel = typeof model === 'string' && model.trim()
-    ? model.trim()
-    : 'gemini-3.8-flash';
-
   try {
-    const response: any = await withTimeout(
-      clientInfo.client.models.generateContent({
-        model: selectedModel,
-        contents: prompt,
-        config: {
-          responseMimeType: 'application/json',
-          temperature: 0.2,
-        },
-      }),
-      12000
-    );
-
-    const parsed = parseCleanJson(response.text || '{}');
+    const generated = await generateCopilotWithFallback(clientInfo.client, prompt, model);
     return res.json({
-      ...parsed,
-      modelUsed: selectedModel,
+      ...generated.parsed,
+      modelUsed: generated.modelUsed,
+      attemptedModels: generated.attemptedModels,
       generatedAt: new Date().toISOString(),
       provenance: {
         type: 'AI_SYNTHESIZED',
         factualConfidenceRaised: false,
       },
     });
-  } catch (err: any) {
+  } catch (error) {
     return res.status(502).json({
-      error: err?.message || 'AI analyst request failed',
+      error: error instanceof Error ? error.message : 'AI analyst request failed',
+      errorType: classifyGeminiError(error),
+      requestedModel: normalizeCopilotModel(model),
       provenance: {
         type: 'AI_SYNTHESIZED',
         factualConfidenceRaised: false,
