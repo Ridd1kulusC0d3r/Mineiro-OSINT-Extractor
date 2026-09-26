@@ -231,7 +231,7 @@ export function ExportModal({
     const finalResults = preview ? previewHits : (sections.platformFindings ? results : []);
 
     const payload: any = {
-      engine: 'Mineiro Username Extractor Unified OSINT Reconnaissance Engine',
+      engine: 'Mineiro Username Intelligence Unified OSINT Reconnaissance Engine',
       version: '3.2.0',
       caseId: `CASE-OSINT-${target.toUpperCase()}-${new Date().getFullYear()}`,
       timestamp: new Date().toISOString(),
