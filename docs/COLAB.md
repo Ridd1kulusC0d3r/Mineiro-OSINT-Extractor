@@ -1,4 +1,6 @@
-# Google Colab oficial
+# Mineiro Username Intelligence · Google Colab oficial
+
+**OSINT Investigation Workbench**
 
 O notebook canônico do Mineiro é:
 
