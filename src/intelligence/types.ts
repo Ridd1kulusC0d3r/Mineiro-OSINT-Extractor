@@ -42,6 +42,18 @@ export interface EvidenceAssessment {
   category: Category;
   url: string;
   status: ScanResult['status'];
+  statusCode?: number;
+  responseTimeMs?: number;
+  capturedMetadata?: {
+    displayName?: string;
+    location?: string;
+    organization?: string;
+    publicProjects?: string[];
+    extractedLinks?: string[];
+    accountCreatedAt?: string;
+    firstPublicEvidenceAt?: string;
+    avatarHash?: string;
+  };
   detectorConfidence: number;
   observationConfidence: number;
   correlationConfidence: number;
