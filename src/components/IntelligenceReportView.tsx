@@ -3,14 +3,10 @@ import {
   ArrowUpRight,
   CheckCircle2,
   ChevronRight,
-  CircleDot,
   Download,
   FileKey2,
   FileSearch,
   GitBranch,
-  Layers3,
-  Link2,
-  ShieldCheck,
   TriangleAlert,
 } from 'lucide-react';
 import type { ScanResult } from '../types';
