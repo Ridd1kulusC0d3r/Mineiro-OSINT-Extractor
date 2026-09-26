@@ -942,6 +942,13 @@ app.post('/api/intelligence/copilot', async (req, res) => {
 
 // AI-Powered Autonomous Profiling Engine (Mineiro Username Extractor Flagship Intelligence)
 app.post('/api/osint/profile', async (req, res) => {
+  if (process.env.MINEIRO_ENABLE_LEGACY_PROFILE !== '1') {
+    return res.status(410).json({
+      error: 'Legacy speculative profile endpoint is disabled by default in Mineiro v1.4.1.',
+      replacement: '/api/intelligence/copilot',
+      note: 'Use the evidence-bounded Analyst Copilot. AI synthesis cannot raise factual confidence by itself.',
+    });
+  }
   const { target, targetType = 'username', foundPlatforms = [], emailData = null, model, customApiKey } = req.body;
   const userHeaderKey = (req.headers['x-gemini-api-key'] as string) || customApiKey;
 
