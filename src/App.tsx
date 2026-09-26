@@ -9,7 +9,7 @@ import { PlatformTable } from './components/PlatformTable';
 import { AiProfileCard } from './components/AiProfileCard';
 import { EmailReconCard } from './components/EmailReconCard';
 import { TerminalLogs } from './components/TerminalLogs';
-import { ExportModal } from './components/ExportModal';
+import { IntelligenceExportModal } from './components/IntelligenceExportModal';
 import { DossierPrintView } from './components/DossierPrintView';
 import { GeminiConfigModal } from './components/GeminiConfigModal';
 import { AccountLinkageView } from './components/AccountLinkageView';
@@ -1093,14 +1093,11 @@ export default function App() {
       />
 
       {/* Export Dossier Modal (JSON, CSV, TXT, PDF) */}
-      <ExportModal
+      <IntelligenceExportModal
         isOpen={isExportOpen}
         onClose={() => setIsExportOpen(false)}
         target={target}
-        targetType={targetType}
         results={results}
-        aiProfile={aiProfile}
-        emailData={emailData}
       />
 
       {/* Hidden printable report layout rendered when window.print() is called */}
