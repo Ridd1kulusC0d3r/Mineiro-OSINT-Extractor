@@ -13,12 +13,15 @@ import {
 } from 'lucide-react';
 import type { ScanResult } from '../types';
 import { buildIntelligenceAssessment } from '../intelligence/assessment';
+import { AiAnalystPanel } from './AiAnalystPanel';
 
 interface IntelligenceReportViewProps {
   target: string;
   results: ScanResult[];
   onOpenExport: () => void;
   onViewTable: () => void;
+  aiApiKey?: string;
+  aiModel?: string;
 }
 
 const sectionLinks = [
@@ -87,6 +90,8 @@ export function IntelligenceReportView({
   results,
   onOpenExport,
   onViewTable,
+  aiApiKey,
+  aiModel,
 }: IntelligenceReportViewProps) {
   const report = useMemo(() => buildIntelligenceAssessment(results), [results]);
   const highValue = report.evidence.filter((item) => item.analyticalValue === 'HIGH' && item.status === 'found');
@@ -331,9 +336,21 @@ export function IntelligenceReportView({
         </div>
       </section>
 
-      <section id="intel-method" className="scroll-mt-36 py-14">
+      <section className="py-14 border-b border-[#20252a]">
         <SectionHeading
           index="06"
+          eyebrow="AI Assist"
+          title="Copiloto analítico"
+          description="IA opcional para triagem de evidências, gaps e contradições. A camada determinística continua sendo a fonte de verdade."
+        />
+        <div className="mt-8">
+          <AiAnalystPanel target={target} results={results} apiKey={aiApiKey} model={aiModel} />
+        </div>
+      </section>
+
+      <section id="intel-method" className="scroll-mt-36 py-14">
+        <SectionHeading
+          index="07"
           eyebrow="Method"
           title="Como esta avaliação foi construída"
           description="Collection, evidence, correlation e assessment são camadas diferentes. O relatório mantém essa separação para evitar certeza artificial."
