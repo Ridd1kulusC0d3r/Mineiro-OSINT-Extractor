@@ -8,6 +8,10 @@ export interface IntelligenceExportSelection {
   highConfidenceFindings: boolean;
   evidenceMatrix: boolean;
   footprintClusters: boolean;
+  correlationGraph: boolean;
+  timeline: boolean;
+  reliabilityHeatmap: boolean;
+  analyticLedger: boolean;
   hypotheses: boolean;
   contradictions: boolean;
   gaps: boolean;
@@ -25,6 +29,10 @@ export const DEFAULT_INTELLIGENCE_EXPORT: IntelligenceExportSelection = {
   highConfidenceFindings: true,
   evidenceMatrix: true,
   footprintClusters: true,
+  correlationGraph: true,
+  timeline: true,
+  reliabilityHeatmap: true,
+  analyticLedger: true,
   hypotheses: true,
   contradictions: true,
   gaps: true,
@@ -49,7 +57,7 @@ export function buildIntelligenceBundle(
   results: ScanResult[],
   sections: IntelligenceExportSelection
 ) {
-  const assessment = buildIntelligenceAssessment(results);
+  const assessment = buildIntelligenceAssessment(results, target || 'target');
   const included = Object.entries(sections).filter(([, enabled]) => enabled).map(([key]) => key);
   const excluded = Object.entries(sections).filter(([, enabled]) => !enabled).map(([key]) => key);
 
@@ -77,6 +85,10 @@ export function buildIntelligenceBundle(
       : undefined,
     evidence: sections.evidenceMatrix ? assessment.evidence : undefined,
     clusters: sections.footprintClusters ? assessment.clusters : undefined,
+    graph: sections.correlationGraph ? assessment.graph : undefined,
+    timeline: sections.timeline ? assessment.timeline : undefined,
+    reliabilityHeatmap: sections.reliabilityHeatmap ? assessment.reliabilityHeatmap : undefined,
+    analyticLedger: sections.analyticLedger ? assessment.analyticLedger : undefined,
     hypotheses: sections.hypotheses ? assessment.hypotheses : undefined,
     contradictions: sections.contradictions ? assessment.contradictoryEvidence : undefined,
     gaps: sections.gaps ? assessment.gaps : undefined,
@@ -107,7 +119,7 @@ export function generateIntelligenceMarkdown(
   results: ScanResult[],
   sections: IntelligenceExportSelection
 ): string {
-  const a = buildIntelligenceAssessment(results);
+  const a = buildIntelligenceAssessment(results, target || 'target');
   const lines: string[] = [
     '# MINEIRO — OPEN-SOURCE INTELLIGENCE ASSESSMENT',
     '',
@@ -139,6 +151,29 @@ export function generateIntelligenceMarkdown(
     a.evidence.forEach((e) => lines.push(`| ${e.platformName} | ${e.status} | ${e.detectorConfidence} | ${e.observationConfidence} | ${e.correlationConfidence} | ${e.analyticalValue} |`));
     lines.push('');
   }
+  if (sections.correlationGraph) {
+    lines.push('## Correlation Graph', '');
+    a.graph.edges.forEach((edge) => {
+      const source = a.graph.nodes.find((node) => node.id === edge.source)?.label || edge.source;
+      const targetNode = a.graph.nodes.find((node) => node.id === edge.target)?.label || edge.target;
+      lines.push(`- ${source} —[${edge.relationship} / ${edge.confidence}]→ ${targetNode}`);
+    });
+    lines.push('');
+  }
+  if (sections.timeline) {
+    lines.push('## Observation Timeline', '');
+    a.timeline.forEach((event) => lines.push(`- ${event.observedAt} · ${event.platformName} · ${event.label}`));
+    lines.push('');
+  }
+  if (sections.analyticLedger) {
+    lines.push('## Analytic Ledger', '');
+    a.analyticLedger.forEach((entry) => {
+      lines.push(`### ${entry.id} — ${entry.confidence}`, entry.claim, '');
+      lines.push(`Supporting evidence: ${entry.supportingEvidenceIds.join(', ') || 'none'}`);
+      lines.push(`Contradictory evidence: ${entry.contradictoryEvidenceIds.join(', ') || 'none'}`, '');
+    });
+  }
+
   if (sections.hypotheses) {
     lines.push('## Hypotheses', '');
     a.hypotheses.forEach((h) => lines.push(`### ${h.id} — ${h.confidence}`, h.statement, '', `Caveat: ${h.caveat}`, ''));
@@ -173,7 +208,7 @@ export function generateIntelligenceMarkdown(
 }
 
 export function generateEvidenceCsv(target: string, results: ScanResult[]): string {
-  const a = buildIntelligenceAssessment(results);
+  const a = buildIntelligenceAssessment(results, target || 'target');
   const header = [
     'target','evidence_id','platform','category','status','detector_confidence',
     'observation_confidence','correlation_confidence','analytical_value','url'
@@ -191,7 +226,7 @@ export function generateIntelligenceHtml(
   results: ScanResult[],
   sections: IntelligenceExportSelection
 ): string {
-  const a = buildIntelligenceAssessment(results);
+  const a = buildIntelligenceAssessment(results, target || 'target');
   const high = a.evidence.filter((e) => e.status === 'found' && e.analyticalValue === 'HIGH');
   const blocks: string[] = [];
 
@@ -201,6 +236,16 @@ export function generateIntelligenceHtml(
   if (sections.evidenceMatrix) {
     blocks.push(`<section><div class="eyebrow">02 · EVIDENCE</div><h2>Evidence matrix</h2><div class="table"><div class="tr th"><span>Finding</span><span>Detector</span><span>Observation</span><span>Correlation</span><span>Value</span></div>${a.evidence.map(e => `<div class="tr"><span><b>${escapeHtml(e.platformName)}</b><small>${escapeHtml(e.category)} · ${escapeHtml(e.status)}</small><small>${escapeHtml(e.url)}</small></span><span>${e.detectorConfidence}</span><span>${e.observationConfidence}</span><span>${e.correlationConfidence}</span><span>${escapeHtml(e.analyticalValue)}</span></div>`).join('')}</div></section>`);
   }
+  if (sections.correlationGraph) {
+    blocks.push(`<section><div class="eyebrow">03 · CORRELATION</div><h2>Correlation graph</h2><div class="cards">${a.graph.edges.slice(0,20).map(edge=>{const source=a.graph.nodes.find(n=>n.id===edge.source)?.label||edge.source;const target=a.graph.nodes.find(n=>n.id===edge.target)?.label||edge.target;return `<article class="card"><b>${escapeHtml(source)} → ${escapeHtml(target)}</b><p>${escapeHtml(edge.relationship)} · confidence ${edge.confidence}</p><small>${escapeHtml(edge.evidenceId||'')}</small></article>`}).join('')}</div></section>`);
+  }
+  if (sections.timeline) {
+    blocks.push(`<section><div class="eyebrow">04 · TIMELINE</div><h2>Observation timeline</h2>${a.timeline.slice(-20).map(event=>`<article class="row"><b>${escapeHtml(new Date(event.observedAt).toLocaleString())}</b><div><strong>${escapeHtml(event.platformName)}</strong><p>${escapeHtml(event.label)}</p></div></article>`).join('')}</section>`);
+  }
+  if (sections.analyticLedger) {
+    blocks.push(`<section><div class="eyebrow">05 · ANALYTIC LEDGER</div><h2>Traceable analytical claims</h2>${a.analyticLedger.map(entry=>`<article class="row"><b>${escapeHtml(entry.id)}</b><div><strong>${escapeHtml(entry.claim)}</strong><p>Confidence: ${escapeHtml(entry.confidence)} · Supporting: ${escapeHtml(entry.supportingEvidenceIds.join(', ')||'none')} · Contradictory: ${escapeHtml(entry.contradictoryEvidenceIds.join(', ')||'none')}</p></div></article>`).join('')}</section>`);
+  }
+
   if (sections.hypotheses || sections.contradictions) {
     blocks.push(`<section><div class="eyebrow">03 · HYPOTHESES</div><h2>Hypotheses & contradictions</h2><div class="cards">${sections.hypotheses ? a.hypotheses.map(h=>`<article class="card"><b>${h.id} · ${h.confidence}</b><p>${escapeHtml(h.statement)}</p><small>${escapeHtml(h.caveat)}</small></article>`).join('') : ''}${sections.contradictions ? `<article class="card"><b>Evidence against correlation</b>${a.contradictoryEvidence.length ? a.contradictoryEvidence.map(x=>`<p>• ${escapeHtml(x)}</p>`).join('') : '<p>No explicit contradiction observed. This is not confirmation.</p>'}</article>` : ''}</div></section>`);
   }

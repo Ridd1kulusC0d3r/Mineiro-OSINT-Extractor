@@ -27,6 +27,7 @@ interface IntelligenceReportViewProps {
 const sectionLinks = [
   ['assessment', 'Assessment'],
   ['evidence', 'Evidence'],
+  ['correlation', 'Correlation'],
   ['hypotheses', 'Hypotheses'],
   ['pivots', 'Pivots'],
   ['gaps', 'Gaps'],
@@ -93,7 +94,7 @@ export function IntelligenceReportView({
   aiApiKey,
   aiModel,
 }: IntelligenceReportViewProps) {
-  const report = useMemo(() => buildIntelligenceAssessment(results), [results]);
+  const report = useMemo(() => buildIntelligenceAssessment(results, target || 'target'), [results, target]);
   const highValue = report.evidence.filter((item) => item.analyticalValue === 'HIGH' && item.status === 'found');
   const uncertain = report.collection.uncertain + report.collection.rateLimited + report.collection.errors;
   const assessmentConfidence =
@@ -231,7 +232,7 @@ export function IntelligenceReportView({
                     <CircleDot className="h-3.5 w-3.5 text-[#cfd3d7]" />
                     <span className="font-medium text-[#f1f2f3]">{item.platformName}</span>
                   </div>
-                  <div className="mt-1 text-xs text-[#828a94]">{item.category} · {item.status}</div>
+                  <div className="mt-1 text-xs text-[#828a94]">{item.category} · {item.status} · source {item.sourceQuality} · IPS {item.intelligencePriorityScore}</div>
                 </div>
                 <div><span className="md:hidden text-xs text-[#737b85]">Detector · </span><span className="tabular-nums text-[#dadddf]">{item.detectorConfidence}</span></div>
                 <div><span className="md:hidden text-xs text-[#737b85]">Observation · </span><span className="tabular-nums text-[#dadddf]">{item.observationConfidence}</span></div>
@@ -243,9 +244,88 @@ export function IntelligenceReportView({
         </div>
       </section>
 
-      <section id="intel-hypotheses" className="scroll-mt-36 py-14 border-b border-[#20252a]">
+      <section id="intel-correlation" className="scroll-mt-36 py-14 border-b border-[#20252a]">
         <SectionHeading
           index="03"
+          eyebrow="Correlation"
+          title="Relações observadas e timeline"
+          description="O grafo mostra relações públicas observadas. SAME_HANDLE continua sendo sinal de correlação, não prova de identidade."
+        />
+
+        <div className="mt-8 grid gap-5 lg:grid-cols-[1.05fr_.95fr]">
+          <div className="rounded-[24px] border border-[#2b3035] bg-[#101316] p-6">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <div className="text-[11px] uppercase tracking-[0.16em] text-[#858c95]">Correlation graph</div>
+                <div className="mt-2 text-sm text-[#969da6]">{report.graph.nodes.length} nodes · {report.graph.edges.length} edges</div>
+              </div>
+              <Band value="PUBLIC EVIDENCE" />
+            </div>
+
+            <div className="mt-6 space-y-3">
+              {report.graph.edges.slice(0, 10).map((edge) => {
+                const source = report.graph.nodes.find((node) => node.id === edge.source);
+                const targetNode = report.graph.nodes.find((node) => node.id === edge.target);
+                return (
+                  <div key={edge.id} className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 rounded-xl border border-[#282e33] px-4 py-3 text-sm">
+                    <span className="truncate text-[#d9dde1]">{source?.label || edge.source}</span>
+                    <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#747c85]">
+                      {edge.relationship} · {edge.confidence}
+                    </span>
+                    <span className="truncate text-right text-[#d9dde1]">{targetNode?.label || edge.target}</span>
+                  </div>
+                );
+              })}
+              {!report.graph.edges.length && (
+                <p className="text-sm text-[#7e8690]">Nenhuma relação positiva foi observada na coleta atual.</p>
+              )}
+            </div>
+          </div>
+
+          <div className="rounded-[24px] border border-[#2b3035] bg-[#101316] p-6">
+            <div className="text-[11px] uppercase tracking-[0.16em] text-[#858c95]">Observation timeline</div>
+            <div className="mt-5 space-y-4">
+              {report.timeline.slice(-8).map((event) => (
+                <div key={event.id} className="grid grid-cols-[92px_1fr] gap-4 border-b border-[#262b30] pb-4 last:border-0">
+                  <span className="font-mono text-[10px] text-[#737b84]">
+                    {new Date(event.observedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                  <div>
+                    <div className="text-sm text-[#e1e4e7]">{event.platformName}</div>
+                    <div className="mt-1 text-xs leading-relaxed text-[#858d96]">{event.label}</div>
+                  </div>
+                </div>
+              ))}
+              {!report.timeline.length && <p className="text-sm text-[#7e8690]">Timeline disponível após a coleta.</p>}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-5 rounded-[24px] border border-[#2b3035] bg-[#101316] p-6">
+          <div className="text-[11px] uppercase tracking-[0.16em] text-[#858c95]">Reliability heatmap</div>
+          <div className="mt-5 overflow-x-auto">
+            <table className="w-full min-w-[520px] text-sm">
+              <thead className="text-left text-[10px] uppercase tracking-[0.15em] text-[#737b84]">
+                <tr><th className="pb-3">Cluster</th><th className="pb-3">High</th><th className="pb-3">Medium</th><th className="pb-3">Low</th></tr>
+              </thead>
+              <tbody className="divide-y divide-[#262b30]">
+                {report.reliabilityHeatmap.map((cell) => (
+                  <tr key={cell.category}>
+                    <td className="py-3 text-[#dfe2e5]">{cell.category}</td>
+                    <td className="py-3 tabular-nums text-[#dfe2e5]">{cell.high}</td>
+                    <td className="py-3 tabular-nums text-[#9ba2aa]">{cell.medium}</td>
+                    <td className="py-3 tabular-nums text-[#7c848d]">{cell.low}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="intel-hypotheses" className="scroll-mt-36 py-14 border-b border-[#20252a]">
+        <SectionHeading
+          index="04"
           eyebrow="Hypotheses"
           title="Hipóteses e contradições"
           description="A hipótese principal só é útil quando a hipótese alternativa continua visível e as evidências contra ela não somem por conveniência."
@@ -283,7 +363,7 @@ export function IntelligenceReportView({
 
       <section id="intel-pivots" className="scroll-mt-36 py-14 border-b border-[#20252a]">
         <SectionHeading
-          index="04"
+          index="05"
           eyebrow="Action"
           title="Próximos pivôs"
           description="Colete menos por impulso e mais por valor esperado. Cada pivô deve existir porque resolve uma pergunta, não porque a internet ainda tem páginas."
@@ -308,7 +388,7 @@ export function IntelligenceReportView({
 
       <section id="intel-gaps" className="scroll-mt-36 py-14 border-b border-[#20252a]">
         <SectionHeading
-          index="05"
+          index="06"
           eyebrow="Gaps"
           title="O que ainda não sabemos"
           description="Uma boa avaliação mostra o que falta. Um relatório que só parece confiante está vendendo decoração."
@@ -338,7 +418,7 @@ export function IntelligenceReportView({
 
       <section className="py-14 border-b border-[#20252a]">
         <SectionHeading
-          index="06"
+          index="07"
           eyebrow="AI Assist"
           title="Copiloto analítico"
           description="IA opcional para triagem de evidências, gaps e contradições. A camada determinística continua sendo a fonte de verdade."
@@ -350,7 +430,7 @@ export function IntelligenceReportView({
 
       <section id="intel-method" className="scroll-mt-36 py-14">
         <SectionHeading
-          index="07"
+          index="08"
           eyebrow="Method"
           title="Como esta avaliação foi construída"
           description="Collection, evidence, correlation e assessment são camadas diferentes. O relatório mantém essa separação para evitar certeza artificial."
