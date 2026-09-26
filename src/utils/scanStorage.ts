@@ -205,35 +205,26 @@ export function clearCachedInvestigations(): void {
  * with a reliable deterministic bitwise fallback.
  */
 export async function computeSha256(message: string): Promise<string> {
-  try {
-    if (typeof window !== 'undefined' && window.crypto && window.crypto.subtle) {
-      const msgBuffer = new TextEncoder().encode(message);
-      const hashBuffer = await window.crypto.subtle.digest('SHA-256', msgBuffer);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
-    }
-  } catch {
-    // fallback
+  const cryptoApi =
+    typeof globalThis !== 'undefined' &&
+    globalThis.crypto &&
+    globalThis.crypto.subtle
+      ? globalThis.crypto
+      : null;
+
+  if (!cryptoApi) {
+    throw new Error('SHA-256 is unavailable in this runtime. Integrity snapshot was not generated.');
   }
 
-  // Fallback 64-character deterministic pseudo-SHA256 digest
-  let hash1 = 0x811c9dc5;
-  let hash2 = 0x55555555;
-  for (let i = 0; i < message.length; i++) {
-    const code = message.charCodeAt(i);
-    hash1 ^= code;
-    hash1 = Math.imul(hash1, 0x01000193);
-    hash2 = (hash2 << 5) - hash2 + code;
-    hash2 |= 0;
-  }
-  const h1 = (hash1 >>> 0).toString(16).padStart(8, '0');
-  const h2 = (hash2 >>> 0).toString(16).padStart(8, '0');
-  return (h1 + h2).repeat(4).substring(0, 64);
+  const msgBuffer = new TextEncoder().encode(message);
+  const hashBuffer = await cryptoApi.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 /**
- * Generates a timestamped, cryptographically-signed summary block within the local
- * investigation history that can be appended to future forensic exports.
+ * Generates a timestamped local integrity snapshot. This verifies exported state
+ * integrity; it does not prove authorship, identity, or legal chain of custody.
  */
 export async function takeInvestigationSnapshot(payload: {
   target: string;
@@ -281,7 +272,7 @@ export async function takeInvestigationSnapshot(payload: {
 
   const summaryBlockText = [
     `-----BEGIN MINEIRO FORENSIC SNAPSHOT BLOCK-----`,
-    `Version: 1.0 (OSINT Cryptographic Chain of Custody)`,
+    `Version: 1.1 (Local OSINT Integrity Snapshot)`,
     `Snapshot ID:      ${shortId}`,
     `Target:           @${cleanTarget} [${payload.targetType.toUpperCase()}]`,
     `Timestamp:        ${timestamp}`,
@@ -291,8 +282,8 @@ export async function takeInvestigationSnapshot(payload: {
     `Archetype:        ${payload.aiProfile?.archetype || 'Standard Moniker Profile'}`,
     `Threat Level:     ${payload.aiProfile?.threatLevel || 'Evaluated'}`,
     `Summary SHA256:   ${summaryHash}`,
-    `Signature:        ${signature}`,
-    `Status:           CRYPTOGRAPHICALLY CORROBORATED & SECURE`,
+    `Integrity Seal:   ${signature}`,
+    `Status:           LOCAL INTEGRITY SNAPSHOT / SHA-256`,
     `-----END MINEIRO FORENSIC SNAPSHOT BLOCK-----`,
   ].join('\n');
 
