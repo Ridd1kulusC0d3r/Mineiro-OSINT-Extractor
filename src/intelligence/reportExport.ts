@@ -57,7 +57,7 @@ export function buildIntelligenceBundle(
   results: ScanResult[],
   sections: IntelligenceExportSelection
 ) {
-  const assessment = buildIntelligenceAssessment(results);
+  const assessment = buildIntelligenceAssessment(results, target || 'target');
   const included = Object.entries(sections).filter(([, enabled]) => enabled).map(([key]) => key);
   const excluded = Object.entries(sections).filter(([, enabled]) => !enabled).map(([key]) => key);
 
@@ -119,7 +119,7 @@ export function generateIntelligenceMarkdown(
   results: ScanResult[],
   sections: IntelligenceExportSelection
 ): string {
-  const a = buildIntelligenceAssessment(results);
+  const a = buildIntelligenceAssessment(results, target || 'target');
   const lines: string[] = [
     '# MINEIRO — OPEN-SOURCE INTELLIGENCE ASSESSMENT',
     '',
@@ -208,7 +208,7 @@ export function generateIntelligenceMarkdown(
 }
 
 export function generateEvidenceCsv(target: string, results: ScanResult[]): string {
-  const a = buildIntelligenceAssessment(results);
+  const a = buildIntelligenceAssessment(results, target || 'target');
   const header = [
     'target','evidence_id','platform','category','status','detector_confidence',
     'observation_confidence','correlation_confidence','analytical_value','url'
@@ -226,7 +226,7 @@ export function generateIntelligenceHtml(
   results: ScanResult[],
   sections: IntelligenceExportSelection
 ): string {
-  const a = buildIntelligenceAssessment(results);
+  const a = buildIntelligenceAssessment(results, target || 'target');
   const high = a.evidence.filter((e) => e.status === 'found' && e.analyticalValue === 'HIGH');
   const blocks: string[] = [];
 
