@@ -760,10 +760,7 @@ async function generateDossierWithGemini(
 // Endpoint to validate a personal Gemini API key or check system key status
 app.post('/api/osint/gemini-validate', async (req, res) => {
   const customKey = req.body.apiKey || (req.headers['x-gemini-api-key'] as string);
-  const deprecated = ['gemini-1.5-flash', 'gemini-1.5-pro', 'gemini-2.0-flash', 'gemini-2.0-pro', 'gemini-2.5-flash'];
-  const selectedModel = req.body.model && !deprecated.includes(req.body.model.trim())
-    ? req.body.model.trim()
-    : 'gemini-3.8-flash';
+  const selectedModel = normalizeCopilotModel(req.body.model);
 
   const clientInfo = getGenAiClient(customKey);
   if (!clientInfo) {
@@ -771,6 +768,7 @@ app.post('/api/osint/gemini-validate', async (req, res) => {
       valid: false,
       isConfigured: false,
       message: 'No API key provided or found in environment.',
+      supportedModels: [...COPILOT_MODELS],
     });
   }
 
@@ -778,26 +776,31 @@ app.post('/api/osint/gemini-validate', async (req, res) => {
     const response = await withTimeout(
       clientInfo.client.models.generateContent({
         model: selectedModel,
-        contents: 'Respond with JSON: {"status": "ok", "service": "gemini"}',
-        config: { responseMimeType: 'application/json' },
+        contents: 'Respond with JSON: {"status":"ok","service":"gemini"}',
+        config: { responseMimeType: 'application/json', temperature: 0 },
       }),
-      6000
+      8000
     );
 
+    const parsed = parseCleanJson(response.text || '{}');
     return res.json({
-      valid: true,
+      valid: parsed?.status === 'ok',
       isConfigured: true,
       isCustom: clientInfo.isCustom,
       modelTested: selectedModel,
-      message: 'Gemini API key is active and responding successfully!',
+      message: 'Gemini is configured and responding.',
+      supportedModels: [...COPILOT_MODELS],
       timestamp: new Date().toISOString(),
     });
-  } catch (err: any) {
+  } catch (error) {
     return res.status(400).json({
       valid: false,
       isConfigured: true,
       isCustom: clientInfo.isCustom,
-      error: err.message || 'Failed to authenticate with Gemini API',
+      modelTested: selectedModel,
+      errorType: classifyGeminiError(error),
+      error: error instanceof Error ? error.message : 'Failed to validate Gemini connection',
+      supportedModels: [...COPILOT_MODELS],
     });
   }
 });
