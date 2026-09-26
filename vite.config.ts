@@ -18,6 +18,13 @@ export default defineConfig(() => {
     server: {
       host: '0.0.0.0',
       port: 3000,
+      // Google Colab proxies the app through an internal codatalab hostname.
+      // Keep the allow-list narrow instead of using allowedHosts: true.
+      allowedHosts: [
+        'localhost',
+        '127.0.0.1',
+        '.codatalab-user-runtimes.internal',
+      ],
       // HMR is disabled in some hosted environments via DISABLE_HMR.
       // Do not modify - file watching is disabled to prevent flickering during agent edits.
       hmr: process.env.DISABLE_HMR !== 'true',
