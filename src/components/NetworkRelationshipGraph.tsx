@@ -462,7 +462,7 @@ export function NetworkRelationshipGraph({
           type: 'linkage',
           similarity: perm.similarityScore,
           radius: permRadius,
-          color: '#F5F5F5', // Mineiro Username Extractor Neutral Light
+          color: '#F5F5F5', // Mineiro Username Intelligence Neutral Light
           details: `Permutation: ${perm.reason} [${perm.similarityScore}% similarity]`,
           profileCompleteness: perm.similarityScore,
           activityDensity: Math.round(perm.similarityScore * 0.8),
@@ -487,7 +487,7 @@ export function NetworkRelationshipGraph({
           type: 'email',
           similarity: ec.similarityScore,
           radius: emailRadius,
-          color: '#FFFFFF', // Mineiro Username Extractor Cyan Signal
+          color: '#FFFFFF', // Mineiro Username Intelligence Cyan Signal
           details: `Email Correlation: ${ec.reason}`,
           profileCompleteness: ec.similarityScore,
           activityDensity: Math.round(ec.similarityScore * 0.85),
