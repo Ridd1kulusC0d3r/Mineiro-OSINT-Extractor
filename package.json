@@ -1,7 +1,7 @@
 {
-  "name": "mineiro-username-extractor",
+  "name": "mineiro-username-intelligence",
   "private": false,
-  "version": "1.4.2",
+  "version": "1.4.3",
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
@@ -45,5 +45,5 @@
     "typescript": "~5.8.2",
     "vite": "^6.2.3"
   },
-  "description": "OSINT intelligence workbench for public-presence collection, evidence review, cautious correlation and auditable local reporting."
+  "description": "OSINT Investigation Workbench for public username presence, evidence review, cautious correlation and auditable local reporting."
 }
