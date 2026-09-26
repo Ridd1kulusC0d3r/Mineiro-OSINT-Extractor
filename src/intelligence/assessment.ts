@@ -9,6 +9,12 @@ import type {
   IntelligencePivot,
   KeyJudgment,
   PriorityBand,
+  SourceQualityGrade,
+  AnalyticLedgerEntry,
+  IntelligenceTimelineEvent,
+  CorrelationGraphNode,
+  CorrelationGraphEdge,
+  ReliabilityHeatmapCell,
 } from './types';
 
 function clamp(value: number, min = 0, max = 100): number {
@@ -19,6 +25,19 @@ function confidenceBand(score: number): ConfidenceBand {
   if (score >= 80) return 'HIGH';
   if (score >= 55) return 'MODERATE';
   return 'LOW';
+}
+
+
+function sourceQualityGrade(result: ScanResult): SourceQualityGrade {
+  const detector = result.detectorReliability ?? 50;
+  const observation = result.confidenceScore ?? 40;
+  const evidenceCount = result.evidenceSignals?.length ?? 0;
+
+  if (detector >= 90 && observation >= 85 && evidenceCount >= 3) return 'A';
+  if (detector >= 80 && observation >= 75) return 'B';
+  if (detector >= 65 && observation >= 55) return 'C';
+  if (result.status === 'uncertain' || result.status === 'rate_limited') return 'D';
+  return 'E';
 }
 
 function priorityBand(score: number): PriorityBand {
@@ -72,7 +91,16 @@ function buildEvidence(results: ScanResult[]): EvidenceAssessment[] {
         evidenceRatio * 100 * 0.25 +
         categoryCorroboration * 100 * 0.15
       );
-      const valueScore = clamp(detector * 0.35 + observation * 0.35 + correlation * 0.3);
+      const evidenceQuality = evidenceRatio * 100;
+      const novelty = foundCategories.get(r.category) === 1 ? 85 : 60;
+      const relevance = r.status === 'found' ? 85 : 35;
+      const priorityScore = clamp(
+        evidenceQuality * 0.32 +
+        correlation * 0.34 +
+        novelty * 0.14 +
+        relevance * 0.2
+      );
+      const valueScore = clamp(detector * 0.3 + observation * 0.3 + correlation * 0.25 + priorityScore * 0.15);
 
       return {
         id: `E-${r.platformId}`,
@@ -85,6 +113,9 @@ function buildEvidence(results: ScanResult[]): EvidenceAssessment[] {
         observationConfidence: observation,
         correlationConfidence: correlation,
         analyticalValue: priorityBand(valueScore),
+        intelligencePriorityScore: priorityScore,
+        sourceQuality: sourceQualityGrade(r),
+        observedAt: r.checkedAt,
         evidenceSignals: r.evidenceSignals || [],
         whyItMatters:
           r.status === 'found'
@@ -266,13 +297,114 @@ function buildPivots(
   return pivots;
 }
 
-export function buildIntelligenceAssessment(results: ScanResult[]): IntelligenceAssessment {
+
+function buildReliabilityHeatmap(results: ScanResult[]): ReliabilityHeatmapCell[] {
+  const map = new Map<string, ReliabilityHeatmapCell>();
+  results.filter((r) => r.status === 'found').forEach((r) => {
+    const current = map.get(r.category) || { category: r.category, high: 0, medium: 0, low: 0 };
+    const detector = r.detectorReliability ?? 50;
+    const observation = r.confidenceScore ?? 50;
+    const combined = detector * 0.5 + observation * 0.5;
+    if (combined >= 80) current.high += 1;
+    else if (combined >= 55) current.medium += 1;
+    else current.low += 1;
+    map.set(r.category, current);
+  });
+  return [...map.values()].sort((a, b) => (b.high * 3 + b.medium * 2 + b.low) - (a.high * 3 + a.medium * 2 + a.low));
+}
+
+function buildTimeline(results: ScanResult[]): IntelligenceTimelineEvent[] {
+  const now = new Date().toISOString();
+  return results
+    .filter((r) => r.status === 'found' || r.status === 'uncertain')
+    .map((r, index) => ({
+      id: `T-${String(index + 1).padStart(3, '0')}`,
+      observedAt: r.checkedAt || now,
+      type: r.status === 'found' ? 'PUBLIC_PROFILE_SIGNAL' as const : 'SCAN_OBSERVATION' as const,
+      platformName: r.platformName,
+      label: r.status === 'found'
+        ? `Public profile signal observed on ${r.platformName}`
+        : `Inconclusive observation on ${r.platformName}`,
+      evidenceId: `E-${r.platformId}`,
+    }))
+    .sort((a, b) => a.observedAt.localeCompare(b.observedAt));
+}
+
+function buildCorrelationGraph(results: ScanResult[], targetLabel = 'target'): {
+  nodes: CorrelationGraphNode[];
+  edges: CorrelationGraphEdge[];
+} {
+  const nodes = new Map<string, CorrelationGraphNode>();
+  const edges: CorrelationGraphEdge[] = [];
+  nodes.set('target', { id: 'target', type: 'TARGET', label: targetLabel });
+
+  results.filter((r) => r.status === 'found').forEach((r) => {
+    const profileId = `profile:${r.platformId}`;
+    nodes.set(profileId, { id: profileId, type: 'PROFILE', label: r.platformName });
+    edges.push({
+      id: `edge:target:${r.platformId}`,
+      source: 'target',
+      target: profileId,
+      relationship: 'SAME_HANDLE',
+      confidence: clamp((r.detectorReliability ?? 50) * 0.45 + (r.confidenceScore ?? 50) * 0.55),
+      evidenceId: `E-${r.platformId}`,
+    });
+
+    for (const rawLink of r.metadata?.extractedLinks || []) {
+      try {
+        const parsed = new URL(rawLink);
+        const domainId = `domain:${parsed.hostname.toLowerCase()}`;
+        nodes.set(domainId, { id: domainId, type: 'DOMAIN', label: parsed.hostname.toLowerCase() });
+        edges.push({
+          id: `edge:${r.platformId}:${parsed.hostname.toLowerCase()}`,
+          source: profileId,
+          target: domainId,
+          relationship: 'LINKS_TO',
+          confidence: 85,
+          evidenceId: `E-${r.platformId}`,
+        });
+      } catch {
+        // Ignore malformed public links instead of inventing entities.
+      }
+    }
+  });
+
+  return { nodes: [...nodes.values()], edges };
+}
+
+function buildAnalyticLedger(
+  judgments: KeyJudgment[],
+  evidence: EvidenceAssessment[],
+  contradictions: string[],
+  generatedAt: string
+): AnalyticLedgerEntry[] {
+  const strongIds = evidence
+    .filter((e) => e.status === 'found' && e.analyticalValue === 'HIGH')
+    .map((e) => e.id);
+
+  return judgments.map((judgment, index) => ({
+    id: `A-${String(index + 1).padStart(3, '0')}`,
+    claim: judgment.text,
+    confidence: judgment.confidence,
+    supportingEvidenceIds: index === 0 ? strongIds.slice(0, 12) : evidence.slice(0, 6).map((e) => e.id),
+    contradictoryEvidenceIds: contradictions.map((_, i) => `C-${String(i + 1).padStart(3, '0')}`),
+    generatedAt,
+  }));
+}
+
+export function buildIntelligenceAssessment(results: ScanResult[], targetLabel = 'target'): IntelligenceAssessment {
   const collection = calculateCollectionCoverage(results);
   const evidence = buildEvidence(results);
   const clusters = buildClusters(results);
   const contradictoryEvidence = buildContradictions(results);
   const gaps = buildGaps(collection, evidence);
   const pivots = buildPivots(evidence, collection, contradictoryEvidence);
+  const generatedAt = new Date().toISOString();
+  const judgments = buildJudgments(collection, evidence, clusters);
+  const timeline = buildTimeline(results);
+  const graph = buildCorrelationGraph(results, targetLabel);
+  const reliabilityHeatmap = buildReliabilityHeatmap(results);
+  const analyticLedger = buildAnalyticLedger(judgments, evidence, contradictoryEvidence, generatedAt);
 
   const strongEvidence = evidence.filter((e) => e.status === 'found' && e.analyticalValue === 'HIGH');
   const supportingEvidence = strongEvidence.map(
@@ -280,9 +412,9 @@ export function buildIntelligenceAssessment(results: ScanResult[]): Intelligence
   );
 
   return {
-    generatedAt: new Date().toISOString(),
+    generatedAt,
     collection,
-    judgments: buildJudgments(collection, evidence, clusters),
+    judgments,
     evidence,
     clusters,
     hypotheses: [
@@ -317,9 +449,14 @@ export function buildIntelligenceAssessment(results: ScanResult[]): Intelligence
     stopCondition:
       'Stop expanding collection when new public findings no longer materially change the key judgments or resolve an identified intelligence gap.',
     sourceQualityNotes: [
+      'Grade A/B findings are structurally stronger than generic search/index hits.',
       'Direct self-declared cross-links should receive more analytical weight than username reuse alone.',
       'Search/index hits and generic 200 responses should receive less weight than stable profile endpoints.',
       'AI-generated synthesis must remain a hypothesis layer and must not increase factual confidence without new evidence.',
     ],
+    analyticLedger,
+    timeline,
+    graph,
+    reliabilityHeatmap,
   };
 }
