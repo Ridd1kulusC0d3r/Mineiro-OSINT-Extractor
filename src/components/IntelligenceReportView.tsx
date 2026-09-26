@@ -436,7 +436,7 @@ export function IntelligenceReportView({
 
       <section className="py-14">
         <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-[#858d96]"><FileSearch className="h-4 w-4" /> AI ASSIST · OPTIONAL</div>
-        <div className="mt-6"><AiAnalystPanel target={target} results={results} apiKey={aiApiKey} model={aiModel} /></div>
+        <div className="mt-6"><AiAnalystPanel target={target} results={results} apiKey={aiApiKey} model={aiModel} requirement={requirement} /></div>
         <button type="button" onClick={onViewTable} className="mt-8 inline-flex items-center gap-2 text-sm text-[#c5cad0] hover:text-white">Abrir trilha completa de evidências <ChevronRight className="h-4 w-4" /></button>
       </section>
     </article>
