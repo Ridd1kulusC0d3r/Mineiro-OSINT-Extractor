@@ -1,21 +1,28 @@
-import type { ScanResult } from '../types';
+import type { Category, ScanResult } from '../types';
 import type {
+  AnalyticHypothesis,
+  AnalyticLedgerEntry,
   CollectionCoverage,
   ConfidenceBand,
+  CorrelationGraphEdge,
+  CorrelationGraphNode,
   EvidenceAssessment,
   FootprintCluster,
   IntelligenceAssessment,
   IntelligenceGap,
   IntelligencePivot,
+  IntelligenceRequirement,
+  IntelligenceTimelineEvent,
   KeyJudgment,
   PriorityBand,
-  SourceQualityGrade,
-  AnalyticLedgerEntry,
-  IntelligenceTimelineEvent,
-  CorrelationGraphNode,
-  CorrelationGraphEdge,
+  ProvenanceGraphEdge,
+  ProvenanceGraphNode,
+  ProvenanceType,
   ReliabilityHeatmapCell,
+  SourceQualityGrade,
+  TechnicalAppendix,
 } from './types';
+import { INTELLIGENCE_REQUIREMENT_LABELS } from './types';
 
 function clamp(value: number, min = 0, max = 100): number {
   return Math.max(min, Math.min(max, Math.round(value)));
@@ -27,23 +34,43 @@ function confidenceBand(score: number): ConfidenceBand {
   return 'LOW';
 }
 
+function priorityBand(score: number): PriorityBand {
+  if (score >= 78) return 'HIGH';
+  if (score >= 50) return 'MEDIUM';
+  return 'LOW';
+}
+
+function requirementRelevance(category: Category, requirement: IntelligenceRequirement): number {
+  if (requirement === 'username_presence') return 75;
+  if (requirement === 'account_correlation') return 85;
+  if (requirement === 'digital_footprint') return 82;
+  if (requirement === 'developer_footprint') {
+    return category === 'developer' || category === 'security' ? 98 : category === 'community' ? 60 : 35;
+  }
+  if (requirement === 'threat_research_alias') {
+    return category === 'security' || category === 'developer' || category === 'community' ? 92 : 45;
+  }
+  if (requirement === 'brand_impersonation') {
+    return category === 'social' || category === 'community' || category === 'media' ? 95 : 45;
+  }
+  return 70;
+}
 
 function sourceQualityGrade(result: ScanResult): SourceQualityGrade {
   const detector = result.detectorReliability ?? 50;
   const observation = result.confidenceScore ?? 40;
-  const evidenceCount = result.evidenceSignals?.length ?? 0;
+  const signalCount = result.evidenceSignals?.length ?? 0;
+  const selfDeclared = Boolean(result.metadata?.extractedLinks?.length || result.metadata?.displayName);
 
-  if (detector >= 90 && observation >= 85 && evidenceCount >= 3) return 'A';
+  if (selfDeclared && detector >= 90 && observation >= 85 && signalCount >= 3) return 'A';
   if (detector >= 80 && observation >= 75) return 'B';
   if (detector >= 65 && observation >= 55) return 'C';
   if (result.status === 'uncertain' || result.status === 'rate_limited') return 'D';
   return 'E';
 }
 
-function priorityBand(score: number): PriorityBand {
-  if (score >= 78) return 'HIGH';
-  if (score >= 50) return 'MEDIUM';
-  return 'LOW';
+function provenanceOf(result: ScanResult): ProvenanceType {
+  return result.provenanceType === 'EXTERNAL' ? 'EXTERNAL' : 'PRIMARY';
 }
 
 export function calculateCollectionCoverage(results: ScanResult[]): CollectionCoverage {
@@ -56,7 +83,6 @@ export function calculateCollectionCoverage(results: ScanResult[]): CollectionCo
   const pending = results.filter((r) => r.status === 'pending' || r.status === 'scanning').length;
   const completed = requested - pending;
   const conclusive = found + absent;
-
   return {
     requested,
     completed,
@@ -66,11 +92,15 @@ export function calculateCollectionCoverage(results: ScanResult[]): CollectionCo
     rateLimited,
     errors,
     pending,
+    blockedOrInconclusive: uncertain + rateLimited + errors,
     effectiveCoveragePercent: requested ? clamp((conclusive / requested) * 100) : 0,
   };
 }
 
-function buildEvidence(results: ScanResult[]): EvidenceAssessment[] {
+function buildEvidence(
+  results: ScanResult[],
+  requirement: IntelligenceRequirement
+): EvidenceAssessment[] {
   const foundCategories = new Map<string, number>();
   results.filter((r) => r.status === 'found').forEach((r) => {
     foundCategories.set(r.category, (foundCategories.get(r.category) || 0) + 1);
@@ -86,21 +116,27 @@ function buildEvidence(results: ScanResult[]): EvidenceAssessment[] {
         : 0.5;
       const categoryCorroboration = Math.min(1, (foundCategories.get(r.category) || 0) / 4);
       const correlation = clamp(
-        detector * 0.25 +
-        observation * 0.35 +
-        evidenceRatio * 100 * 0.25 +
-        categoryCorroboration * 100 * 0.15
+        detector * 0.24 +
+        observation * 0.34 +
+        evidenceRatio * 100 * 0.24 +
+        categoryCorroboration * 100 * 0.18
       );
-      const evidenceQuality = evidenceRatio * 100;
+      const relevance = requirementRelevance(r.category, requirement);
       const novelty = foundCategories.get(r.category) === 1 ? 85 : 60;
-      const relevance = r.status === 'found' ? 85 : 35;
+      const evidenceQuality = evidenceRatio * 100;
       const priorityScore = clamp(
-        evidenceQuality * 0.32 +
-        correlation * 0.34 +
+        evidenceQuality * 0.28 +
+        correlation * 0.30 +
         novelty * 0.14 +
-        relevance * 0.2
+        relevance * 0.28
       );
-      const valueScore = clamp(detector * 0.3 + observation * 0.3 + correlation * 0.25 + priorityScore * 0.15);
+      const valueScore = clamp(
+        detector * 0.26 +
+        observation * 0.27 +
+        correlation * 0.24 +
+        priorityScore * 0.23
+      );
+      const directCrossLink = Boolean(r.metadata?.extractedLinks?.length);
 
       return {
         id: `E-${r.platformId}`,
@@ -112,147 +148,155 @@ function buildEvidence(results: ScanResult[]): EvidenceAssessment[] {
         detectorConfidence: detector,
         observationConfidence: observation,
         correlationConfidence: correlation,
+        assessmentContribution: priorityBand(valueScore),
         analyticalValue: priorityBand(valueScore),
         intelligencePriorityScore: priorityScore,
+        requirementRelevance: relevance,
         sourceQuality: sourceQualityGrade(r),
+        provenance: provenanceOf(r),
         observedAt: r.checkedAt,
+        sourceObservedAt: r.sourceObservedAt,
         evidenceSignals: r.evidenceSignals || [],
-        whyItMatters:
-          r.status === 'found'
-            ? `Public presence signal in ${r.category}; treat as a lead until independently corroborated.`
-            : `Inconclusive response in ${r.category}; do not use as positive identity evidence.`,
+        whyItMatters: r.status === 'found'
+          ? directCrossLink
+            ? 'The public profile exposes an independent outbound link, which can corroborate the finding beyond handle reuse.'
+            : 'The public presence is a lead. It requires independent corroboration before any identity conclusion.'
+          : 'The endpoint is inconclusive and should not be used as positive identity evidence.',
+        recommendedPivot: directCrossLink
+          ? 'Validate the self-declared public link and compare whether the same public identifier appears independently elsewhere.'
+          : 'Compare public metadata and independent self-declared links before correlating this profile with another account.',
       };
     })
     .sort((a, b) =>
-      b.correlationConfidence - a.correlationConfidence ||
-      b.observationConfidence - a.observationConfidence
+      b.intelligencePriorityScore - a.intelligencePriorityScore ||
+      b.correlationConfidence - a.correlationConfidence
     );
 }
 
+function domainsFor(result: ScanResult): string[] {
+  const domains = new Set<string>();
+  for (const raw of result.metadata?.extractedLinks || []) {
+    try {
+      domains.add(new URL(raw).hostname.toLowerCase());
+    } catch {
+      // malformed public link; ignore
+    }
+  }
+  return [...domains];
+}
+
 function buildClusters(results: ScanResult[]): FootprintCluster[] {
-  const byCategory = new Map<string, ScanResult[]>();
+  const byCategory = new Map<Category, ScanResult[]>();
   results.filter((r) => r.status === 'found').forEach((r) => {
     const current = byCategory.get(r.category) || [];
     current.push(r);
     byCategory.set(r.category, current);
   });
 
-  return [...byCategory.entries()]
-    .map(([category, items]) => {
-      const weighted = items.reduce((sum, item) => {
-        const detector = (item.detectorReliability ?? 50) / 100;
-        const observation = (item.confidenceScore ?? 50) / 100;
-        return sum + detector * observation;
-      }, 0);
-      const detectorAverage = items.reduce((sum, item) => sum + (item.detectorReliability ?? 50), 0) / items.length;
-      return {
-        category: category as FootprintCluster['category'],
-        findings: items.length,
-        strongFindings: items.filter(
-          (item) => (item.detectorReliability ?? 0) >= 80 && (item.confidenceScore ?? 0) >= 75
-        ).length,
-        weightedScore: clamp((weighted / Math.max(1, items.length)) * 100),
-        averageDetectorReliability: clamp(detectorAverage),
-      };
-    })
-    .sort((a, b) => b.weightedScore - a.weightedScore || b.findings - a.findings);
+  const clusters = [...byCategory.entries()].map(([category, items]) => {
+    const weighted = items.reduce((sum, item) => {
+      return sum + ((item.detectorReliability ?? 50) / 100) * ((item.confidenceScore ?? 50) / 100);
+    }, 0);
+    const detectorAverage = items.reduce((sum, item) => sum + (item.detectorReliability ?? 50), 0) / items.length;
+    return {
+      category,
+      findings: items.length,
+      strongFindings: items.filter(
+        (item) => (item.detectorReliability ?? 0) >= 80 && (item.confidenceScore ?? 0) >= 75
+      ).length,
+      weightedScore: clamp((weighted / Math.max(1, items.length)) * 100),
+      averageDetectorReliability: clamp(detectorAverage),
+      overlaps: [],
+    } satisfies FootprintCluster;
+  });
+
+  for (const cluster of clusters) {
+    const sourceItems = byCategory.get(cluster.category) || [];
+    const sourceDomains = new Set(sourceItems.flatMap(domainsFor));
+    for (const other of clusters) {
+      if (other.category === cluster.category) continue;
+      const otherDomains = new Set((byCategory.get(other.category) || []).flatMap(domainsFor));
+      const shared = [...sourceDomains].filter((d) => otherDomains.has(d));
+      if (shared.length) {
+        cluster.overlaps.push({
+          withCategory: other.category,
+          sharedSignals: shared,
+          score: clamp(65 + Math.min(30, shared.length * 10)),
+        });
+      }
+    }
+  }
+
+  return clusters.sort((a, b) => b.weightedScore - a.weightedScore || b.findings - a.findings);
+}
+
+function buildContradictions(results: ScanResult[]): string[] {
+  const contradictions: string[] = [];
+  const found = results.filter((r) => r.status === 'found');
+  const displayNames = new Set(found.map((r) => r.metadata?.displayName?.trim().toLowerCase()).filter(Boolean));
+  const locations = new Set(found.map((r) => r.metadata?.location?.trim().toLowerCase()).filter(Boolean));
+  const organizations = new Set(found.map((r) => r.metadata?.organization?.trim().toLowerCase()).filter(Boolean));
+
+  if (displayNames.size > 1) contradictions.push('Public display names differ across observed profiles.');
+  if (locations.size > 1) contradictions.push('Public location fields differ across observed profiles.');
+  if (organizations.size > 1) contradictions.push('Public organization fields differ across observed profiles.');
+  const weakFound = found.filter((r) => (r.detectorReliability ?? 0) < 60 || (r.confidenceScore ?? 0) < 55);
+  if (weakFound.length) contradictions.push(`${weakFound.length} positive result(s) rely on weak detector or observation confidence.`);
+  return contradictions;
 }
 
 function buildJudgments(
   collection: CollectionCoverage,
   evidence: EvidenceAssessment[],
-  clusters: FootprintCluster[]
+  clusters: FootprintCluster[],
+  requirement: IntelligenceRequirement
 ): KeyJudgment[] {
-  const judgments: KeyJudgment[] = [];
-  const highEvidence = evidence.filter((e) => e.analyticalValue === 'HIGH' && e.status === 'found');
+  const high = evidence.filter((e) => e.status === 'found' && e.analyticalValue === 'HIGH');
   const leading = clusters[0];
-
-  judgments.push({
+  const out: KeyJudgment[] = [{
     id: 'KJ-01',
-    confidence: confidenceBand(
-      collection.effectiveCoveragePercent * 0.45 +
-      Math.min(100, highEvidence.length * 12) * 0.55
-    ),
-    text: highEvidence.length
-      ? `${highEvidence.length} high-value public findings warrant analyst review.`
-      : 'No high-value finding currently supports a strong cross-platform assessment.',
-    basis: `Effective collection coverage ${collection.effectiveCoveragePercent}% with ${highEvidence.length} high-value findings.`,
-  });
-
+    confidence: confidenceBand(collection.effectiveCoveragePercent * 0.4 + Math.min(100, high.length * 12) * 0.6),
+    text: high.length
+      ? `${high.length} high-value public finding(s) are relevant to ${INTELLIGENCE_REQUIREMENT_LABELS[requirement].toLowerCase()}.`
+      : 'No high-value finding currently supports a strong analytical conclusion.',
+    basis: `Effective coverage ${collection.effectiveCoveragePercent}%; ${high.length} high-value finding(s).`,
+  }];
   if (leading) {
-    judgments.push({
+    out.push({
       id: 'KJ-02',
       confidence: confidenceBand(leading.weightedScore),
-      text: `${leading.category} is the strongest observed footprint cluster in the current collection.`,
-      basis: `${leading.findings} findings; weighted evidence score ${leading.weightedScore}/100.`,
+      text: `${leading.category} is the strongest observed footprint cluster.`,
+      basis: `${leading.findings} findings; weighted score ${leading.weightedScore}/100.`,
     });
   }
-
-  if (collection.uncertain + collection.rateLimited + collection.errors > 0) {
-    judgments.push({
+  if (collection.blockedOrInconclusive) {
+    out.push({
       id: 'KJ-03',
       confidence: 'HIGH',
       text: 'Collection gaps materially limit negative conclusions.',
-      basis: `${collection.uncertain} uncertain, ${collection.rateLimited} rate-limited and ${collection.errors} error results.`,
+      basis: `${collection.blockedOrInconclusive} result(s) are uncertain, rate-limited or errored.`,
     });
   }
-
-  return judgments;
-}
-
-function buildContradictions(results: ScanResult[]): string[] {
-  const contradictions: string[] = [];
-  const foundWithMetadata = results.filter((r) => r.status === 'found' && r.metadata);
-  const displayNames = new Set(
-    foundWithMetadata.map((r) => r.metadata?.displayName?.trim().toLowerCase()).filter(Boolean)
-  );
-  const locations = new Set(
-    foundWithMetadata.map((r) => r.metadata?.location?.trim().toLowerCase()).filter(Boolean)
-  );
-
-  if (displayNames.size > 1) {
-    contradictions.push('Public display names differ across observed profiles; identity correlation should be reduced until resolved.');
-  }
-  if (locations.size > 1) {
-    contradictions.push('Public location fields differ across observed profiles; treat them as contradictory metadata, not proof of separate identities.');
-  }
-
-  const lowQualityFound = results.filter(
-    (r) => r.status === 'found' && ((r.detectorReliability ?? 0) < 60 || (r.confidenceScore ?? 0) < 55)
-  );
-  if (lowQualityFound.length) {
-    contradictions.push(`${lowQualityFound.length} FOUND result(s) rely on weak detector or observation confidence and should not drive the assessment.`);
-  }
-
-  return contradictions;
+  return out;
 }
 
 function buildGaps(collection: CollectionCoverage, evidence: EvidenceAssessment[]): IntelligenceGap[] {
   const gaps: IntelligenceGap[] = [];
-  if (collection.effectiveCoveragePercent < 80) {
-    gaps.push({
-      id: 'GAP-01',
-      severity: 'HIGH',
-      question: 'What conclusions would change if currently inconclusive services became available?',
-      reason: `Only ${collection.effectiveCoveragePercent}% of requested collection is currently conclusive.`,
-    });
-  }
-  if (!evidence.some((e) => e.correlationConfidence >= 80)) {
-    gaps.push({
-      id: 'GAP-02',
-      severity: 'HIGH',
-      question: 'Is there an independent public cross-link connecting two or more findings?',
-      reason: 'Username reuse alone is insufficient for strong identity correlation.',
-    });
-  }
-  if (!evidence.some((e) => e.evidenceSignals.length >= 3)) {
-    gaps.push({
-      id: 'GAP-03',
-      severity: 'MEDIUM',
-      question: 'Can high-value findings be corroborated with richer response evidence?',
-      reason: 'Most current findings have limited multi-signal evidence.',
-    });
-  }
+  if (collection.effectiveCoveragePercent < 80) gaps.push({
+    id: 'GAP-01', severity: 'HIGH',
+    question: 'What conclusions would change if currently inconclusive services became available?',
+    reason: `Only ${collection.effectiveCoveragePercent}% of requested collection is conclusive.`,
+  });
+  if (!evidence.some((e) => e.correlationConfidence >= 80 && e.status === 'found')) gaps.push({
+    id: 'GAP-02', severity: 'HIGH',
+    question: 'Is there an independent public cross-link connecting two or more findings?',
+    reason: 'Handle reuse alone is insufficient for strong cross-account correlation.',
+  });
+  if (!evidence.some((e) => e.sourceQuality === 'A' || e.sourceQuality === 'B')) gaps.push({
+    id: 'GAP-03', severity: 'MEDIUM',
+    question: 'Can any finding be upgraded with a stronger public source?',
+    reason: 'The current evidence set lacks high-quality source grades.',
+  });
   return gaps;
 }
 
@@ -261,115 +305,259 @@ function buildPivots(
   collection: CollectionCoverage,
   contradictions: string[]
 ): IntelligencePivot[] {
-  const pivots: IntelligencePivot[] = [];
-  const top = evidence.filter((e) => e.status === 'found').slice(0, 5);
-
-  top.forEach((e, index) => {
-    pivots.push({
-      id: `PIVOT-${String(index + 1).padStart(2, '0')}`,
-      priority: e.analyticalValue,
-      signal: `${e.platformName}: ${e.observationConfidence}/100 observation confidence`,
-      action: 'Open the public profile and validate self-declared links, display name and other public metadata before correlating identities.',
-      reason: 'Independent self-declared cross-links are stronger than username reuse alone.',
-    });
+  const pivots: IntelligencePivot[] = evidence
+    .filter((e) => e.status === 'found')
+    .slice(0, 6)
+    .map((e, i) => ({
+      id: `PIVOT-${String(i + 1).padStart(2, '0')}`,
+      priority: priorityBand(e.intelligencePriorityScore),
+      priorityScore: e.intelligencePriorityScore,
+      signal: `${e.platformName}: source ${e.sourceQuality}, correlation ${e.correlationConfidence}/100`,
+      action: e.recommendedPivot,
+      reason: e.whyItMatters,
+    }));
+  if (contradictions.length) pivots.unshift({
+    id: 'PIVOT-CONTRADICTION',
+    priority: 'HIGH',
+    priorityScore: 95,
+    signal: `${contradictions.length} contradictory signal(s)`,
+    action: 'Resolve contradictory public metadata before increasing correlation confidence.',
+    reason: 'Contradictory evidence can invalidate an otherwise plausible account-correlation hypothesis.',
   });
-
-  if (collection.uncertain + collection.rateLimited > 0) {
-    pivots.push({
-      id: 'PIVOT-COLLECTION',
-      priority: 'MEDIUM',
-      signal: `${collection.uncertain + collection.rateLimited} inconclusive protected responses`,
-      action: 'Re-run only inconclusive detectors later with conservative concurrency.',
-      reason: 'A targeted retry is more efficient and less noisy than repeating the full scan.',
-    });
-  }
-
-  if (contradictions.length) {
-    pivots.push({
-      id: 'PIVOT-CONTRADICTION',
-      priority: 'HIGH',
-      signal: `${contradictions.length} contradictory signal(s)`,
-      action: 'Resolve contradictions before increasing identity-correlation confidence.',
-      reason: 'Contradictory evidence is analytically more important than collecting more weak matches.',
-    });
-  }
-
+  if (collection.uncertain + collection.rateLimited > 0) pivots.push({
+    id: 'PIVOT-COLLECTION',
+    priority: 'MEDIUM',
+    priorityScore: 58,
+    signal: `${collection.uncertain + collection.rateLimited} inconclusive protected response(s)`,
+    action: 'Re-run only inconclusive detectors later with conservative concurrency.',
+    reason: 'Targeted retry is more efficient and less noisy than repeating the full scan.',
+  });
   return pivots;
 }
-
 
 function buildReliabilityHeatmap(results: ScanResult[]): ReliabilityHeatmapCell[] {
   const map = new Map<string, ReliabilityHeatmapCell>();
   results.filter((r) => r.status === 'found').forEach((r) => {
     const current = map.get(r.category) || { category: r.category, high: 0, medium: 0, low: 0 };
-    const detector = r.detectorReliability ?? 50;
-    const observation = r.confidenceScore ?? 50;
-    const combined = detector * 0.5 + observation * 0.5;
-    if (combined >= 80) current.high += 1;
-    else if (combined >= 55) current.medium += 1;
-    else current.low += 1;
+    const combined = (r.detectorReliability ?? 50) * 0.5 + (r.confidenceScore ?? 50) * 0.5;
+    if (combined >= 80) current.high++;
+    else if (combined >= 55) current.medium++;
+    else current.low++;
     map.set(r.category, current);
   });
   return [...map.values()].sort((a, b) => (b.high * 3 + b.medium * 2 + b.low) - (a.high * 3 + a.medium * 2 + a.low));
 }
 
 function buildTimeline(results: ScanResult[]): IntelligenceTimelineEvent[] {
-  const now = new Date().toISOString();
-  return results
-    .filter((r) => r.status === 'found' || r.status === 'uncertain')
-    .map((r, index) => ({
-      id: `T-${String(index + 1).padStart(3, '0')}`,
-      observedAt: r.checkedAt || now,
-      type: r.status === 'found' ? 'PUBLIC_PROFILE_SIGNAL' as const : 'SCAN_OBSERVATION' as const,
+  const events: IntelligenceTimelineEvent[] = [];
+  let index = 1;
+  for (const r of results.filter((x) => x.status === 'found' || x.status === 'uncertain')) {
+    const evidenceId = `E-${r.platformId}`;
+    const scanTime = r.checkedAt || new Date().toISOString();
+    events.push({
+      id: `T-${String(index++).padStart(3, '0')}`,
+      observedAt: scanTime,
+      timestampKind: 'SCAN_TIMESTAMP',
+      type: r.status === 'found' ? 'PUBLIC_PROFILE_SIGNAL' : 'SCAN_OBSERVATION',
       platformName: r.platformName,
-      label: r.status === 'found'
-        ? `Public profile signal observed on ${r.platformName}`
-        : `Inconclusive observation on ${r.platformName}`,
-      evidenceId: `E-${r.platformId}`,
-    }))
-    .sort((a, b) => a.observedAt.localeCompare(b.observedAt));
+      label: r.status === 'found' ? 'Public profile signal observed during this scan.' : 'Inconclusive observation during this scan.',
+      evidenceId,
+      provenance: provenanceOf(r),
+    });
+    if (r.metadata?.accountCreatedAt) events.push({
+      id: `T-${String(index++).padStart(3, '0')}`,
+      observedAt: r.metadata.accountCreatedAt,
+      timestampKind: 'ACCOUNT_CREATED',
+      type: 'ACCOUNT_LIFECYCLE',
+      platformName: r.platformName,
+      label: 'Public account-creation timestamp reported by the source.',
+      evidenceId,
+      provenance: provenanceOf(r),
+    });
+    if (r.metadata?.firstPublicEvidenceAt) events.push({
+      id: `T-${String(index++).padStart(3, '0')}`,
+      observedAt: r.metadata.firstPublicEvidenceAt,
+      timestampKind: 'FIRST_PUBLIC_EVIDENCE',
+      type: 'ACCOUNT_LIFECYCLE',
+      platformName: r.platformName,
+      label: 'First public evidence timestamp recorded for this profile.',
+      evidenceId,
+      provenance: provenanceOf(r),
+    });
+    if (r.sourceObservedAt) events.push({
+      id: `T-${String(index++).padStart(3, '0')}`,
+      observedAt: r.sourceObservedAt,
+      timestampKind: 'SOURCE_OBSERVED',
+      type: 'PUBLIC_PROFILE_SIGNAL',
+      platformName: r.platformName,
+      label: 'Source-specific observation timestamp.',
+      evidenceId,
+      provenance: provenanceOf(r),
+    });
+  }
+  return events.sort((a, b) => a.observedAt.localeCompare(b.observedAt));
 }
 
-function buildCorrelationGraph(results: ScanResult[], targetLabel = 'target'): {
-  nodes: CorrelationGraphNode[];
-  edges: CorrelationGraphEdge[];
-} {
+function addGraphNode(nodes: Map<string, CorrelationGraphNode>, node: CorrelationGraphNode) {
+  if (!nodes.has(node.id)) nodes.set(node.id, node);
+}
+
+function buildCorrelationGraph(results: ScanResult[], targetLabel: string): {nodes: CorrelationGraphNode[]; edges: CorrelationGraphEdge[]} {
   const nodes = new Map<string, CorrelationGraphNode>();
   const edges: CorrelationGraphEdge[] = [];
-  nodes.set('target', { id: 'target', type: 'TARGET', label: targetLabel });
+  addGraphNode(nodes, { id: 'target', type: 'TARGET', label: targetLabel, provenance: 'DERIVED' });
+  const usernameId = `username:${targetLabel.toLowerCase()}`;
+  addGraphNode(nodes, { id: usernameId, type: targetLabel.includes('@') ? 'EMAIL' : 'USERNAME', label: targetLabel, provenance: 'PRIMARY' });
+  edges.push({ id: 'edge:target:identifier', source: 'target', target: usernameId, relationship: 'USES', confidence: 100, provenance: 'DERIVED' });
 
-  results.filter((r) => r.status === 'found').forEach((r) => {
+  for (const r of results.filter((x) => x.status === 'found')) {
+    const evidenceId = `E-${r.platformId}`;
+    const provenance = provenanceOf(r);
+    const platformId = `platform:${r.platformId}`;
     const profileId = `profile:${r.platformId}`;
-    nodes.set(profileId, { id: profileId, type: 'PROFILE', label: r.platformName });
+    addGraphNode(nodes, { id: platformId, type: 'PLATFORM', label: r.platformName, provenance, evidenceId });
+    addGraphNode(nodes, { id: profileId, type: 'PROFILE', label: r.url, provenance, evidenceId });
     edges.push({
-      id: `edge:target:${r.platformId}`,
-      source: 'target',
-      target: profileId,
-      relationship: 'SAME_HANDLE',
-      confidence: clamp((r.detectorReliability ?? 50) * 0.45 + (r.confidenceScore ?? 50) * 0.55),
-      evidenceId: `E-${r.platformId}`,
+      id: `edge:identifier:${r.platformId}`, source: usernameId, target: profileId,
+      relationship: 'SAME_HANDLE', confidence: clamp((r.detectorReliability ?? 50) * 0.45 + (r.confidenceScore ?? 50) * 0.55),
+      evidenceId, sourceUrl: r.url, observedAt: r.checkedAt, provenance,
+    });
+    edges.push({
+      id: `edge:profile:platform:${r.platformId}`, source: profileId, target: platformId,
+      relationship: 'OBSERVED_ON', confidence: 100, evidenceId, sourceUrl: r.url, observedAt: r.checkedAt, provenance,
     });
 
+    if (r.metadata?.displayName) {
+      const id = `display:${r.metadata.displayName.toLowerCase()}`;
+      addGraphNode(nodes, { id, type: 'DISPLAY_NAME', label: r.metadata.displayName, provenance, evidenceId });
+      edges.push({ id: `edge:display:${r.platformId}`, source: profileId, target: id, relationship: 'USES', confidence: 72, evidenceId, sourceUrl: r.url, observedAt: r.checkedAt, provenance });
+    }
+    if (r.metadata?.organization) {
+      const id = `org:${r.metadata.organization.toLowerCase()}`;
+      addGraphNode(nodes, { id, type: 'ORGANIZATION', label: r.metadata.organization, provenance, evidenceId });
+      edges.push({ id: `edge:org:${r.platformId}`, source: profileId, target: id, relationship: 'MENTIONS', confidence: 72, evidenceId, sourceUrl: r.url, observedAt: r.checkedAt, provenance });
+    }
+    if (r.metadata?.avatarHash) {
+      const id = `avatar:${r.metadata.avatarHash}`;
+      addGraphNode(nodes, { id, type: 'AVATAR_HASH', label: r.metadata.avatarHash, provenance, evidenceId });
+      edges.push({ id: `edge:avatar:${r.platformId}`, source: profileId, target: id, relationship: 'REFERENCES', confidence: 70, evidenceId, sourceUrl: r.url, observedAt: r.checkedAt, provenance });
+    }
+    for (const project of r.metadata?.publicProjects || []) {
+      const id = `project:${project.toLowerCase()}`;
+      addGraphNode(nodes, { id, type: 'PUBLIC_PROJECT', label: project, provenance, evidenceId });
+      edges.push({ id: `edge:project:${r.platformId}:${id}`, source: profileId, target: id, relationship: 'REFERENCES', confidence: 75, evidenceId, sourceUrl: r.url, observedAt: r.checkedAt, provenance });
+    }
     for (const rawLink of r.metadata?.extractedLinks || []) {
       try {
         const parsed = new URL(rawLink);
         const domainId = `domain:${parsed.hostname.toLowerCase()}`;
-        nodes.set(domainId, { id: domainId, type: 'DOMAIN', label: parsed.hostname.toLowerCase() });
-        edges.push({
-          id: `edge:${r.platformId}:${parsed.hostname.toLowerCase()}`,
-          source: profileId,
-          target: domainId,
-          relationship: 'LINKS_TO',
-          confidence: 85,
-          evidenceId: `E-${r.platformId}`,
-        });
+        const urlId = `url:${rawLink}`;
+        addGraphNode(nodes, { id: domainId, type: 'DOMAIN', label: parsed.hostname.toLowerCase(), provenance, evidenceId });
+        addGraphNode(nodes, { id: urlId, type: 'PUBLIC_URL', label: rawLink, provenance, evidenceId });
+        edges.push({ id: `edge:url:${r.platformId}:${rawLink}`, source: profileId, target: urlId, relationship: 'LINKS_TO', confidence: 88, evidenceId, sourceUrl: r.url, observedAt: r.checkedAt, provenance });
+        edges.push({ id: `edge:host:${r.platformId}:${parsed.hostname}`, source: urlId, target: domainId, relationship: 'HOSTED_ON', confidence: 100, evidenceId, sourceUrl: rawLink, observedAt: r.checkedAt, provenance });
       } catch {
-        // Ignore malformed public links instead of inventing entities.
+        // ignore malformed public links
       }
     }
+  }
+
+  const domainProfiles = new Map<string, string[]>();
+  edges.filter((e) => e.relationship === 'HOSTED_ON').forEach((e) => {
+    const linkedUrlEdge = edges.find((x) => x.target === e.source && x.relationship === 'LINKS_TO');
+    if (!linkedUrlEdge) return;
+    const list = domainProfiles.get(e.target) || [];
+    list.push(linkedUrlEdge.source);
+    domainProfiles.set(e.target, list);
   });
+  for (const [domainId, profiles] of domainProfiles.entries()) {
+    const unique = [...new Set(profiles)];
+    if (unique.length < 2) continue;
+    for (let i = 0; i < unique.length - 1; i++) {
+      edges.push({
+        id: `edge:same-domain:${domainId}:${i}`,
+        source: unique[i], target: unique[i + 1], relationship: 'SAME_DOMAIN',
+        confidence: 90, provenance: 'DERIVED',
+      });
+    }
+  }
 
   return { nodes: [...nodes.values()], edges };
+}
+
+function buildProvenanceGraph(
+  evidence: EvidenceAssessment[],
+  ledger: AnalyticLedgerEntry[]
+): {nodes: ProvenanceGraphNode[]; edges: ProvenanceGraphEdge[]} {
+  const nodes: ProvenanceGraphNode[] = [];
+  const edges: ProvenanceGraphEdge[] = [];
+  for (const e of evidence) {
+    const sourceNodeId = `prov:${e.id}:${e.provenance}`;
+    nodes.push({ id: sourceNodeId, label: e.provenance, type: e.provenance });
+    nodes.push({ id: e.id, label: e.platformName, type: 'EVIDENCE' });
+    edges.push({ source: sourceNodeId, target: e.id, relation: 'OBSERVED_AS' });
+  }
+  for (const entry of ledger) {
+    nodes.push({ id: entry.id, label: entry.claim, type: 'ASSESSMENT' });
+    for (const eId of entry.supportingEvidenceIds) {
+      edges.push({ source: eId, target: entry.id, relation: 'DERIVED_FROM' });
+    }
+  }
+  return { nodes, edges };
+}
+
+function buildTechnicalAppendix(results: ScanResult[], evidence: EvidenceAssessment[]): TechnicalAppendix {
+  const resultStatusCounts: Record<string, number> = {};
+  results.forEach((r) => { resultStatusCounts[r.status] = (resultStatusCounts[r.status] || 0) + 1; });
+  const sourceQualityCounts: Record<SourceQualityGrade, number> = { A: 0, B: 0, C: 0, D: 0, E: 0 };
+  const provenanceCounts: Record<ProvenanceType, number> = { PRIMARY: 0, DERIVED: 0, EXTERNAL: 0, AI_SYNTHESIZED: 0 };
+  evidence.forEach((e) => {
+    sourceQualityCounts[e.sourceQuality]++;
+    provenanceCounts[e.provenance]++;
+  });
+  provenanceCounts.DERIVED += 1;
+  return {
+    detectorCount: results.length,
+    evidenceChecksAvailable: results.reduce((sum, r) => sum + (r.evidenceChecksTotal || 0), 0),
+    resultStatusCounts,
+    sourceQualityCounts,
+    provenanceCounts,
+  };
+}
+
+function buildHypotheses(
+  evidence: EvidenceAssessment[],
+  clusters: FootprintCluster[],
+  contradictions: string[],
+  collection: CollectionCoverage
+): AnalyticHypothesis[] {
+  const strong = evidence.filter((e) => e.status === 'found' && e.analyticalValue === 'HIGH');
+  const hypotheses: AnalyticHypothesis[] = [{
+    id: 'H1',
+    statement: 'A subset of high-confidence findings may represent the same public online identity.',
+    confidence: confidenceBand(strong.length * 12 + collection.effectiveCoveragePercent * 0.35),
+    supportingEvidenceIds: strong.map((e) => e.id),
+    contradictoryEvidenceIds: contradictions.map((_, i) => `C-${String(i + 1).padStart(3, '0')}`),
+    caveat: 'Same handle is only a lead; independent public corroboration is required.',
+  }];
+  if (clusters[0]) hypotheses.push({
+    id: 'H2',
+    statement: `Findings inside the ${clusters[0].category} cluster may be more strongly related to each other than to findings in other clusters.`,
+    confidence: confidenceBand(clusters[0].weightedScore),
+    supportingEvidenceIds: evidence.filter((e) => e.category === clusters[0].category && e.status === 'found').map((e) => e.id),
+    contradictoryEvidenceIds: [],
+    caveat: 'Cluster similarity reflects observable service context, not a claim about private identity.',
+  });
+  hypotheses.push({
+    id: 'H3',
+    statement: 'Some lower-confidence findings may be unrelated username collisions.',
+    confidence: evidence.some((e) => e.status === 'found' && e.correlationConfidence < 50) ? 'MODERATE' : 'LOW',
+    supportingEvidenceIds: evidence.filter((e) => e.status === 'found' && e.correlationConfidence < 50).map((e) => e.id),
+    contradictoryEvidenceIds: strong.map((e) => e.id),
+    caveat: 'This is the explicit alternative hypothesis and should remain open until independent corroboration exists.',
+    alternative: true,
+  });
+  return hypotheses;
 }
 
 function buildAnalyticLedger(
@@ -378,10 +566,7 @@ function buildAnalyticLedger(
   contradictions: string[],
   generatedAt: string
 ): AnalyticLedgerEntry[] {
-  const strongIds = evidence
-    .filter((e) => e.status === 'found' && e.analyticalValue === 'HIGH')
-    .map((e) => e.id);
-
+  const strongIds = evidence.filter((e) => e.status === 'found' && e.analyticalValue === 'HIGH').map((e) => e.id);
   return judgments.map((judgment, index) => ({
     id: `A-${String(index + 1).padStart(3, '0')}`,
     claim: judgment.text,
@@ -389,74 +574,73 @@ function buildAnalyticLedger(
     supportingEvidenceIds: index === 0 ? strongIds.slice(0, 12) : evidence.slice(0, 6).map((e) => e.id),
     contradictoryEvidenceIds: contradictions.map((_, i) => `C-${String(i + 1).padStart(3, '0')}`),
     generatedAt,
+    provenance: 'DERIVED',
   }));
 }
 
-export function buildIntelligenceAssessment(results: ScanResult[], targetLabel = 'target'): IntelligenceAssessment {
+export function buildIntelligenceAssessment(
+  results: ScanResult[],
+  targetLabel = 'target',
+  requirement: IntelligenceRequirement = 'account_correlation'
+): IntelligenceAssessment {
+  const generatedAt = new Date().toISOString();
   const collection = calculateCollectionCoverage(results);
-  const evidence = buildEvidence(results);
+  const evidence = buildEvidence(results, requirement);
   const clusters = buildClusters(results);
   const contradictoryEvidence = buildContradictions(results);
+  const judgments = buildJudgments(collection, evidence, clusters, requirement);
   const gaps = buildGaps(collection, evidence);
   const pivots = buildPivots(evidence, collection, contradictoryEvidence);
-  const generatedAt = new Date().toISOString();
-  const judgments = buildJudgments(collection, evidence, clusters);
+  const hypotheses = buildHypotheses(evidence, clusters, contradictoryEvidence, collection);
+  const ledger = buildAnalyticLedger(judgments, evidence, contradictoryEvidence, generatedAt);
   const timeline = buildTimeline(results);
   const graph = buildCorrelationGraph(results, targetLabel);
-  const reliabilityHeatmap = buildReliabilityHeatmap(results);
-  const analyticLedger = buildAnalyticLedger(judgments, evidence, contradictoryEvidence, generatedAt);
-
-  const strongEvidence = evidence.filter((e) => e.status === 'found' && e.analyticalValue === 'HIGH');
-  const supportingEvidence = strongEvidence.map(
-    (e) => `${e.id}: ${e.platformName} public-presence signal (${e.correlationConfidence}/100 correlation support).`
-  );
+  const provenanceGraph = buildProvenanceGraph(evidence, ledger);
+  const highConfidenceFindings = evidence.filter((e) => e.status === 'found' && e.analyticalValue === 'HIGH');
+  const unresolvedFindings = evidence.filter((e) => e.status === 'uncertain' || e.status === 'rate_limited');
+  const assessmentConfidence = judgments[0]?.confidence || 'LOW';
 
   return {
     generatedAt,
+    intelligenceRequirement: requirement,
+    intelligenceRequirementLabel: INTELLIGENCE_REQUIREMENT_LABELS[requirement],
+    assessmentConfidence,
     collection,
     judgments,
     evidence,
+    highConfidenceFindings,
+    unresolvedFindings,
     clusters,
-    hypotheses: [
-      {
-        id: 'H1',
-        statement: 'A subset of high-confidence findings may represent the same public online identity.',
-        confidence: confidenceBand(strongEvidence.length * 12 + collection.effectiveCoveragePercent * 0.35),
-        supportingEvidenceIds: strongEvidence.map((e) => e.id),
-        contradictoryEvidenceIds: contradictoryEvidence.map((_, i) => `C-${i + 1}`),
-        caveat: 'Same username is only a lead. Identity correlation requires independent corroboration.',
-      },
-      {
-        id: 'H2',
-        statement: 'Some low-confidence findings may be username collisions unrelated to the primary identity hypothesis.',
-        confidence: evidence.some((e) => e.correlationConfidence < 50) ? 'MODERATE' : 'LOW',
-        supportingEvidenceIds: evidence.filter((e) => e.correlationConfidence < 50).map((e) => e.id),
-        contradictoryEvidenceIds: [],
-        caveat: 'Do not merge weak findings into a single identity without independent evidence.',
-      },
-    ],
-    supportingEvidence,
+    hypotheses,
+    supportingEvidence: highConfidenceFindings.map((e) => `${e.id}: ${e.platformName} (${e.sourceQuality}, IPS ${e.intelligencePriorityScore})`),
     contradictoryEvidence,
+    knownAssessedUnknown: {
+      known: evidence.filter((e) => e.status === 'found').slice(0, 10).map((e) => `${e.platformName}: public presence observed at ${e.url}`),
+      assessed: judgments.map((j) => `${j.id}: ${j.text}`),
+      unknown: gaps.map((g) => g.question),
+    },
     gaps,
     pivots,
     collectionPlan: [
-      'Validate the top five high-value findings manually.',
-      'Prioritize independent public cross-links over additional username-only matches.',
-      'Resolve contradictory metadata before raising correlation confidence.',
-      'Retry only inconclusive detectors after cooldown instead of repeating the entire registry.',
-      'Record source URL, timestamp and detector confidence for any finding used in a final assessment.',
+      'Validate self-declared public links from the highest-priority findings.',
+      'Resolve contradictory public metadata before raising correlation confidence.',
+      'Re-run only inconclusive detectors after a cooldown when collection coverage materially affects the assessment.',
+      'Stop broadening collection when new evidence no longer changes key judgments or closes an identified intelligence gap.',
     ],
-    stopCondition:
-      'Stop expanding collection when new public findings no longer materially change the key judgments or resolve an identified intelligence gap.',
+    stopCondition: 'Stop expanding collection when new public evidence no longer materially changes the key judgments, resolves a contradiction, or closes an identified intelligence gap.',
     sourceQualityNotes: [
-      'Grade A/B findings are structurally stronger than generic search/index hits.',
-      'Direct self-declared cross-links should receive more analytical weight than username reuse alone.',
-      'Search/index hits and generic 200 responses should receive less weight than stable profile endpoints.',
-      'AI-generated synthesis must remain a hypothesis layer and must not increase factual confidence without new evidence.',
+      'A = direct/stable public evidence with strong detector and observation support.',
+      'B = strong public platform evidence.',
+      'C = usable evidence that still requires corroboration.',
+      'D = weak or inconclusive observation.',
+      'E = unverified or structurally weak signal.',
+      'AI synthesis cannot independently raise factual confidence.',
     ],
-    analyticLedger,
+    analyticLedger: ledger,
     timeline,
     graph,
-    reliabilityHeatmap,
+    provenanceGraph,
+    reliabilityHeatmap: buildReliabilityHeatmap(results),
+    technicalAppendix: buildTechnicalAppendix(results, evidence),
   };
 }
