@@ -130,7 +130,7 @@ function getGenAiClient(customApiKey?: string): { client: GoogleGenAI; isCustom:
       apiKey,
       httpOptions: {
         headers: {
-          'User-Agent': 'mineiro-username-extractor/1.3',
+          'User-Agent': 'mineiro-username-extractor/1.3.1',
         },
       },
     }),
@@ -143,7 +143,7 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     service: 'Mineiro Username Extractor Unified OSINT Engine',
-    version: '1.3.0',
+    version: '1.3.1',
     timestamp: new Date().toISOString(),
     geminiConfigured: Boolean(process.env.GEMINI_API_KEY),
     supportedDatabases: ['Mineiro Core (local direct probes)', 'Mineiro Username Extractor WAF Guard', 'Mineiro Username Extractor DNS & Email Recon'],
@@ -237,7 +237,7 @@ app.post('/api/osint/verify', async (req, res) => {
       method: 'GET',
       signal: controller.signal,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 MineiroUsernameExtractor/1.3',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 MineiroUsernameExtractor/1.3.1',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.5',
       },
@@ -1295,7 +1295,7 @@ async function startServer() {
     const server = app.listen(PORT, '0.0.0.0', () => {
       console.log('\n' + TERMINAL_BANNER + '\n');
       console.log(`[ready] http://0.0.0.0:${PORT}`);
-      console.log('[mode] local-first OSINT probes | monochrome interface | v1.3.0');
+      console.log('[mode] local-first OSINT probes | monochrome interface | v1.3.1');
     });
 
     server.on('error', (err: NodeJS.ErrnoException) => {
