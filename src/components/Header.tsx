@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { ThemeMode, getSavedTheme, applyTheme } from '../utils/theme';
 import { LanguageSelector } from './LanguageSelector';
+import { useI18n } from '../utils/i18n';
 
 interface HeaderProps {
   onReset: () => void;
@@ -43,6 +44,7 @@ export function Header({
   isScanning,
 }: HeaderProps) {
   const [theme, setTheme] = useState<ThemeMode>(getSavedTheme);
+  const { tr } = useI18n();
 
   useEffect(() => {
     applyTheme(theme);
@@ -127,9 +129,9 @@ export function Header({
         <div className="ml-auto flex items-center gap-2">
           {totalScanned > 0 && (
             <div className="hidden xl:flex items-center gap-2 rounded-xl border border-[#2c3237] px-3 py-2 text-xs text-[#89919a]">
-              <span>{foundCount} found</span>
+              <span>{foundCount} {tr('header.found')}</span>
               <span className="text-[#3f464d]">·</span>
-              <span>{totalScanned} checked</span>
+              <span>{totalScanned} {tr('header.checked')}</span>
               {isScanning && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />}
             </div>
           )}
@@ -140,10 +142,10 @@ export function Header({
             type="button"
             onClick={toggleTheme}
             className="inline-flex items-center gap-2 rounded-xl border border-[#2d3339] bg-[#111518] px-3.5 py-2.5 text-sm text-[#c9cdd2] hover:border-[#525961] hover:text-white"
-            title="Alternar tema"
+            title={tr('header.theme')}
           >
             <Contrast className="h-4 w-4" />
-            <span className="hidden md:inline">Tema</span>
+            <span className="hidden md:inline">{tr('header.theme')}</span>
           </button>
 
           <button
@@ -153,14 +155,14 @@ export function Header({
             className="inline-flex items-center gap-2 rounded-xl border border-[#394047] bg-[#15191c] px-3.5 py-2.5 text-sm font-medium text-[#f0f1f2] hover:bg-[#1b2024] disabled:cursor-not-allowed disabled:opacity-35"
           >
             <Download className="h-4 w-4" />
-            <span className="hidden sm:inline">Export</span>
+            <span className="hidden sm:inline">{tr('header.export')}</span>
           </button>
 
           <button
             type="button"
             onClick={onReset}
             className="rounded-xl border border-[#2d3339] p-2.5 text-[#9098a1] hover:border-[#525961] hover:text-white"
-            title="Limpar workspace"
+            title={tr('header.reset')}
           >
             <RefreshCw className="h-4 w-4" />
           </button>

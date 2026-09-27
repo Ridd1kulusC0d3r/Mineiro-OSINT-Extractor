@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Key, Sparkles, CheckCircle2, XCircle, ExternalLink, X, Eye, EyeOff, ShieldCheck, Cpu } from 'lucide-react';
+import { useI18n } from '../utils/i18n';
 
 interface GeminiConfigModalProps {
   isOpen: boolean;
@@ -16,6 +17,7 @@ export function GeminiConfigModal({
   onSavePersonalKey,
   selectedModel,
 }: GeminiConfigModalProps) {
+  const { tr } = useI18n();
   const [apiKeyInput, setApiKeyInput] = useState(personalKey);
   const supportedModels = ['gemini-3.8-flash', 'gemini-3.7-flash', 'gemini-3.5-flash-lite', 'gemini-flash-latest'];
   const initialModel = supportedModels.includes(selectedModel) ? selectedModel : 'gemini-3.8-flash';
@@ -46,13 +48,13 @@ export function GeminiConfigModal({
       } else {
         setTestResult({
           success: false,
-          message: data.error || data.message || 'Failed to validate Gemini API key.',
+          message: data.error || data.message || tr('gemini.validationFailed'),
         });
       }
     } catch (err: any) {
       setTestResult({
         success: false,
-        message: err.message || 'Connection error while testing key.',
+        message: err.message || tr('gemini.connectionError'),
       });
     } finally {
       setIsTesting(false);
@@ -81,10 +83,10 @@ export function GeminiConfigModal({
             </div>
             <div>
               <h2 className="text-sm font-bold text-white uppercase tracking-wider">
-                Gemini · Analyst Copilot
+                {tr('gemini.title')}
               </h2>
               <p className="text-[11px] text-neutral-400">
-                Connect Gemini to the evidence-bounded Analyst Copilot
+                {tr('gemini.subtitle')}
               </p>
             </div>
           </div>
@@ -100,10 +102,10 @@ export function GeminiConfigModal({
         <div className="p-3 bg-neutral-900/80 border border-neutral-800 text-xs space-y-1.5">
           <div className="flex items-center gap-2 text-white font-semibold">
             <ShieldCheck className="w-4 h-4 text-neutral-400" />
-            <span>Privacy & Full Control</span>
+            <span>{tr('gemini.privacy')}</span>
           </div>
           <p className="text-neutral-400 text-[11px] leading-relaxed">
-            Your key is stored only in this browser's local storage and sent to the local Mineiro server for Gemini requests. Remove it at any time with Clear.
+            {tr('gemini.privacyDesc')}
           </p>
           <a
             href="https://aistudio.google.com/app/apikey"
@@ -111,7 +113,7 @@ export function GeminiConfigModal({
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1 text-[11px] text-white underline hover:text-neutral-300 pt-1"
           >
-            Obtain free API key in the provider console <ExternalLink className="w-3 h-3" />
+            {tr('gemini.obtainKey')} <ExternalLink className="w-3 h-3" />
           </a>
         </div>
 
@@ -144,7 +146,7 @@ export function GeminiConfigModal({
               </button>
             </div>
             <p className="text-[10px] text-neutral-500">
-              If left blank, Mineiro uses GEMINI_API_KEY from the server environment when available. The deterministic assessment works without AI.
+              {tr('gemini.blankKey')}
             </p>
           </div>
 
@@ -198,7 +200,7 @@ export function GeminiConfigModal({
               className="px-3 py-2 bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-700 hover:border-neutral-500 transition-colors disabled:opacity-50 flex items-center gap-1.5"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              {isTesting ? 'Testing...' : 'Test Connection'}
+              {isTesting ? tr('gemini.testing') : tr('gemini.test')}
             </button>
             {apiKeyInput && (
               <button

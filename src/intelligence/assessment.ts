@@ -22,7 +22,7 @@ import type {
   SourceQualityGrade,
   TechnicalAppendix,
 } from './types';
-import { INTELLIGENCE_REQUIREMENT_LABELS } from './types';
+import { analysisText, requirementLabel, type AnalysisLanguage } from './localization';
 
 function clamp(value: number, min = 0, max = 100): number {
   return Math.max(min, Math.min(max, Math.round(value)));
@@ -99,7 +99,8 @@ export function calculateCollectionCoverage(results: ScanResult[]): CollectionCo
 
 function buildEvidence(
   results: ScanResult[],
-  requirement: IntelligenceRequirement
+  requirement: IntelligenceRequirement,
+  language: AnalysisLanguage
 ): EvidenceAssessment[] {
   const foundCategories = new Map<string, number>();
   results.filter((r) => r.status === 'found').forEach((r) => {
@@ -171,12 +172,12 @@ function buildEvidence(
         evidenceSignals: r.evidenceSignals || [],
         whyItMatters: r.status === 'found'
           ? directCrossLink
-            ? 'The public profile exposes an independent outbound link, which can corroborate the finding beyond handle reuse.'
-            : 'The public presence is a lead. It requires independent corroboration before any identity conclusion.'
-          : 'The endpoint is inconclusive and should not be used as positive identity evidence.',
+            ? analysisText(language, 'evidence_direct')
+            : analysisText(language, 'evidence_lead')
+          : analysisText(language, 'evidence_inconclusive'),
         recommendedPivot: directCrossLink
-          ? 'Validate the self-declared public link and compare whether the same public identifier appears independently elsewhere.'
-          : 'Compare public metadata and independent self-declared links before correlating this profile with another account.',
+          ? analysisText(language, 'pivot_direct')
+          : analysisText(language, 'pivot_metadata'),
       };
     })
     .sort((a, b) =>
@@ -242,7 +243,7 @@ function buildClusters(results: ScanResult[]): FootprintCluster[] {
   return clusters.sort((a, b) => b.weightedScore - a.weightedScore || b.findings - a.findings);
 }
 
-function buildContradictions(results: ScanResult[]): string[] {
+function buildContradictions(results: ScanResult[], language: AnalysisLanguage): string[] {
   const contradictions: string[] = [];
   const found = results.filter((r) => r.status === 'found');
   const displayNames = new Set(found.map((r) => r.metadata?.displayName?.trim().toLowerCase()).filter(Boolean));
@@ -250,12 +251,12 @@ function buildContradictions(results: ScanResult[]): string[] {
   const organizations = new Set(found.map((r) => r.metadata?.organization?.trim().toLowerCase()).filter(Boolean));
   const avatarHashes = new Set(found.map((r) => r.metadata?.avatarHash?.trim().toLowerCase()).filter(Boolean));
 
-  if (displayNames.size > 1) contradictions.push('Public display names differ across observed profiles.');
-  if (locations.size > 1) contradictions.push('Public location fields differ across observed profiles.');
-  if (organizations.size > 1) contradictions.push('Public organization fields differ across observed profiles.');
-  if (avatarHashes.size > 1) contradictions.push('Public avatar hashes differ across observed profiles; visual identity correlation should be reduced until independently resolved.');
+  if (displayNames.size > 1) contradictions.push(analysisText(language, 'contradiction_display'));
+  if (locations.size > 1) contradictions.push(analysisText(language, 'contradiction_location'));
+  if (organizations.size > 1) contradictions.push(analysisText(language, 'contradiction_org'));
+  if (avatarHashes.size > 1) contradictions.push(analysisText(language, 'contradiction_avatar'));
   const weakFound = found.filter((r) => (r.detectorReliability ?? 0) < 60 || (r.confidenceScore ?? 0) < 55);
-  if (weakFound.length) contradictions.push(`${weakFound.length} positive result(s) rely on weak detector or observation confidence.`);
+  if (weakFound.length) contradictions.push(analysisText(language, 'contradiction_weak', { count: weakFound.length }));
   return contradictions;
 }
 
@@ -263,7 +264,8 @@ function buildJudgments(
   collection: CollectionCoverage,
   evidence: EvidenceAssessment[],
   clusters: FootprintCluster[],
-  requirement: IntelligenceRequirement
+  requirement: IntelligenceRequirement,
+  language: AnalysisLanguage
 ): KeyJudgment[] {
   const high = evidence.filter((e) => e.status === 'found' && e.analyticalValue === 'HIGH');
   const leading = clusters[0];
@@ -271,45 +273,45 @@ function buildJudgments(
     id: 'KJ-01',
     confidence: confidenceBand(collection.effectiveCoveragePercent * 0.4 + Math.min(100, high.length * 12) * 0.6),
     text: high.length
-      ? `${high.length} high-value public finding(s) are relevant to ${INTELLIGENCE_REQUIREMENT_LABELS[requirement].toLowerCase()}.`
-      : 'No high-value finding currently supports a strong analytical conclusion.',
-    basis: `Effective coverage ${collection.effectiveCoveragePercent}%; ${high.length} high-value finding(s).`,
+      ? analysisText(language, 'judgment_high', { count: high.length, requirement: requirementLabel(language, requirement).toLowerCase() })
+      : analysisText(language, 'judgment_none'),
+    basis: analysisText(language, 'judgment_basis', { coverage: collection.effectiveCoveragePercent, count: high.length }),
   }];
   if (leading) {
     out.push({
       id: 'KJ-02',
       confidence: confidenceBand(leading.weightedScore),
-      text: `${leading.category} is the strongest observed footprint cluster.`,
-      basis: `${leading.findings} findings; weighted score ${leading.weightedScore}/100.`,
+      text: analysisText(language, 'judgment_cluster', { category: leading.category }),
+      basis: analysisText(language, 'judgment_cluster_basis', { count: leading.findings, score: leading.weightedScore }),
     });
   }
   if (collection.blockedOrInconclusive) {
     out.push({
       id: 'KJ-03',
       confidence: 'HIGH',
-      text: 'Collection gaps materially limit negative conclusions.',
-      basis: `${collection.blockedOrInconclusive} result(s) are uncertain, rate-limited or errored.`,
+      text: analysisText(language, 'judgment_gap'),
+      basis: analysisText(language, 'judgment_gap_basis', { count: collection.blockedOrInconclusive }),
     });
   }
   return out;
 }
 
-function buildGaps(collection: CollectionCoverage, evidence: EvidenceAssessment[]): IntelligenceGap[] {
+function buildGaps(collection: CollectionCoverage, evidence: EvidenceAssessment[], language: AnalysisLanguage): IntelligenceGap[] {
   const gaps: IntelligenceGap[] = [];
   if (collection.effectiveCoveragePercent < 80) gaps.push({
     id: 'GAP-01', severity: 'HIGH',
-    question: 'What conclusions would change if currently inconclusive services became available?',
-    reason: `Only ${collection.effectiveCoveragePercent}% of requested collection is conclusive.`,
+    question: analysisText(language, 'gap1_q'),
+    reason: analysisText(language, 'gap1_r', { coverage: collection.effectiveCoveragePercent }),
   });
   if (!evidence.some((e) => e.correlationConfidence >= 80 && e.status === 'found')) gaps.push({
     id: 'GAP-02', severity: 'HIGH',
-    question: 'Is there an independent public cross-link connecting two or more findings?',
-    reason: 'Handle reuse alone is insufficient for strong cross-account correlation.',
+    question: analysisText(language, 'gap2_q'),
+    reason: analysisText(language, 'gap2_r'),
   });
   if (!evidence.some((e) => e.sourceQuality === 'A' || e.sourceQuality === 'B')) gaps.push({
     id: 'GAP-03', severity: 'MEDIUM',
-    question: 'Can any finding be upgraded with a stronger public source?',
-    reason: 'The current evidence set lacks high-quality source grades.',
+    question: analysisText(language, 'gap3_q'),
+    reason: analysisText(language, 'gap3_r'),
   });
   return gaps;
 }
@@ -317,7 +319,8 @@ function buildGaps(collection: CollectionCoverage, evidence: EvidenceAssessment[
 function buildPivots(
   evidence: EvidenceAssessment[],
   collection: CollectionCoverage,
-  contradictions: string[]
+  contradictions: string[],
+  language: AnalysisLanguage
 ): IntelligencePivot[] {
   const pivots: IntelligencePivot[] = evidence
     .filter((e) => e.status === 'found')
@@ -334,17 +337,17 @@ function buildPivots(
     id: 'PIVOT-CONTRADICTION',
     priority: 'HIGH',
     priorityScore: 95,
-    signal: `${contradictions.length} contradictory signal(s)`,
-    action: 'Resolve contradictory public metadata before increasing correlation confidence.',
-    reason: 'Contradictory evidence can invalidate an otherwise plausible account-correlation hypothesis.',
+    signal: analysisText(language, 'pivot_contradiction_signal', { count: contradictions.length }),
+    action: analysisText(language, 'pivot_contradiction_action'),
+    reason: analysisText(language, 'pivot_contradiction_reason'),
   });
   if (collection.uncertain + collection.rateLimited > 0) pivots.push({
     id: 'PIVOT-COLLECTION',
     priority: 'MEDIUM',
     priorityScore: 58,
-    signal: `${collection.uncertain + collection.rateLimited} inconclusive protected response(s)`,
-    action: 'Re-run only inconclusive detectors later with conservative concurrency.',
-    reason: 'Targeted retry is more efficient and less noisy than repeating the full scan.',
+    signal: analysisText(language, 'pivot_collection_signal', { count: collection.uncertain + collection.rateLimited }),
+    action: analysisText(language, 'pivot_collection_action'),
+    reason: analysisText(language, 'pivot_collection_reason'),
   });
   return pivots;
 }
@@ -362,7 +365,7 @@ function buildReliabilityHeatmap(results: ScanResult[]): ReliabilityHeatmapCell[
   return [...map.values()].sort((a, b) => (b.high * 3 + b.medium * 2 + b.low) - (a.high * 3 + a.medium * 2 + a.low));
 }
 
-function buildTimeline(results: ScanResult[]): IntelligenceTimelineEvent[] {
+function buildTimeline(results: ScanResult[], language: AnalysisLanguage): IntelligenceTimelineEvent[] {
   const events: IntelligenceTimelineEvent[] = [];
   let index = 1;
   for (const r of results.filter((x) => x.status === 'found' || x.status === 'uncertain')) {
@@ -374,7 +377,7 @@ function buildTimeline(results: ScanResult[]): IntelligenceTimelineEvent[] {
       timestampKind: 'SCAN_TIMESTAMP',
       type: r.status === 'found' ? 'PUBLIC_PROFILE_SIGNAL' : 'SCAN_OBSERVATION',
       platformName: r.platformName,
-      label: r.status === 'found' ? 'Public profile signal observed during this scan.' : 'Inconclusive observation during this scan.',
+      label: r.status === 'found' ? analysisText(language, 'timeline_found') : analysisText(language, 'timeline_uncertain'),
       evidenceId,
       provenance: provenanceOf(r),
     });
@@ -384,7 +387,7 @@ function buildTimeline(results: ScanResult[]): IntelligenceTimelineEvent[] {
       timestampKind: 'ACCOUNT_CREATED',
       type: 'ACCOUNT_LIFECYCLE',
       platformName: r.platformName,
-      label: 'Public account-creation timestamp reported by the source.',
+      label: analysisText(language, 'timeline_created'),
       evidenceId,
       provenance: provenanceOf(r),
     });
@@ -394,7 +397,7 @@ function buildTimeline(results: ScanResult[]): IntelligenceTimelineEvent[] {
       timestampKind: 'FIRST_PUBLIC_EVIDENCE',
       type: 'ACCOUNT_LIFECYCLE',
       platformName: r.platformName,
-      label: 'First public evidence timestamp recorded for this profile.',
+      label: analysisText(language, 'timeline_first'),
       evidenceId,
       provenance: provenanceOf(r),
     });
@@ -404,7 +407,7 @@ function buildTimeline(results: ScanResult[]): IntelligenceTimelineEvent[] {
       timestampKind: 'SOURCE_OBSERVED',
       type: 'PUBLIC_PROFILE_SIGNAL',
       platformName: r.platformName,
-      label: 'Source-specific observation timestamp.',
+      label: analysisText(language, 'timeline_source'),
       evidenceId,
       provenance: provenanceOf(r),
     });
@@ -543,32 +546,33 @@ function buildHypotheses(
   evidence: EvidenceAssessment[],
   clusters: FootprintCluster[],
   contradictions: string[],
-  collection: CollectionCoverage
+  collection: CollectionCoverage,
+  language: AnalysisLanguage
 ): AnalyticHypothesis[] {
   const strong = evidence.filter((e) => e.status === 'found' && e.analyticalValue === 'HIGH');
   const hypotheses: AnalyticHypothesis[] = [{
     id: 'H1',
-    statement: 'A subset of high-confidence findings may represent the same public online identity.',
+    statement: analysisText(language, 'hypothesis_h1'),
     confidence: confidenceBand(strong.length * 12 + collection.effectiveCoveragePercent * 0.35),
     supportingEvidenceIds: strong.map((e) => e.id),
     contradictoryEvidenceIds: contradictions.map((_, i) => `C-${String(i + 1).padStart(3, '0')}`),
-    caveat: 'Same handle is only a lead; independent public corroboration is required.',
+    caveat: analysisText(language, 'hypothesis_h1_caveat'),
   }];
   if (clusters[0]) hypotheses.push({
     id: 'H2',
-    statement: `Findings inside the ${clusters[0].category} cluster may be more strongly related to each other than to findings in other clusters.`,
+    statement: analysisText(language, 'hypothesis_h2', { category: clusters[0].category }),
     confidence: confidenceBand(clusters[0].weightedScore),
     supportingEvidenceIds: evidence.filter((e) => e.category === clusters[0].category && e.status === 'found').map((e) => e.id),
     contradictoryEvidenceIds: [],
-    caveat: 'Cluster similarity reflects observable service context, not a claim about private identity.',
+    caveat: analysisText(language, 'hypothesis_h2_caveat'),
   });
   hypotheses.push({
     id: 'H3',
-    statement: 'Some lower-confidence findings may be unrelated username collisions.',
+    statement: analysisText(language, 'hypothesis_h3'),
     confidence: evidence.some((e) => e.status === 'found' && e.correlationConfidence < 50) ? 'MODERATE' : 'LOW',
     supportingEvidenceIds: evidence.filter((e) => e.status === 'found' && e.correlationConfidence < 50).map((e) => e.id),
     contradictoryEvidenceIds: strong.map((e) => e.id),
-    caveat: 'This is the explicit alternative hypothesis and should remain open until independent corroboration exists.',
+    caveat: analysisText(language, 'hypothesis_h3_caveat'),
     alternative: true,
   });
   return hypotheses;
@@ -595,19 +599,20 @@ function buildAnalyticLedger(
 export function buildIntelligenceAssessment(
   results: ScanResult[],
   targetLabel = 'target',
-  requirement: IntelligenceRequirement = 'account_correlation'
+  requirement: IntelligenceRequirement = 'account_correlation',
+  language: AnalysisLanguage = 'en'
 ): IntelligenceAssessment {
   const generatedAt = new Date().toISOString();
   const collection = calculateCollectionCoverage(results);
-  const evidence = buildEvidence(results, requirement);
+  const evidence = buildEvidence(results, requirement, language);
   const clusters = buildClusters(results);
-  const contradictoryEvidence = buildContradictions(results);
-  const judgments = buildJudgments(collection, evidence, clusters, requirement);
-  const gaps = buildGaps(collection, evidence);
-  const pivots = buildPivots(evidence, collection, contradictoryEvidence);
-  const hypotheses = buildHypotheses(evidence, clusters, contradictoryEvidence, collection);
+  const contradictoryEvidence = buildContradictions(results, language);
+  const judgments = buildJudgments(collection, evidence, clusters, requirement, language);
+  const gaps = buildGaps(collection, evidence, language);
+  const pivots = buildPivots(evidence, collection, contradictoryEvidence, language);
+  const hypotheses = buildHypotheses(evidence, clusters, contradictoryEvidence, collection, language);
   const ledger = buildAnalyticLedger(judgments, evidence, contradictoryEvidence, generatedAt);
-  const timeline = buildTimeline(results);
+  const timeline = buildTimeline(results, language);
   const graph = buildCorrelationGraph(results, targetLabel);
   const provenanceGraph = buildProvenanceGraph(evidence, ledger);
   const highConfidenceFindings = evidence.filter((e) => e.status === 'found' && e.analyticalValue === 'HIGH');
@@ -617,7 +622,7 @@ export function buildIntelligenceAssessment(
   return {
     generatedAt,
     intelligenceRequirement: requirement,
-    intelligenceRequirementLabel: INTELLIGENCE_REQUIREMENT_LABELS[requirement],
+    intelligenceRequirementLabel: requirementLabel(language, requirement),
     assessmentConfidence,
     collection,
     judgments,
@@ -629,26 +634,26 @@ export function buildIntelligenceAssessment(
     supportingEvidence: highConfidenceFindings.map((e) => `${e.id}: ${e.platformName} (${e.sourceQuality}, IPS ${e.intelligencePriorityScore})`),
     contradictoryEvidence,
     knownAssessedUnknown: {
-      known: evidence.filter((e) => e.status === 'found').slice(0, 10).map((e) => `${e.platformName}: public presence observed at ${e.url}`),
+      known: evidence.filter((e) => e.status === 'found').slice(0, 10).map((e) => analysisText(language, 'known_presence', { platform: e.platformName, url: e.url })),
       assessed: judgments.map((j) => `${j.id}: ${j.text}`),
       unknown: gaps.map((g) => g.question),
     },
     gaps,
     pivots,
     collectionPlan: [
-      'Validate self-declared public links from the highest-priority findings.',
-      'Resolve contradictory public metadata before raising correlation confidence.',
-      'Re-run only inconclusive detectors after a cooldown when collection coverage materially affects the assessment.',
-      'Stop broadening collection when new evidence no longer changes key judgments or closes an identified intelligence gap.',
+      analysisText(language, 'plan1'),
+      analysisText(language, 'plan2'),
+      analysisText(language, 'plan3'),
+      analysisText(language, 'plan4'),
     ],
-    stopCondition: 'Stop expanding collection when new public evidence no longer materially changes the key judgments, resolves a contradiction, or closes an identified intelligence gap.',
+    stopCondition: analysisText(language, 'stop'),
     sourceQualityNotes: [
-      'A = direct/stable public evidence with strong detector and observation support.',
-      'B = strong public platform evidence.',
-      'C = usable evidence that still requires corroboration.',
-      'D = weak or inconclusive observation.',
-      'E = unverified or structurally weak signal.',
-      'AI synthesis cannot independently raise factual confidence.',
+      analysisText(language, 'sourceA'),
+      analysisText(language, 'sourceB'),
+      analysisText(language, 'sourceC'),
+      analysisText(language, 'sourceD'),
+      analysisText(language, 'sourceE'),
+      analysisText(language, 'sourceAI'),
     ],
     analyticLedger: ledger,
     timeline,

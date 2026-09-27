@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.4.4] - 2026-09-27
+
+### Internationalization
+- Full interface language state for Portuguese, English and Spanish.
+- Language selector now changes visible product surfaces instead of only storing a preference.
+- Canonical trilingual UI catalog with CI key-parity validation.
+- Intelligence Assessment narratives localized by selected language.
+- Intelligence Requirements, judgments, hypotheses, contradictions, gaps, pivots, timeline and collection plan localized.
+- AI Analyst Workspace, Gemini settings, Username Linkage and Relationship Graph localized.
+- Export builder localized.
+- HTML, Markdown and analytical JSON generation follow the selected language.
+- Export manifest records the selected language.
+- Browser document language and title update when the locale changes.
+- Selected language persists in localStorage.
+- Compatibility translation bridge covers legacy UI surfaces while components migrate to direct message keys.
+
+### Compatibility
+- Machine-oriented JSON and CSV structural field names remain stable for downstream integrations.
+- Public evidence semantics and confidence scoring are unchanged by language selection.
+
+
 ## [1.4.3] - 2026-09-26
 
 ### Brand

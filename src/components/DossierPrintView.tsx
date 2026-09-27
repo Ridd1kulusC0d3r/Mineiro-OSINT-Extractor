@@ -1,5 +1,6 @@
 import type { AiProfileReport, EmailReconData, ScanResult } from '../types';
 import { buildIntelligenceAssessment } from '../intelligence/assessment';
+import { useI18n } from '../utils/i18n';
 
 interface DossierPrintViewProps {
   target: string;
@@ -14,7 +15,8 @@ export function DossierPrintView({
   targetType,
   results,
 }: DossierPrintViewProps) {
-  const report = buildIntelligenceAssessment(results, target || 'target');
+  const { language } = useI18n();
+  const report = buildIntelligenceAssessment(results, target || 'target', 'account_correlation', language);
 
   return (
     <div className="hidden print:block bg-white text-black p-8 max-w-5xl mx-auto font-sans text-xs space-y-7">

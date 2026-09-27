@@ -4,6 +4,30 @@
 
 Este guia cobre o fluxo normal de uma investigação no Mineiro.
 
+## Idioma da interface
+
+O seletor no cabeçalho oferece:
+
+- **PT** — Português;
+- **EN** — English;
+- **ES** — Español.
+
+A escolha é aplicada imediatamente à interface e fica salva no navegador.
+
+Também seguem o idioma selecionado:
+
+- Intelligence Report;
+- julgamentos, hipóteses, contradições e gaps;
+- Username Linkage;
+- Relationship Graph;
+- AI Analyst Copilot;
+- configuração Gemini;
+- construtor de exportação;
+- HTML e Markdown exportados;
+- narrativas do JSON analítico.
+
+Os nomes estruturais de campos em JSON/CSV permanecem estáveis para não quebrar integrações.
+
 ## 1. Defina a pergunta
 
 Antes de coletar, escolha o **Intelligence Requirement**.

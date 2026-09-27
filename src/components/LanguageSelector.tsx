@@ -21,7 +21,7 @@ interface LanguageSelectorProps {
 }
 
 export function LanguageSelector({ variant = 'auto', className = '' }: LanguageSelectorProps) {
-  const { language, setLanguage, t } = useI18n();
+  const { language, setLanguage, tr } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -75,9 +75,9 @@ export function LanguageSelector({ variant = 'auto', className = '' }: LanguageS
           variant === 'dropdown' ? '!hidden' : ''
         }`}
         role="group"
-        aria-label="Language selection"
+        aria-label={tr('lang.select')}
       >
-        <div className="flex items-center text-[#A3A3A3] px-1.5 py-1" title="Select interface language">
+        <div className="flex items-center text-[#A3A3A3] px-1.5 py-1" title={tr('lang.select')}>
           <Globe className="w-3.5 h-3.5 text-[#FFFFFF]" />
         </div>
 
@@ -114,7 +114,7 @@ export function LanguageSelector({ variant = 'auto', className = '' }: LanguageS
           aria-expanded={isOpen}
           aria-haspopup="listbox"
           className="flex items-center gap-1.5 px-2.5 h-8.5 bg-[#0A0A0A] border border-[#2A2A2A] hover:border-[#737373] rounded-md text-xs text-[#F5F5F5] font-bold tracking-wider transition-colors"
-          title={`Active Language: ${currentOption.label}`}
+          title={`${tr('lang.active')}: ${currentOption.nativeLabel}`}
         >
           <Globe className="w-3.5 h-3.5 text-[#FFFFFF]" />
           <span className="uppercase text-[11px] font-bold">{currentOption.code}</span>
@@ -130,11 +130,11 @@ export function LanguageSelector({ variant = 'auto', className = '' }: LanguageS
           <div
             id="language-selector-menu"
             role="listbox"
-            aria-label="Available languages"
+            aria-label={tr('lang.available')}
             className="absolute right-0 top-full mt-1.5 w-44 bg-[#0A0A0A] border border-[#2A2A2A] rounded-md shadow-2xl p-1 z-50 animate-in fade-in zoom-in-95 duration-100 divide-y divide-[#2A2A2A]/40"
           >
             <div className="px-2.5 py-1.5 text-[10px] text-[#A3A3A3] uppercase tracking-wider font-semibold">
-              Select Language
+              {tr('lang.select')}
             </div>
             <div className="py-0.5 space-y-0.5">
               {SUPPORTED_LANGUAGES.map((option) => {
