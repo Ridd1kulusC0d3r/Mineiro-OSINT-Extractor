@@ -1106,10 +1106,17 @@ function formatMessage(template: string, vars?: Record<string, string | number>)
 }
 
 const literalLookup = new Map<string, UiMessageKey>();
+const legacyLiteralLookup = new Map<string, keyof Translations>();
+
 for (const locale of ['en', 'pt', 'es'] as Language[]) {
   const messages = uiMessages[locale];
   for (const key of Object.keys(messages) as UiMessageKey[]) {
     literalLookup.set(messages[key].trim(), key);
+  }
+
+  const legacy = translations[locale];
+  for (const key of Object.keys(legacy) as Array<keyof Translations>) {
+    legacyLiteralLookup.set(legacy[key].trim(), key);
   }
 }
 
@@ -1117,14 +1124,15 @@ function autoTranslateTree(root: ParentNode, language: Language) {
   const translateText = (value: string) => {
     const trimmed = value.trim();
     const key = literalLookup.get(trimmed);
-    if (!key) return value;
-    const translated = uiMessages[language][key];
+    const legacyKey = legacyLiteralLookup.get(trimmed);
+    if (!key && !legacyKey) return value;
+    const translated = key ? uiMessages[language][key] : translations[language][legacyKey!];
     const leading = value.match(/^\s*/)?.[0] || '';
     const trailing = value.match(/\s*$/)?.[0] || '';
     return `${leading}${translated}${trailing}`;
   };
 
-  const walk = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const walk = document.createTreeWalker(root as Node, NodeFilter.SHOW_TEXT);
   const textNodes: Text[] = [];
   while (walk.nextNode()) textNodes.push(walk.currentNode as Text);
   for (const node of textNodes) {
