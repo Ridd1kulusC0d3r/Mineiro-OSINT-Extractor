@@ -3,6 +3,7 @@ import { GitBranch, Info } from 'lucide-react';
 import type { EmailReconData, ScanResult } from '../types';
 import { buildIntelligenceAssessment } from '../intelligence/assessment';
 import { generateAccountLinkageDossier } from '../data/accountLinkage';
+import { useI18n } from '../utils/i18n';
 
 interface RelationshipGraphViewProps {
   target: string;
@@ -33,6 +34,7 @@ const WIDTH = 1120;
 const HEIGHT = 660;
 
 export function RelationshipGraphView({ target, results, emailData }: RelationshipGraphViewProps) {
+  const { tr } = useI18n();
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const data = useMemo(() => {
@@ -129,15 +131,15 @@ export function RelationshipGraphView({ target, results, emailData }: Relationsh
             Account Relationship Graph
           </div>
           <h2 className="mt-3 text-2xl font-semibold tracking-[-0.035em] text-[#f3f4f5]">
-            Mapa de relações observadas e candidatos de linkage.
+            {tr('graph.heading')}
           </h2>
           <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[#9097a0]">
-            Linhas sólidas vêm de evidência pública observada. Linhas tracejadas representam apenas similaridade de username e precisam de validação independente.
+            {tr('graph.desc')}
           </p>
         </div>
         <div className="flex gap-2 text-xs">
-          <span className="rounded-lg border border-[#343a40] px-3 py-2 text-[#b0b6bd]">{observedEdges} observed</span>
-          <span className="rounded-lg border border-dashed border-[#535a62] px-3 py-2 text-[#b0b6bd]">{candidateEdges} candidate</span>
+          <span className="rounded-lg border border-[#343a40] px-3 py-2 text-[#b0b6bd]">{observedEdges} {tr('graph.observed')}</span>
+          <span className="rounded-lg border border-dashed border-[#535a62] px-3 py-2 text-[#b0b6bd]">{candidateEdges} {tr('graph.candidate')}</span>
         </div>
       </div>
 
@@ -212,8 +214,8 @@ export function RelationshipGraphView({ target, results, emailData }: Relationsh
           )}
         </div>
         <div className="flex items-center gap-4 text-[10px] uppercase tracking-[0.12em] text-[#777f88]">
-          <span>solid = observed</span>
-          <span>dashed = candidate</span>
+          <span>{tr('graph.solid')}</span>
+          <span>{tr('graph.dashed')}</span>
         </div>
       </div>
     </section>
