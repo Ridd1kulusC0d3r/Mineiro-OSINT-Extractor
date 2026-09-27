@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Check, Copy, GitFork, Search } from 'lucide-react';
 import type { EmailReconData, ScanResult } from '../types';
 import { generateAccountLinkageDossier } from '../data/accountLinkage';
+import { useI18n } from '../utils/i18n';
 
 interface AccountLinkageViewProps {
   target: string;
@@ -16,6 +17,7 @@ export function AccountLinkageView({
   emailData,
   onPivotScan,
 }: AccountLinkageViewProps) {
+  const { tr } = useI18n();
   const [copiedHandle, setCopiedHandle] = useState<string | null>(null);
   const dossier = useMemo(
     () => generateAccountLinkageDossier(target, results, emailData),
@@ -40,11 +42,10 @@ export function AccountLinkageView({
               Username Linkage
             </div>
             <h2 className="mt-3 text-2xl font-semibold tracking-[-0.035em] text-[#f3f4f5]">
-              Variantes parecidas como pivôs, não como identidade confirmada.
+              {tr('linkage.heading')}
             </h2>
             <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[#9097a0]">
-              O motor normaliza o identificador, gera mutações sintáticas conservadoras e calcula similaridade de string.
-              Uma variante continua sendo candidata até existir evidência pública independente.
+              {tr('linkage.desc')}
             </p>
           </div>
           <div className="rounded-xl border border-[#343a40] px-3 py-2 text-xs text-[#b5bbc2]">
@@ -54,16 +55,16 @@ export function AccountLinkageView({
 
         <div className="mt-6 grid gap-3 sm:grid-cols-3">
           <div className="rounded-[16px] border border-[#282e33] p-4">
-            <div className="text-[10px] uppercase tracking-[0.14em] text-[#747c85]">Observed exact handle</div>
+            <div className="text-[10px] uppercase tracking-[0.14em] text-[#747c85]">{tr('linkage.observed')}</div>
             <div className="mt-2 text-2xl font-semibold text-[#f2f3f4]">{found}</div>
           </div>
           <div className="rounded-[16px] border border-[#282e33] p-4">
-            <div className="text-[10px] uppercase tracking-[0.14em] text-[#747c85]">Candidate variants</div>
+            <div className="text-[10px] uppercase tracking-[0.14em] text-[#747c85]">{tr('linkage.candidates')}</div>
             <div className="mt-2 text-2xl font-semibold text-[#f2f3f4]">{dossier.permutations.length}</div>
           </div>
           <div className="rounded-[16px] border border-[#282e33] p-4">
-            <div className="text-[10px] uppercase tracking-[0.14em] text-[#747c85]">Promotion rule</div>
-            <div className="mt-2 text-sm text-[#a5abb2]">pivot + independent public evidence</div>
+            <div className="text-[10px] uppercase tracking-[0.14em] text-[#747c85]">{tr('linkage.promotion')}</div>
+            <div className="mt-2 text-sm text-[#a5abb2]">{tr('linkage.promotionValue')}</div>
           </div>
         </div>
       </div>
@@ -97,7 +98,7 @@ export function AccountLinkageView({
                 className="inline-flex items-center gap-2 rounded-lg border border-[#30363c] px-3 py-2 text-xs text-[#9da4ac] hover:text-white"
               >
                 {copiedHandle === item.label ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                {copiedHandle === item.label ? 'Copied' : 'Copy'}
+                {copiedHandle === item.label ? tr('linkage.copied') : tr('linkage.copy')}
               </button>
               <button
                 type="button"
@@ -113,7 +114,7 @@ export function AccountLinkageView({
       </div>
 
       <div className="rounded-[18px] border border-[#292f34] bg-[#0f1214] p-5">
-        <div className="text-[10px] uppercase tracking-[0.14em] text-[#747c85]">Method notes</div>
+        <div className="text-[10px] uppercase tracking-[0.14em] text-[#747c85]">{tr('linkage.method')}</div>
         <div className="mt-3 grid gap-3 md:grid-cols-3">
           {dossier.behavioralHypotheses.map((note, index) => (
             <p key={index} className="text-sm leading-relaxed text-[#9299a2]">{note}</p>
