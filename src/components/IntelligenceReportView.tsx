@@ -23,13 +23,120 @@ import { requirementLabel } from '../intelligence/localization';
 interface IntelligenceReportViewProps {
   target: string;
   results: ScanResult[];
-  onOpenExport: () => void;
+  onOpen{tr('header.export')}: () => void;
   onViewTable: () => void;
   aiApiKey?: string;
   aiModel?: string;
   requirement?: IntelligenceRequirement;
   onRequirementChange?: (requirement: IntelligenceRequirement) => void;
 }
+
+const requirementKeys = Object.keys(INTELLIGENCE_REQUIREMENT_LABELS) as IntelligenceRequirement[];
+
+function Band({ value }: { value: string }) {
+  return (
+    <span className="inline-flex items-center rounded-full border border-[#34383d] px-2.5 py-1 text-[10px] font-semibold tracking-[0.14em] text-[#d9dce0]">
+      {value}
+    </span>
+  );
+}
+
+function Section({
+  id,
+  index,
+  title,
+  description,
+  children,
+}: {
+  id: string;
+  index: string;
+  title: string;
+  description: string;
+  children: ReactNode;
+}) {
+  return (
+    <section id={id} className="scroll-mt-36 border-b border-[#20252a] py-14">
+      <div className="grid gap-4 lg:grid-cols-[1fr_1fr] lg:items-end">
+        <div>
+          <div className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-[#8f969f]">
+            {index}
+          </div>
+          <h2 className="mt-2 text-2xl md:text-3xl font-semibold tracking-[-0.035em] text-[#f4f5f6]">
+            {title}
+          </h2>
+        </div>
+        <p className="max-w-xl text-sm md:text-base text-[#8e959e] lg:justify-self-end">{description}</p>
+      </div>
+      <div className="mt-8">{children}</div>
+    </section>
+  );
+}
+
+function Metric({ label, value, detail }: { label: string; value: string | number; detail: string }) {
+  return (
+    <div className="rounded-[22px] border border-[#2b3035] bg-[#111417] px-6 py-6 min-h-[148px] flex flex-col justify-between">
+      <div className="text-[11px] uppercase tracking-[0.17em] text-[#8b929b]">{label}</div>
+      <div>
+        <div className="text-4xl font-semibold tracking-[-0.045em] text-[#f4f5f6]">{value}</div>
+        <div className="mt-2 text-sm text-[#8f969f]">{detail}</div>
+      </div>
+    </div>
+  );
+}
+
+export function IntelligenceReportView({
+  target,
+  results,
+  onOpen{tr('header.export')},
+  onViewTable,
+  aiApiKey,
+  aiModel,
+  requirement = 'account_correlation',
+  onRequirementChange,
+}: IntelligenceReportViewProps) {
+  const { language, tr } = useI18n();
+  const requirements = requirementKeys.map((key) => [key, requirementLabel(language, key)] as const);
+  const report = useMemo(
+    () => buildIntelligenceAssessment(results, target || 'target', requirement, language),
+    [results, target, requirement, language]
+  );
+  const [selectedEvidenceId, setSelectedEvidenceId] = useState<string | null>(null);
+  const [snapshotHash, setSnapshotHash] = useState<string>('calculating…');
+
+  const selectedEvidence = report.evidence.find((e) => e.id === selectedEvidenceId) || null;
+
+  useEffect(() => {
+    let cancelled = false;
+    const canonical = JSON.stringify({
+      target,
+      requirement,
+      generatedFrom: results
+        .map((r) => ({
+          platformId: r.platformId,
+          status: r.status,
+          statusCode: r.statusCode,
+          url: r.url,
+          checkedAt: r.checkedAt,
+          confidenceScore: r.confidenceScore,
+          detectorReliability: r.detectorReliability,
+          evidenceSignals: r.evidenceSignals || [],
+        }))
+        .sort((a, b) => a.platformId.localeCompare(b.platformId)),
+    });
+    computeSha256(canonical)
+      .then((hash) => { if (!cancelled) setSnapshotHash(hash); })
+      .catch(() => { if (!cancelled) setSnapshotHash('unavailable'); });
+    return () => { cancelled = true; };
+  }, [target, requirement, results]);
+
+  const navigation = [
+    ['intel-requirement', tr('report.requirement')],
+    ['intel-assessment', tr('report.assessment')],
+    ['intel-evidence', tr('report.evidence')],
+    ['intel-correlation', tr('report.correlation')],
+    ['intel-gaps', tr('report.gaps')],
+    ['intel-integrity', tr('report.integrity')],
+  ];
 
   return (
     <article className="mx-auto max-w-[1320px] px-4 sm:px-6 lg:px-8 pb-24">
@@ -44,11 +151,11 @@ interface IntelligenceReportViewProps {
           </nav>
           <div className="flex shrink-0 gap-2">
             <button type="button" onClick={onViewTable} className="rounded-xl border border-[#2d3339] px-3 py-2 text-xs text-[#c8ccd1] hover:text-white">
-              Audit table
+              {tr('report.auditTable')}
             </button>
-            <button type="button" onClick={onOpenExport} className="inline-flex items-center gap-2 rounded-xl border border-[#394047] bg-[#15191c] px-3 py-2 text-xs font-medium text-[#f2f3f4]">
+            <button type="button" onClick={onOpen{tr('header.export')}} className="inline-flex items-center gap-2 rounded-xl border border-[#394047] bg-[#15191c] px-3 py-2 text-xs font-medium text-[#f2f3f4]">
               <Download className="h-3.5 w-3.5" />
-              Export
+              {tr('header.export')}
             </button>
           </div>
         </div>
@@ -314,7 +421,7 @@ interface IntelligenceReportViewProps {
         <div className="rounded-[20px] border border-[#3b4249] bg-[#101316] p-6">
           <div className="flex items-center gap-2 text-sm text-[#edf0f2]"><FileKey2 className="h-4 w-4" /> SHA-256</div>
           <code className="mt-4 block break-all rounded-xl bg-[#0b0e10] p-4 text-xs text-[#b9bec4]">{snapshotHash}</code>
-          <div className="mt-4 text-xs text-[#747c85]">Target: {target || 'target'} · Requirement: {report.intelligenceRequirementLabel} · Generated locally</div>
+          <div className="mt-4 text-xs text-[#747c85]">Target: {target || 'target'} · Requirement: {report.intelligenceRequirementLabel} · {tr('report.generatedLocal')}</div>
         </div>
       </Section>
 
@@ -325,7 +432,7 @@ interface IntelligenceReportViewProps {
             <div><div className="text-[10px] uppercase tracking-[0.14em] text-[#737b84]">Optional</div><p className="mt-2 text-sm text-[#abb1b8]">Raw results and AI synthesis remain explicitly selectable.</p></div>
             <div><div className="text-[10px] uppercase tracking-[0.14em] text-[#737b84]">Integrity</div><p className="mt-2 text-sm text-[#abb1b8]">Every exported payload receives its own SHA-256 manifest.</p></div>
           </div>
-          <button type="button" onClick={onOpenExport} className="mt-6 inline-flex items-center gap-2 rounded-xl border border-[#4a5159] px-4 py-2.5 text-sm text-[#eef0f2] hover:bg-[#171b1f]"><Download className="h-4 w-4" /> Open export builder</button>
+          <button type="button" onClick={onOpen{tr('header.export')}} className="mt-6 inline-flex items-center gap-2 rounded-xl border border-[#4a5159] px-4 py-2.5 text-sm text-[#eef0f2] hover:bg-[#171b1f]"><Download className="h-4 w-4" /> {tr('report.openExport')}</button>
         </div>
       </Section>
 
