@@ -99,8 +99,6 @@ const labelsByLanguage: Record<'en' | 'pt' | 'es', Array<[keyof IntelligenceExpo
   ],
 };
 
-function download
-
 function download(name: string, content: string, type: string) {
   const blob = new Blob([content], { type });
   const url = URL.createObjectURL(blob);
