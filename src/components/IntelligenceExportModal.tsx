@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Check, Download, FileCode2, FileJson2, FileSpreadsheet, X } from 'lucide-react';
 import type { ScanResult } from '../types';
 import type { IntelligenceRequirement } from '../intelligence/types';
+import { useI18n } from '../utils/i18n';
 import {
   DEFAULT_INTELLIGENCE_EXPORT,
   createExportManifest,
@@ -63,6 +64,7 @@ export function IntelligenceExportModal({
   results,
   requirement,
 }: IntelligenceExportModalProps) {
+  const { tr } = useI18n();
   const [sections, setSections] = useState<IntelligenceExportSelection>(DEFAULT_INTELLIGENCE_EXPORT);
   const [isExporting, setIsExporting] = useState(false);
   const activeCount = useMemo(() => Object.values(sections).filter(Boolean).length, [sections]);
@@ -100,9 +102,9 @@ export function IntelligenceExportModal({
             <div className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-[#969da7]">
               Report export · local only · {requirement}
             </div>
-            <h2 className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[#f4f5f6]">Monte o relatório antes de exportar.</h2>
+            <h2 className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[#f4f5f6]">{tr('export.title')}</h2>
             <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[#8f969f]">
-              Cada export gera o arquivo principal e um manifest JSON separado com SHA-256 do payload, formato e lista exata de seções incluídas e excluídas.
+              {tr('export.subtitle')}
             </p>
           </div>
           <button type="button" onClick={onClose} className="rounded-xl border border-[#30363c] p-2.5 text-[#a7adb5] hover:text-white"><X className="h-4 w-4" /></button>
@@ -111,10 +113,10 @@ export function IntelligenceExportModal({
         <div className="grid gap-8 px-6 py-7 md:px-8 lg:grid-cols-[1.25fr_.75fr]">
           <div>
             <div className="flex items-center justify-between gap-3">
-              <div><div className="text-sm font-medium text-[#eff1f2]">Conteúdo do relatório</div><div className="mt-1 text-xs text-[#777f89]">{activeCount}/{labels.length} seções selecionadas</div></div>
+              <div><div className="text-sm font-medium text-[#eff1f2]">{tr('export.content')}</div><div className="mt-1 text-xs text-[#777f89]">{activeCount}/{labels.length} {tr('export.sectionsSelected')}</div></div>
               <div className="flex gap-2">
-                <button type="button" onClick={() => setSections(DEFAULT_INTELLIGENCE_EXPORT)} className="rounded-lg border border-[#30363c] px-3 py-2 text-xs text-[#aeb3b9] hover:text-white">Padrão</button>
-                <button type="button" onClick={() => setSections(Object.fromEntries(labels.map(([k]) => [k, true])) as unknown as IntelligenceExportSelection)} className="rounded-lg border border-[#30363c] px-3 py-2 text-xs text-[#aeb3b9] hover:text-white">Tudo</button>
+                <button type="button" onClick={() => setSections(DEFAULT_INTELLIGENCE_EXPORT)} className="rounded-lg border border-[#30363c] px-3 py-2 text-xs text-[#aeb3b9] hover:text-white">{tr('export.default')}</button>
+                <button type="button" onClick={() => setSections(Object.fromEntries(labels.map(([k]) => [k, true])) as unknown as IntelligenceExportSelection)} className="rounded-lg border border-[#30363c] px-3 py-2 text-xs text-[#aeb3b9] hover:text-white">{tr('export.all')}</button>
               </div>
             </div>
 
@@ -132,23 +134,23 @@ export function IntelligenceExportModal({
 
           <aside>
             <div className="sticky top-8 rounded-[22px] border border-[#2b3035] bg-[#101316] p-5">
-              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.17em] text-[#858d96]">Export formats</div>
+              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.17em] text-[#858d96]">{tr('export.formats')}</div>
               <div className="mt-4 grid gap-3">
                 <button disabled={isExporting} onClick={() => doExport('html','html','text/html;charset=utf-8',()=>generateIntelligenceHtml(target,results,sections,requirement))} className="group flex items-center gap-4 rounded-[16px] border border-[#343a40] p-4 text-left hover:border-[#606873] disabled:opacity-50">
-                  <FileCode2 className="h-5 w-5 text-[#cbd0d5]" /><div className="flex-1"><div className="text-sm font-medium text-[#f1f2f3]">Enriched HTML</div><div className="mt-1 text-xs text-[#7f8790]">Leitura e impressão local.</div></div><Download className="h-4 w-4" />
+                  <FileCode2 className="h-5 w-5 text-[#cbd0d5]" /><div className="flex-1"><div className="text-sm font-medium text-[#f1f2f3]">{tr('export.html')}</div><div className="mt-1 text-xs text-[#7f8790]">{tr('export.htmlDesc')}</div></div><Download className="h-4 w-4" />
                 </button>
                 <button disabled={isExporting} onClick={() => doExport('json','json','application/json;charset=utf-8',()=>generateIntelligenceJson(target,results,sections,requirement))} className="group flex items-center gap-4 rounded-[16px] border border-[#343a40] p-4 text-left hover:border-[#606873] disabled:opacity-50">
-                  <FileJson2 className="h-5 w-5 text-[#cbd0d5]" /><div className="flex-1"><div className="text-sm font-medium text-[#f1f2f3]">Analytical JSON</div><div className="mt-1 text-xs text-[#7f8790]">Integrações e automação.</div></div><Download className="h-4 w-4" />
+                  <FileJson2 className="h-5 w-5 text-[#cbd0d5]" /><div className="flex-1"><div className="text-sm font-medium text-[#f1f2f3]">{tr('export.json')}</div><div className="mt-1 text-xs text-[#7f8790]">{tr('export.jsonDesc')}</div></div><Download className="h-4 w-4" />
                 </button>
                 <button disabled={isExporting} onClick={() => doExport('markdown','md','text/markdown;charset=utf-8',()=>generateIntelligenceMarkdown(target,results,sections,requirement))} className="group flex items-center gap-4 rounded-[16px] border border-[#343a40] p-4 text-left hover:border-[#606873] disabled:opacity-50">
-                  <FileCode2 className="h-5 w-5 text-[#cbd0d5]" /><div className="flex-1"><div className="text-sm font-medium text-[#f1f2f3]">Markdown</div><div className="mt-1 text-xs text-[#7f8790]">Case notes e documentação.</div></div><Download className="h-4 w-4" />
+                  <FileCode2 className="h-5 w-5 text-[#cbd0d5]" /><div className="flex-1"><div className="text-sm font-medium text-[#f1f2f3]">Markdown</div><div className="mt-1 text-xs text-[#7f8790]">{tr('export.markdownDesc')}</div></div><Download className="h-4 w-4" />
                 </button>
                 <button disabled={isExporting} onClick={() => doExport('csv','csv','text/csv;charset=utf-8',()=>generateEvidenceCsv(target,results,requirement))} className="group flex items-center gap-4 rounded-[16px] border border-[#343a40] p-4 text-left hover:border-[#606873] disabled:opacity-50">
-                  <FileSpreadsheet className="h-5 w-5 text-[#cbd0d5]" /><div className="flex-1"><div className="text-sm font-medium text-[#f1f2f3]">Evidence CSV</div><div className="mt-1 text-xs text-[#7f8790]">Finding, scores, source quality, IPS e provenance.</div></div><Download className="h-4 w-4" />
+                  <FileSpreadsheet className="h-5 w-5 text-[#cbd0d5]" /><div className="flex-1"><div className="text-sm font-medium text-[#f1f2f3]">{tr('export.csv')}</div><div className="mt-1 text-xs text-[#7f8790]">{tr('export.csvDesc')}</div></div><Download className="h-4 w-4" />
                 </button>
               </div>
               <div className="mt-5 border-t border-[#282d32] pt-4 text-xs leading-relaxed text-[#7f8790]">
-                <b className="text-[#b9bec4]">Integridade:</b> o manifest calcula SHA-256 sobre o payload antes da inserção do próprio manifest. Isso verifica integridade do arquivo, não autoria ou identidade.
+                <b className="text-[#b9bec4]">{tr('export.integrity')}:</b> {tr('export.integrityDesc')}
               </div>
             </div>
           </aside>
