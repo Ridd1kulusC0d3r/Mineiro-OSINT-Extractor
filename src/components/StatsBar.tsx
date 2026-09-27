@@ -14,6 +14,7 @@ type View =
   | 'grid'
   | 'table'
   | 'profile'
+  | 'ai'
   | 'linkage'
   | 'terminal'
   | 'batch';
