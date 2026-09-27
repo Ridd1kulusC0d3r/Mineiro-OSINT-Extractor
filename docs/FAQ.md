@@ -25,7 +25,7 @@ Porque alguns serviços respondem com rate limit, WAF, redirects ambíguos ou co
 Não. Os 7.880 são checks lógicos possíveis. Vários são extraídos de uma única resposta.
 
 ## Posso rodar no Colab?
-Sim. Use o notebook oficial em `notebooks/Mineiro_Official_Colab.ipynb`.
+Sim. Use o notebook oficial em `notebooks/Mineiro_Username_Intelligence_Colab.ipynb`.
 
 ## O Copilot é obrigatório?
 Não. Todo assessment determinístico funciona sem IA.

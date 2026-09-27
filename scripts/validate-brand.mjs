@@ -64,10 +64,15 @@ function collect(dir) {
   return out;
 }
 
+const validatorFilesAllowedToReferenceLegacyNames = new Set([
+  'scripts/validate-brand.mjs',
+  'scripts/validate-docs.mjs',
+]);
+
 const activeFiles = [
   ...rootFiles.filter((file) => fs.existsSync(file)),
   ...roots.flatMap((root) => fs.existsSync(root) ? collect(root) : []),
-];
+].filter((file) => !validatorFilesAllowedToReferenceLegacyNames.has(file));
 
 const violations = [];
 for (const file of activeFiles) {
