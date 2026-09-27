@@ -16,10 +16,10 @@ for (const locale of locales) {
   }
 }
 
-if (uiMessages.en['header.report'] === uiMessages.pt['header.report']) {
+if (String(uiMessages.en['header.report']) === String(uiMessages.pt['header.report'])) {
   throw new Error('English and Portuguese header translations unexpectedly match.');
 }
-if (uiMessages.pt['header.report'] === uiMessages.es['header.report']) {
+if (String(uiMessages.pt['header.report']) === String(uiMessages.es['header.report'])) {
   throw new Error('Portuguese and Spanish header translations unexpectedly match.');
 }
 
@@ -29,7 +29,7 @@ for (const locale of locales) {
   if (!requirement.trim() || !evidence.trim()) throw new Error(`Analytical localization missing for ${locale}.`);
 }
 
-if (analysisText('pt', 'gap2_q') === analysisText('en', 'gap2_q')) {
+if (String(analysisText('pt', 'gap2_q')) === String(analysisText('en', 'gap2_q'))) {
   throw new Error('Analytical gap localization did not change across locales.');
 }
 
