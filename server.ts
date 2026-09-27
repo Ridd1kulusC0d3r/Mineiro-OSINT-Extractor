@@ -131,7 +131,7 @@ function getGenAiClient(customApiKey?: string): { client: GoogleGenAI; isCustom:
       apiKey,
       httpOptions: {
         headers: {
-          'User-Agent': 'mineiro-username-intelligence/1.4.3',
+          'User-Agent': 'mineiro-username-intelligence/1.4.4',
         },
       },
     }),
@@ -225,7 +225,7 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     service: 'Mineiro Username Intelligence · OSINT Investigation Workbench',
-    version: '1.4.3',
+    version: '1.4.4',
     timestamp: new Date().toISOString(),
     geminiConfigured: Boolean(process.env.GEMINI_API_KEY),
     supportedDatabases: ['Mineiro Core (local direct probes)', 'Mineiro Evidence Engine', 'Mineiro Public Recon'],
@@ -319,7 +319,7 @@ app.post('/api/osint/verify', async (req, res) => {
       method: 'GET',
       signal: controller.signal,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 MineiroUsernameIntelligence/1.4.3',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 MineiroUsernameIntelligence/1.4.4',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.5',
       },
