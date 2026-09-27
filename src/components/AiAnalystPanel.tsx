@@ -15,8 +15,8 @@ interface AiAnalystPanelProps {
 }
 
 export function AiAnalystPanel({ target, results, apiKey, model, requirement = 'account_correlation' }: AiAnalystPanelProps) {
-  const { tr } = useI18n();
-  const assessment = useMemo(() => buildIntelligenceAssessment(results, target || 'target', requirement), [results, target, requirement]);
+  const { tr, language } = useI18n();
+  const assessment = useMemo(() => buildIntelligenceAssessment(results, target || 'target', requirement, language), [results, target, requirement, language]);
   const [question, setQuestion] = useState('');
   const [output, setOutput] = useState<(AnalystCopilotOutput & { modelUsed?: string }) | null>(null);
   const [isLoading, setIsLoading] = useState(false);
