@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { getPlatformsForScope } from '../data/platforms';
 import type { CachedInvestigation, ModularScanConfig, ScanPreset } from '../types';
+import { useI18n } from '../utils/i18n';
 
 interface TargetBarProps {
   target: string;
@@ -34,10 +35,10 @@ interface TargetBarProps {
   onToggleScanDepth?: (depth: 'fast' | 'deep') => void;
 }
 
-const presetMeta: Array<[ScanPreset, string, string]> = [
-  ['quick', 'Quick', '20'],
-  ['standard', 'Standard', '50'],
-  ['deep', 'Full', '985'],
+const presetMeta: Array<[ScanPreset, 'target.quick' | 'target.standard' | 'target.full', string]> = [
+  ['quick', 'target.quick', '20'],
+  ['standard', 'target.standard', '50'],
+  ['deep', 'target.full', '985'],
 ];
 
 export function TargetBar({
@@ -54,6 +55,8 @@ export function TargetBar({
   onOpenBulkImport,
   bulkBatchCount = 0,
 }: TargetBarProps) {
+  const { tr } = useI18n();
+
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     if (!target.trim()) return;
@@ -109,7 +112,7 @@ export function TargetBar({
               type="text"
               value={target}
               onChange={(e) => setTarget(e.target.value)}
-              placeholder={targetType === 'username' ? 'username para investigar' : 'email para validar'}
+              placeholder={targetType === 'username' ? tr('target.usernamePlaceholder') : tr('target.emailPlaceholder')}
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
@@ -140,7 +143,7 @@ export function TargetBar({
                 }`}
                 title={preset === 'deep' ? 'Full progressive scan' : `${label} scan`}
               >
-                <span className="font-medium">{label}</span>
+                <span className="font-medium">{tr(label)}</span>
                 <span className="ml-1 text-[#69717a]">{count}</span>
               </button>
             ))}
@@ -152,7 +155,7 @@ export function TargetBar({
                   ? 'bg-[#eef0f2] text-[#0b0e10]'
                   : 'text-[#858d96] hover:bg-[#1c2125] hover:text-white'
               }`}
-              title="Configuração avançada"
+              title={tr('target.settings')}
             >
               <Settings2 className="h-4 w-4" />
             </button>
@@ -168,21 +171,21 @@ export function TargetBar({
             }`}
           >
             {isScanning ? <Square className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
-            {isScanning ? 'Stop' : 'Run scan'}
+            {isScanning ? tr('target.stop') : tr('target.run')}
           </button>
         </form>
 
         <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-[#747c85]">
           <div className="flex flex-wrap items-center gap-2">
-            <span>{activePlatforms.length} detectores no escopo</span>
+            <span>{activePlatforms.length} {tr('target.detectorsScope')}</span>
             <span className="text-[#3e454c]">·</span>
-            <span>{scanConfig.concurrency}x configuração base</span>
+            <span>{scanConfig.concurrency}x {tr('target.baseConcurrency')}</span>
             <span className="text-[#3e454c]">·</span>
-            <span>{scanConfig.enableEvidenceChecks ? 'Evidence Engine ativo' : 'Evidence Engine sob demanda'}</span>
+            <span>{scanConfig.enableEvidenceChecks ? tr('target.evidenceOn') : tr('target.evidenceDemand')}</span>
             {isProgressiveFull && (
               <>
                 <span className="text-[#3e454c]">·</span>
-                <span className="text-[#b2b7bd]">Full usa discovery → validation</span>
+                <span className="text-[#b2b7bd]">{tr('target.fullProgressive')}</span>
               </>
             )}
           </div>
