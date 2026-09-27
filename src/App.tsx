@@ -6,13 +6,13 @@ import { DashboardView } from './components/DashboardView';
 import { IntelligenceReportView } from './components/IntelligenceReportView';
 import { PlatformGrid } from './components/PlatformGrid';
 import { PlatformTable } from './components/PlatformTable';
-import { AiProfileCard } from './components/AiProfileCard';
 import { EmailReconCard } from './components/EmailReconCard';
 import { TerminalLogs } from './components/TerminalLogs';
 import { IntelligenceExportModal } from './components/IntelligenceExportModal';
 import { DossierPrintView } from './components/DossierPrintView';
 import { GeminiConfigModal } from './components/GeminiConfigModal';
-import { AccountLinkageView } from './components/AccountLinkageView';
+import { CorrelationWorkspace } from './components/CorrelationWorkspace';
+import { AiWorkspace } from './components/AiWorkspace';
 import { BulkImportModal } from './components/BulkImportModal';
 import { BulkScanView } from './components/BulkScanView';
 import { ModularScanModal } from './components/ModularScanModal';
@@ -50,7 +50,7 @@ export default function App() {
   const [concurrency, setConcurrency] = useState<number>(16);
   const [isScanning, setIsScanning] = useState<boolean>(false);
   const [activeView, setActiveView] = useState<
-    'intelligence' | 'dashboard' | 'grid' | 'table' | 'profile' | 'linkage' | 'terminal' | 'batch'
+    'intelligence' | 'dashboard' | 'grid' | 'table' | 'profile' | 'ai' | 'linkage' | 'terminal' | 'batch'
   >('intelligence');
   const [intelligenceRequirement, setIntelligenceRequirement] = useState<IntelligenceRequirement>('account_correlation');
 
@@ -839,7 +839,7 @@ export default function App() {
         setActiveView('table');
         break;
       case 'view-profile':
-        setActiveView('intelligence');
+        setActiveView('ai');
         break;
       case 'view-linkage':
         setActiveView('linkage');
@@ -880,7 +880,7 @@ export default function App() {
         onReset={handleReset}
         onOpenExport={() => setIsExportOpen(true)}
         onGoToDashboard={() => setActiveView('intelligence')}
-        onOpenGeminiConfig={() => setIsGeminiModalOpen(true)}
+        onOpenAiWorkspace={() => setActiveView('ai')}
         onOpenBulkImport={() => setIsBulkModalOpen(true)}
         onOpenHistory={() => setIsHistoryModalOpen(true)}
         onOpenShortcuts={() => setIsShortcutsModalOpen(true)}
@@ -988,12 +988,12 @@ export default function App() {
             aiProfile={aiProfile}
             onViewGrid={() => setActiveView('grid')}
             onViewTable={() => setActiveView('table')}
-            onViewProfile={() => setActiveView('profile')}
+            onViewProfile={() => setActiveView('ai')}
             onViewTerminal={() => setActiveView('terminal')}
             onOpenExport={() => setIsExportOpen(true)}
             onPivotScan={handlePivotScan}
             isScanning={isScanning}
-            onRequestAiProfile={() => fetchAiProfile(target, results.filter((r) => r.status === 'found'))}
+            onRequestAiProfile={() => setActiveView('ai')}
             isAiLoading={isAiLoading}
             bulkBatch={bulkBatch}
             onViewBatch={() => setActiveView('batch')}
@@ -1004,9 +1004,9 @@ export default function App() {
           />
         )}
 
-        {/* View: Account Linkage Theory & Permutations */}
+        {/* View: Correlation workspace */}
         {activeView === 'linkage' && (
-          <AccountLinkageView
+          <CorrelationWorkspace
             target={target}
             results={results}
             emailData={emailData}
@@ -1041,18 +1041,15 @@ export default function App() {
           </div>
         )}
 
-        {/* View: AI Intelligence Profile */}
-        {activeView === 'profile' && (
-          <AiProfileCard
-            report={aiProfile}
+        {/* View: AI Analyst Workspace */}
+        {(activeView === 'ai' || activeView === 'profile') && (
+          <AiWorkspace
             target={target}
-            foundResults={results.filter((r) => r.status === 'found')}
-            isLoading={isAiLoading}
-            onRequestProfile={() => fetchAiProfile(target, results.filter((r) => r.status === 'found'))}
-            onOpenGeminiConfig={() => setIsGeminiModalOpen(true)}
-            hasPersonalKey={Boolean(personalGeminiKey)}
-            emailData={emailData}
-            onOpenExport={() => setIsExportOpen(true)}
+            results={results}
+            apiKey={personalGeminiKey}
+            model={selectedGeminiModel}
+            requirement={intelligenceRequirement}
+            onOpenConfig={() => setIsGeminiModalOpen(true)}
           />
         )}
 
@@ -1165,10 +1162,10 @@ export default function App() {
             <span className="text-[#737373]">•</span>
             <span className="text-[#A3A3A3]">WAF & ANTI-BOT GUARD</span>
             <span className="text-[#737373]">•</span>
-            <span className="text-[#A3A3A3]">AUTONOMOUS AI DOSSIER</span>
+            <span className="text-[#A3A3A3]">EVIDENCE-BOUNDED AI COPILOT</span>
           </div>
           <div className="text-[10px] text-[#737373]">
-            ADVANCED FORENSIC OPEN-SOURCE RECONNAISSANCE & THREAT INTELLIGENCE
+            OSINT INVESTIGATION WORKBENCH · EVIDENCE · CORRELATION · REPORTING
           </div>
         </div>
       </footer>
