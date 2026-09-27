@@ -3,6 +3,7 @@ import { BrainCircuit, CheckCircle2, Settings2, TriangleAlert } from 'lucide-rea
 import type { ScanResult } from '../types';
 import type { IntelligenceRequirement } from '../intelligence/types';
 import { AiAnalystPanel } from './AiAnalystPanel';
+import { useI18n } from '../utils/i18n';
 
 interface AiWorkspaceProps {
   target: string;
@@ -21,6 +22,7 @@ export function AiWorkspace({
   requirement,
   onOpenConfig,
 }: AiWorkspaceProps) {
+  const { tr } = useI18n();
   const [status, setStatus] = useState<{
     configured: boolean;
     source: 'personal' | 'server' | 'none';
@@ -60,10 +62,10 @@ export function AiWorkspace({
               AI Analyst
             </div>
             <h1 className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-[#f4f5f6]">
-              Copilot analítico conectado ao assessment, não ao legado de profiling.
+              {tr('ai.workspaceTitle')}
             </h1>
             <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[#9097a0]">
-              A IA recebe a camada estruturada de evidência e pode resumir, revisar contradições, gaps e pivôs. Ela não aumenta confidence factual sozinha.
+              {tr('ai.workspaceDesc')}
             </p>
           </div>
           <button
@@ -78,18 +80,18 @@ export function AiWorkspace({
 
         <div className="mt-6 grid gap-3 sm:grid-cols-3">
           <div className="rounded-[16px] border border-[#292f34] p-4">
-            <div className="text-[10px] uppercase tracking-[0.14em] text-[#747c85]">Connection</div>
+            <div className="text-[10px] uppercase tracking-[0.14em] text-[#747c85]">{tr('ai.connection')}</div>
             <div className="mt-2 flex items-center gap-2 text-sm text-[#e6e9ec]">
               {status?.configured ? <CheckCircle2 className="h-4 w-4" /> : <TriangleAlert className="h-4 w-4" />}
-              {status?.configured ? 'configured' : 'not configured'}
+              {status?.configured ? tr('ai.configured') : tr('ai.notConfigured')}
             </div>
           </div>
           <div className="rounded-[16px] border border-[#292f34] p-4">
-            <div className="text-[10px] uppercase tracking-[0.14em] text-[#747c85]">Credential source</div>
-            <div className="mt-2 text-sm text-[#e6e9ec]">{status?.source || (apiKey ? 'personal' : 'unknown')}</div>
+            <div className="text-[10px] uppercase tracking-[0.14em] text-[#747c85]">{tr('ai.credentialSource')}</div>
+            <div className="mt-2 text-sm text-[#e6e9ec]">{status?.source === 'personal' ? tr('ai.personal') : status?.source === 'server' ? tr('ai.server') : status?.source === 'none' ? tr('ai.none') : apiKey ? tr('ai.personal') : tr('ai.unknown')}</div>
           </div>
           <div className="rounded-[16px] border border-[#292f34] p-4">
-            <div className="text-[10px] uppercase tracking-[0.14em] text-[#747c85]">Selected model</div>
+            <div className="text-[10px] uppercase tracking-[0.14em] text-[#747c85]">{tr('ai.selectedModel')}</div>
             <div className="mt-2 font-mono text-sm text-[#e6e9ec]">{model || status?.defaultModel || 'gemini-3.8-flash'}</div>
           </div>
         </div>
