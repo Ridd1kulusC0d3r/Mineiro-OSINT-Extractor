@@ -1,7 +1,7 @@
 {
   "name": "mineiro-username-intelligence",
   "private": false,
-  "version": "1.4.3",
+  "version": "1.4.4",
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
@@ -17,8 +17,9 @@
     "intelligence:test": "tsx scripts/intelligence-smoke.ts",
     "colab:validate": "node scripts/validate-colab.mjs",
     "docs:validate": "node scripts/validate-docs.mjs",
-    "check": "npm run brand:validate && npm run registry:validate && npm run lint && npm run demo && npm run intelligence:test && npm run manual:validate && npm run colab:validate && npm run docs:validate && npm run build",
-    "brand:validate": "node scripts/validate-brand.mjs"
+    "check": "npm run brand:validate && npm run i18n:validate && npm run registry:validate && npm run lint && npm run demo && npm run intelligence:test && npm run manual:validate && npm run colab:validate && npm run docs:validate && npm run build",
+    "brand:validate": "node scripts/validate-brand.mjs",
+    "i18n:validate": "tsx scripts/i18n-smoke.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
