@@ -4,6 +4,7 @@ import type { ScanResult } from '../types';
 import { buildIntelligenceAssessment } from '../intelligence/assessment';
 import type { AnalystCopilotOutput } from '../ai/analystCopilot';
 import type { IntelligenceRequirement } from '../intelligence/types';
+import { useI18n } from '../utils/i18n';
 
 interface AiAnalystPanelProps {
   target: string;
@@ -14,6 +15,7 @@ interface AiAnalystPanelProps {
 }
 
 export function AiAnalystPanel({ target, results, apiKey, model, requirement = 'account_correlation' }: AiAnalystPanelProps) {
+  const { tr } = useI18n();
   const assessment = useMemo(() => buildIntelligenceAssessment(results, target || 'target', requirement), [results, target, requirement]);
   const [question, setQuestion] = useState('');
   const [output, setOutput] = useState<(AnalystCopilotOutput & { modelUsed?: string }) | null>(null);
@@ -43,10 +45,10 @@ export function AiAnalystPanel({ target, results, apiKey, model, requirement = '
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'AI analyst request failed');
+      if (!res.ok) throw new Error(data.error || tr('ai.requestFailed'));
       setOutput(data);
     } catch (err: any) {
-      setError(err?.message || 'AI analyst request failed');
+      setError(err?.message || tr('ai.requestFailed'));
     } finally {
       setIsLoading(false);
     }
@@ -61,14 +63,14 @@ export function AiAnalystPanel({ target, results, apiKey, model, requirement = '
             AI Analyst Copilot
           </div>
           <h3 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-[#f4f5f6]">
-            Use IA para triagem, não para fabricar certeza.
+            {tr('ai.copilotTitle')}
           </h3>
           <p className="mt-3 text-sm leading-relaxed text-[#8f969f]">
-            O copiloto recebe somente a avaliação já construída localmente. Ele pode resumir evidências, sugerir pivôs, apontar contradições e priorizar gaps. O resultado permanece marcado como AI_SYNTHESIZED e não aumenta a confiança factual.
+            {tr('ai.copilotDesc')}
           </p>
         </div>
         <div className="rounded-xl border border-[#333941] px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#aeb4bb]">
-          optional · analyst controlled
+          {tr('ai.optional')}
         </div>
       </div>
 
@@ -76,7 +78,7 @@ export function AiAnalystPanel({ target, results, apiKey, model, requirement = '
         <input
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
-          placeholder="Ex.: quais contradições devo resolver antes de correlacionar as contas?"
+          placeholder={tr('ai.questionPlaceholder')}
           className="min-h-11 flex-1 rounded-xl border border-[#30363c] bg-[#0b0e10] px-4 text-sm text-[#eef0f2] outline-none placeholder:text-[#626a73] focus:border-[#646c75]"
         />
         <button
@@ -106,7 +108,7 @@ export function AiAnalystPanel({ target, results, apiKey, model, requirement = '
 
           <div className="grid gap-5 lg:grid-cols-3">
             <div>
-              <div className="text-[10px] uppercase tracking-[0.16em] text-[#858c95]">Contradictions to resolve</div>
+              <div className="text-[10px] uppercase tracking-[0.16em] text-[#858c95]">{tr('ai.contradictions')}</div>
               <div className="mt-3 space-y-2">
                 {(output.contradictionsToResolve || []).map((item, i) => (
                   <div key={i} className="border-l border-[#4b525a] pl-3 text-sm leading-relaxed text-[#a1a7af]">{item}</div>
@@ -114,7 +116,7 @@ export function AiAnalystPanel({ target, results, apiKey, model, requirement = '
               </div>
             </div>
             <div>
-              <div className="text-[10px] uppercase tracking-[0.16em] text-[#858c95]">Intelligence gaps</div>
+              <div className="text-[10px] uppercase tracking-[0.16em] text-[#858c95]">{tr('ai.intelligenceGaps')}</div>
               <div className="mt-3 space-y-3">
                 {(output.intelligenceGaps || []).map((item, i) => (
                   <div key={i} className="rounded-xl border border-[#292f34] p-3">
@@ -125,7 +127,7 @@ export function AiAnalystPanel({ target, results, apiKey, model, requirement = '
               </div>
             </div>
             <div>
-              <div className="text-[10px] uppercase tracking-[0.16em] text-[#858c95]">Recommended pivots</div>
+              <div className="text-[10px] uppercase tracking-[0.16em] text-[#858c95]">{tr('ai.recommendedPivots')}</div>
               <div className="mt-3 space-y-3">
                 {(output.recommendedPivots || []).map((item, i) => (
                   <div key={i} className="rounded-xl border border-[#292f34] p-3">
