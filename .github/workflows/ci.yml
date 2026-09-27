@@ -44,6 +44,9 @@ jobs:
       - name: Validate product brand
         run: npm run brand:validate
 
+      - name: Validate i18n catalogs
+        run: npm run i18n:validate
+
       - name: Validate Registry
         run: npm run registry:validate
 
