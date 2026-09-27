@@ -3,6 +3,7 @@ import { GitBranch, GitFork } from 'lucide-react';
 import type { EmailReconData, ScanResult } from '../types';
 import { AccountLinkageView } from './AccountLinkageView';
 import { RelationshipGraphView } from './RelationshipGraphView';
+import { useI18n } from '../utils/i18n';
 
 interface CorrelationWorkspaceProps {
   target: string;
@@ -12,6 +13,7 @@ interface CorrelationWorkspaceProps {
 }
 
 export function CorrelationWorkspace(props: CorrelationWorkspaceProps) {
+  const { tr } = useI18n();
   const [tab, setTab] = useState<'linkage' | 'graph'>('graph');
 
   return (
