@@ -7,6 +7,7 @@ import {
   Terminal,
   FileSpreadsheet,
 } from 'lucide-react';
+import { useI18n } from '../utils/i18n';
 
 type View =
   | 'intelligence'
@@ -38,14 +39,14 @@ interface StatsBarProps {
 
 const views: Array<{
   id: View;
-  label: string;
+  label: 'nav.intelligence' | 'nav.evidence' | 'nav.platforms' | 'nav.correlation' | 'nav.console';
   icon: typeof FileSearch;
 }> = [
-  { id: 'intelligence', label: 'Intelligence', icon: FileSearch },
-  { id: 'table', label: 'Evidence', icon: Table },
-  { id: 'grid', label: 'Platforms', icon: LayoutGrid },
-  { id: 'linkage', label: 'Correlation', icon: GitFork },
-  { id: 'terminal', label: 'Console', icon: Terminal },
+  { id: 'intelligence', label: 'nav.intelligence', icon: FileSearch },
+  { id: 'table', label: 'nav.evidence', icon: Table },
+  { id: 'grid', label: 'nav.platforms', icon: LayoutGrid },
+  { id: 'linkage', label: 'nav.correlation', icon: GitFork },
+  { id: 'terminal', label: 'nav.console', icon: Terminal },
 ];
 
 export function StatsBar({
@@ -63,6 +64,7 @@ export function StatsBar({
   batchCount = 0,
   isBatchActive = false,
 }: StatsBarProps) {
+  const { tr } = useI18n();
   const percent = totalCount > 0 ? Math.round((scannedCount / totalCount) * 100) : 0;
   const auditView = activeView === 'table' || activeView === 'grid';
 
@@ -84,7 +86,7 @@ export function StatsBar({
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5" />
-                  {label}
+                  {tr(label)}
                 </button>
               ))}
               {(batchCount > 0 || isBatchActive || activeView === 'batch') && (
@@ -107,15 +109,15 @@ export function StatsBar({
             <div className="hidden h-4 w-px shrink-0 bg-[#2b3035] md:block" />
 
             <div className="hidden shrink-0 items-center gap-3 text-xs text-[#747c85] md:flex">
-              <span className="tabular-nums">{percent}% collected</span>
+              <span className="tabular-nums">{percent}% {tr('stats.collected')}</span>
               <div className="h-1.5 w-24 overflow-hidden rounded-full bg-[#1a1e22]">
                 <div
                   className={`h-full rounded-full bg-[#cfd3d7] transition-all ${isScanning ? 'animate-pulse' : ''}`}
                   style={{ width: `${percent}%` }}
                 />
               </div>
-              <span className="tabular-nums">{foundCount} found</span>
-              {uncertainCount > 0 && <span className="tabular-nums">{uncertainCount} unresolved</span>}
+              <span className="tabular-nums">{foundCount} {tr('stats.found')}</span>
+              {uncertainCount > 0 && <span className="tabular-nums">{uncertainCount} {tr('stats.unresolved')}</span>}
             </div>
           </div>
 
@@ -127,7 +129,7 @@ export function StatsBar({
                   id="filter-search-input"
                   value={searchFilter}
                   onChange={(event) => setSearchFilter(event.target.value)}
-                  placeholder="Filter evidence..."
+                  placeholder={tr('stats.filterEvidence')}
                   className="h-9 w-full rounded-lg border border-[#2d3339] bg-[#101417] pl-9 pr-3 text-xs text-[#e7e9eb] outline-none placeholder:text-[#5d656e] focus:border-[#58616a]"
                 />
               </div>
@@ -143,7 +145,7 @@ export function StatsBar({
                         : 'text-[#78818a] hover:text-white'
                     }`}
                   >
-                    {status === 'not_found' ? 'absent' : status}
+                    {status === 'not_found' ? tr('stats.absent') : status === 'all' ? tr('stats.all') : status === 'uncertain' ? tr('stats.uncertain') : status}
                   </button>
                 ))}
               </div>
