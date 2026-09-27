@@ -23,7 +23,7 @@ import { requirementLabel } from '../intelligence/localization';
 interface IntelligenceReportViewProps {
   target: string;
   results: ScanResult[];
-  onOpen{tr('header.export')}: () => void;
+  onOpenExport: () => void;
   onViewTable: () => void;
   aiApiKey?: string;
   aiModel?: string;
@@ -87,7 +87,7 @@ function Metric({ label, value, detail }: { label: string; value: string | numbe
 export function IntelligenceReportView({
   target,
   results,
-  onOpen{tr('header.export')},
+  onOpenExport,
   onViewTable,
   aiApiKey,
   aiModel,
@@ -153,7 +153,7 @@ export function IntelligenceReportView({
             <button type="button" onClick={onViewTable} className="rounded-xl border border-[#2d3339] px-3 py-2 text-xs text-[#c8ccd1] hover:text-white">
               {tr('report.auditTable')}
             </button>
-            <button type="button" onClick={onOpen{tr('header.export')}} className="inline-flex items-center gap-2 rounded-xl border border-[#394047] bg-[#15191c] px-3 py-2 text-xs font-medium text-[#f2f3f4]">
+            <button type="button" onClick={onOpenExport} className="inline-flex items-center gap-2 rounded-xl border border-[#394047] bg-[#15191c] px-3 py-2 text-xs font-medium text-[#f2f3f4]">
               <Download className="h-3.5 w-3.5" />
               {tr('header.export')}
             </button>
@@ -432,7 +432,7 @@ export function IntelligenceReportView({
             <div><div className="text-[10px] uppercase tracking-[0.14em] text-[#737b84]">Optional</div><p className="mt-2 text-sm text-[#abb1b8]">Raw results and AI synthesis remain explicitly selectable.</p></div>
             <div><div className="text-[10px] uppercase tracking-[0.14em] text-[#737b84]">Integrity</div><p className="mt-2 text-sm text-[#abb1b8]">Every exported payload receives its own SHA-256 manifest.</p></div>
           </div>
-          <button type="button" onClick={onOpen{tr('header.export')}} className="mt-6 inline-flex items-center gap-2 rounded-xl border border-[#4a5159] px-4 py-2.5 text-sm text-[#eef0f2] hover:bg-[#171b1f]"><Download className="h-4 w-4" /> {tr('report.openExport')}</button>
+          <button type="button" onClick={onOpenExport} className="mt-6 inline-flex items-center gap-2 rounded-xl border border-[#4a5159] px-4 py-2.5 text-sm text-[#eef0f2] hover:bg-[#171b1f]"><Download className="h-4 w-4" /> {tr('report.openExport')}</button>
         </div>
       </Section>
 
