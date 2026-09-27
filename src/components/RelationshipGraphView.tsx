@@ -34,11 +34,11 @@ const WIDTH = 1120;
 const HEIGHT = 660;
 
 export function RelationshipGraphView({ target, results, emailData }: RelationshipGraphViewProps) {
-  const { tr } = useI18n();
+  const { tr, language } = useI18n();
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const data = useMemo(() => {
-    const assessment = buildIntelligenceAssessment(results, target || 'target', 'account_correlation');
+    const assessment = buildIntelligenceAssessment(results, target || 'target', 'account_correlation', language);
     const linkage = generateAccountLinkageDossier(target, results, emailData);
 
     const observed = assessment.graph.nodes.filter((node) =>
@@ -114,7 +114,7 @@ export function RelationshipGraphView({ target, results, emailData }: Relationsh
     }
 
     return { nodes, edges };
-  }, [target, results, emailData]);
+  }, [target, results, emailData, language]);
 
   const byId = useMemo(() => new Map(data.nodes.map((node) => [node.id, node])), [data.nodes]);
   const selected = selectedId ? byId.get(selectedId) : undefined;
