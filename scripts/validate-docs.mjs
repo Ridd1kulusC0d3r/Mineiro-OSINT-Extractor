@@ -9,6 +9,7 @@ const requiredFiles = [
   'docs/TROUBLESHOOTING.md',
   'docs/FAQ.md',
   'docs/GRAPH-HUNTING.md',
+  'docs/DEPLOYMENT.md',
   'notebooks/Mineiro_Username_Intelligence_Colab.ipynb',
   'ARCHITECTURE.md',
   'CONTRIBUTING.md',
