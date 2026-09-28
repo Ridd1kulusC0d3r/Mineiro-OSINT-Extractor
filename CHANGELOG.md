@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.5.0] - 2026-09-27
+
+### Graph Hunting
+- Similar-user candidate nodes can launch background pivot scans directly from the relationship graph.
+- Pivot scans preserve the current investigation instead of replacing it.
+- Pivot findings are merged into the active graph as observed profile edges.
+- Candidate similarity edges remain explicitly candidate even after a successful pivot.
+- Added Mineiro Graph Query, a local read-only graph query engine.
+- Added query presets for similar usernames, shared domains, observed profiles, strong edges, same-domain relations and target-to-profile paths.
+- Query results visually highlight matched nodes/edges and dim unrelated graph elements.
+- Added optional local Neo4j/Cypher export without requiring a Neo4j dependency or remote connection.
+- Added graph hunting smoke tests to the product quality gate and CI.
+- Added dedicated Graph Hunting documentation.
+
+### Safety and analytical semantics
+- Similar username remains a discovery hypothesis, not identity proof.
+- Pivot success confirms public presence of the candidate handle on observed services only.
+- Candidate and observed edges retain separate semantics in UI and exports.
+
+
 ## [1.4.4] - 2026-09-27
 
 ### Internationalization
