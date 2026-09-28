@@ -99,6 +99,7 @@ export default function App() {
   const isBatchPausedRef = useRef<boolean>(false);
   const abortBatchRef = useRef<boolean>(false);
   const skipTargetRef = useRef<boolean>(false);
+  const graphPivotScanRef = useRef<boolean>(false);
 
   const addLog = (message: string, level: 'info' | 'success' | 'warn' | 'error' = 'info') => {
     const timestamp = new Date().toLocaleTimeString('en-GB', { hour12: false });
@@ -381,7 +382,7 @@ export default function App() {
 
   // Execute Single Target OSINT Scan
   const handleStartScan = async (overrideConfig?: ModularScanConfig) => {
-    if (!target.trim() || isScanning) return;
+    if (!target.trim() || isScanning || graphPivotScanRef.current) return;
     const activeCfg = overrideConfig || scanConfig;
 
     abortRef.current = false;
@@ -748,7 +749,8 @@ export default function App() {
   const handlePivotScan = async (newTarget: string): Promise<GraphPivotInvestigation> => {
     const clean = newTarget.trim();
     if (!clean) throw new Error('Pivot target is empty.');
-    if (isScanning) throw new Error('A scan is already running. Finish or stop it before launching a graph pivot.');
+    if (isScanning || graphPivotScanRef.current) throw new Error('A scan is already running. Finish or stop it before launching a graph pivot.');
+    graphPivotScanRef.current = true;
 
     const pivotConfig: ModularScanConfig = {
       ...DEFAULT_SCAN_CONFIGS.standard,
@@ -759,7 +761,12 @@ export default function App() {
 
     addLog(`[GRAPH PIVOT] Background scan started for @${clean} from @${target || 'target'}.`, 'info');
 
-    const pivotResult = await scanTargetCore(clean, 'username', pivotConfig, false, false);
+    let pivotResult;
+    try {
+      pivotResult = await scanTargetCore(clean, 'username', pivotConfig, false, false);
+    } finally {
+      graphPivotScanRef.current = false;
+    }
 
     const investigation: GraphPivotInvestigation = {
       id: `pivot-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
