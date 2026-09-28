@@ -62,6 +62,9 @@ jobs:
       - name: Graph hunting smoke test
         run: npm run graph:test
 
+      - name: Case Diff Intelligence smoke test
+        run: npm run case:test
+
       - name: Validate official Colab
         run: npm run colab:validate
 

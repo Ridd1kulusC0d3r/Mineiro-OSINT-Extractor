@@ -14,6 +14,8 @@ import {
   ExternalLink
 } from 'lucide-react';
 import { CachedInvestigation } from '../types';
+import type { MineiroCase } from '../cases/types';
+import { useI18n } from '../utils/i18n';
 
 interface InvestigationHistoryModalProps {
   isOpen: boolean;
@@ -24,6 +26,10 @@ interface InvestigationHistoryModalProps {
   onLoadInvestigation: (scan: CachedInvestigation) => void;
   onDeleteInvestigation: (id: string) => void;
   onClearAllHistory: () => void;
+  persistentCases?: MineiroCase[];
+  currentCaseId?: string | null;
+  onLoadCase?: (caseFile: MineiroCase) => void;
+  onDeleteCase?: (caseId: string) => Promise<void> | void;
 }
 
 export function InvestigationHistoryModal({
@@ -35,7 +41,44 @@ export function InvestigationHistoryModal({
   onLoadInvestigation,
   onDeleteInvestigation,
   onClearAllHistory,
+  persistentCases = [],
+  currentCaseId = null,
+  onLoadCase,
+  onDeleteCase,
 }: InvestigationHistoryModalProps) {
+  const { language } = useI18n();
+  const caseCopy = {
+    en: {
+      title: 'Persistent Cases',
+      desc: 'Long-lived investigation memory stored locally in IndexedDB.',
+      collections: 'collections',
+      pivots: 'pivots',
+      active: 'Active case',
+      open: 'Open case',
+      delete: 'Delete case',
+      recent: 'Recent scan cache',
+    },
+    pt: {
+      title: 'Casos persistentes',
+      desc: 'Memória de investigação de longo prazo armazenada localmente em IndexedDB.',
+      collections: 'coletas',
+      pivots: 'pivôs',
+      active: 'Caso ativo',
+      open: 'Abrir caso',
+      delete: 'Excluir caso',
+      recent: 'Cache de scans recentes',
+    },
+    es: {
+      title: 'Casos persistentes',
+      desc: 'Memoria de investigación de largo plazo almacenada localmente en IndexedDB.',
+      collections: 'recolecciones',
+      pivots: 'pivotes',
+      active: 'Caso activo',
+      open: 'Abrir caso',
+      delete: 'Eliminar caso',
+      recent: 'Caché de escaneos recientes',
+    },
+  }[language];
   if (!isOpen) return null;
 
   const MAX_SLOTS = 5;
@@ -72,6 +115,85 @@ export function InvestigationHistoryModal({
             <X className="w-4 h-4" />
           </button>
         </div>
+
+        <section className="space-y-3 border border-neutral-800 bg-black/40 p-3.5">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="text-[11px] font-bold uppercase tracking-[0.12em] text-white">{caseCopy.title}</div>
+              <p className="mt-1 text-[10px] leading-relaxed text-neutral-500">{caseCopy.desc}</p>
+            </div>
+            <span className="rounded border border-neutral-800 px-2 py-1 text-[10px] text-neutral-400">
+              IndexedDB · {persistentCases.length}
+            </span>
+          </div>
+
+          {persistentCases.length === 0 ? (
+            <div className="rounded border border-dashed border-neutral-800 p-4 text-center text-[11px] text-neutral-500">
+              No persistent cases yet. Complete a scan to create one automatically.
+            </div>
+          ) : (
+            <div className="max-h-[260px] space-y-2 overflow-y-auto pr-1">
+              {persistentCases.map((caseFile) => {
+                const active = caseFile.id === currentCaseId;
+                return (
+                  <div
+                    key={caseFile.id}
+                    className={`flex flex-col gap-3 border p-3 sm:flex-row sm:items-center sm:justify-between ${active ? 'border-neutral-500 bg-neutral-900/70' : 'border-neutral-800 bg-neutral-950'}`}
+                  >
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="truncate text-sm font-bold text-white">{caseFile.name}</span>
+                        {active && (
+                          <span className="border border-neutral-600 px-1.5 py-0.5 text-[9px] uppercase tracking-wider text-neutral-300">
+                            {caseCopy.active}
+                          </span>
+                        )}
+                      </div>
+                      <div className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-neutral-500">
+                        <span>{caseFile.collections.length} {caseCopy.collections}</span>
+                        <span>{caseFile.pivotInvestigations.length} {caseCopy.pivots}</span>
+                        <span>{new Date(caseFile.updatedAt).toLocaleString()}</span>
+                      </div>
+                      <div className="mt-1 truncate font-mono text-[9px] text-neutral-600">{caseFile.id}</div>
+                    </div>
+
+                    <div className="flex shrink-0 items-center gap-2">
+                      {onLoadCase && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onLoadCase(caseFile);
+                            onClose();
+                          }}
+                          className="inline-flex items-center gap-1.5 bg-white px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-black hover:bg-neutral-200"
+                        >
+                          <ArrowRight className="h-3 w-3" />
+                          {caseCopy.open}
+                        </button>
+                      )}
+                      {onDeleteCase && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (window.confirm(`Delete persistent case "${caseFile.name}"? This does not delete the separate recent-scan cache.`)) {
+                              onDeleteCase(caseFile.id);
+                            }
+                          }}
+                          className="border border-neutral-800 p-1.5 text-neutral-500 hover:border-neutral-600 hover:text-white"
+                          title={caseCopy.delete}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
+        <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-neutral-500">{caseCopy.recent}</div>
 
         {/* Storage Slot Meter */}
         <div className="flex items-center justify-between text-xs bg-neutral-900/80 border border-neutral-800 p-2.5 px-3">

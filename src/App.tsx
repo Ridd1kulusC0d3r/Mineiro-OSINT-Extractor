@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { Header } from './components/Header';
 import { TargetBar } from './components/TargetBar';
 import { StatsBar } from './components/StatsBar';
@@ -35,6 +35,8 @@ import {
 import { ParsedTarget } from './utils/csvParser';
 import type { IntelligenceRequirement } from './intelligence/types';
 import type { GraphPivotInvestigation } from './graph/types';
+import type { CaseCollectionSnapshot, MineiroCase } from './cases/types';
+import { appendCollection, appendPivot, deleteCase as deletePersistentCase, getCase, getOrCreateCaseForTarget, listCases } from './cases/store';
 import { 
   getCachedInvestigations, 
   saveInvestigationToCache, 
@@ -55,9 +57,17 @@ export default function App() {
   >('intelligence');
   const [intelligenceRequirement, setIntelligenceRequirement] = useState<IntelligenceRequirement>('account_correlation');
 
-  // Local state persistence: last 5 cached investigations in localStorage
+  // Fast compatibility cache: last 5 scans in localStorage.
   const [cachedScans, setCachedScans] = useState<CachedInvestigation[]>(() => getCachedInvestigations());
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState<boolean>(false);
+
+  // Persistent Case Graph: long-lived investigation memory in IndexedDB.
+  const [persistentCases, setPersistentCases] = useState<MineiroCase[]>([]);
+  const [currentCaseId, setCurrentCaseId] = useState<string | null>(null);
+  const currentCase = useMemo(
+    () => persistentCases.find((item) => item.id === currentCaseId) || null,
+    [persistentCases, currentCaseId]
+  );
 
   // Global Keyboard Shortcuts Help Modal
   const [isShortcutsModalOpen, setIsShortcutsModalOpen] = useState<boolean>(false);
@@ -112,6 +122,88 @@ export default function App() {
         message,
       },
     ]);
+  };
+
+  const refreshPersistentCases = async () => {
+    try {
+      const cases = await listCases();
+      setPersistentCases(cases);
+      return cases;
+    } catch (error) {
+      console.warn('[MINEIRO CASES] Failed to load IndexedDB cases:', error);
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    refreshPersistentCases();
+  }, []);
+
+  const ensureCaseForTarget = async (
+    caseTarget: string,
+    caseTargetType: 'username' | 'email'
+  ): Promise<MineiroCase> => {
+    if (currentCaseId) {
+      const attached = await getCase(currentCaseId);
+      if (
+        attached &&
+        attached.primaryTarget.toLowerCase() === caseTarget.trim().toLowerCase() &&
+        attached.primaryTargetType === caseTargetType
+      ) {
+        return attached;
+      }
+    }
+
+    const caseFile = await getOrCreateCaseForTarget(caseTarget, caseTargetType);
+    setCurrentCaseId(caseFile.id);
+    await refreshPersistentCases();
+    return caseFile;
+  };
+
+  const loadCaseCollectionSnapshot = (snapshot: CaseCollectionSnapshot) => {
+    if (isScanning) {
+      addLog('Cannot load a case snapshot while a scan is running.', 'warn');
+      return;
+    }
+    setTarget(snapshot.target);
+    setTargetType(snapshot.targetType);
+    setResults(snapshot.results || []);
+    setEmailData(snapshot.emailData || null);
+    setAiProfile(null);
+    setScanConfig((previous) => ({ ...previous, preset: snapshot.preset }));
+    setActiveView('linkage');
+    addLog(
+      `[CASE RESTORE] Loaded snapshot ${snapshot.id} for "${snapshot.target}" from ${new Date(snapshot.collectedAt).toLocaleString()}.`,
+      'success'
+    );
+  };
+
+  const loadPersistentCase = (caseFile: MineiroCase) => {
+    if (isScanning) {
+      addLog('Cannot load a persistent case while a scan is running.', 'warn');
+      return;
+    }
+    setCurrentCaseId(caseFile.id);
+    const latest = [...caseFile.collections]
+      .filter((item) => item.target.toLowerCase() === caseFile.primaryTarget.toLowerCase())
+      .sort((a, b) => b.collectedAt.localeCompare(a.collectedAt))[0];
+    if (latest) {
+      loadCaseCollectionSnapshot(latest);
+    } else {
+      setTarget(caseFile.primaryTarget);
+      setTargetType(caseFile.primaryTargetType);
+      setResults([]);
+      setEmailData(null);
+      setActiveView('linkage');
+    }
+    addLog(`[CASE] Opened persistent case ${caseFile.id} · ${caseFile.name}.`, 'success');
+  };
+
+  const handleDeletePersistentCase = async (caseId: string) => {
+    await deletePersistentCase(caseId);
+    if (currentCaseId === caseId) setCurrentCaseId(null);
+    await refreshPersistentCases();
+    addLog(`[CASE] Deleted persistent case ${caseId} from IndexedDB.`, 'info');
   };
 
   // Handler for direct scan preset selection
@@ -416,6 +508,29 @@ export default function App() {
       setCachedScans(updatedCache);
       addLog(`[CACHE] Investigation persisted to localStorage (Slot ${Math.min(updatedCache.length, 5)}/5)`, 'info');
 
+      // Persist the collection as an immutable-ish Case snapshot in IndexedDB.
+      try {
+        const caseFile = await ensureCaseForTarget(cleanTarget, targetType);
+        const collectedAt = new Date().toISOString();
+        await appendCollection(caseFile.id, {
+          id: `collection_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+          target: cleanTarget,
+          targetType,
+          collectedAt,
+          preset: activeCfg.preset,
+          results: scanResult.results,
+          emailData: scanResult.emailData,
+          foundCount: scanResult.foundCount,
+          uncertainCount: scanResult.uncertainCount,
+          totalScanned: scanResult.totalScanned,
+        });
+        setCurrentCaseId(caseFile.id);
+        await refreshPersistentCases();
+        addLog(`[CASE] Collection appended to ${caseFile.id}. Diff Intelligence is available after the second snapshot for this target.`, 'success');
+      } catch (caseError: any) {
+        addLog(`[CASE] Persistent case write failed: ${caseError?.message || caseError}`, 'warn');
+      }
+
       // Generate cryptographically signed snapshot for chain of custody
       try {
         const snapshot = await takeInvestigationSnapshot({
@@ -716,6 +831,7 @@ export default function App() {
     setResults([]);
     setAiProfile(null);
     setEmailData(null);
+    setCurrentCaseId(null);
     setLogs([]);
     setActiveView('intelligence');
     addLog('Workspace reset. System in standby.', 'info');
@@ -791,6 +907,29 @@ export default function App() {
       totalScanned: pivotResult.totalScanned,
     });
     setCachedScans(updatedCache);
+
+    try {
+      const attachedCase = currentCaseId ? await getCase(currentCaseId) : null;
+      const caseFile = attachedCase || await getOrCreateCaseForTarget(target || clean, target ? targetType : 'username');
+      await appendPivot(caseFile.id, investigation);
+      await appendCollection(caseFile.id, {
+        id: `collection_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+        target: clean,
+        targetType: 'username',
+        collectedAt: investigation.scannedAt,
+        preset: pivotConfig.preset,
+        results: pivotResult.results,
+        emailData: null,
+        foundCount: pivotResult.foundCount,
+        uncertainCount: pivotResult.uncertainCount,
+        totalScanned: pivotResult.totalScanned,
+      });
+      setCurrentCaseId(caseFile.id);
+      await refreshPersistentCases();
+      addLog(`[CASE GRAPH] Pivot @${clean} persisted inside ${caseFile.id}.`, 'success');
+    } catch (caseError: any) {
+      addLog(`[CASE GRAPH] Could not persist pivot: ${caseError?.message || caseError}`, 'warn');
+    }
 
     addLog(
       `[GRAPH PIVOT] @${clean}: ${pivotResult.foundCount} found · ${pivotResult.uncertainCount} unresolved · ${pivotResult.totalScanned} checked.`,
@@ -933,7 +1072,7 @@ export default function App() {
         onOpenBulkImport={() => setIsBulkModalOpen(true)}
         onOpenHistory={() => setIsHistoryModalOpen(true)}
         onOpenShortcuts={() => setIsShortcutsModalOpen(true)}
-        cachedScansCount={cachedScans.length}
+        cachedScansCount={persistentCases.length}
         bulkBatchCount={bulkBatch ? bulkBatch.items.length : 0}
         hasPersonalKey={Boolean(personalGeminiKey)}
         selectedModel={selectedGeminiModel}
@@ -1060,6 +1199,8 @@ export default function App() {
             results={results}
             emailData={emailData}
             onPivotScan={handlePivotScan}
+            caseFile={currentCase}
+            onLoadSnapshot={loadCaseCollectionSnapshot}
           />
         )}
 
@@ -1192,6 +1333,10 @@ export default function App() {
         onLoadInvestigation={handleLoadCachedInvestigation}
         onDeleteInvestigation={handleDeleteCachedInvestigation}
         onClearAllHistory={handleClearAllHistory}
+        persistentCases={persistentCases}
+        currentCaseId={currentCaseId}
+        onLoadCase={loadPersistentCase}
+        onDeleteCase={handleDeletePersistentCase}
       />
 
       {/* Global Keyboard Shortcuts Cheat Sheet Modal */}

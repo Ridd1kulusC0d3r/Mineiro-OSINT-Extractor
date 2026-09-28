@@ -131,7 +131,7 @@ function getGenAiClient(customApiKey?: string): { client: GoogleGenAI; isCustom:
       apiKey,
       httpOptions: {
         headers: {
-          'User-Agent': 'mineiro-username-intelligence/1.5.0',
+          'User-Agent': 'mineiro-username-intelligence/1.6.0',
         },
       },
     }),
@@ -225,7 +225,7 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     service: 'Mineiro Username Intelligence · OSINT Investigation Workbench',
-    version: '1.5.0',
+    version: '1.6.0',
     timestamp: new Date().toISOString(),
     geminiConfigured: Boolean(process.env.GEMINI_API_KEY),
     supportedDatabases: ['Mineiro Core (local direct probes)', 'Mineiro Evidence Engine', 'Mineiro Public Recon'],
@@ -319,7 +319,7 @@ app.post('/api/osint/verify', async (req, res) => {
       method: 'GET',
       signal: controller.signal,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 MineiroUsernameIntelligence/1.5.0',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 MineiroUsernameIntelligence/1.6.0',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.5',
       },
@@ -1442,7 +1442,7 @@ async function startServer() {
     const server = app.listen(PORT, '0.0.0.0', () => {
       console.log('\n' + TERMINAL_BANNER + '\n');
       console.log(`[ready] http://0.0.0.0:${PORT}`);
-      console.log('[mode] local-first OSINT probes | monochrome interface | v1.3.1');
+      console.log('[mode] local-first OSINT probes | persistent cases | diff intelligence | v1.6.0');
     });
 
     server.on('error', (err: NodeJS.ErrnoException) => {

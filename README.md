@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/actions/workflows/ci.yml/badge.svg"></a>
-  <img alt="Version" src="https://img.shields.io/badge/version-1.5.0-111111">
+  <img alt="Version" src="https://img.shields.io/badge/version-1.6.0-111111">
   <img alt="Node" src="https://img.shields.io/badge/node-22%2B-111111">
   <img alt="License" src="https://img.shields.io/badge/code-MIT-111111">
 </p>
@@ -162,6 +162,37 @@ PATH from=TARGET to=PROFILE
 
 Guia completo: [docs/GRAPH-HUNTING.md](docs/GRAPH-HUNTING.md).
 
+## Case Graph & Diff Intelligence
+
+A v1.6 adiciona memória persistente de investigação sem remover o cache rápido existente.
+
+```text
+Case
+├── collection snapshots
+├── pivot investigations
+├── persistent graph memory
+└── Diff Intelligence
+```
+
+Os Cases ficam no IndexedDB do navegador e sobrevivem a reloads. O cache dos 5 scans recentes continua disponível em localStorage para restauração rápida.
+
+O Diff Intelligence compara snapshots do mesmo alvo e classifica mudanças como:
+
+- `NEW`
+- `DISAPPEARED`
+- `CHANGED`
+- `UNCHANGED`
+- `CONFIDENCE_UP`
+- `CONFIDENCE_DOWN`
+
+`DISAPPEARED` representa mudança observada entre coletas e **não prova exclusão de conta**.
+
+### Deploy persistente
+
+Para demo/lab, continue usando Colab. Para uma URL persistente, use o container Docker em Cloud Run, Render, Railway, Fly.io ou VPS.
+
+Guia: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
 ## Relatório
 
 A Intelligence View organiza a investigação em 22 seções, incluindo:
@@ -214,6 +245,7 @@ Detalhes: [ARCHITECTURE.md](ARCHITECTURE.md) e [docs/ENGINEERING-V1.4.md](docs/E
 | rodar pela primeira vez | [Getting Started](docs/GETTING-STARTED.md) |
 | usar a ferramenta no dia a dia | [User Guide](docs/USER-GUIDE.md) |
 | rodar no Colab | [Colab oficial](docs/COLAB.md) |
+| subir em produção | [Deployment](docs/DEPLOYMENT.md) |
 | entender scores e relatório | [Metodologia](docs/INTELLIGENCE-METHODOLOGY.md) |
 | entender arquitetura | [Architecture](ARCHITECTURE.md) |
 | resolver um erro | [Troubleshooting](docs/TROUBLESHOOTING.md) |
@@ -266,4 +298,4 @@ O código original do Mineiro é MIT. O catálogo histórico possui entradas em 
 
 ---
 
-**Mineiro Username Intelligence v1.5.0** · OSINT Investigation Workbench · evidence first · local reporting
+**Mineiro Username Intelligence v1.6.0** · OSINT Investigation Workbench · evidence first · local reporting
