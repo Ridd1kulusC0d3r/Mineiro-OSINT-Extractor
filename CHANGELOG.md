@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.6.0] - 2026-09-28
+
+### Persistent Case Graph
+- Added long-lived Cases stored locally in IndexedDB.
+- Primary scans append immutable collection snapshots to the matching Case.
+- Graph pivot investigations persist inside the active Case.
+- Reopening a Case restores its latest primary collection and persisted pivots.
+- Existing five-scan localStorage cache remains available for quick compatibility restores.
+- Resetting the workspace detaches the active Case without deleting it.
+
+### Diff Intelligence
+- Added snapshot-to-snapshot comparison for the same target.
+- Change classes: NEW, DISAPPEARED, CHANGED, UNCHANGED, CONFIDENCE_UP and CONFIDENCE_DOWN.
+- Metadata, URL, status and confidence movements are tracked separately.
+- Inconclusive transitions remain explicitly caveated.
+- DISAPPEARED is treated as a collection difference, not proof of account deletion.
+- Added Case Diff smoke tests to CI.
+
+### Deployment
+- Hardened Docker runtime with reproducible npm ci installs.
+- Runtime image uses production dependencies only and runs as the non-root node user.
+- Added container healthcheck against /api/health.
+- Added deployment guidance for Colab, Docker, managed containers and VPS.
+- Case persistence remains browser-local, so the backend stays stateless in v1.6.
+
+
 ## [1.5.0] - 2026-09-27
 
 ### Graph Hunting
