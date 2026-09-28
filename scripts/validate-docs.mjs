@@ -8,6 +8,7 @@ const requiredFiles = [
   'docs/COLAB.md',
   'docs/TROUBLESHOOTING.md',
   'docs/FAQ.md',
+  'docs/GRAPH-HUNTING.md',
   'notebooks/Mineiro_Username_Intelligence_Colab.ipynb',
   'ARCHITECTURE.md',
   'CONTRIBUTING.md',
