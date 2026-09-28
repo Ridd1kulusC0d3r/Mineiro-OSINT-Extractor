@@ -1,3 +1,5 @@
+import type { ScanResult } from '../types';
+
 export interface HuntGraphNode {
   id: string;
   label: string;
@@ -24,4 +26,15 @@ export interface GraphQueryResult {
   matchedEdgeIds: string[];
   summary: string;
   warnings: string[];
+}
+
+export interface GraphPivotInvestigation {
+  id: string;
+  sourceTarget: string;
+  target: string;
+  foundCount: number;
+  uncertainCount: number;
+  totalScanned: number;
+  results: ScanResult[];
+  scannedAt: string;
 }
