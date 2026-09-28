@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/actions/workflows/ci.yml/badge.svg"></a>
-  <img alt="Version" src="https://img.shields.io/badge/version-1.4.3-111111">
+  <img alt="Version" src="https://img.shields.io/badge/version-1.5.0-111111">
   <img alt="Node" src="https://img.shields.io/badge/node-22%2B-111111">
   <img alt="License" src="https://img.shields.io/badge/code-MIT-111111">
 </p>
@@ -139,6 +139,29 @@ Não use um único score para responder perguntas diferentes.
 
 O modelo completo está em [docs/INTELLIGENCE-METHODOLOGY.md](docs/INTELLIGENCE-METHODOLOGY.md).
 
+## Graph Hunting
+
+A v1.5 transforma o grafo em uma superfície ativa de investigação:
+
+- usernames semelhantes aparecem como nós candidatos;
+- candidatos podem ser escaneados diretamente do grafo;
+- pivot scans rodam em background sem substituir a investigação atual;
+- perfis encontrados pelo pivot entram no mesmo grafo;
+- arestas candidatas continuam tracejadas mesmo após o pivot;
+- consultas locais read-only destacam nós e relações;
+- export opcional para Neo4j/Cypher.
+
+Exemplos:
+
+```text
+MATCH candidate=true AND similarity>=70
+SHARED type=DOMAIN
+EDGE relationship=SAME_DOMAIN
+PATH from=TARGET to=PROFILE
+```
+
+Guia completo: [docs/GRAPH-HUNTING.md](docs/GRAPH-HUNTING.md).
+
 ## Relatório
 
 A Intelligence View organiza a investigação em 22 seções, incluindo:
@@ -243,4 +266,4 @@ O código original do Mineiro é MIT. O catálogo histórico possui entradas em 
 
 ---
 
-**Mineiro Username Intelligence v1.4.3** · OSINT Investigation Workbench · evidence first · local reporting
+**Mineiro Username Intelligence v1.5.0** · OSINT Investigation Workbench · evidence first · local reporting
