@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FolderClock, GitBranch, GitFork } from 'lucide-react';
 import type { EmailReconData, ScanResult } from '../types';
 import { AccountLinkageView } from './AccountLinkageView';
@@ -21,6 +21,10 @@ export function CorrelationWorkspace(props: CorrelationWorkspaceProps) {
   const { tr } = useI18n();
   const [tab, setTab] = useState<'linkage' | 'graph' | 'case'>('graph');
   const [pivotInvestigations, setPivotInvestigations] = useState<GraphPivotInvestigation[]>([]);
+
+  useEffect(() => {
+    setPivotInvestigations(props.caseFile?.pivotInvestigations || []);
+  }, [props.caseFile?.id, props.caseFile?.updatedAt]);
 
   const handlePivotScan = async (candidate: string) => {
     const investigation = await props.onPivotScan(candidate);
