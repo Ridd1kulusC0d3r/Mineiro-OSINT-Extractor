@@ -22,6 +22,7 @@ import {
   ShieldAlert
 } from 'lucide-react';
 import { ScanResult, AiProfileReport, EmailReconData, BulkBatchState, BulkTargetItem } from '../types';
+import type { GraphPivotInvestigation } from '../graph/types';
 import { UNIFIED_DATABASES, CATEGORY_LABELS } from '../data/platforms';
 import { WorldThreatMap } from './WorldThreatMap';
 import { NetworkRelationshipGraph } from './NetworkRelationshipGraph';
@@ -48,7 +49,7 @@ interface DashboardViewProps {
   onViewProfile: () => void;
   onViewTerminal: () => void;
   onOpenExport: () => void;
-  onPivotScan?: (newTarget: string) => void;
+  onPivotScan?: (newTarget: string) => Promise<GraphPivotInvestigation>;
   isScanning: boolean;
   onRequestAiProfile?: () => void;
   isAiLoading?: boolean;
@@ -430,7 +431,7 @@ export function DashboardView({
               target={target}
               results={results}
               emailData={emailData}
-              onPivotScan={onPivotScan || (() => {})}
+              onPivotScan={onPivotScan || (async (newTarget) => ({ id: `noop-${Date.now()}`, sourceTarget: target, target: newTarget, foundCount: 0, uncertainCount: 0, totalScanned: 0, results: [], scannedAt: new Date().toISOString() }))}
             />
           )}
 
