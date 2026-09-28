@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowDownUp, Clock3, Database, GitCompareArrows, History, RefreshCw } from 'lucide-react';
 import type { CaseCollectionSnapshot, MineiroCase } from '../cases/types';
 import { diffCollections } from '../cases/diff';
@@ -76,6 +76,12 @@ export function CaseDiffPanel({ caseFile, currentTarget, onLoadSnapshot }: CaseD
   const defaultBefore = Math.max(0, defaultAfter - 1);
   const [beforeIndex, setBeforeIndex] = useState(defaultBefore);
   const [afterIndex, setAfterIndex] = useState(defaultAfter);
+
+  useEffect(() => {
+    const nextAfter = Math.max(0, targetCollections.length - 1);
+    setAfterIndex(nextAfter);
+    setBeforeIndex(Math.max(0, nextAfter - 1));
+  }, [caseFile?.id, currentTarget, targetCollections.length]);
 
   const boundedBefore = Math.min(beforeIndex, Math.max(0, targetCollections.length - 1));
   const boundedAfter = Math.min(afterIndex, Math.max(0, targetCollections.length - 1));
