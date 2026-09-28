@@ -4,17 +4,25 @@ import type { EmailReconData, ScanResult } from '../types';
 import { AccountLinkageView } from './AccountLinkageView';
 import { RelationshipGraphView } from './RelationshipGraphView';
 import { useI18n } from '../utils/i18n';
+import type { GraphPivotInvestigation } from '../graph/types';
 
 interface CorrelationWorkspaceProps {
   target: string;
   results: ScanResult[];
   emailData: EmailReconData | null;
-  onPivotScan: (newTarget: string) => void;
+  onPivotScan: (newTarget: string) => Promise<GraphPivotInvestigation>;
 }
 
 export function CorrelationWorkspace(props: CorrelationWorkspaceProps) {
   const { tr } = useI18n();
   const [tab, setTab] = useState<'linkage' | 'graph'>('graph');
+  const [pivotInvestigations, setPivotInvestigations] = useState<GraphPivotInvestigation[]>([]);
+
+  const handlePivotScan = async (candidate: string) => {
+    const investigation = await props.onPivotScan(candidate);
+    setPivotInvestigations((current) => [investigation, ...current.filter((item) => item.target !== investigation.target)].slice(0, 12));
+    return investigation;
+  };
 
   return (
     <div className="space-y-5">
@@ -37,7 +45,7 @@ export function CorrelationWorkspace(props: CorrelationWorkspaceProps) {
         </button>
       </div>
 
-      {tab === 'graph' ? <RelationshipGraphView target={props.target} results={props.results} emailData={props.emailData} /> : <AccountLinkageView {...props} />}
+      {tab === 'graph' ? <RelationshipGraphView target={props.target} results={props.results} emailData={props.emailData} onPivotScan={handlePivotScan} pivotInvestigations={pivotInvestigations} /> : <AccountLinkageView {...props} onPivotScan={handlePivotScan} />}
     </div>
   );
 }

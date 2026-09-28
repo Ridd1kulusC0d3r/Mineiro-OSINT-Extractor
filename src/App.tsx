@@ -34,6 +34,7 @@ import {
 } from './types';
 import { ParsedTarget } from './utils/csvParser';
 import type { IntelligenceRequirement } from './intelligence/types';
+import type { GraphPivotInvestigation } from './graph/types';
 import { 
   getCachedInvestigations, 
   saveInvestigationToCache, 
@@ -98,6 +99,7 @@ export default function App() {
   const isBatchPausedRef = useRef<boolean>(false);
   const abortBatchRef = useRef<boolean>(false);
   const skipTargetRef = useRef<boolean>(false);
+  const graphPivotScanRef = useRef<boolean>(false);
 
   const addLog = (message: string, level: 'info' | 'success' | 'warn' | 'error' = 'info') => {
     const timestamp = new Date().toLocaleTimeString('en-GB', { hour12: false });
@@ -154,7 +156,8 @@ export default function App() {
     targetHandle: string,
     targetMode: 'username' | 'email',
     configToUse: ModularScanConfig,
-    isBulk: boolean = false
+    isBulk: boolean = false,
+    publishToWorkspace: boolean = true
   ): Promise<{
     results: ScanResult[];
     emailData: EmailReconData | null;
@@ -180,12 +183,12 @@ export default function App() {
       detectorReliability: p.detectorReliability,
       reliabilityTier: p.reliabilityTier,
     }));
-    setResults(initialResults);
+    if (publishToWorkspace) setResults(initialResults);
 
     let targetEmailData: EmailReconData | null = null;
     // Modular email recon execution
     if (configToUse.enableEmailRecon && (targetMode === 'email' || cleanTarget.includes('@'))) {
-      setIsEmailLoading(true);
+      if (publishToWorkspace) setIsEmailLoading(true);
       addLog(`[DNS RECON] Probing MX records & Gravatar for ${cleanTarget}...`, 'info');
       try {
         const res = await fetch('/api/osint/email-recon', {
@@ -195,7 +198,7 @@ export default function App() {
         });
         const data = await res.json();
         targetEmailData = data;
-        setEmailData(data);
+        if (publishToWorkspace) setEmailData(data);
         if (data.mxRecordsFound) {
           addLog(`[DNS] Active MX mail server confirmed for domain: ${data.domain}`, 'success');
         }
@@ -205,7 +208,7 @@ export default function App() {
       } catch (err: any) {
         addLog(`Email recon check error: ${err.message}`, 'warn');
       } finally {
-        setIsEmailLoading(false);
+        if (publishToWorkspace) setIsEmailLoading(false);
       }
     }
 
@@ -248,7 +251,7 @@ export default function App() {
 
         const batch = items.slice(index, index + batchSize);
         batch.forEach((item) => { item.status = 'scanning'; });
-        setResults([...currentResults]);
+        if (publishToWorkspace) setResults([...currentResults]);
 
         await Promise.all(
           batch.map(async (item) => {
@@ -308,7 +311,7 @@ export default function App() {
           })
         );
 
-        setResults([...currentResults]);
+        if (publishToWorkspace) setResults([...currentResults]);
       }
     };
 
@@ -379,7 +382,7 @@ export default function App() {
 
   // Execute Single Target OSINT Scan
   const handleStartScan = async (overrideConfig?: ModularScanConfig) => {
-    if (!target.trim() || isScanning) return;
+    if (!target.trim() || isScanning || graphPivotScanRef.current) return;
     const activeCfg = overrideConfig || scanConfig;
 
     abortRef.current = false;
@@ -740,15 +743,61 @@ export default function App() {
     });
   }, [results, searchFilter, statusFilter]);
 
-  // Pivot Scan handler: allows instantaneous pivot investigation into any discovered permutation or linked account
-  const handlePivotScan = (newTarget: string) => {
+  // Graph pivot scan: scans a similar username in the background without replacing
+  // the current investigation. The result is returned to the graph workspace so
+  // analysts can compare the original target and candidate in one visual context.
+  const handlePivotScan = async (newTarget: string): Promise<GraphPivotInvestigation> => {
     const clean = newTarget.trim();
-    if (!clean) return;
-    const isEmail = clean.includes('@');
-    setTarget(clean);
-    setTargetType(isEmail ? 'email' : 'username');
-    addLog(`[PIVOT DISCOVERY] New target designated via Linkage Theory: ${clean}`, 'info');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (!clean) throw new Error('Pivot target is empty.');
+    if (isScanning || graphPivotScanRef.current) throw new Error('A scan is already running. Finish or stop it before launching a graph pivot.');
+    graphPivotScanRef.current = true;
+
+    const pivotConfig: ModularScanConfig = {
+      ...DEFAULT_SCAN_CONFIGS.standard,
+      concurrency: Math.min(10, DEFAULT_SCAN_CONFIGS.standard.concurrency),
+      enableEvidenceChecks: true,
+      enableAutoAiProfile: false,
+    };
+
+    addLog(`[GRAPH PIVOT] Background scan started for @${clean} from @${target || 'target'}.`, 'info');
+
+    let pivotResult;
+    try {
+      pivotResult = await scanTargetCore(clean, 'username', pivotConfig, false, false);
+    } finally {
+      graphPivotScanRef.current = false;
+    }
+
+    const investigation: GraphPivotInvestigation = {
+      id: `pivot-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      sourceTarget: target || 'target',
+      target: clean,
+      foundCount: pivotResult.foundCount,
+      uncertainCount: pivotResult.uncertainCount,
+      totalScanned: pivotResult.totalScanned,
+      results: pivotResult.results,
+      scannedAt: new Date().toISOString(),
+    };
+
+    const updatedCache = saveInvestigationToCache({
+      target: clean,
+      targetType: 'username',
+      results: pivotResult.results,
+      emailData: null,
+      aiProfile: null,
+      preset: pivotConfig.preset,
+      foundCount: pivotResult.foundCount,
+      uncertainCount: pivotResult.uncertainCount,
+      totalScanned: pivotResult.totalScanned,
+    });
+    setCachedScans(updatedCache);
+
+    addLog(
+      `[GRAPH PIVOT] @${clean}: ${pivotResult.foundCount} found · ${pivotResult.uncertainCount} unresolved · ${pivotResult.totalScanned} checked.`,
+      pivotResult.foundCount > 0 ? 'success' : 'info'
+    );
+
+    return investigation;
   };
 
   // Global Keyboard Shortcuts Manager (⌘K, Esc, /, 1-7, ⌘Enter, ⌘E, ⌘B, ⌘H, ⌘M, ?)

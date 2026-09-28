@@ -1,41 +1,80 @@
 import { useMemo, useState } from 'react';
-import { GitBranch, Info } from 'lucide-react';
+import { GitBranch, Info, Search, Target } from 'lucide-react';
 import type { EmailReconData, ScanResult } from '../types';
 import { buildIntelligenceAssessment } from '../intelligence/assessment';
 import { generateAccountLinkageDossier } from '../data/accountLinkage';
 import { useI18n } from '../utils/i18n';
+import { GraphQueryPanel } from './GraphQueryPanel';
+import type { GraphPivotInvestigation, GraphQueryResult, HuntGraphEdge, HuntGraphNode } from '../graph/types';
 
 interface RelationshipGraphViewProps {
   target: string;
   results: ScanResult[];
   emailData: EmailReconData | null;
+  onPivotScan: (newTarget: string) => Promise<GraphPivotInvestigation>;
+  pivotInvestigations: GraphPivotInvestigation[];
 }
 
-interface VisualNode {
-  id: string;
-  label: string;
-  type: string;
+interface VisualNode extends HuntGraphNode {
   x: number;
   y: number;
-  candidate?: boolean;
-  evidenceId?: string;
 }
 
-interface VisualEdge {
-  id: string;
-  source: string;
-  target: string;
-  label: string;
-  confidence: number;
-  candidate?: boolean;
-}
+interface VisualEdge extends HuntGraphEdge {}
 
 const WIDTH = 1120;
 const HEIGHT = 660;
 
-export function RelationshipGraphView({ target, results, emailData }: RelationshipGraphViewProps) {
+export function RelationshipGraphView({ target, results, emailData, onPivotScan, pivotInvestigations }: RelationshipGraphViewProps) {
   const { tr, language } = useI18n();
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [queryResult, setQueryResult] = useState<GraphQueryResult | null>(null);
+  const [scanningCandidate, setScanningCandidate] = useState<string | null>(null);
+
+  const copy = useMemo(() => ({
+    en: {
+      inspect: 'Click a node to inspect.',
+      candidate: 'candidate',
+      observed: 'observed',
+      similarity: 'similarity',
+      scan: 'Scan candidate',
+      candidateHelp: 'This node is only a username-similarity hypothesis. Run a pivot scan to collect independent public evidence.',
+      queryActive: 'query active',
+      queryHint: 'Matched nodes stay bright; unmatched nodes are dimmed.',
+      target: 'Target',
+      scanComplete: 'pivot scan complete',
+      profilesFound: 'profiles found',
+      scanning: 'Scanning…',
+    },
+    pt: {
+      inspect: 'Clique em um nó para inspecionar.',
+      candidate: 'candidato',
+      observed: 'observado',
+      similarity: 'similaridade',
+      scan: 'Escanear candidato',
+      candidateHelp: 'Este nó é apenas uma hipótese de similaridade de username. Execute um pivot scan para coletar evidência pública independente.',
+      queryActive: 'consulta ativa',
+      queryHint: 'Nós encontrados permanecem em destaque; os demais ficam atenuados.',
+      target: 'Alvo',
+      scanComplete: 'pivot concluído',
+      profilesFound: 'perfis encontrados',
+      scanning: 'Escaneando…',
+    },
+    es: {
+      inspect: 'Haz clic en un nodo para inspeccionar.',
+      candidate: 'candidato',
+      observed: 'observado',
+      similarity: 'similitud',
+      scan: 'Escanear candidato',
+      candidateHelp: 'Este nodo es solo una hipótesis de similitud de username. Ejecuta un pivot scan para recopilar evidencia pública independiente.',
+      queryActive: 'consulta activa',
+      queryHint: 'Los nodos coincidentes permanecen destacados; los demás se atenúan.',
+      target: 'Objetivo',
+      scanComplete: 'pivot completado',
+      profilesFound: 'perfiles encontrados',
+      scanning: 'Escaneando…',
+    },
+  })[language], [language]);
 
   const data = useMemo(() => {
     const assessment = buildIntelligenceAssessment(results, target || 'target', 'account_correlation', language);
@@ -75,13 +114,20 @@ export function RelationshipGraphView({ target, results, emailData }: Relationsh
     });
 
     const candidateRadius = 285;
-    linkage.permutations.slice(0, 12).forEach((item, index) => {
-      const angle = -Math.PI / 2 + ((Math.PI * 2) / Math.max(1, Math.min(12, linkage.permutations.length))) * index;
+    linkage.permutations.slice(0, 16).forEach((item, index) => {
+      const angle = -Math.PI / 2 + ((Math.PI * 2) / Math.max(1, Math.min(16, linkage.permutations.length))) * index;
       nodes.push({
         id: `candidate:${item.label}`,
         label: item.label,
         type: 'USERNAME_CANDIDATE',
         candidate: true,
+        similarityScore: item.similarityScore,
+        metadata: {
+          mutationType: item.mutationType,
+          reason: item.reason,
+          hypothesis: item.hypothesis,
+          pivotHandle: item.pivotHandle || item.label,
+        },
         x: centerX + Math.cos(angle) * candidateRadius,
         y: centerY + Math.sin(angle) * candidateRadius,
       });
@@ -90,18 +136,19 @@ export function RelationshipGraphView({ target, results, emailData }: Relationsh
     const nodeIds = new Set(nodes.map((node) => node.id));
     const edges: VisualEdge[] = assessment.graph.edges
       .filter((edge) => nodeIds.has(edge.source) && nodeIds.has(edge.target))
-      .slice(0, 70)
+      .slice(0, 90)
       .map((edge) => ({
         id: edge.id,
         source: edge.source,
         target: edge.target,
         label: edge.relationship,
         confidence: edge.confidence,
+        evidenceId: edge.evidenceId,
       }));
 
     const usernameNode = nodes.find((node) => node.type === 'USERNAME' || node.type === 'EMAIL');
     if (usernameNode) {
-      linkage.permutations.slice(0, 12).forEach((item) => {
+      linkage.permutations.slice(0, 16).forEach((item) => {
         edges.push({
           id: `candidate-edge:${item.label}`,
           source: usernameNode.id,
@@ -113,109 +160,240 @@ export function RelationshipGraphView({ target, results, emailData }: Relationsh
       });
     }
 
+    // Preserve pivot scans inside the current graph. A successful pivot confirms
+    // public presence of the candidate handle on those services, but it does not
+    // confirm that the candidate and original target are the same identity.
+    pivotInvestigations.forEach((pivot, pivotIndex) => {
+      let candidateNode = nodes.find((node) => node.id === `candidate:${pivot.target}`);
+      if (!candidateNode) {
+        const angle = -Math.PI / 2 + ((Math.PI * 2) / Math.max(1, pivotInvestigations.length)) * pivotIndex;
+        candidateNode = {
+          id: `candidate:${pivot.target}`,
+          label: pivot.target,
+          type: 'USERNAME_CANDIDATE',
+          candidate: true,
+          similarityScore: 0,
+          metadata: { pivotHandle: pivot.target },
+          x: centerX + Math.cos(angle) * 285,
+          y: centerY + Math.sin(angle) * 285,
+        };
+        nodes.push(candidateNode);
+        if (usernameNode) {
+          edges.push({
+            id: `candidate-edge:${pivot.target}`,
+            source: usernameNode.id,
+            target: candidateNode.id,
+            label: 'PIVOT_CANDIDATE',
+            confidence: 0,
+            candidate: true,
+          });
+        }
+      }
+
+      candidateNode.metadata = {
+        ...(candidateNode.metadata || {}),
+        scannedAt: pivot.scannedAt,
+        foundCount: pivot.foundCount,
+        uncertainCount: pivot.uncertainCount,
+        totalScanned: pivot.totalScanned,
+      };
+
+      const foundProfiles = pivot.results.filter((result) => result.status === 'found').slice(0, 8);
+      foundProfiles.forEach((result, resultIndex) => {
+        const localAngle = ((Math.PI * 2) / Math.max(1, foundProfiles.length)) * resultIndex;
+        const profileId = `pivot-profile:${pivot.target}:${result.platformId}`;
+        const profileNode: VisualNode = {
+          id: profileId,
+          label: result.platformName,
+          type: 'PIVOT_PROFILE',
+          candidate: false,
+          evidenceId: result.id,
+          metadata: {
+            username: pivot.target,
+            url: result.url,
+            statusCode: result.statusCode,
+            detectorReliability: result.detectorReliability,
+            confidenceScore: result.confidenceScore,
+          },
+          x: Math.max(36, Math.min(WIDTH - 36, candidateNode!.x + Math.cos(localAngle) * 72)),
+          y: Math.max(36, Math.min(HEIGHT - 36, candidateNode!.y + Math.sin(localAngle) * 72)),
+        };
+        if (!nodes.some((node) => node.id === profileId)) nodes.push(profileNode);
+        edges.push({
+          id: `pivot-observed:${pivot.target}:${result.platformId}`,
+          source: candidateNode!.id,
+          target: profileId,
+          label: 'OBSERVED_ON',
+          confidence: result.confidenceScore || result.detectorReliability || 60,
+          candidate: false,
+          evidenceId: result.id,
+        });
+      });
+    });
+
     return { nodes, edges };
-  }, [target, results, emailData, language]);
+  }, [target, results, emailData, language, pivotInvestigations]);
 
   const byId = useMemo(() => new Map(data.nodes.map((node) => [node.id, node])), [data.nodes]);
   const selected = selectedId ? byId.get(selectedId) : undefined;
 
   const observedEdges = data.edges.filter((edge) => !edge.candidate).length;
   const candidateEdges = data.edges.filter((edge) => edge.candidate).length;
+  const matchedNodes = queryResult?.query ? new Set(queryResult.matchedNodeIds) : null;
+  const matchedEdges = queryResult?.query ? new Set(queryResult.matchedEdgeIds) : null;
 
   return (
-    <section className="rounded-[22px] border border-[#2b3035] bg-[#101316] overflow-hidden">
-      <div className="flex flex-col gap-4 border-b border-[#292f34] p-6 lg:flex-row lg:items-start lg:justify-between">
-        <div>
-          <div className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-[#8d949d]">
-            <GitBranch className="h-4 w-4" />
-            Account Relationship Graph
+    <section className="space-y-4">
+      <GraphQueryPanel
+        nodes={data.nodes}
+        edges={data.edges}
+        onResult={(result) => {
+          setQueryResult(result);
+          if (result.matchedNodeIds.length === 1) setSelectedId(result.matchedNodeIds[0]);
+        }}
+      />
+
+      <div className="rounded-[22px] border border-[#2b3035] bg-[#101316] overflow-hidden">
+        <div className="flex flex-col gap-4 border-b border-[#292f34] p-6 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <div className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-[#8d949d]">
+              <GitBranch className="h-4 w-4" />
+              {tr('graph.title')}
+            </div>
+            <h2 className="mt-3 text-2xl font-semibold tracking-[-0.035em] text-[#f3f4f5]">
+              {tr('graph.heading')}
+            </h2>
+            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[#9097a0]">
+              {tr('graph.desc')}
+            </p>
+            {queryResult?.query ? (
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-[#858d96]">
+                <span className="rounded-lg border border-[#3a4148] px-2.5 py-1 font-mono">{copy.queryActive}: {queryResult.query}</span>
+                <span>{copy.queryHint}</span>
+              </div>
+            ) : null}
           </div>
-          <h2 className="mt-3 text-2xl font-semibold tracking-[-0.035em] text-[#f3f4f5]">
-            {tr('graph.heading')}
-          </h2>
-          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[#9097a0]">
-            {tr('graph.desc')}
-          </p>
+          <div className="flex flex-wrap gap-2 text-xs">
+            <span className="rounded-lg border border-[#343a40] px-3 py-2 text-[#b0b6bd]">{observedEdges} {tr('graph.observed')}</span>
+            <span className="rounded-lg border border-dashed border-[#535a62] px-3 py-2 text-[#b0b6bd]">{candidateEdges} {tr('graph.candidate')}</span>
+          </div>
         </div>
-        <div className="flex gap-2 text-xs">
-          <span className="rounded-lg border border-[#343a40] px-3 py-2 text-[#b0b6bd]">{observedEdges} {tr('graph.observed')}</span>
-          <span className="rounded-lg border border-dashed border-[#535a62] px-3 py-2 text-[#b0b6bd]">{candidateEdges} {tr('graph.candidate')}</span>
-        </div>
-      </div>
 
-      <div className="relative overflow-x-auto bg-[#0b0e10]">
-        <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="min-w-[900px] w-full">
-          <rect width={WIDTH} height={HEIGHT} fill="#0b0e10" />
-          {data.edges.map((edge) => {
-            const source = byId.get(edge.source);
-            const targetNode = byId.get(edge.target);
-            if (!source || !targetNode) return null;
-            return (
-              <g key={edge.id}>
-                <line
-                  x1={source.x}
-                  y1={source.y}
-                  x2={targetNode.x}
-                  y2={targetNode.y}
-                  stroke={edge.candidate ? '#59616a' : '#343a40'}
-                  strokeWidth={edge.candidate ? 1.1 : Math.max(1, edge.confidence / 45)}
-                  strokeDasharray={edge.candidate ? '6 6' : undefined}
-                  opacity={edge.candidate ? 0.75 : 0.9}
-                />
-              </g>
-            );
-          })}
+        <div className="relative overflow-x-auto bg-[#0b0e10]">
+          <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="min-w-[900px] w-full">
+            <rect width={WIDTH} height={HEIGHT} fill="#0b0e10" />
+            {data.edges.map((edge) => {
+              const source = byId.get(edge.source);
+              const targetNode = byId.get(edge.target);
+              if (!source || !targetNode) return null;
+              const matches = !matchedEdges || matchedEdges.has(edge.id);
+              return (
+                <g key={edge.id} opacity={matches ? 1 : 0.11}>
+                  <line
+                    x1={source.x}
+                    y1={source.y}
+                    x2={targetNode.x}
+                    y2={targetNode.y}
+                    stroke={edge.candidate ? '#59616a' : '#343a40'}
+                    strokeWidth={edge.candidate ? 1.1 : Math.max(1, edge.confidence / 45)}
+                    strokeDasharray={edge.candidate ? '6 6' : undefined}
+                    opacity={edge.candidate ? 0.78 : 0.92}
+                  />
+                </g>
+              );
+            })}
 
-          {data.nodes.map((node) => {
-            const isSelected = selectedId === node.id;
-            const radius =
-              node.type === 'TARGET' ? 28 :
-              node.type === 'USERNAME' || node.type === 'EMAIL' ? 22 :
-              node.type === 'PROFILE' ? 16 : node.candidate ? 13 : 11;
-            return (
-              <g
-                key={node.id}
-                transform={`translate(${node.x},${node.y})`}
-                onClick={() => setSelectedId(node.id)}
-                className="cursor-pointer"
-              >
-                <circle
-                  r={radius}
-                  fill={node.candidate ? '#111518' : node.type === 'TARGET' ? '#f1f2f3' : '#171b1f'}
-                  stroke={node.candidate ? '#6b737c' : isSelected ? '#ffffff' : '#555d66'}
-                  strokeWidth={isSelected ? 2.5 : 1.2}
-                  strokeDasharray={node.candidate ? '4 3' : undefined}
-                />
-                {node.type === 'TARGET' && <text textAnchor="middle" dy="4" fontSize="10" fill="#0b0e10" fontWeight="700">TARGET</text>}
-                <text
-                  textAnchor="middle"
-                  y={radius + 15}
-                  fontSize="10"
-                  fill="#a8aeb5"
+            {data.nodes.map((node) => {
+              const isSelected = selectedId === node.id;
+              const matches = !matchedNodes || matchedNodes.has(node.id);
+              const radius =
+                node.type === 'TARGET' ? 28 :
+                node.type === 'USERNAME' || node.type === 'EMAIL' ? 22 :
+                node.type === 'PROFILE' ? 16 : node.candidate ? 13 : 11;
+              return (
+                <g
+                  key={node.id}
+                  transform={`translate(${node.x},${node.y})`}
+                  onClick={() => setSelectedId(node.id)}
+                  className="cursor-pointer"
+                  opacity={matches ? 1 : 0.16}
                 >
-                  {node.label.length > 24 ? `${node.label.slice(0, 21)}…` : node.label}
-                </text>
-              </g>
-            );
-          })}
-        </svg>
-      </div>
-
-      <div className="grid gap-4 border-t border-[#292f34] p-5 md:grid-cols-[1fr_auto]">
-        <div className="min-h-[58px]">
-          {selected ? (
-            <>
-              <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#747c85]">{selected.type}{selected.candidate ? ' · candidate' : ' · observed'}</div>
-              <div className="mt-1 break-all text-sm text-[#e9ebed]">{selected.label}</div>
-              {selected.evidenceId && <div className="mt-1 text-xs text-[#7f8790]">evidence: {selected.evidenceId}</div>}
-            </>
-          ) : (
-            <div className="flex items-center gap-2 text-sm text-[#7f8790]"><Info className="h-4 w-4" /> Clique em um nó para inspecionar.</div>
-          )}
+                  <circle
+                    r={radius}
+                    fill={node.candidate ? '#111518' : node.type === 'TARGET' ? '#f1f2f3' : '#171b1f'}
+                    stroke={node.candidate ? '#6b737c' : isSelected ? '#ffffff' : '#555d66'}
+                    strokeWidth={isSelected ? 2.5 : matches && matchedNodes ? 2 : 1.2}
+                    strokeDasharray={node.candidate ? '4 3' : undefined}
+                  />
+                  {node.type === 'TARGET' && <text textAnchor="middle" dy="4" fontSize="10" fill="#0b0e10" fontWeight="700">TARGET</text>}
+                  <text textAnchor="middle" y={radius + 15} fontSize="10" fill="#a8aeb5">
+                    {node.label.length > 24 ? `${node.label.slice(0, 21)}…` : node.label}
+                  </text>
+                  {node.candidate && typeof node.similarityScore === 'number' ? (
+                    <text textAnchor="middle" y={radius + 29} fontSize="9" fill="#737b84">
+                      {node.similarityScore}%
+                    </text>
+                  ) : null}
+                </g>
+              );
+            })}
+          </svg>
         </div>
-        <div className="flex items-center gap-4 text-[10px] uppercase tracking-[0.12em] text-[#777f88]">
-          <span>{tr('graph.solid')}</span>
-          <span>{tr('graph.dashed')}</span>
+
+        <div className="grid gap-4 border-t border-[#292f34] p-5 lg:grid-cols-[1fr_auto]">
+          <div className="min-h-[72px]">
+            {selected ? (
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#747c85]">
+                    {selected.type} · {selected.candidate ? copy.candidate : copy.observed}
+                  </div>
+                  <div className="mt-1 break-all text-sm text-[#e9ebed]">{selected.label}</div>
+                  {typeof selected.similarityScore === 'number' ? (
+                    <div className="mt-1 text-xs text-[#8f969f]">{copy.similarity}: {selected.similarityScore}%</div>
+                  ) : null}
+                  {selected.evidenceId && <div className="mt-1 text-xs text-[#7f8790]">evidence: {selected.evidenceId}</div>}
+                  {selected.candidate ? <div className="mt-2 max-w-2xl text-xs leading-relaxed text-[#7f8790]">{copy.candidateHelp}</div> : null}
+                  {selected.candidate && typeof selected.metadata?.totalScanned === 'number' ? (
+                    <div className="mt-2 rounded-lg border border-[#2d3338] bg-[#0b0e10] px-3 py-2 font-mono text-[10px] text-[#959ca4]">
+                      {copy.scanComplete} · {String(selected.metadata.foundCount || 0)} {copy.profilesFound} · {String(selected.metadata.totalScanned)} checked
+                    </div>
+                  ) : null}
+                </div>
+
+                {selected.candidate ? (
+                  <button
+                    type="button"
+                    disabled={scanningCandidate === selected.label}
+                    onClick={async () => {
+                      const handle = String(selected.metadata?.pivotHandle || selected.label);
+                      setScanningCandidate(handle);
+                      try {
+                        await onPivotScan(handle);
+                      } finally {
+                        setScanningCandidate(null);
+                      }
+                    }}
+                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-[#5a626b] bg-[#181c20] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#20252a] disabled:opacity-50"
+                  >
+                    <Search className="h-4 w-4" />
+                    {scanningCandidate === selected.label ? copy.scanning : copy.scan}
+                  </button>
+                ) : selected.type === 'TARGET' ? (
+                  <div className="inline-flex items-center gap-2 rounded-xl border border-[#343a40] px-3 py-2 text-xs text-[#a7adb4]">
+                    <Target className="h-4 w-4" />
+                    {copy.target}
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 text-sm text-[#7f8790]"><Info className="h-4 w-4" /> {copy.inspect}</div>
+            )}
+          </div>
+          <div className="flex items-center gap-4 text-[10px] uppercase tracking-[0.12em] text-[#777f88]">
+            <span>{tr('graph.solid')}</span>
+            <span>{tr('graph.dashed')}</span>
+          </div>
         </div>
       </div>
     </section>

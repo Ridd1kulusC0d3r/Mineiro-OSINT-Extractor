@@ -2,13 +2,14 @@ import { useMemo, useState } from 'react';
 import { Check, Copy, GitFork, Search } from 'lucide-react';
 import type { EmailReconData, ScanResult } from '../types';
 import { generateAccountLinkageDossier } from '../data/accountLinkage';
+import type { GraphPivotInvestigation } from '../graph/types';
 import { useI18n } from '../utils/i18n';
 
 interface AccountLinkageViewProps {
   target: string;
   results: ScanResult[];
   emailData: EmailReconData | null;
-  onPivotScan: (newTarget: string) => void;
+  onPivotScan: (newTarget: string) => Promise<GraphPivotInvestigation>;
 }
 
 export function AccountLinkageView({
@@ -19,6 +20,8 @@ export function AccountLinkageView({
 }: AccountLinkageViewProps) {
   const { tr } = useI18n();
   const [copiedHandle, setCopiedHandle] = useState<string | null>(null);
+  const [scanningHandle, setScanningHandle] = useState<string | null>(null);
+  const [pivotSummary, setPivotSummary] = useState<Record<string, GraphPivotInvestigation>>({});
   const dossier = useMemo(
     () => generateAccountLinkageDossier(target, results, emailData),
     [target, results, emailData]
@@ -102,13 +105,27 @@ export function AccountLinkageView({
               </button>
               <button
                 type="button"
-                onClick={() => onPivotScan(item.pivotHandle || item.label)}
+                onClick={async () => {
+                  const handle = item.pivotHandle || item.label;
+                  setScanningHandle(handle);
+                  try {
+                    const result = await onPivotScan(handle);
+                    setPivotSummary((current) => ({ ...current, [handle]: result }));
+                  } finally {
+                    setScanningHandle(null);
+                  }
+                }}
                 className="inline-flex items-center gap-2 rounded-lg border border-[#505861] bg-[#171b1f] px-3 py-2 text-xs font-medium text-[#eef0f2] hover:bg-[#1d2226]"
               >
                 <Search className="h-3.5 w-3.5" />
                 Pivot scan
               </button>
             </div>
+            {pivotSummary[item.pivotHandle || item.label] ? (
+              <div className="mt-3 rounded-lg border border-[#2d3338] bg-[#0b0e10] px-3 py-2 font-mono text-[10px] text-[#8f969f]">
+                {pivotSummary[item.pivotHandle || item.label].foundCount} found · {pivotSummary[item.pivotHandle || item.label].totalScanned} checked
+              </div>
+            ) : null}
           </article>
         ))}
       </div>
