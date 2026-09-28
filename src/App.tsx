@@ -145,7 +145,13 @@ export default function App() {
   ): Promise<MineiroCase> => {
     if (currentCaseId) {
       const attached = await getCase(currentCaseId);
-      if (attached) return attached;
+      if (
+        attached &&
+        attached.primaryTarget.toLowerCase() === caseTarget.trim().toLowerCase() &&
+        attached.primaryTargetType === caseTargetType
+      ) {
+        return attached;
+      }
     }
 
     const caseFile = await getOrCreateCaseForTarget(caseTarget, caseTargetType);
@@ -903,7 +909,8 @@ export default function App() {
     setCachedScans(updatedCache);
 
     try {
-      const caseFile = await ensureCaseForTarget(target || clean, target ? targetType : 'username');
+      const attachedCase = currentCaseId ? await getCase(currentCaseId) : null;
+      const caseFile = attachedCase || await getOrCreateCaseForTarget(target || clean, target ? targetType : 'username');
       await appendPivot(caseFile.id, investigation);
       await appendCollection(caseFile.id, {
         id: `collection_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
