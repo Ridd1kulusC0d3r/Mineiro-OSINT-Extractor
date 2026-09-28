@@ -5,13 +5,14 @@ import { buildIntelligenceAssessment } from '../intelligence/assessment';
 import { generateAccountLinkageDossier } from '../data/accountLinkage';
 import { useI18n } from '../utils/i18n';
 import { GraphQueryPanel } from './GraphQueryPanel';
-import type { GraphQueryResult, HuntGraphEdge, HuntGraphNode } from '../graph/types';
+import type { GraphPivotInvestigation, GraphQueryResult, HuntGraphEdge, HuntGraphNode } from '../graph/types';
 
 interface RelationshipGraphViewProps {
   target: string;
   results: ScanResult[];
   emailData: EmailReconData | null;
-  onPivotScan: (newTarget: string) => void;
+  onPivotScan: (newTarget: string) => Promise<GraphPivotInvestigation>;
+  pivotInvestigations: GraphPivotInvestigation[];
 }
 
 interface VisualNode extends HuntGraphNode {
@@ -24,10 +25,11 @@ interface VisualEdge extends HuntGraphEdge {}
 const WIDTH = 1120;
 const HEIGHT = 660;
 
-export function RelationshipGraphView({ target, results, emailData, onPivotScan }: RelationshipGraphViewProps) {
+export function RelationshipGraphView({ target, results, emailData, onPivotScan, pivotInvestigations }: RelationshipGraphViewProps) {
   const { tr, language } = useI18n();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [queryResult, setQueryResult] = useState<GraphQueryResult | null>(null);
+  const [scanningCandidate, setScanningCandidate] = useState<string | null>(null);
 
   const copy = useMemo(() => ({
     en: {
@@ -40,6 +42,9 @@ export function RelationshipGraphView({ target, results, emailData, onPivotScan 
       queryActive: 'query active',
       queryHint: 'Matched nodes stay bright; unmatched nodes are dimmed.',
       target: 'Target',
+      scanComplete: 'pivot scan complete',
+      profilesFound: 'profiles found',
+      scanning: 'Scanning…',
     },
     pt: {
       inspect: 'Clique em um nó para inspecionar.',
@@ -51,6 +56,9 @@ export function RelationshipGraphView({ target, results, emailData, onPivotScan 
       queryActive: 'consulta ativa',
       queryHint: 'Nós encontrados permanecem em destaque; os demais ficam atenuados.',
       target: 'Alvo',
+      scanComplete: 'pivot concluído',
+      profilesFound: 'perfis encontrados',
+      scanning: 'Escaneando…',
     },
     es: {
       inspect: 'Haz clic en un nodo para inspeccionar.',
@@ -62,6 +70,9 @@ export function RelationshipGraphView({ target, results, emailData, onPivotScan 
       queryActive: 'consulta activa',
       queryHint: 'Los nodos coincidentes permanecen destacados; los demás se atenúan.',
       target: 'Objetivo',
+      scanComplete: 'pivot completado',
+      profilesFound: 'perfiles encontrados',
+      scanning: 'Escaneando…',
     },
   })[language], [language]);
 
@@ -149,8 +160,79 @@ export function RelationshipGraphView({ target, results, emailData, onPivotScan 
       });
     }
 
+    // Preserve pivot scans inside the current graph. A successful pivot confirms
+    // public presence of the candidate handle on those services, but it does not
+    // confirm that the candidate and original target are the same identity.
+    pivotInvestigations.forEach((pivot, pivotIndex) => {
+      let candidateNode = nodes.find((node) => node.id === `candidate:${pivot.target}`);
+      if (!candidateNode) {
+        const angle = -Math.PI / 2 + ((Math.PI * 2) / Math.max(1, pivotInvestigations.length)) * pivotIndex;
+        candidateNode = {
+          id: `candidate:${pivot.target}`,
+          label: pivot.target,
+          type: 'USERNAME_CANDIDATE',
+          candidate: true,
+          similarityScore: 0,
+          metadata: { pivotHandle: pivot.target },
+          x: centerX + Math.cos(angle) * 285,
+          y: centerY + Math.sin(angle) * 285,
+        };
+        nodes.push(candidateNode);
+        if (usernameNode) {
+          edges.push({
+            id: `candidate-edge:${pivot.target}`,
+            source: usernameNode.id,
+            target: candidateNode.id,
+            label: 'PIVOT_CANDIDATE',
+            confidence: 0,
+            candidate: true,
+          });
+        }
+      }
+
+      candidateNode.metadata = {
+        ...(candidateNode.metadata || {}),
+        scannedAt: pivot.scannedAt,
+        foundCount: pivot.foundCount,
+        uncertainCount: pivot.uncertainCount,
+        totalScanned: pivot.totalScanned,
+      };
+
+      const foundProfiles = pivot.results.filter((result) => result.status === 'found').slice(0, 8);
+      foundProfiles.forEach((result, resultIndex) => {
+        const localAngle = ((Math.PI * 2) / Math.max(1, foundProfiles.length)) * resultIndex;
+        const profileId = `pivot-profile:${pivot.target}:${result.platformId}`;
+        const profileNode: VisualNode = {
+          id: profileId,
+          label: result.platformName,
+          type: 'PIVOT_PROFILE',
+          candidate: false,
+          evidenceId: result.id,
+          metadata: {
+            username: pivot.target,
+            url: result.url,
+            statusCode: result.statusCode,
+            detectorReliability: result.detectorReliability,
+            confidenceScore: result.confidenceScore,
+          },
+          x: Math.max(36, Math.min(WIDTH - 36, candidateNode!.x + Math.cos(localAngle) * 72)),
+          y: Math.max(36, Math.min(HEIGHT - 36, candidateNode!.y + Math.sin(localAngle) * 72)),
+        };
+        if (!nodes.some((node) => node.id === profileId)) nodes.push(profileNode);
+        edges.push({
+          id: `pivot-observed:${pivot.target}:${result.platformId}`,
+          source: candidateNode!.id,
+          target: profileId,
+          label: 'OBSERVED_ON',
+          confidence: result.confidenceScore || result.detectorReliability || 60,
+          candidate: false,
+          evidenceId: result.id,
+        });
+      });
+    });
+
     return { nodes, edges };
-  }, [target, results, emailData, language]);
+  }, [target, results, emailData, language, pivotInvestigations]);
 
   const byId = useMemo(() => new Map(data.nodes.map((node) => [node.id, node])), [data.nodes]);
   const selected = selectedId ? byId.get(selectedId) : undefined;
@@ -272,16 +354,30 @@ export function RelationshipGraphView({ target, results, emailData, onPivotScan 
                   ) : null}
                   {selected.evidenceId && <div className="mt-1 text-xs text-[#7f8790]">evidence: {selected.evidenceId}</div>}
                   {selected.candidate ? <div className="mt-2 max-w-2xl text-xs leading-relaxed text-[#7f8790]">{copy.candidateHelp}</div> : null}
+                  {selected.candidate && typeof selected.metadata?.totalScanned === 'number' ? (
+                    <div className="mt-2 rounded-lg border border-[#2d3338] bg-[#0b0e10] px-3 py-2 font-mono text-[10px] text-[#959ca4]">
+                      {copy.scanComplete} · {String(selected.metadata.foundCount || 0)} {copy.profilesFound} · {String(selected.metadata.totalScanned)} checked
+                    </div>
+                  ) : null}
                 </div>
 
                 {selected.candidate ? (
                   <button
                     type="button"
-                    onClick={() => onPivotScan(String(selected.metadata?.pivotHandle || selected.label))}
-                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-[#5a626b] bg-[#181c20] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#20252a]"
+                    disabled={scanningCandidate === selected.label}
+                    onClick={async () => {
+                      const handle = String(selected.metadata?.pivotHandle || selected.label);
+                      setScanningCandidate(handle);
+                      try {
+                        await onPivotScan(handle);
+                      } finally {
+                        setScanningCandidate(null);
+                      }
+                    }}
+                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-[#5a626b] bg-[#181c20] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#20252a] disabled:opacity-50"
                   >
                     <Search className="h-4 w-4" />
-                    {copy.scan}
+                    {scanningCandidate === selected.label ? copy.scanning : copy.scan}
                   </button>
                 ) : selected.type === 'TARGET' ? (
                   <div className="inline-flex items-center gap-2 rounded-xl border border-[#343a40] px-3 py-2 text-xs text-[#a7adb4]">
