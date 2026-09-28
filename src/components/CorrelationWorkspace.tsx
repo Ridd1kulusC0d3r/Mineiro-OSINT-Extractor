@@ -37,7 +37,7 @@ export function CorrelationWorkspace(props: CorrelationWorkspaceProps) {
         </button>
       </div>
 
-      {tab === 'graph' ? <RelationshipGraphView target={props.target} results={props.results} emailData={props.emailData} /> : <AccountLinkageView {...props} />}
+      {tab === 'graph' ? <RelationshipGraphView target={props.target} results={props.results} emailData={props.emailData} onPivotScan={props.onPivotScan} /> : <AccountLinkageView {...props} />}
     </div>
   );
 }
