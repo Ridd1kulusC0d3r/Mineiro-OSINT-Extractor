@@ -1043,6 +1043,7 @@ app.post('/api/osint/profile', async (req, res) => {
   const threatActorHeuristics = baselineBehavior.threatActorAnalysis || evaluateThreatActorHeuristics(foundPlatforms, target, emailData);
 
   const clientInfo = getGenAiClient(userHeaderKey);
+  let isQuotaExceeded = false;
 
   if (clientInfo) {
     // --- MULTI-PASS EVALUATION ---
@@ -1093,7 +1094,7 @@ MULTI-PASS VERIFIED ENTITIES:
 - Technical Footprint Level: ${weightedEntities.technicalFootprint.level}
 - Is Tech Professional: ${weightedEntities.technicalFootprint.isTechProfessional ? 'YES' : 'NO'}
 - Technical Evidence: ${weightedEntities.technicalFootprint.evidence}
-- Primary Tools: ${weightedEntities.technicalFootprint.primaryTools.join(', ') || 'Standard web & communication tools'}
+- Primary Tools: ${(weightedEntities.technicalFootprint.primaryTools || []).join(', ') || 'Standard web & communication tools'}
 
 ARCHETYPE WEIGHTING DIRECTIVE:
 ${archetypeDirective}
@@ -1286,7 +1287,7 @@ Return strictly the raw JSON without markdown code fences or backticks.`;
       });
     }
 
-    var isQuotaExceeded = Boolean(aiResult?.quotaExceeded);
+    isQuotaExceeded = Boolean(aiResult?.quotaExceeded);
   }
 
   // High-fidelity fallback heuristic profiler (used if no API key or on temporary demand spike)
@@ -1434,7 +1435,7 @@ async function startServer() {
     } else {
       const distPath = path.join(process.cwd(), 'dist');
       app.use(express.static(distPath));
-      app.get('*', (req, res) => {
+      app.get('/{*splat}', (req, res) => {
         res.sendFile(path.join(distPath, 'index.html'));
       });
     }
