@@ -206,7 +206,7 @@ function buildClusters(results: ScanResult[]): FootprintCluster[] {
     byCategory.set(r.category, current);
   });
 
-  const clusters = [...byCategory.entries()].map(([category, items]) => {
+  const clusters: FootprintCluster[] = [...byCategory.entries()].map(([category, items]) => {
     const weighted = items.reduce((sum, item) => {
       return sum + ((item.detectorReliability ?? 50) / 100) * ((item.confidenceScore ?? 50) / 100);
     }, 0);
@@ -219,7 +219,7 @@ function buildClusters(results: ScanResult[]): FootprintCluster[] {
       ).length,
       weightedScore: clamp((weighted / Math.max(1, items.length)) * 100),
       averageDetectorReliability: clamp(detectorAverage),
-      overlaps: [],
+      overlaps: [] as FootprintCluster['overlaps'],
     } satisfies FootprintCluster;
   });
 
