@@ -95,14 +95,14 @@ export function ExportModal({
       showToast({
         title: 'Cryptographic Snapshot Sealed',
         message: `Forensic snapshot generated with SHA-256 seal: ${snap.summaryHash.slice(0, 12)}...`,
-        type: 'default',
+        type: 'info',
       });
     } catch (err: any) {
       console.error(err);
       showToast({
         title: 'Snapshot Error',
         message: 'Failed to compute snapshot digest.',
-        type: 'default',
+        type: 'info',
       });
     } finally {
       setIsGeneratingSnapshot(false);
@@ -133,7 +133,7 @@ export function ExportModal({
   const applyPreset = (preset: 'all' | 'executive_findings' | 'ai_threat' | 'tech_raw') => {
     if (preset === 'all') {
       setSections(DEFAULT_REPORT_SECTIONS);
-      showToast({ title: 'Preset Applied', message: 'All report sections enabled.', type: 'default' });
+      showToast({ title: 'Preset Applied', message: 'All report sections enabled.', type: 'info' });
     } else if (preset === 'executive_findings') {
       setSections({
         executiveSummary: true,
@@ -147,7 +147,7 @@ export function ExportModal({
         platformFindings: true,
         wafUncertain: false,
       });
-      showToast({ title: 'Preset Applied', message: 'Executive & Findings preset selected.', type: 'default' });
+      showToast({ title: 'Preset Applied', message: 'Executive & Findings preset selected.', type: 'info' });
     } else if (preset === 'ai_threat') {
       setSections({
         executiveSummary: true,
@@ -161,7 +161,7 @@ export function ExportModal({
         platformFindings: false,
         wafUncertain: false,
       });
-      showToast({ title: 'Preset Applied', message: 'AI & Threat Profiling preset selected.', type: 'default' });
+      showToast({ title: 'Preset Applied', message: 'AI & Threat Profiling preset selected.', type: 'info' });
     } else if (preset === 'tech_raw') {
       setSections({
         executiveSummary: true,
@@ -175,7 +175,7 @@ export function ExportModal({
         platformFindings: true,
         wafUncertain: true,
       });
-      showToast({ title: 'Preset Applied', message: 'Technical Probes Only preset selected.', type: 'default' });
+      showToast({ title: 'Preset Applied', message: 'Technical Probes Only preset selected.', type: 'info' });
     }
   };
 
@@ -559,7 +559,7 @@ export function ExportModal({
     showToast({
       title: 'PDF Dossier Dispatched',
       message: 'Print view dispatched for external saving or document archiving.',
-      type: 'default',
+      type: 'info',
     });
   };
 
