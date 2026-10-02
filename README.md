@@ -1,7 +1,7 @@
 # Mineiro Username Intelligence
 
 <p align="center">
-  <img src="assets/mineiro-logo.png" alt="Mineiro" width="200">
+  <img src="assets/logo.svg" alt="Mineiro — feijão guerreiro" width="180">
 </p>
 
 <p align="center"><strong>OSINT Investigation Workbench</strong> for public username presence: evidence first, cautious correlation, auditable reports.</p>
