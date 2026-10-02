@@ -39,3 +39,20 @@ describe('analyzeTarget', () => {
     expect(analyzeTarget('forgejo', 'email')).toMatchObject({ issue: 'invalid_email' });
   });
 });
+
+import { readVerifyOutcome } from '../src/core/verifyOutcome';
+
+describe('readVerifyOutcome', () => {
+  it('passes a normal verdict through', () => {
+    expect(readVerifyOutcome(true, 200, { status: 'found', statusCode: 200 })).toEqual({ status: 'found', statusCode: 200, uncertainReason: undefined });
+    expect(readVerifyOutcome(true, 200, { status: 'not_found', statusCode: 404 }).status).toBe('not_found');
+  });
+  it('never turns a local refusal into "not found"', () => {
+    const limited = readVerifyOutcome(false, 429, { error: 'Rate limit exceeded', limit: 'verify' });
+    expect(limited.status).toBe('error');
+    expect(limited.uncertainReason).toMatch(/Rate limit exceeded/);
+    expect(readVerifyOutcome(false, 400, { error: 'URL does not match the detector pattern' }).status).toBe('error');
+    expect(readVerifyOutcome(true, 200, {}).status).toBe('error');
+    expect(readVerifyOutcome(true, 200, { status: 'weird' }).status).toBe('error');
+  });
+});

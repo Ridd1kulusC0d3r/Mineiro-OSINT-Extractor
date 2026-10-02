@@ -11,11 +11,19 @@ import { assertProbeableUrl, BlockedTargetError, safeFetch } from '../security/s
 
 const VERSION = '1.7.0';
 
-const DEFAULT_HEADERS = {
-  'User-Agent': `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 MineiroUsernameIntelligence/${VERSION}`,
+const ACCEPT = {
   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
   'Accept-Language': 'en-US,en;q=0.5',
 };
+
+const BROWSER_UA = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 MineiroUsernameIntelligence/${VERSION}`;
+const HONEST_UA = `MineiroUsernameIntelligence/${VERSION} (+https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor; public-signal checker)`;
+
+/** MINEIRO_USER_AGENT overrides everything; otherwise a detector may opt into the honest UA. */
+function requestHeaders(honest: boolean): Record<string, string> {
+  const override = process.env.MINEIRO_USER_AGENT?.trim();
+  return { 'User-Agent': override || (honest ? HONEST_UA : BROWSER_UA), ...ACCEPT };
+}
 
 const RETRY_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
@@ -46,7 +54,7 @@ async function probe(
   try {
     const { response, finalUrl } = await safeFetch(url, {
       method: options.method,
-      headers: options.headers || DEFAULT_HEADERS,
+      headers: options.headers || requestHeaders(false),
       signal: controller.signal,
     });
     const server = (response.headers.get('server') || '').toLowerCase();
@@ -61,14 +69,14 @@ async function probe(
   });
 }
 
-async function controlFingerprint(detectorId: string, urlPattern: string, timeoutMs: number): Promise<PageFingerprint | null> {
+async function controlFingerprint(detectorId: string, urlPattern: string, timeoutMs: number, honest: boolean): Promise<PageFingerprint | null> {
   const cached = baselineCache.get(detectorId);
   if (cached && Date.now() - cached.at < BASELINE_TTL_MS) return cached.fingerprint;
 
   const handle = randomControlUsername();
   let fingerprint: PageFingerprint | null = null;
   try {
-    const outcome = await probe(buildDetectorUrl(urlPattern, handle), timeoutMs, { readBody: true });
+    const outcome = await probe(buildDetectorUrl(urlPattern, handle), timeoutMs, { readBody: true, headers: requestHeaders(honest) });
     fingerprint = fingerprintPage({ status: outcome.statusCode, finalUrl: outcome.finalUrl, body: outcome.body, handle });
   } catch {
     fingerprint = null;
@@ -131,18 +139,19 @@ export function verifyRouter(): Router {
     const retryStrategy = wafRetryStrategy || (depth === 'deep' ? 'adaptive' : 'none');
     const handle = typeof username === 'string' ? username : '';
     const declarative = DECLARATIVE_DETECTORS.get(platformId);
+    const honestUa = declarative?.userAgent === 'honest';
     const wantBody = Boolean(enableEvidenceChecks || baseline || declarative);
     const cacheKey = `${platformId}|${url}|${depth}|${Boolean(enableEvidenceChecks)}|${Boolean(baseline)}`;
     const cached = cacheGet(cacheKey);
     if (cached) return res.json({ ...cached, cached: true });
     const started = Date.now();
     const collectedAt = new Date().toISOString();
-    const base = { platformId, url, scanDepth: depth, collectedAt, detectorVersion: detector.lastVerified || 'legacy' };
+    const base = { platformId, url, scanDepth: depth, collectedAt, detectorVersion: declarative ? `declarative:${declarative.lastVerified}` : (detector.lastVerified || 'legacy') };
 
     try {
       const [first, control] = await Promise.all([
-        probe(url, timeout, { readBody: wantBody }),
-        baseline ? controlFingerprint(platformId, detector.urlPattern, timeout) : Promise.resolve(null),
+        probe(url, timeout, { readBody: wantBody, headers: requestHeaders(honestUa) }),
+        baseline ? controlFingerprint(platformId, detector.urlPattern, timeout, honestUa) : Promise.resolve(null),
       ]);
       let outcome = first;
       const statusCode = outcome.statusCode;

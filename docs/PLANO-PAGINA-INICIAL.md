@@ -98,6 +98,29 @@ Tudo é medido em CI ou localmente. Não coletamos dados de uso.
 2. **Casos recentes na Home** mostram alvos anteriores. É dado local e útil, mas sensível em máquina compartilhada. O item 12 resolve; até lá, o botão "Open cases" já permite apagar casos.
 3. **Exemplos sugeridos** (`forgejo`, `nodejs`, `rust-lang`) são organizações públicas. Se algum deles passar a bloquear consultas automatizadas, trocar a lista; ela é uma constante em `HomeView.tsx`.
 
+## 6b. Backlog técnico levantado pela revisão da documentação
+
+Achados ao validar cada afirmação da documentação contra o produto. Os itens "corrigido" já estão no código; o resto é trabalho futuro.
+
+| Item | Estado |
+|---|---|
+| Erro local (400/429) aparecia como `not_found` | **corrigido** (`ERROR` + motivo) |
+| `@alice` virava `%40alice` na URL | **corrigido** |
+| Textos de atalhos/modal em lote divergiam do comportamento | **corrigido** |
+| Requisição desnecessária ao Google Fonts | **corrigido** |
+| Codeberg bloqueava UA de navegador | **corrigido** (`userAgent: honest`) |
+| README prometia STIX/SQLite na interface | **corrigido** (documentado como API) |
+| Suporte a proxy no servidor (`undici.ProxyAgent`, respeitando o guard anti-SSRF) | aberto |
+| Ícones: servir localmente / opt-in em vez de Google/DuckDuckGo | aberto |
+| Modo e-mail: não usar o endereço inteiro como handle em detectores `both` | aberto |
+| Lote: cabeçalho vira alvo; `a,b,c` numa linha; persistir lote | aberto |
+| Modal modular com estado antigo | aberto |
+| Lint de texto literal (i18n) | aberto |
+| Abas Dashboard e IA sem entrada visível no menu | aberto |
+| Números dos cartões da Home (20/50/985) diferentes dos reais (19/49/984) | aberto |
+| Tema "bone" praticamente igual ao escuro | aberto |
+| Auditar proveniência dos 985 detectores (0 hoje) | aberto, longo prazo |
+
 ## 7. Ordem sugerida
 
 `1 → 4 → 2 → 3` (a rede de proteção do E2E antes da refatoração do bundle), depois `5` (destrava demos e CI), `7`, `6`, `8`, e então os itens de qualidade visual (`10`, `11`) antes de qualquer mexida em tema (`13`).

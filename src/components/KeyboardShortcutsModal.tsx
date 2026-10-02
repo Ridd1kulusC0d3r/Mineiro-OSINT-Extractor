@@ -83,7 +83,7 @@ export function KeyboardShortcutsModal({
         keys: ['/'],
         actionId: 'focus-filter',
         label: t.shortcutFilterSearch || 'Jump to Platform Filter Search',
-        description: 'Quickly filters platform results by name, URL, category, or status.',
+        description: 'Quickly filters platform results by name or URL (Evidence and Platforms tabs).',
         icon: Search,
       },
       {
@@ -92,7 +92,7 @@ export function KeyboardShortcutsModal({
         keys: ['D'],
         actionId: 'toggle-depth',
         label: t.shortcutToggleDepth || 'Toggle Scan Depth (Fast ⚡ / Deep 🛡️)',
-        description: 'Switches between Fast (2.5s, single-pass) and Deep (6.5s, adaptive retry with browser-like headers).',
+        description: 'Switches the probe timeout between Fast (2.5 s) and Deep (6.5 s). Blocked sites stay UNCERTAIN: no retries, no bypass.',
         icon: Zap,
       },
 
@@ -130,7 +130,7 @@ export function KeyboardShortcutsModal({
         keys: ['4'],
         actionId: 'view-profile',
         label: t.shortcutViewDossier || 'Switch to Autonomous AI Dossier',
-        description: 'Deep behavioral archetypes, psychological indicators, and risk synthesis.',
+        description: 'AI Analyst Copilot: optional, evidence-bounded synthesis (needs a Gemini key).',
         icon: Sparkles,
       },
       {
@@ -159,7 +159,7 @@ export function KeyboardShortcutsModal({
         keys: [modKey, 'E'],
         actionId: 'open-export',
         label: t.shortcutExport || 'Export Forensic Dossier',
-        description: 'Generate JSON, CSV, PDF, and cryptographically signed SHA-256 evidence packages.',
+        description: 'Build the report: HTML, JSON, Markdown or CSV, each with a SHA-256 integrity manifest.',
         icon: Download,
       },
       {
@@ -168,7 +168,7 @@ export function KeyboardShortcutsModal({
         keys: [modKey, 'B'],
         actionId: 'open-bulk',
         label: t.shortcutBulk || 'Open Bulk Target CSV Ingestion',
-        description: 'Batch process up to 100 targets sequentially with automatic pacing.',
+        description: 'Import a CSV/TXT list and scan the targets one after another.',
         icon: FileSpreadsheet,
       },
       {

@@ -1,5 +1,8 @@
 # Mineiro v1.4 — Engenharia de Software, Dados e Arquitetura
 
+> [!NOTE]
+> **Documento histórico (v1.4).** Descreve o desenho da época; pode divergir da versão atual. Para o estado vigente, veja [ARCHITECTURE.md](../ARCHITECTURE.md), [INTELLIGENCE-METHODOLOGY.md](INTELLIGENCE-METHODOLOGY.md) e [USER-GUIDE.md](USER-GUIDE.md).
+
 ## 1. Visão
 
 A v1.4 separa explicitamente cinco responsabilidades:

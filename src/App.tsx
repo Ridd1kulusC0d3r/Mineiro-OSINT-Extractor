@@ -5,6 +5,7 @@ import { StatsBar } from './components/StatsBar';
 import { DashboardView } from './components/DashboardView';
 import { IntelligenceReportView } from './components/IntelligenceReportView';
 import { HomeView } from './components/HomeView';
+import { readVerifyOutcome } from './core/verifyOutcome';
 import { PlatformGrid } from './components/PlatformGrid';
 import { PlatformTable } from './components/PlatformTable';
 import { EmailReconCard } from './components/EmailReconCard';
@@ -372,9 +373,10 @@ export default function App() {
                 }),
               });
 
-              const data = await res.json();
-              item.status = data.status || 'not_found';
-              item.statusCode = data.statusCode;
+              const data = await res.json().catch(() => ({}));
+              const outcome = readVerifyOutcome(res.ok, res.status, data);
+              item.status = outcome.status;
+              item.statusCode = outcome.statusCode;
               item.responseTimeMs = data.responseTimeMs;
               item.confidenceScore = data.confidenceScore || 0;
               item.evidenceLevel = data.evidenceLevel;
@@ -384,7 +386,7 @@ export default function App() {
               item.detectorReliability = data.detectorReliability ?? platform?.detectorReliability;
               item.siteType = platform?.siteType;
               item.reliabilityTier = platform?.reliabilityTier;
-              item.uncertainReason = data.uncertainReason;
+              item.uncertainReason = outcome.uncertainReason;
               item.wafRetried = false;
               item.retryResolved = false;
               item.wafStrategyApplied = 'respect-protection-boundary';
@@ -484,7 +486,8 @@ export default function App() {
     setAiProfile(null);
     setEmailData(null);
 
-    const cleanTarget = target.trim();
+    // A leading @ is decoration, not part of the handle (it would become %40 in every URL).
+    const cleanTarget = targetType === 'username' ? target.trim().replace(/^@+/, '') : target.trim();
     const platforms = getPlatformsForScope(activeCfg.platformScope, activeCfg.selectedCategory, targetType);
     addLog(`=== INITIALIZING MINEIRO OSINT RECON ENGINE ===`, 'info');
     addLog(`Target: @${cleanTarget} | Mode: ${targetType.toUpperCase()} | Preset: ${activeCfg.preset.toUpperCase()} | Scope: ${platforms.length} platforms (${activeCfg.concurrency}x concurrency)`, 'info');

@@ -10,7 +10,7 @@
   <img alt="Node" src="https://img.shields.io/badge/node-22%2B-111111">
   <img alt="License" src="https://img.shields.io/badge/code-MIT-111111">
   <img alt="Python" src="https://img.shields.io/badge/pip-instal%C3%A1vel-111111">
-  <img alt="Export" src="https://img.shields.io/badge/export-STIX%202.1-111111">
+  <img alt="Export" src="https://img.shields.io/badge/export-HTML%20%C2%B7%20JSON%20%C2%B7%20MD%20%C2%B7%20CSV-111111">
 </p>
 
 <p align="center">
@@ -51,7 +51,7 @@ Um `FOUND` é um achado. Não é prova automática de identidade.
 - Source Quality e Detector Reliability separados;
 - Intelligence Priority Score para ordenar achados;
 - clusters de pegada pública;
-- grafo de correlação com provenance;
+- grafo de correlação (observado × candidato);
 - hipóteses principal e alternativa;
 - evidência contraditória e gaps;
 - Analytic Ledger rastreável por evidence ID;
@@ -140,8 +140,8 @@ Para uma instalação guiada, use [docs/GETTING-STARTED.md](docs/GETTING-STARTED
 - **Sondagem mais segura:** o servidor só consulta URLs que um detector do registry pode gerar, bloqueia IPs privados/metadata (resistente a DNS rebinding) e revalida cada redirect; rate limit, headers de segurança e modo `MINEIRO_PUBLIC=1` para instâncias compartilhadas.
 - **Menos falso positivo:** baseline diferencial (alvo vs. handle aleatório inexistente) e detectores declarativos com canários.
 - **Evidência auditável:** `evidenceHash` (SHA-256), `collectedAt` e `detectorVersion` em cada resultado.
-- **Interoperável:** export STIX 2.1; store SQLite com Entity → Observation → Claim.
-- **Mais OSINT:** variantes de username, pivôs com orçamento, hash perceptual de avatar, linha do tempo Wayback, consulta de CNPJ (só dados da empresa).
+- **Interoperável (API):** export STIX 2.1 e store SQLite opcional (Entity → Observation → Claim) via API local (veja [docs/CLI-E-API.md](docs/CLI-E-API.md)); a interface ainda não grava neles.
+- **Mais OSINT (API):** variantes de username, pivôs com orçamento, hash perceptual de avatar, linha do tempo Wayback, consulta de CNPJ (só dados da empresa).
 - **`pip install`** e build reproduzível com lockfile.
 
 Detalhes no [CHANGELOG](CHANGELOG.md).

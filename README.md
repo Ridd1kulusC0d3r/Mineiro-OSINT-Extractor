@@ -8,7 +8,7 @@
   <img alt="License" src="https://img.shields.io/badge/code-MIT-111111">
   <img alt="Node" src="https://img.shields.io/badge/node-22%2B-111111">
   <img alt="Python" src="https://img.shields.io/badge/pip-installable-111111">
-  <img alt="Export" src="https://img.shields.io/badge/export-STIX%202.1-111111">
+  <img alt="Export" src="https://img.shields.io/badge/export-HTML%20%C2%B7%20JSON%20%C2%B7%20MD%20%C2%B7%20CSV-111111">
 </p>
 
 <p align="center">
@@ -46,9 +46,9 @@ It keeps apart four things that username tools usually blur together: **collecti
     <td valign="top" width="33%"><b>Safe by construction</b><br><sub>Public IPs only (rebinding-safe), every redirect re-validated, rate limits. No CAPTCHA or login bypass.</sub></td>
   </tr>
   <tr>
-    <td valign="top" width="33%"><b>Auditable reports</b><br><sub>HTML, JSON, Markdown, CSV and <b>STIX 2.1</b>, each with an integrity manifest.</sub></td>
+    <td valign="top" width="33%"><b>Auditable reports</b><br><sub>HTML, JSON, Markdown and CSV from the UI, each with an integrity manifest (SHA-256). STIX 2.1 is available through the API.</sub></td>
     <td valign="top" width="33%"><b>Cautious correlation</b><br><sub>Similar usernames, shared domains and avatar hashes become <i>candidate</i> edges. A claim must cite observations.</sub></td>
-    <td valign="top" width="33%"><b>Runs locally</b><br><sub><code>pip install</code>, Colab or from source. SQLite store in your home directory. Nothing leaves your machine except the checks themselves.</sub></td>
+    <td valign="top" width="33%"><b>Runs locally</b><br><sub><code>pip install</code>, Colab or from source. Optional SQLite store in your home directory. Investigations stay in your browser; the app sends only the probe requests, plus site-icon lookups (favicon services) and the AI copilot if you enable it. See <a href="docs/PRIVACIDADE-E-DADOS.md">privacy</a>.</sub></td>
   </tr>
 </table>
 
@@ -180,8 +180,8 @@ Full model: [docs/INTELLIGENCE-METHODOLOGY.md](docs/INTELLIGENCE-METHODOLOGY.md)
 - **Safer probing.** The server only probes URLs a registry detector can produce, resolves DNS through a guard that blocks private, loopback, link-local and cloud-metadata ranges, and re-validates every redirect hop. Rate limits, security headers and a `MINEIRO_PUBLIC=1` mode for shared deployments.
 - **Fewer false positives.** Differential baseline and declarative detectors (`registry/detectors/*.json`) with canary handles and a weekly health check.
 - **Auditable evidence.** `evidenceHash` (SHA-256), `collectedAt` and `detectorVersion` on every result.
-- **Interoperable.** STIX 2.1 export; SQLite store with Entity → Observation → Claim.
-- **More OSINT.** Username variants (Jaro-Winkler), pivot extraction with depth/budget limits, avatar perceptual hash, Wayback Machine timeline, Brazilian CNPJ lookup (company-level fields only).
+- **Interoperable (API).** STIX 2.1 export and an optional SQLite store (Entity → Observation → Claim) are exposed through the local API (see [docs/CLI-E-API.md](docs/CLI-E-API.md)); the UI does not write to them yet.
+- **More OSINT (API).** Username variants (Jaro-Winkler), pivot extraction with depth/budget limits, avatar perceptual hash, Wayback Machine timeline, Brazilian CNPJ lookup (company-level fields only).
 - **`pip install`** and a reproducible, locked build.
 
 See the [CHANGELOG](CHANGELOG.md) for details.

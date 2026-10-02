@@ -31,6 +31,26 @@ const pages = [
   { name: 'architecture', html: 'diagram-architecture.html', out: 'assets/diagrams/architecture.png', width: 1200, scale: 2, fit: true, flat: true },
 ];
 
+// Documentation screens (assets/docs). `natural`: keep the real CSS size (modals must not be upscaled).
+const docFrames = [
+  { name: 'd-modular', out: 'assets/docs/modular.png', files: ['docs-modular.png'], natural: true },
+  { name: 'd-cases', out: 'assets/docs/cases.png', files: ['docs-cases.png'], natural: true },
+  { name: 'd-batch', out: 'assets/docs/batch.png', files: ['docs-batch.png'], natural: true },
+  { name: 'd-shortcuts', out: 'assets/docs/shortcuts.png', files: ['docs-shortcuts.png'], natural: true },
+  { name: 'd-gemini', out: 'assets/docs/gemini.png', files: ['docs-gemini.png'], natural: true },
+  { name: 'd-export', out: 'assets/docs/export.png', files: ['docs-export.png'], natural: true },
+  { name: 'd-ai', out: 'assets/docs/ai.png', files: ['docs-ai.png'], chrome: 'localhost:3000 · AI' },
+  { name: 'd-console', out: 'assets/docs/console.png', files: ['docs-console.png'], chrome: 'localhost:3000 · Console' },
+  { name: 'd-filters', out: 'assets/docs/filters.png', files: ['docs-filters.png'], chrome: 'localhost:3000 · Evidence' },
+  { name: 'd-similar', out: 'assets/docs/similar.png', files: ['docs-similar.png'], chrome: 'localhost:3000 · Similar usernames', maxHeight: 860 },
+  { name: 'd-diff', out: 'assets/docs/diff.png', files: ['docs-diff.png'], chrome: 'localhost:3000 · Case & Diff', maxHeight: 760 },
+  { name: 'd-email', out: 'assets/docs/email.png', files: ['docs-email.png'], chrome: 'localhost:3000 · E-mail' },
+  { name: 'd-dashboard', out: 'assets/docs/dashboard.png', files: ['docs-dashboard.png'], chrome: 'localhost:3000 · Dashboard (tecla 1)', maxHeight: 900 },
+  ...['requirement', 'coverage', 'high', 'hypotheses', 'gaps', 'method', 'integrity'].map((id) => ({
+    name: `d-report-${id}`, out: `assets/docs/report-${id}.png`, files: [`docs-report-${id}.png`], natural: true,
+  })),
+];
+
 // App screenshots wrapped in a quiet window frame (transparent outside, so it sits well on light and dark pages).
 const frames = [
   { name: 'home', out: 'assets/screenshots/home.png', files: ['home.png'], chrome: 'localhost:3000 · Start' },
@@ -41,20 +61,27 @@ const frames = [
   { name: 'matrix', out: 'assets/screenshots/evidence-matrix.png', files: ['report-evidence.png'] },
 ];
 
+function pngSize(file) {
+  const b = fs.readFileSync(file);
+  return { w: b.readUInt32BE(16), h: b.readUInt32BE(20) };
+}
+
 const frameHtml = (f) => {
   const imgs = f.files
     .map((file, i) => `<img src="${pathToFileURL(path.join(RAW, file))}" style="display:block;width:100%;${f.crop && i === 0 ? `height:${f.crop * 100}%;object-fit:cover;object-position:top;` : ''}">`)
     .join(f.files.length > 1 ? '<div style="height:1px;background:#1a1a1a"></div>' : '');
+  const body = f.maxHeight ? `<div style="max-height:${f.maxHeight}px;overflow:hidden">${imgs}</div>` : imgs;
+  const natural = f.natural ? Math.round(pngSize(path.join(RAW, f.files[0])).w / 2) : 1280;
   const bar = f.chrome
     ? `<div style="display:flex;align-items:center;gap:8px;height:38px;padding:0 16px;background:#0a0a0a;border-bottom:1px solid #2a2a2a">
          <i style="width:11px;height:11px;border-radius:50%;background:#2a2a2a"></i><i style="width:11px;height:11px;border-radius:50%;background:#2a2a2a"></i><i style="width:11px;height:11px;border-radius:50%;background:#2a2a2a"></i>
          <span style="margin-left:14px;font:400 12px 'JetBrains Mono',monospace;color:#737373">${f.chrome}</span></div>`
     : '';
-  const cropWrap = f.crop ? 'overflow:hidden;' : '';
+  const cropWrap = '';
   return `<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="${pathToFileURL(path.join(SRC, 'common.css'))}">
-    <style>body{padding:28px;width:1336px;background:transparent}
+    <style>body{padding:28px;width:${natural + 56}px;background:transparent}
     .card{border:1px solid #2a2a2a;border-radius:14px;overflow:hidden;background:#000;box-shadow:0 18px 50px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.4)}</style></head>
-    <body><div class="card" style="${cropWrap}">${bar}${imgs}</div></body></html>`;
+    <body><div class="card" style="${cropWrap}">${bar}${body}</div></body></html>`;
 };
 
 const browser = await chromium.launch({ executablePath: chromePath(), args: ['--no-sandbox'] });
@@ -76,9 +103,9 @@ for (const job of pages.filter((j) => want(j.name))) {
   console.log('rendered', job.out, (fs.statSync(job.out).size / 1024).toFixed(0) + ' KB');
 }
 
-for (const f of frames.filter((j) => want(j.name))) {
+for (const f of [...frames, ...docFrames].filter((j) => want(j.name))) {
   if (!f.files.every((file) => fs.existsSync(path.join(RAW, file)))) { console.warn('skip', f.name, '(missing raw capture)'); continue; }
-  const ctx = await browser.newContext({ viewport: { width: 1336, height: 900 }, deviceScaleFactor: 1.5 });
+  const ctx = await browser.newContext({ viewport: { width: 1336, height: 900 }, deviceScaleFactor: f.natural ? 2 : 1.5 });
   const page = await ctx.newPage();
   const tmp = path.join(SRC, `.frame-${f.name}.html`);
   fs.writeFileSync(tmp, frameHtml(f));

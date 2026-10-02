@@ -37,6 +37,7 @@ export function PlatformGrid({ results }: PlatformGridProps) {
         const isUncertain = item.status === 'uncertain';
         const isScanning = item.status === 'scanning';
         const isRateLimited = item.status === 'rate_limited';
+        const isError = item.status === 'error';
         const isNotFound = item.status === 'not_found';
         const isPending = item.status === 'pending';
 
@@ -130,6 +131,11 @@ export function PlatformGrid({ results }: PlatformGridProps) {
                   {isRateLimited && (
                     <span className="px-2 py-0.5 text-[10px] font-mono text-[#A3A3A3] border border-[#2A2A2A] bg-[#050505] rounded-sm whitespace-nowrap">
                       RATE_LMT
+                    </span>
+                  )}
+                  {isError && (
+                    <span title={item.uncertainReason || 'The probe failed before a verdict'} className="px-2 py-0.5 text-[10px] font-mono text-[#A3A3A3] border border-dotted border-[#737373] bg-[#050505] rounded-sm whitespace-nowrap">
+                      ERROR
                     </span>
                   )}
                   {isPending && (

@@ -15,6 +15,8 @@ export interface DeclarativeDetector {
   canary?: { present: string; absent?: string };
   lastVerified: string;
   source: string; // where the rule comes from (URL of docs, own observation...)
+  /** 'honest' identifies Mineiro instead of imitating a browser; some sites block the browser-like default */
+  userAgent?: 'default' | 'honest';
 }
 
 export interface MatchContext {
@@ -70,6 +72,7 @@ export function validateDeclarativeDetector(value: any): string[] {
   if (typeof value.id !== 'string' || !value.id) errors.push(`${label}: id required`);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value.lastVerified ?? '')) errors.push(`${label}: lastVerified must be YYYY-MM-DD`);
   if (typeof value.source !== 'string' || !value.source) errors.push(`${label}: source required (provenance)`);
+  if (value.userAgent !== undefined && !['default', 'honest'].includes(value.userAgent)) errors.push(`${label}: userAgent must be "default" or "honest"`);
   for (const key of ['present', 'absent'] as const) {
     if (!Array.isArray(value[key])) { errors.push(`${label}: ${key} must be an array`); continue; }
     for (const matcher of value[key]) {

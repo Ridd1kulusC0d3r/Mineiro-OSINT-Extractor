@@ -1,5 +1,16 @@
 # Changelog
 
+### Documentation
+- New guides: `docs/CLI-E-API.md` (CLI, environment variables, REST reference with real responses), `docs/RECEITAS.md` (9 investigation recipes), `docs/PRIVACIDADE-E-DADOS.md`, `docs/GLOSSARIO.md`, `docs/CHEATSHEET.md`; rewritten `GETTING-STARTED`, `USER-GUIDE` (17 sections, real screenshots in `assets/docs`), `TROUBLESHOOTING`, `FAQ`, `GRAPH-HUNTING` and `INTELLIGENCE-METHODOLOGY` (now with every formula). Runnable examples in `examples/`.
+- `npm run docs:validate` now checks every relative link and heading anchor in all Markdown files.
+- README no longer implies that STIX/SQLite are used by the UI or that nothing leaves the machine (favicon lookups and the optional AI copilot do).
+
+### Fixes found while verifying the docs
+- A local-server refusal (400/429) was shown as "not found"; it is now an `ERROR` result with the reason.
+- A leading `@` is stripped from usernames instead of being probed as `%40name`.
+- Corrected keyboard-shortcut and bulk-import texts; removed the unused Google Fonts request.
+- Codeberg detector sends an honest User-Agent; `detectorVersion` reports `declarative:<lastVerified>`.
+
 ## [1.7.0] - 2026-10-02
 
 ### Security

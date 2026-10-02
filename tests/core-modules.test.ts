@@ -132,3 +132,12 @@ describe('copilot output sanitizer', () => {
     expect(output.recommendedPivots).toEqual([]);
   });
 });
+
+describe('declarative detector userAgent', () => {
+  const base = { id: 'x', lastVerified: '2026-10-02', source: 's', present: [{ type: 'status' as const, codes: [200] }], absent: [] };
+  it('accepts default/honest and rejects anything else', () => {
+    expect(validateDeclarativeDetector({ ...base, userAgent: 'honest' })).toEqual([]);
+    expect(validateDeclarativeDetector({ ...base, userAgent: 'default' })).toEqual([]);
+    expect(validateDeclarativeDetector({ ...base, userAgent: 'chrome' }).join()).toMatch(/userAgent/);
+  });
+});

@@ -60,6 +60,7 @@ export function PlatformTable({ results }: PlatformTableProps) {
             const isUncertain = item.status === 'uncertain';
             const isScanning = item.status === 'scanning';
             const isRateLimited = item.status === 'rate_limited';
+            const isError = item.status === 'error';
             const isNotFound = item.status === 'not_found';
             const isPending = item.status === 'pending';
 
@@ -107,6 +108,12 @@ export function PlatformTable({ results }: PlatformTableProps) {
                   {isRateLimited && (
                     <span className="px-1.5 py-0.5 rounded-sm bg-[#050505] text-[#A3A3A3] border border-[#2A2A2A] text-[10px]">
                       RATE_LMT
+                    </span>
+                  )}
+                  {isError && (
+                    <span title={item.uncertainReason || 'The probe failed before a verdict'} className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-sm bg-[#050505] text-[#A3A3A3] border border-dotted border-[#737373] text-[10px]">
+                      <AlertTriangle className="w-2.5 h-2.5" />
+                      ERROR
                     </span>
                   )}
                   {isPending && (
