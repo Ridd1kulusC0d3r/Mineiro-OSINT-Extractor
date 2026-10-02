@@ -27,7 +27,9 @@
     "detectors:health": "tsx scripts/detector-health.ts",
     "build:bundle": "esbuild server.ts --bundle --platform=node --format=cjs --external:vite --minify --legal-comments=none --outfile=dist/server.bundle.cjs",
     "build:python": "node scripts/build-python-package.mjs",
-    "version:check": "node scripts/check-version.mjs"
+    "version:check": "node scripts/check-version.mjs",
+    "assets:capture": "node scripts/capture-app-assets.mjs --url http://localhost:3400",
+    "assets:render": "node scripts/render-assets.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
@@ -48,6 +50,8 @@
     "world-atlas": "^2.0.2"
   },
   "devDependencies": {
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
     "@types/d3": "^7.4.3",
     "@types/express": "^5.0.0",
     "@types/node": "^22.14.0",
@@ -57,6 +61,7 @@
     "@types/topojson-client": "^3.1.5",
     "autoprefixer": "^10.4.21",
     "esbuild": "^0.28.2",
+    "playwright-core": "^1.63.0",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~7.0.2",

@@ -1,5 +1,27 @@
 # Contributing
 
+> English summary first; the detailed guide below is in Portuguese.
+
+Useful contributions improve one of: **detector quality**, **false-positive reduction**, performance, accessibility, investigation/reporting, documentation, synthetic tests, or registry provenance.
+
+```bash
+git clone https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor.git
+cd Mineiro-OSINT-Extractor
+npm ci --no-audit --no-fund
+git checkout -b feature/my-improvement
+npm run check        # must pass before opening a pull request
+```
+
+Ground rules:
+
+- **New or changed detectors need provenance and a canary.** Add them to `registry/detectors/*.json` with `source`, `lastVerified` and a `canary` (a known-present and a known-absent handle), then run `npm run detectors:validate` and `npm run detectors:health`. Do not paste large untracked catalogs.
+- **Never add a bypass** for authentication, CAPTCHAs or access controls. A blocked response is `uncertain`, not an invitation to escalate.
+- Use **public, organisational or synthetic handles** in tests, fixtures and screenshots. Never a private individual.
+- Add or update a Vitest test for behaviour changes in `src/core` or `server/`.
+- Follow the [Code of Conduct](CODE_OF_CONDUCT.md) and report security issues privately ([SECURITY.md](SECURITY.md)).
+
+---
+
 Contribuições úteis para o Mineiro melhoram uma destas áreas:
 
 - qualidade de detector;
@@ -16,7 +38,7 @@ Contribuições úteis para o Mineiro melhoram uma destas áreas:
 ```bash
 git clone https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor.git
 cd Mineiro-OSINT-Extractor
-npm install --no-audit --no-fund
+npm ci --no-audit --no-fund
 git checkout -b feature/minha-melhoria
 ```
 

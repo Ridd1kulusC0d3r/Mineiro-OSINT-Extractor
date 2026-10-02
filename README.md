@@ -1,16 +1,14 @@
-# Mineiro Username Intelligence
-
 <p align="center">
-  <img src="assets/mineiro-logo.png" alt="Mineiro" width="200">
+  <img src="assets/banner.png" alt="Mineiro Username Intelligence · OSINT Investigation Workbench" width="100%">
 </p>
-
-<p align="center"><strong>OSINT Investigation Workbench</strong> for public username presence: evidence first, cautious correlation, auditable reports.</p>
 
 <p align="center">
   <a href="https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/actions/workflows/ci.yml/badge.svg"></a>
   <img alt="Version" src="https://img.shields.io/badge/version-1.7.0-111111">
-  <img alt="Node" src="https://img.shields.io/badge/node-22%2B-111111">
   <img alt="License" src="https://img.shields.io/badge/code-MIT-111111">
+  <img alt="Node" src="https://img.shields.io/badge/node-22%2B-111111">
+  <img alt="Python" src="https://img.shields.io/badge/pip-installable-111111">
+  <img alt="Export" src="https://img.shields.io/badge/export-STIX%202.1-111111">
 </p>
 
 <p align="center">
@@ -22,6 +20,8 @@
   &nbsp;·&nbsp;
   <a href="docs/README.md">Docs</a>
   &nbsp;·&nbsp;
+  <a href="CHANGELOG.md">Changelog</a>
+  &nbsp;·&nbsp;
   <a href="README.pt-BR.md">Português</a>
 </p>
 
@@ -29,37 +29,79 @@
   <img src="assets/demo.gif" alt="Mineiro scanning a public handle across 49 platforms, with live progress, evidence-based verdicts and the correlation graph" width="860">
 </p>
 
-<p align="center"><sub>A Standard scan of a public open-source handle: live progress, per-platform verdicts (found / absent / uncertain), the Evidence Engine, and the correlation graph.</sub></p>
+<p align="center"><sub>A Standard scan of a public open-source handle: live progress, per-platform verdicts (absent / uncertain / found), the Evidence Engine and the correlation graph. Real UI, no mockups.</sub></p>
 
 ---
 
-## What it is
+**Mineiro Username Intelligence** is an **OSINT Investigation Workbench**. It checks public surfaces associated with a username or e-mail and turns raw technical responses into a structured, auditable assessment.
 
-Mineiro checks public surfaces associated with an identifier (a username or e-mail) and turns raw technical responses into a structured assessment.
+It keeps apart four things that username tools usually blur together: **collection → evidence → correlation → assessment**. A `FOUND` is an observation. It is **not** proof of identity.
 
-It keeps apart four things that username tools usually blur together:
+## At a glance
 
-```text
-collection  →  evidence  →  correlation  →  assessment
-```
+<table>
+  <tr>
+    <td valign="top" width="33%"><b>Evidence, not guesses</b><br><sub>8 logical checks per response. Each result carries a SHA-256 <code>evidenceHash</code>, a timestamp and the detector version.</sub></td>
+    <td valign="top" width="33%"><b>Fewer false positives</b><br><sub>A differential baseline asks for a handle that cannot exist and discards “200 OK” pages that look the same.</sub></td>
+    <td valign="top" width="33%"><b>Safe by construction</b><br><sub>Public IPs only (rebinding-safe), every redirect re-validated, rate limits. No CAPTCHA or login bypass.</sub></td>
+  </tr>
+  <tr>
+    <td valign="top" width="33%"><b>Auditable reports</b><br><sub>HTML, JSON, Markdown, CSV and <b>STIX 2.1</b>, each with an integrity manifest.</sub></td>
+    <td valign="top" width="33%"><b>Cautious correlation</b><br><sub>Similar usernames, shared domains and avatar hashes become <i>candidate</i> edges. A claim must cite observations.</sub></td>
+    <td valign="top" width="33%"><b>Runs locally</b><br><sub><code>pip install</code>, Colab or from source. SQLite store in your home directory. Nothing leaves your machine except the checks themselves.</sub></td>
+  </tr>
+</table>
 
-A `FOUND` is an observation. It is **not** proof of identity.
+## How it works
 
-### What you get
+<p align="center">
+  <img src="assets/diagrams/pipeline.png" alt="Pipeline: collection, evidence, correlation, assessment. FOUND is an observation, not proof of identity." width="860">
+</p>
 
-- A registry of **985 cataloged detectors** (984 scannable) with provenance and reliability metadata;
-- Quick, Standard and Full scan presets;
-- An Evidence Engine with several signals per response, plus a **differential baseline** that probes a handle that cannot exist and discards "200 OK" pages that look the same (soft-404s);
-- Detector Reliability and Source Quality kept separate from per-observation confidence;
-- Clusters of public footprint, a correlation graph with provenance, primary and alternative hypotheses, contradictory evidence and gaps;
-- HTML, JSON, Markdown, CSV and **STIX 2.1** exports, each with a SHA-256 manifest;
-- Declarative detectors (`registry/detectors/*.json`) with canary handles and a weekly health check;
-- A local SQLite store (Entity → Observation → Claim) where every claim must cite observations;
-- An optional AI Analyst Copilot, always labeled `AI_SYNTHESIZED` and unable to raise factual confidence.
+## See it
+
+**Evidence ledger.** Every detector, its verdict, confidence and how many of the 8 checks passed:
+
+<p align="center">
+  <img src="assets/screenshots/evidence.png" alt="Evidence ledger listing 49 detectors with status, confidence and checks passed" width="860">
+</p>
+
+**Intelligence report.** Conclusions first; what is known, what is assessed, what is unknown:
+
+<p align="center">
+  <img src="assets/screenshots/report.png" alt="Executive view and key judgments from the intelligence report" width="860">
+</p>
+
+**Correlation graph.** Solid edges are observed; dashed edges are username-similarity candidates that need independent validation:
+
+<p align="center">
+  <img src="assets/screenshots/graph.png" alt="Account relationship graph with observed profiles and dashed candidate usernames" width="860">
+</p>
+
+<details>
+<summary>More: platform cards, evidence matrix</summary>
+
+<p align="center">
+  <img src="assets/screenshots/platforms.png" alt="Platform cards with verdicts and edge-protection notes" width="860">
+</p>
+<p align="center">
+  <img src="assets/screenshots/evidence-matrix.png" alt="Evidence matrix separating detector, observation and correlation scores" width="860">
+</p>
+
+</details>
+
+## Why a `200 OK` is not a profile
+
+Many sites answer `200 OK` with a "profile not found" page. Mineiro also requests a handle that cannot exist and only trusts a result that looks *different* from that control.
+
+<p align="center">
+  <img src="assets/diagrams/baseline.png" alt="Differential baseline: target page and control page are compared on status, redirect shape, DOM skeleton, title and text; identical means absent, distinct means found" width="860">
+</p>
 
 ## Quick start
 
-### Option 1 — pip
+<details open>
+<summary><b>Option 1 · pip</b> (recommended)</summary>
 
 ```bash
 pip install mineiro-osint     # not on PyPI yet? see "Install from a release" below
@@ -74,13 +116,19 @@ The package ships the full app (~1.3 MB). It uses your Node.js (>= 22.5) if pres
 pip install https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/releases/download/v1.7.0/mineiro_osint-1.7.0-py3-none-any.whl
 ```
 
-### Option 2 — Google Colab
+</details>
+
+<details>
+<summary><b>Option 2 · Google Colab</b></summary>
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Username_Intelligence_Colab.ipynb)
 
 The official notebook clones the repo, installs dependencies, validates the registry, starts the server and opens the UI through the Colab proxy. Nothing to install locally.
 
-### Option 3 — from source
+</details>
+
+<details>
+<summary><b>Option 3 · from source</b></summary>
 
 Requires **Node.js 22+**.
 
@@ -93,16 +141,9 @@ npm run dev
 
 Open `http://localhost:3000`. A guided setup is in [docs/GETTING-STARTED.md](docs/GETTING-STARTED.md), and Docker instructions are in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
+</details>
+
 > The in-depth documentation under `docs/` is currently in Portuguese. This README and the CHANGELOG are the English entry points.
-
-## Investigation flow
-
-```text
-Intelligence Requirement → Progressive Collection → Evidence → Correlation
-        → Hypotheses → Contradictions → Assessment → Pivots → Collection Plan
-```
-
-The requirement you choose changes which findings are relevant, not the observed facts. Available requirements: username presence, public account correlation, digital footprint mapping, developer footprint, threat-research alias mapping, brand impersonation monitoring.
 
 ## Scan modes
 
@@ -128,13 +169,13 @@ Do not use one score to answer different questions.
 
 Full model: [docs/INTELLIGENCE-METHODOLOGY.md](docs/INTELLIGENCE-METHODOLOGY.md).
 
-## What's new in 1.7
+## What's in 1.7
 
-- **Safer probing.** The server only probes URLs a registry detector can produce, resolves DNS through a guard that blocks private, loopback, link-local and cloud-metadata ranges (rebinding-safe), and re-validates every redirect hop. Rate limits, security headers and a `MINEIRO_PUBLIC=1` mode for shared deployments.
-- **Fewer false positives.** Differential baseline (target vs. a random non-existent handle) and declarative detectors with canaries.
-- **Auditable evidence.** Every result carries `evidenceHash` (SHA-256), `collectedAt` and `detectorVersion`.
+- **Safer probing.** The server only probes URLs a registry detector can produce, resolves DNS through a guard that blocks private, loopback, link-local and cloud-metadata ranges, and re-validates every redirect hop. Rate limits, security headers and a `MINEIRO_PUBLIC=1` mode for shared deployments.
+- **Fewer false positives.** Differential baseline and declarative detectors (`registry/detectors/*.json`) with canary handles and a weekly health check.
+- **Auditable evidence.** `evidenceHash` (SHA-256), `collectedAt` and `detectorVersion` on every result.
 - **Interoperable.** STIX 2.1 export; SQLite store with Entity → Observation → Claim.
-- **More OSINT.** Username variants with Jaro-Winkler similarity, pivot extraction with depth/budget limits, avatar perceptual hash, Wayback Machine timeline, Brazilian CNPJ lookup (company-level fields only).
+- **More OSINT.** Username variants (Jaro-Winkler), pivot extraction with depth/budget limits, avatar perceptual hash, Wayback Machine timeline, Brazilian CNPJ lookup (company-level fields only).
 - **`pip install`** and a reproducible, locked build.
 
 See the [CHANGELOG](CHANGELOG.md) for details.
@@ -147,13 +188,9 @@ See the [CHANGELOG](CHANGELOG.md) for details.
 
 ## Architecture
 
-```text
-React UI ── Intelligence Report · Evidence Audit · Registry · AI Analyst Copilot
-   │
-Express API ── verify (guarded fetch) · extras (variants, pivots, avatar, Wayback, CNPJ) · store (SQLite, STIX)
-   │              └─ src/core: evidence · baseline · matchers · net · stix  (pure, unit-tested)
-Public endpoints
-```
+<p align="center">
+  <img src="assets/diagrams/architecture.png" alt="Architecture: React UI, local Express server with guards and a pure core, public surfaces" width="860">
+</p>
 
 Details: [ARCHITECTURE.md](ARCHITECTURE.md).
 
@@ -161,13 +198,13 @@ Details: [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ```bash
 npm ci --no-audit --no-fund
-npm test          # Vitest: evidence, baseline, SSRF guard, store
-npm run check     # the full CI gate
+npm test               # Vitest: evidence, baseline, SSRF guard, store
+npm run check          # the full CI gate
 npm run build:python   # stage the app inside the pip package
 npm run detectors:health   # live canary check of declarative detectors
 ```
 
-Contributing: [CONTRIBUTING.md](CONTRIBUTING.md). Security policy: [SECURITY.md](SECURITY.md).
+The README visuals are reproducible: `npm run assets:capture` (screenshots from a running instance) and `npm run assets:render` (banner, diagrams, framed screenshots). See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md).
 
 ## Principles
 
@@ -190,4 +227,4 @@ Original Mineiro code is MIT. The historical catalog has entries still under pro
 
 ---
 
-**Mineiro Username Intelligence v1.7.0** · OSINT Investigation Workbench · evidence first · local reporting
+<p align="center"><sub><b>Mineiro Username Intelligence v1.7.0</b> · OSINT Investigation Workbench · evidence first · local reporting</sub></p>

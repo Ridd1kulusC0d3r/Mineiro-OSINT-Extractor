@@ -166,10 +166,10 @@ export function IntelligenceReportView({
           Mineiro · Open-source intelligence assessment
         </div>
         <h1 className="mt-5 max-w-5xl text-[clamp(2.8rem,6vw,5.5rem)] leading-[0.97] font-semibold tracking-[-0.06em] text-[#f7f7f8]">
-          Pegada pública observada, separada de hipótese e de conclusão.
+          {tr('report.heroTitle')}
         </h1>
         <p className="mt-6 max-w-4xl text-lg md:text-2xl leading-relaxed text-[#989fa8]">
-          O relatório mostra o que foi observado, o que foi avaliado, o que contradiz a hipótese e o que ainda falta para responder à pergunta de inteligência.
+          {tr('report.heroLead')}
         </p>
         <div className="mt-7 flex flex-wrap gap-3 text-sm text-[#8d949d]">
           <Band value={`ASSESSMENT ${report.assessmentConfidence}`} />
@@ -204,7 +204,7 @@ export function IntelligenceReportView({
         </div>
       </Section>
 
-      <Section id="intel-assessment" index="02 · EXECUTIVE ASSESSMENT" title={tr('report.executive')} description="Conclusão operacional primeiro. Quantidade de checks fica no apêndice, onde pertence.">
+      <Section id="intel-assessment" index="02 · EXECUTIVE ASSESSMENT" title={tr('report.executive')} description={tr('report.executiveDesc')}>
         <div className="grid gap-5 lg:grid-cols-[1.25fr_.75fr]">
           <div className="rounded-[24px] border border-[#2b3035] bg-[#101316] p-6">
             <div className="text-[11px] uppercase tracking-[0.16em] text-[#858c95]">Known · Assessed · Unknown</div>
@@ -214,11 +214,11 @@ export function IntelligenceReportView({
                 ['ASSESSED', report.knownAssessedUnknown.assessed],
                 ['UNKNOWN', report.knownAssessedUnknown.unknown],
               ].map(([label, items]) => (
-                <div key={label as string}>
+                <div key={label as string} className="min-w-0">
                   <div className="font-mono text-[10px] tracking-[0.14em] text-[#7d858e]">{label as string}</div>
                   <div className="mt-3 space-y-3">
                     {(items as string[]).slice(0, 6).map((item, i) => (
-                      <p key={i} className="text-sm leading-relaxed text-[#abb0b7]">{item}</p>
+                      <p key={i} className="text-sm leading-relaxed text-[#abb0b7] [overflow-wrap:anywhere]">{item}</p>
                     ))}
                   </div>
                 </div>
@@ -258,10 +258,10 @@ export function IntelligenceReportView({
 
       <Section id="intel-coverage" index="04 · COLLECTION COVERAGE" title={tr('report.collectionCoverage')} description={tr('report.collectionCoverageDesc')}>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <Metric label="Requested" value={report.collection.requested} detail="detectores solicitados" />
-          <Metric label="Completed" value={report.collection.completed} detail="execuções encerradas" />
-          <Metric label="Conclusive" value={report.collection.found + report.collection.absent} detail="positivo ou ausência explícita" />
-          <Metric label="Blocked / inconclusive" value={report.collection.blockedOrInconclusive} detail="não usar como conclusão negativa" />
+          <Metric label={tr('report.requested')} value={report.collection.requested} detail={tr('report.requestedDetail')} />
+          <Metric label={tr('report.completedLabel')} value={report.collection.completed} detail={tr('report.completedDetail')} />
+          <Metric label={tr('report.conclusive')} value={report.collection.found + report.collection.absent} detail={tr('report.conclusiveDetail')} />
+          <Metric label={tr('report.blocked')} value={report.collection.blockedOrInconclusive} detail={tr('report.blockedDetail')} />
         </div>
       </Section>
 

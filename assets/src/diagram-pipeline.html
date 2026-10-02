@@ -1,0 +1,37 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="common.css">
+<style>
+  body { width: 1200px; padding: 28px; background: transparent; }
+  .board { background: var(--black); border: 1px solid var(--line); border-radius: 18px; padding: 40px 40px 32px; }
+  .head { display: flex; justify-content: space-between; align-items: baseline; }
+  h2 { font-weight: 800; font-size: 30px; letter-spacing: -.03em; }
+  .eyebrow { font-size: 12px; }
+  .stages { display: grid; grid-template-columns: repeat(4, 1fr); gap: 34px; margin-top: 32px; position: relative; }
+  .stage { position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px 20px 20px; }
+  .stage:not(:last-child)::after { content: ""; position: absolute; right: -27px; top: 50%; width: 20px; height: 20px; border-top: 2px solid var(--line-strong); border-right: 2px solid var(--line-strong); transform: translateY(-50%) rotate(45deg); }
+  .n { font-family: var(--mono); font-size: 12px; color: var(--muted); letter-spacing: .14em; }
+  h3 { font-weight: 600; font-size: 22px; margin-top: 6px; letter-spacing: -.02em; }
+  .q { font-size: 14px; color: var(--text2); margin-top: 6px; font-style: italic; }
+  ul { list-style: none; margin-top: 16px; display: grid; gap: 9px; }
+  li { font-family: var(--mono); font-size: 12.5px; line-height: 1.45; color: var(--text); padding-left: 16px; position: relative; }
+  li::before { content: ""; position: absolute; left: 0; top: .55em; width: 6px; height: 6px; border-radius: 50%; border: 1.5px solid var(--text2); }
+  .foot { margin-top: 28px; border-top: 1px solid var(--line); padding-top: 20px; display: flex; gap: 14px; align-items: center; }
+  .foot .chip { font-size: 13px; }
+  .foot span.t { font-size: 15px; color: var(--text2); }
+  .foot b { color: var(--text); font-weight: 600; }
+</style></head>
+<body><div class="board">
+  <div class="head"><h2>From observation to assessment</h2><div class="eyebrow">Four layers, never blended</div></div>
+  <div class="stages">
+    <div class="stage"><div class="n">01</div><h3>Collection</h3><div class="q">What did we ask?</div>
+      <ul><li>985 public detectors</li><li>guarded fetch: no private ranges</li><li>per-host concurrency limits</li><li>no CAPTCHA or login bypass</li></ul></div>
+    <div class="stage"><div class="n">02</div><h3>Evidence</h3><div class="q">What did we actually see?</div>
+      <ul><li>8 logical checks per response</li><li>differential baseline vs a handle that cannot exist</li><li>declarative rules with canaries</li><li>SHA-256 evidence hash</li></ul></div>
+    <div class="stage"><div class="n">03</div><h3>Correlation</h3><div class="q">What might relate?</div>
+      <ul><li>similar usernames (dashed = candidate)</li><li>shared domains and pivots</li><li>avatar perceptual hash</li><li>claims must cite observations</li></ul></div>
+    <div class="stage"><div class="n">04</div><h3>Assessment</h3><div class="q">What do we conclude, and how sure?</div>
+      <ul><li>primary + alternative hypotheses</li><li>contradictions and gaps</li><li>HTML, JSON, CSV, STIX 2.1</li><li>manifest with integrity hashes</li></ul></div>
+  </div>
+  <div class="foot"><span class="chip">FOUND</span><span class="t">is an <b>observation</b>. It is not proof of identity.</span></div>
+</div></body></html>

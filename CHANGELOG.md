@@ -26,6 +26,14 @@
 - Release workflow: pushing a `v*` tag builds the app, the wheel and a GitHub Release with these notes.
 - Server honors `HOST` (default `0.0.0.0` for containers).
 
+### UI fixes
+- Intelligence Report: the hero, executive description and collection-coverage metrics were hard-coded in Portuguese; they now use the i18n catalogs (EN/PT/ES, 191 keys).
+- Intelligence Report: long URLs in the Known/Assessed/Unknown panel no longer overflow into the next column.
+
+### Presentation
+- New README: banner, animated demo, feature cards, pipeline / differential-baseline / architecture diagrams, screenshot gallery, collapsible install options. Visuals are generated from real app screenshots and reproducible (`npm run assets:capture`, `npm run assets:render`).
+- Social preview image (1280x640), `CODE_OF_CONDUCT.md`, `CITATION.cff`, release-note categories, English contributing summary, repository settings checklist in `docs/RELEASING.md`.
+
 ### Engineering
 - Evidence engine extracted to `src/core`; Vitest suite with HTML fixtures.
 
