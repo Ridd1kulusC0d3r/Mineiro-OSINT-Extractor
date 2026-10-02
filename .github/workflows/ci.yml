@@ -50,6 +50,9 @@ jobs:
       - name: Validate Registry
         run: npm run registry:validate
 
+      - name: Validate declarative detectors
+        run: npm run detectors:validate
+
       - name: Type check
         run: npm run lint
 

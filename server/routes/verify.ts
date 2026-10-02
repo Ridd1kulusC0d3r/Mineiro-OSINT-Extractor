@@ -4,6 +4,9 @@ import { evaluateEvidence, readBodyPreview } from '../../src/core/evidence';
 import { compareToBaseline, fingerprintPage, type PageFingerprint } from '../../src/core/baseline';
 import { buildDetectorUrl, matchesDetectorPattern, randomControlUsername } from '../../src/core/net';
 import { getRegistryDetector } from '../../src/registry/registry';
+import { evaluateMatchers } from '../../src/core/matchers';
+import { DECLARATIVE_DETECTORS } from '../detectors';
+import { withHostSlot } from '../hostLimiter';
 import { assertProbeableUrl, BlockedTargetError, safeFetch } from '../security/safeFetch';
 
 const VERSION = '1.6.0';
@@ -37,6 +40,7 @@ async function probe(
   timeoutMs: number,
   options: { method?: 'GET' | 'HEAD'; headers?: Record<string, string>; readBody?: boolean } = {}
 ): Promise<ProbeOutcome> {
+  return withHostSlot(new URL(url).hostname, async () => {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -54,6 +58,7 @@ async function probe(
   } finally {
     clearTimeout(timer);
   }
+  });
 }
 
 async function controlFingerprint(detectorId: string, urlPattern: string, timeoutMs: number): Promise<PageFingerprint | null> {
@@ -70,6 +75,23 @@ async function controlFingerprint(detectorId: string, urlPattern: string, timeou
   }
   baselineCache.set(detectorId, { at: Date.now(), fingerprint });
   return fingerprint;
+}
+
+// Short-lived result cache: repeated scans of the same handle do not re-hit the sites.
+const RESULT_TTL_MS = Number(process.env.MINEIRO_CACHE_TTL_MS || 5 * 60_000);
+const resultCache = new Map<string, { at: number; payload: any }>();
+
+function cacheGet(key: string) {
+  const hit = resultCache.get(key);
+  if (!hit) return null;
+  if (Date.now() - hit.at > RESULT_TTL_MS) { resultCache.delete(key); return null; }
+  return hit.payload;
+}
+
+function cacheSet(key: string, payload: any) {
+  if (payload.status !== 'found' && payload.status !== 'not_found') return;
+  if (resultCache.size >= 2000) resultCache.delete(resultCache.keys().next().value as string);
+  resultCache.set(key, { at: Date.now(), payload });
 }
 
 function evidenceHash(parts: { statusCode: number; finalUrl: string; body: string }): string {
@@ -108,7 +130,11 @@ export function verifyRouter(): Router {
       : (depth === 'fast' ? 2500 : 6500);
     const retryStrategy = wafRetryStrategy || (depth === 'deep' ? 'adaptive' : 'none');
     const handle = typeof username === 'string' ? username : '';
-    const wantBody = Boolean(enableEvidenceChecks || baseline);
+    const declarative = DECLARATIVE_DETECTORS.get(platformId);
+    const wantBody = Boolean(enableEvidenceChecks || baseline || declarative);
+    const cacheKey = `${platformId}|${url}|${depth}|${Boolean(enableEvidenceChecks)}|${Boolean(baseline)}`;
+    const cached = cacheGet(cacheKey);
+    if (cached) return res.json({ ...cached, cached: true });
     const started = Date.now();
     const collectedAt = new Date().toISOString();
     const base = { platformId, url, scanDepth: depth, collectedAt, detectorVersion: detector.lastVerified || 'legacy' };
@@ -208,7 +234,21 @@ export function verifyRouter(): Router {
         }
       }
 
-      return res.json({
+      // Declarative rules (registry/detectors/*.json) refine the result when they exist for this detector.
+      if (declarative) {
+        const rule = evaluateMatchers(declarative, { status: code, finalUrl: outcome.finalUrl, body: outcome.body });
+        evidenceSignals = [...evidenceSignals, ...rule.signals];
+        if (rule.verdict === 'absent') {
+          found = false;
+          evidenceLevel = 'absent';
+          confidenceScore = Math.max(confidenceScore, 90);
+        } else if (rule.verdict === 'present' && found) {
+          confidenceScore = Math.min(97, Math.max(confidenceScore, 85));
+          if (evidenceLevel === 'probable') evidenceLevel = 'confirmed';
+        }
+      }
+
+      const payload = {
         ...base,
         status: evidenceLevel === 'uncertain' && found ? 'uncertain' : (found ? 'found' : 'not_found'),
         statusCode: code,
@@ -223,7 +263,9 @@ export function verifyRouter(): Router {
         evidenceHash: wantBody ? evidenceHash({ statusCode: code, finalUrl: outcome.finalUrl, body: outcome.body }) : undefined,
         wafRetried, retryResolved: wafRetried,
         wafStrategyApplied: wafRetried ? 'adaptive_browser_headers' : undefined,
-      });
+      };
+      cacheSet(cacheKey, payload);
+      return res.json(payload);
     } catch (err: any) {
       const timedOut = err?.name === 'AbortError';
       if (err instanceof BlockedTargetError) return res.status(400).json({ error: err.message });

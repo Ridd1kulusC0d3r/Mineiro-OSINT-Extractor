@@ -1,0 +1,29 @@
+{
+  "$comment": "Declarative detectors. Every entry needs provenance (source), a verification date and canary handles. Verified against the live site on the lastVerified date.",
+  "detectors": [
+    {
+      "id": "codeberg",
+      "present": [{ "type": "status", "codes": [200] }],
+      "absent": [{ "type": "status", "codes": [404] }, { "type": "body_contains", "values": ["The page you are trying to reach either does not exist"] }],
+      "canary": { "present": "forgejo", "absent": "zqx9q8w7e6r5t4y3u2" },
+      "lastVerified": "2026-10-02",
+      "source": "own observation: public profile returns 200 with <title> '<name> - Codeberg.org', unknown user returns 404"
+    },
+    {
+      "id": "devto",
+      "present": [{ "type": "status", "codes": [200] }, { "type": "body_regex", "pattern": "<title>[^<]+- DEV Community" }],
+      "absent": [{ "type": "status", "codes": [404] }, { "type": "body_contains", "values": ["404: Page Not Found"] }],
+      "canary": { "present": "ben", "absent": "zqx9q8w7e6r5t4y3u2" },
+      "lastVerified": "2026-10-02",
+      "source": "own observation: profile returns 200 with title '<name> - DEV Community', unknown user returns 404 page"
+    },
+    {
+      "id": "keybase",
+      "present": [{ "type": "status", "codes": [200] }, { "type": "body_regex", "pattern": "<title>[^<]*\\| Keybase" }],
+      "absent": [{ "type": "status", "codes": [404] }],
+      "canary": { "present": "chris", "absent": "zqx9q8w7e6r5t4y3u2" },
+      "lastVerified": "2026-10-02",
+      "source": "own observation: profile returns 200 with title '<user> (<name>) | Keybase', unknown user returns 404"
+    }
+  ]
+}

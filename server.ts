@@ -12,6 +12,8 @@ import { getRegistryStats, MINEIRO_REGISTRY } from './src/registry/registry';
 import { benchmarkRegistry } from './src/registry/bench';
 import { buildAnalystCopilotPrompt } from './src/ai/analystCopilot';
 import { verifyRouter } from './server/routes/verify';
+import { extrasRouter } from './server/routes/extras';
+import { storeRouter } from './server/routes/store';
 import { PUBLIC_MODE, rateLimit, securityHeaders } from './server/security/middleware';
 
 
@@ -26,7 +28,10 @@ app.use(securityHeaders);
 app.use(express.json({ limit: '2mb' }));
 app.use('/api/osint/verify', rateLimit({ perMinute: PUBLIC_MODE ? 120 : 6000, burst: PUBLIC_MODE ? 40 : 600, name: 'verify' }));
 app.use(['/api/intelligence', '/api/osint/gemini-validate', '/api/osint/email-recon', '/api/osint/profile'], rateLimit({ perMinute: PUBLIC_MODE ? 10 : 60, name: 'ai' }));
+app.use(['/api/osint/wayback', '/api/osint/avatar-hash', '/api/osint/br', '/api/osint/pivots', '/api/osint/variants'], rateLimit({ perMinute: PUBLIC_MODE ? 20 : 300, name: 'extras' }));
 app.use(verifyRouter());
+app.use(extrasRouter());
+app.use(storeRouter());
 
 // Initialize GoogleGenAI client lazily or safely with User-Agent telemetry
 function getGenAiClient(customApiKey?: string): { client: GoogleGenAI; isCustom: boolean } | null {
