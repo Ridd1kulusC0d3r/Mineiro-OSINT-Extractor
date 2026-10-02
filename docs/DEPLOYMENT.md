@@ -13,17 +13,6 @@ Use the official notebook when you want:
 
 Colab is intentionally **not** the recommended persistent production runtime. The VM is ephemeral and the proxy hostname changes between sessions.
 
-## 0. Zero-hosting options (fastest)
-
-| Option | Effort for the user | Notes |
-|---|---|---|
-| **GitHub Codespaces** | Click *Code → Codespaces → Create*. The `.devcontainer` installs and starts the app; port 3000 opens in the browser. | Free monthly quota, GitHub account required. Probes leave from GitHub's IP range. |
-| **Local (`npm ci && npm run dev`)** | Node 22 only. | Complete feature set; probes use the user's own IP. |
-| **Public Hugging Face Space** | Open a link, no login. | Someone must host it once (free). Runs with `MINEIRO_PUBLIC=1`: strict rate limits, no persistence, no server Gemini key, no avatar fetching. See `deploy/huggingface/`. |
-| Google Colab | Open notebook, run cells. | Slowest start; kept for demos. |
-
-A browser-only deployment (GitHub Pages) cannot run probes: sites do not send CORS headers, so a server-side hop is required.
-
 ## 2. Docker — recommended persistent local/server deployment
 
 Build:
@@ -113,7 +102,7 @@ A future Case Bundle export/import is the appropriate way to move investigations
 
 ### MINEIRO_PUBLIC
 
-Set to `1` for shared instances: stricter rate limits, server Gemini key ignored, SQLite store and avatar hashing disabled.
+Set to `1` for any shared or public deployment: stricter rate limits, server Gemini key ignored, SQLite store and avatar hashing disabled.
 
 ### MINEIRO_DB
 

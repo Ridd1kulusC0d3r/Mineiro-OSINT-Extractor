@@ -22,7 +22,6 @@
 
 ### Engineering
 - Evidence engine extracted to `src/core`; Vitest suite with HTML fixtures.
-- `.devcontainer` (Codespaces) and `deploy/huggingface` for zero-hosting access.
 
 ## [1.6.0] - 2026-09-28
 
