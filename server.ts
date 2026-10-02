@@ -143,7 +143,8 @@ app.get('/api/health', (req, res) => {
     service: 'Mineiro Username Intelligence · OSINT Investigation Workbench',
     version: '1.7.0',
     timestamp: new Date().toISOString(),
-    geminiConfigured: Boolean(process.env.GEMINI_API_KEY),
+    geminiConfigured: !PUBLIC_MODE && Boolean(process.env.GEMINI_API_KEY),
+    publicMode: PUBLIC_MODE,
     supportedDatabases: ['Mineiro Core (local direct probes)', 'Mineiro Evidence Engine', 'Mineiro Public Recon'],
   });
 });

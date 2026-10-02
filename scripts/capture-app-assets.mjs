@@ -29,9 +29,11 @@ function chromePath() {
 
 const browser = await chromium.launch({ executablePath: chromePath(), args: ['--no-sandbox'] });
 
-async function runScan(page) {
+async function runScan(page, homeShot) {
   await page.goto(URL_, { waitUntil: 'networkidle' });
   await page.locator('#lang-btn-en').click();
+  await page.waitForTimeout(500);
+  if (homeShot) await page.screenshot({ path: homeShot }); // clean start screen, before any input
   await page.locator('input[type=text]').first().fill(HANDLE);
   await page.locator('button', { hasText: /^Standard/ }).first().click();
 }
@@ -54,9 +56,8 @@ const tab = async (page, name) => {
 {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 });
   const page = await ctx.newPage();
-  await runScan(page);
-  await page.screenshot({ path: `${RAW}/home.png` }); // start screen, before any scan
-  await page.locator('button[type=submit]').click();
+  await runScan(page, `${RAW}/home.png`);
+  await page.locator('button[type=submit]').first().click();
   await waitDone(page);
 
   await tab(page, 'Platforms');
@@ -120,7 +121,7 @@ if (WANT_GIF) {
   await page.locator('button', { hasText: /^Standard/ }).first().click();
   await page.waitForTimeout(300);
   await snap(2);
-  await page.locator('button[type=submit]').click();
+  await page.locator('button[type=submit]').first().click();
   await tab(page, 'Platforms');
   const t0 = Date.now();
   while (Date.now() - t0 < 60000) {

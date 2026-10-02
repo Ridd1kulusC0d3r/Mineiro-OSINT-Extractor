@@ -1157,13 +1157,15 @@ export default function App() {
         {/* View: Intelligence Assessment Workspace */}
         {activeView === 'intelligence' && results.length === 0 && !isScanning && (
           <HomeView
+            target={target}
+            setTarget={setTarget}
+            targetType={targetType}
+            setTargetType={setTargetType}
             activePreset={scanConfig.preset}
             onSelectPreset={handleSelectPreset}
-            onPickExample={(handle) => {
-              setTarget(handle);
-              setTargetType('username');
-              window.setTimeout(() => document.querySelector<HTMLInputElement>('input[type="text"]')?.focus(), 0);
-            }}
+            onStartScan={() => handleStartScan()}
+            recentCases={[...persistentCases].sort((x, y) => y.updatedAt.localeCompare(x.updatedAt)).slice(0, 3)}
+            onOpenCase={loadPersistentCase}
             onOpenBatch={() => setIsBulkModalOpen(true)}
             onOpenCases={() => setIsHistoryModalOpen(true)}
             casesCount={persistentCases.length}

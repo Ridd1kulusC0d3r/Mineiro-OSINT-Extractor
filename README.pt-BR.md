@@ -61,7 +61,7 @@ Um `FOUND` é um achado. Não é prova automática de identidade.
 
 ## Veja funcionando
 
-**Tela inicial.** Escolha o modo, teste um exemplo público e aprenda a ler um veredito antes do primeiro scan:
+**Tela inicial.** Busque logo ao abrir, escolha o modo e teste um exemplo público. Cole a URL de um perfil e ele sugere o handle; aprenda a ler um veredito antes do primeiro scan:
 
 <p align="center">
   <img src="assets/screenshots/home.png" alt="Tela inicial com handles de exemplo, modos de scan e como ler um veredito" width="860">

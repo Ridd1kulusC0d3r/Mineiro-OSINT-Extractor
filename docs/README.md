@@ -49,6 +49,7 @@ Leia:
 | [Deployment](DEPLOYMENT.md) | operação / produção | 10 min |
 | [Arquitetura](../ARCHITECTURE.md) | engenharia | 10 min |
 | [Releasing](RELEASING.md) | manutenção / release (EN) | 5 min |
+| [Plano da tela inicial](PLANO-PAGINA-INICIAL.md) | produto / UX, plano priorizado | 8 min |
 | [Contributing](../CONTRIBUTING.md) | contribuidores | 8 min |
 
 ## Convenções

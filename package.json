@@ -29,7 +29,8 @@
     "build:python": "node scripts/build-python-package.mjs",
     "version:check": "node scripts/check-version.mjs",
     "assets:capture": "node scripts/capture-app-assets.mjs --url http://localhost:3400",
-    "assets:render": "node scripts/render-assets.mjs"
+    "assets:render": "node scripts/render-assets.mjs",
+    "e2e:start": "node scripts/e2e-start-page.mjs --url http://localhost:3400"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
@@ -60,6 +61,7 @@
     "@types/react-dom": "^19.0.0",
     "@types/topojson-client": "^3.1.5",
     "autoprefixer": "^10.4.21",
+    "axe-core": "^4.13.0",
     "esbuild": "^0.28.2",
     "playwright-core": "^1.63.0",
     "tailwindcss": "^4.1.14",

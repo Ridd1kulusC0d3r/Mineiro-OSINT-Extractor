@@ -60,7 +60,7 @@ It keeps apart four things that username tools usually blur together: **collecti
 
 ## See it
 
-**Start screen.** Pick a mode, try a public example, learn how to read a verdict before the first scan:
+**Start screen.** Search right where you land, pick a mode, try a public example. Paste a profile URL and it suggests the handle; learn how to read a verdict before the first scan:
 
 <p align="center">
   <img src="assets/screenshots/home.png" alt="Start screen with example handles, scan modes and how to read a verdict" width="860">
