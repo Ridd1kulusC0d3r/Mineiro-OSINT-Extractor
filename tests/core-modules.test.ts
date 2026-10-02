@@ -118,3 +118,17 @@ describe('stix export', () => {
     expect(bundle.objects.find((o: any) => o.type === 'observed-data').x_mineiro_evidence_hash).toBe('abc');
   });
 });
+
+import { sanitizeCopilotOutput } from '../src/ai/analystCopilot';
+
+describe('copilot output sanitizer', () => {
+  it('drops evidence ids the model invented', () => {
+    const { output, droppedEvidenceIds } = sanitizeCopilotOutput(
+      { executiveBrief: 'x', priorityEvidenceIds: ['E-001', 'E-999'], recommendedPivots: 'oops' },
+      ['E-001', 'E-002']
+    );
+    expect(output.priorityEvidenceIds).toEqual(['E-001']);
+    expect(droppedEvidenceIds).toEqual(['E-999']);
+    expect(output.recommendedPivots).toEqual([]);
+  });
+});

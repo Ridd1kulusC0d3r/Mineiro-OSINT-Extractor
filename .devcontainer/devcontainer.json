@@ -1,0 +1,15 @@
+{
+  "name": "Mineiro OSINT Workbench",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
+  "postCreateCommand": "npm ci --no-audit --no-fund",
+  "postAttachCommand": "npm run dev",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": { "label": "Mineiro", "onAutoForward": "openBrowser" }
+  },
+  "containerEnv": { "PORT": "3000" },
+  "customizations": {
+    "codespaces": { "openFiles": ["COMECE-AQUI.md"] },
+    "vscode": { "extensions": ["dbaeumer.vscode-eslint", "vitest.explorer"] }
+  }
+}

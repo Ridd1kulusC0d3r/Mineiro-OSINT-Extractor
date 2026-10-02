@@ -10,7 +10,7 @@ import { computeBehavioralProfile } from './src/data/behavioralEngine';
 import { evaluateThreatActorHeuristics } from './src/data/threatActorHeuristics';
 import { getRegistryStats, MINEIRO_REGISTRY } from './src/registry/registry';
 import { benchmarkRegistry } from './src/registry/bench';
-import { buildAnalystCopilotPrompt } from './src/ai/analystCopilot';
+import { buildAnalystCopilotPrompt, COPILOT_RESPONSE_SCHEMA, sanitizeCopilotOutput } from './src/ai/analystCopilot';
 import { verifyRouter } from './server/routes/verify';
 import { extrasRouter } from './server/routes/extras';
 import { storeRouter } from './server/routes/store';
@@ -93,6 +93,7 @@ async function generateCopilotWithFallback(
           contents: prompt,
           config: {
             responseMimeType: 'application/json',
+            responseJsonSchema: COPILOT_RESPONSE_SCHEMA,
             temperature: 0.2,
           },
         }),
@@ -587,8 +588,11 @@ app.post('/api/intelligence/copilot', async (req, res) => {
 
   try {
     const generated = await generateCopilotWithFallback(clientInfo.client, prompt, model);
+    const evidenceIds = (Array.isArray(assessment.evidence) ? assessment.evidence : []).map((e: any) => String(e?.id));
+    const { output, droppedEvidenceIds } = sanitizeCopilotOutput(generated.parsed, evidenceIds);
     return res.json({
-      ...generated.parsed,
+      ...output,
+      droppedEvidenceIds,
       modelUsed: generated.modelUsed,
       attemptedModels: generated.attemptedModels,
       generatedAt: new Date().toISOString(),

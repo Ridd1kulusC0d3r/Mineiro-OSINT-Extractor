@@ -63,6 +63,10 @@ A forma mais rápida de testar o produto é o notebook oficial:
 
 Ele cuida de clone/update, dependências, validação do Registry, servidor, health check e abertura da interface pelo proxy do Colab.
 
+### Sem instalar nada: GitHub Codespaces
+
+Clique em **Code → Codespaces → Create codespace**. O `.devcontainer` instala tudo e abre a interface no navegador. Detalhes e outras opções (instância pública restrita) em [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
 ### Local
 
 Pré-requisito: **Node.js 22+**.
@@ -70,7 +74,7 @@ Pré-requisito: **Node.js 22+**.
 ```bash
 git clone https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor.git
 cd Mineiro-OSINT-Extractor
-npm install --no-audit --no-fund
+npm ci --no-audit --no-fund
 npm run dev
 ```
 

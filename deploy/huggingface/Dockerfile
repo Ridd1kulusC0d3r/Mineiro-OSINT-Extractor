@@ -1,31 +1,19 @@
+# Public, restricted instance for Hugging Face Spaces (Docker SDK).
+# MINEIRO_PUBLIC=1: strict rate limits, no server-held Gemini key, no persistence, no avatar fetching.
 FROM node:22-alpine AS build
 WORKDIR /app
-
 COPY package*.json ./
 RUN npm ci --no-audit --no-fund
-
 COPY . .
 RUN npm run build
 
-
-FROM node:22-alpine AS runtime
+FROM node:22-alpine
 WORKDIR /app
-
-ENV NODE_ENV=production
-ENV PORT=3000
-
+ENV NODE_ENV=production PORT=7860 MINEIRO_PUBLIC=1 MINEIRO_TRUST_PROXY=1
 COPY package*.json ./
 RUN npm ci --omit=dev --no-audit --no-fund && npm cache clean --force
-
 COPY --from=build /app/dist ./dist
 COPY registry ./registry
-RUN mkdir -p /app/data && chown node:node /app/data
-VOLUME /app/data
-
 USER node
-EXPOSE 3000
-
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD wget -q -O - http://127.0.0.1:3000/api/health >/dev/null 2>&1 || exit 1
-
+EXPOSE 7860
 CMD ["node", "dist/server.cjs"]

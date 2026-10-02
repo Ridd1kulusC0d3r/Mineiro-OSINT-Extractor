@@ -1,5 +1,29 @@
 # Changelog
 
+## [Unreleased]
+
+### Security
+- `/api/osint/verify` only accepts URLs that a registry detector can produce; DNS is resolved through a guarded lookup (private, loopback, link-local and metadata ranges blocked, DNS-rebinding safe) and every redirect hop is re-validated.
+- Token-bucket rate limiting, security headers, 2 MB body limit, `MINEIRO_PUBLIC` mode for shared instances.
+- `package-lock.json` committed; CI uses `npm ci`.
+
+### Detection quality
+- Differential baseline: each detector is also probed with a random non-existent handle; targets whose page is indistinguishable from it are classified absent (removes most soft-404 false positives).
+- Declarative detectors (`registry/detectors/*.json`) with matchers, provenance, verification date and canary handles; weekly `detector-health` workflow opens an issue on drift.
+- Results carry `evidenceHash` (SHA-256), `collectedAt`, `detectorVersion`; per-host concurrency cap and 5-minute result cache.
+
+### Data model and interoperability
+- SQLite store (`node:sqlite`): Entity → Observation → Claim; a claim must cite existing observations.
+- STIX 2.1 export (`/api/store/export/stix`).
+
+### OSINT
+- Username variants with Jaro-Winkler similarity, pivot extraction with depth/budget planning, avatar dHash, Wayback CDX summary, CNPJ lookup via BrasilAPI (company-level fields only).
+- Copilot: provider-enforced JSON schema and post-validation that drops evidence ids not present in the assessment.
+
+### Engineering
+- Evidence engine extracted to `src/core`; Vitest suite with HTML fixtures.
+- `.devcontainer` (Codespaces) and `deploy/huggingface` for zero-hosting access.
+
 ## [1.6.0] - 2026-09-28
 
 ### Persistent Case Graph

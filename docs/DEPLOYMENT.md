@@ -13,6 +13,17 @@ Use the official notebook when you want:
 
 Colab is intentionally **not** the recommended persistent production runtime. The VM is ephemeral and the proxy hostname changes between sessions.
 
+## 0. Zero-hosting options (fastest)
+
+| Option | Effort for the user | Notes |
+|---|---|---|
+| **GitHub Codespaces** | Click *Code → Codespaces → Create*. The `.devcontainer` installs and starts the app; port 3000 opens in the browser. | Free monthly quota, GitHub account required. Probes leave from GitHub's IP range. |
+| **Local (`npm ci && npm run dev`)** | Node 22 only. | Complete feature set; probes use the user's own IP. |
+| **Public Hugging Face Space** | Open a link, no login. | Someone must host it once (free). Runs with `MINEIRO_PUBLIC=1`: strict rate limits, no persistence, no server Gemini key, no avatar fetching. See `deploy/huggingface/`. |
+| Google Colab | Open notebook, run cells. | Slowest start; kept for demos. |
+
+A browser-only deployment (GitHub Pages) cannot run probes: sites do not send CORS headers, so a server-side hop is required.
+
 ## 2. Docker — recommended persistent local/server deployment
 
 Build:
@@ -99,6 +110,22 @@ Clearing browser site data or using another browser/device does **not** automati
 A future Case Bundle export/import is the appropriate way to move investigations between machines without making a central database mandatory.
 
 ## Environment variables
+
+### MINEIRO_PUBLIC
+
+Set to `1` for shared instances: stricter rate limits, server Gemini key ignored, SQLite store and avatar hashing disabled.
+
+### MINEIRO_DB
+
+Path of the SQLite file (default `data/mineiro.sqlite`). Mount a volume on `/app/data` in containers.
+
+### MINEIRO_TRUST_PROXY
+
+Set to `1` behind a reverse proxy so rate limiting uses the real client IP.
+
+### MINEIRO_HOST_CONCURRENCY / MINEIRO_CACHE_TTL_MS
+
+Per-host concurrent probe cap (default 4) and verify-result cache TTL (default 300000 ms).
 
 ### PORT
 

@@ -280,3 +280,24 @@ AI synthesis nunca altera automaticamente confidence factual.
 O export calcula SHA-256 real sobre o payload antes da inserção do manifest. Cada formato gera um arquivo `.manifest.json` companheiro.
 
 O hash é uma verificação de integridade do conteúdo, não assinatura de autoria nem cadeia de custódia legal.
+
+
+## v1.7 Core, Safety and Data Layer
+
+```text
+Browser UI ──> Express (rate limit, headers)
+                 ├─ routes/verify  ── detector-bound URL ── safeFetch (guarded DNS, manual redirects)
+                 │        ├─ core/evidence   8 logical checks
+                 │        ├─ core/baseline   target vs. random-handle control (soft-404 killer)
+                 │        └─ core/matchers   registry/detectors/*.json (declarative rules + canaries)
+                 ├─ routes/extras  variants · pivots · avatar dHash · Wayback CDX · CNPJ
+                 └─ routes/store   SQLite: Entity -> Observation(evidence_hash) -> Claim(cites observations)
+                                   └─ STIX 2.1 export
+```
+
+Design rules:
+
+- `src/core/*` is pure (no Express, no filesystem) and covered by Vitest fixtures.
+- The server never probes a URL the client invented: the URL must match the detector's `urlPattern`, and the resolved IP must be public at connect time.
+- An observation is a fact with a hash; a claim is an inference and must cite observations.
+- `MINEIRO_PUBLIC=1` removes everything that would let a shared instance act as an open scanner or a database of lookups.
