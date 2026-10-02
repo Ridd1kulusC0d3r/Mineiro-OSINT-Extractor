@@ -61,6 +61,12 @@ Um `FOUND` é um achado. Não é prova automática de identidade.
 
 ## Veja funcionando
 
+**Tela inicial.** Escolha o modo, teste um exemplo público e aprenda a ler um veredito antes do primeiro scan:
+
+<p align="center">
+  <img src="assets/screenshots/home.png" alt="Tela inicial com handles de exemplo, modos de scan e como ler um veredito" width="860">
+</p>
+
 **Ledger de evidências.** Cada detector, o veredito, a confiança e quantos dos 8 checks passaram:
 
 <p align="center">

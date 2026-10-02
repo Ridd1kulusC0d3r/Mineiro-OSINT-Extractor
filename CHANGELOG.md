@@ -27,6 +27,7 @@
 - Server honors `HOST` (default `0.0.0.0` for containers).
 
 ### UI fixes
+- New start screen: until the first scan, the main page used to be a ~10,000 px wall of empty report sections ("0", empty matrix). It is now a focused landing (~1,760 px): value proposition, public example handles, selectable scan modes (Quick / Standard / Full), a "how to read a verdict" legend, the four-step method, trust statements and shortcuts to batch import and cases. Fully localized (EN/PT/ES, 32 new keys), keyboard-accessible, no horizontal overflow on phones. The report appears as soon as a scan starts.
 - Intelligence Report: the hero, executive description and collection-coverage metrics were hard-coded in Portuguese; they now use the i18n catalogs (EN/PT/ES, 191 keys).
 - Intelligence Report: long URLs in the Known/Assessed/Unknown panel no longer overflow into the next column.
 

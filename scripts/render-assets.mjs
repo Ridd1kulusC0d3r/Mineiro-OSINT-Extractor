@@ -33,6 +33,7 @@ const pages = [
 
 // App screenshots wrapped in a quiet window frame (transparent outside, so it sits well on light and dark pages).
 const frames = [
+  { name: 'home', out: 'assets/screenshots/home.png', files: ['home.png'], chrome: 'localhost:3000 · Start' },
   { name: 'platforms', out: 'assets/screenshots/platforms.png', files: ['platforms.png'], chrome: 'localhost:3000 · Platforms' },
   { name: 'evidence', out: 'assets/screenshots/evidence.png', files: ['evidence.png'], chrome: 'localhost:3000 · Evidence' },
   { name: 'graph', out: 'assets/screenshots/graph.png', files: ['graph.png'] },

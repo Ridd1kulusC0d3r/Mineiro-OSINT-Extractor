@@ -4,6 +4,7 @@ import { TargetBar } from './components/TargetBar';
 import { StatsBar } from './components/StatsBar';
 import { DashboardView } from './components/DashboardView';
 import { IntelligenceReportView } from './components/IntelligenceReportView';
+import { HomeView } from './components/HomeView';
 import { PlatformGrid } from './components/PlatformGrid';
 import { PlatformTable } from './components/PlatformTable';
 import { EmailReconCard } from './components/EmailReconCard';
@@ -1154,7 +1155,21 @@ export default function App() {
         )}
 
         {/* View: Intelligence Assessment Workspace */}
-        {activeView === 'intelligence' && (
+        {activeView === 'intelligence' && results.length === 0 && !isScanning && (
+          <HomeView
+            activePreset={scanConfig.preset}
+            onSelectPreset={handleSelectPreset}
+            onPickExample={(handle) => {
+              setTarget(handle);
+              setTargetType('username');
+              window.setTimeout(() => document.querySelector<HTMLInputElement>('input[type="text"]')?.focus(), 0);
+            }}
+            onOpenBatch={() => setIsBulkModalOpen(true)}
+            onOpenCases={() => setIsHistoryModalOpen(true)}
+            casesCount={persistentCases.length}
+          />
+        )}
+        {activeView === 'intelligence' && (results.length > 0 || isScanning) && (
           <IntelligenceReportView
             target={target}
             results={results}

@@ -55,6 +55,7 @@ const tab = async (page, name) => {
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 });
   const page = await ctx.newPage();
   await runScan(page);
+  await page.screenshot({ path: `${RAW}/home.png` }); // start screen, before any scan
   await page.locator('button[type=submit]').click();
   await waitDone(page);
 

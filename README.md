@@ -60,6 +60,12 @@ It keeps apart four things that username tools usually blur together: **collecti
 
 ## See it
 
+**Start screen.** Pick a mode, try a public example, learn how to read a verdict before the first scan:
+
+<p align="center">
+  <img src="assets/screenshots/home.png" alt="Start screen with example handles, scan modes and how to read a verdict" width="860">
+</p>
+
 **Evidence ledger.** Every detector, its verdict, confidence and how many of the 8 checks passed:
 
 <p align="center">
