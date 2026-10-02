@@ -365,6 +365,7 @@ export default function App() {
                   // v1.4 respects protection boundaries: progressive validation does not attempt bypass retries.
                   wafRetryStrategy: 'none',
                   enableEvidenceChecks: options.evidence,
+                  baseline: options.evidence,
                   username: usernamePart,
                   detectorReliability: platform?.detectorReliability || 60,
                 }),
