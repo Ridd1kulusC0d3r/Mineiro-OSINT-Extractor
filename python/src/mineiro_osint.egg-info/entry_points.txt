@@ -1,0 +1,2 @@
+[console_scripts]
+mineiro = mineiro_osint.cli:main

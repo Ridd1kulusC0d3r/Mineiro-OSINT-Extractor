@@ -1,0 +1,69 @@
+name: Release
+
+# Push a tag like v1.7.0 to publish: git tag v1.7.0 && git push origin v1.7.0
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build and create GitHub Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: npm ci --no-audit --no-fund
+      - name: Version consistency (tag must match every declared version)
+        run: node scripts/check-version.mjs "${GITHUB_REF_NAME}"
+      - name: Quality gate
+        run: |
+          npm run lint
+          npm test
+          npm run detectors:validate
+      - name: Build wheel
+        run: |
+          npm run build:python
+          pip wheel ./python --no-deps -w dist-py
+          (cd dist-py && sha256sum *.whl > SHA256SUMS.txt)
+      - name: Smoke test the wheel
+        run: |
+          python -m venv /tmp/venv
+          /tmp/venv/bin/pip install dist-py/*.whl
+          /tmp/venv/bin/mineiro --check
+      - name: Release notes from CHANGELOG
+        run: node scripts/release-notes.mjs "${GITHUB_REF_NAME}" > RELEASE_NOTES.md
+      - uses: softprops/action-gh-release@v2
+        with:
+          body_path: RELEASE_NOTES.md
+          files: |
+            dist-py/*.whl
+            dist-py/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheel
+          path: dist-py/*.whl
+
+  publish-pypi:
+    name: Publish to PyPI (opt-in)
+    needs: build
+    # Enable by creating the repository variable PUBLISH_PYPI=true and configuring a PyPI trusted publisher.
+    if: vars.PUBLISH_PYPI == 'true'
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: wheel
+          path: dist
+      - uses: pypa/gh-action-pypi-publish@release/v1

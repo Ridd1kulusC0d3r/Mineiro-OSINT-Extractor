@@ -9,3 +9,10 @@ coverage/
 
 data/
 detector-health.md
+
+python/src/mineiro_osint/_app/
+python/dist/
+python/build/
+python/*.egg-info/
+python/LICENSE
+__pycache__/

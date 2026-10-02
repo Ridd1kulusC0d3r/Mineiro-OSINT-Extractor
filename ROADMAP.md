@@ -9,6 +9,7 @@ O roadmap é orientado por qualidade analítica e manutenção, não por quantid
 - detectores declarativos + canários semanais
 - SQLite Entity/Observation/Claim, export STIX 2.1
 - variantes, pivôs, dHash de avatar, Wayback, CNPJ
+- `pip install mineiro-osint`, README em inglês, demo em GIF, workflow de release
 
 ## Agora
 

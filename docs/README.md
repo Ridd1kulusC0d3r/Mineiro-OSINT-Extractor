@@ -48,6 +48,7 @@ Leia:
 | [Graph Hunting](GRAPH-HUNTING.md) | investigação por relações | 10 min |
 | [Deployment](DEPLOYMENT.md) | operação / produção | 10 min |
 | [Arquitetura](../ARCHITECTURE.md) | engenharia | 10 min |
+| [Releasing](RELEASING.md) | manutenção / release (EN) | 5 min |
 | [Contributing](../CONTRIBUTING.md) | contribuidores | 8 min |
 
 ## Convenções
