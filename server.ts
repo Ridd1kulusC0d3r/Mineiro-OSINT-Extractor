@@ -10,7 +10,11 @@ import { computeBehavioralProfile } from './src/data/behavioralEngine';
 import { evaluateThreatActorHeuristics } from './src/data/threatActorHeuristics';
 import { getRegistryStats, MINEIRO_REGISTRY } from './src/registry/registry';
 import { benchmarkRegistry } from './src/registry/bench';
-import { buildAnalystCopilotPrompt } from './src/ai/analystCopilot';
+import { buildAnalystCopilotPrompt, COPILOT_RESPONSE_SCHEMA, sanitizeCopilotOutput } from './src/ai/analystCopilot';
+import { verifyRouter } from './server/routes/verify';
+import { extrasRouter } from './server/routes/extras';
+import { storeRouter } from './server/routes/store';
+import { PUBLIC_MODE, rateLimit, securityHeaders } from './server/security/middleware';
 
 
 const TERMINAL_BANNER = `\n+------------------------------------------------------------------+\n|                                                                  |\n|   M   M  I  N   N  EEEEE  I  RRRR    OOO                       |\n|   MM MM  I  NN  N  E      I  R   R  O   O                      |\n|   M M M  I  N N N  EEEE   I  RRRR   O   O                      |\n|   M   M  I  N  NN  E      I  R  R   O   O                      |\n|   M   M  I  N   N  EEEEE  I  R   R   OOO                       |\n|                                                                  |\n|                USERNAME INTELLIGENCE // OSINT                       |\n|                                                                  |\n|   [ probe ] -> [ classify ] -> [ correlate ] -> [ export ]      |\n|                                                                  |\n|   public signals only  |  evidence over assumptions              |\n+------------------------------------------------------------------+\n`;
@@ -18,112 +22,22 @@ const app = express();
 const PORT = Number(process.env.PORT || 3000);
 
 
-const EVIDENCE_CHECK_IDS = [
-  'status_expected',
-  'absence_status',
-  'redirect_consistency',
-  'username_final_url',
-  'username_body',
-  'canonical_match',
-  'soft_404',
-  'edge_protection',
-] as const;
-
-async function readBodyPreview(response: Response, maxBytes = 192 * 1024): Promise<string> {
-  const type = response.headers.get('content-type') || '';
-  if (!/text|html|json|xml/i.test(type) || !response.body) return '';
-
-  const reader = response.body.getReader();
-  const chunks: Uint8Array[] = [];
-  let total = 0;
-
-  try {
-    while (total < maxBytes) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      if (!value) continue;
-      const remaining = maxBytes - total;
-      const chunk = value.byteLength > remaining ? value.slice(0, remaining) : value;
-      chunks.push(chunk);
-      total += chunk.byteLength;
-      if (total >= maxBytes) break;
-    }
-  } finally {
-    try { await reader.cancel(); } catch {}
-  }
-
-  const merged = new Uint8Array(total);
-  let offset = 0;
-  for (const chunk of chunks) {
-    merged.set(chunk, offset);
-    offset += chunk.byteLength;
-  }
-  return new TextDecoder('utf-8', { fatal: false }).decode(merged);
-}
-
-function evaluateEvidence(input: {
-  requestedUrl: string;
-  finalUrl: string;
-  username?: string;
-  statusCode: number;
-  expectedStatus: number;
-  errorStatus: number;
-  body: string;
-  edgeProtected: boolean;
-}) {
-  const { requestedUrl, finalUrl, username = '', statusCode, expectedStatus, errorStatus, body, edgeProtected } = input;
-  const bodyLower = body.toLowerCase();
-  const usernameLower = username.trim().toLowerCase();
-  const finalLower = finalUrl.toLowerCase();
-  const requested = new URL(requestedUrl);
-  const final = new URL(finalUrl);
-
-  const soft404Hints = [
-    'page not found', 'user not found', 'profile not found',
-    'does not exist', "doesn't exist", 'no such user', '>404<'
-  ];
-  const soft404 = soft404Hints.some((hint) => bodyLower.includes(hint));
-
-  const canonicalMatch = (() => {
-    const match = body.match(/<link[^>]+rel=["'][^"']*canonical[^"']*["'][^>]+href=["']([^"']+)["']/i)
-      || body.match(/<link[^>]+href=["']([^"']+)["'][^>]+rel=["'][^"']*canonical[^"']*["']/i);
-    if (!match) return false;
-    try {
-      const canonical = new URL(match[1], finalUrl);
-      return canonical.hostname === final.hostname
-        && (!usernameLower || canonical.href.toLowerCase().includes(encodeURIComponent(usernameLower)));
-    } catch {
-      return false;
-    }
-  })();
-
-  const checks = [
-    { id: 'status_expected', pass: statusCode === expectedStatus, signal: `http_status:${statusCode}` },
-    { id: 'absence_status', pass: statusCode === errorStatus || statusCode === 404, signal: statusCode === errorStatus || statusCode === 404 ? 'explicit_absence_status' : 'absence_status_not_observed' },
-    { id: 'redirect_consistency', pass: requested.hostname === final.hostname || final.hostname.endsWith(`.${requested.hostname}`) || requested.hostname.endsWith(`.${final.hostname}`), signal: requested.href === final.href ? 'no_redirect' : `final_host:${final.hostname}` },
-    { id: 'username_final_url', pass: Boolean(usernameLower && finalLower.includes(encodeURIComponent(usernameLower))), signal: usernameLower && finalLower.includes(encodeURIComponent(usernameLower)) ? 'username_in_final_url' : 'username_not_in_final_url' },
-    { id: 'username_body', pass: Boolean(usernameLower && bodyLower.includes(usernameLower)), signal: usernameLower && bodyLower.includes(usernameLower) ? 'username_token_in_body' : 'username_token_not_observed' },
-    { id: 'canonical_match', pass: canonicalMatch, signal: canonicalMatch ? 'canonical_consistent' : 'canonical_not_confirmed' },
-    { id: 'soft_404', pass: !soft404, signal: soft404 ? 'soft_404_hint_detected' : 'no_soft_404_hint' },
-    { id: 'edge_protection', pass: !edgeProtected, signal: edgeProtected ? 'edge_protection_detected' : 'no_edge_protection_signal' },
-  ];
-
-  return {
-    checks,
-    passed: checks.filter((c) => c.pass).length,
-    total: checks.length,
-    signals: checks.map((c) => c.signal),
-    soft404,
-  };
-}
-
-app.use(express.json());
+app.disable('x-powered-by');
+app.set('trust proxy', process.env.MINEIRO_TRUST_PROXY === '1');
+app.use(securityHeaders);
+app.use(express.json({ limit: '2mb' }));
+app.use('/api/osint/verify', rateLimit({ perMinute: PUBLIC_MODE ? 120 : 6000, burst: PUBLIC_MODE ? 40 : 600, name: 'verify' }));
+app.use(['/api/intelligence', '/api/osint/gemini-validate', '/api/osint/email-recon', '/api/osint/profile'], rateLimit({ perMinute: PUBLIC_MODE ? 10 : 60, name: 'ai' }));
+app.use(['/api/osint/wayback', '/api/osint/avatar-hash', '/api/osint/br', '/api/osint/pivots', '/api/osint/variants'], rateLimit({ perMinute: PUBLIC_MODE ? 20 : 300, name: 'extras' }));
+app.use(verifyRouter());
+app.use(extrasRouter());
+app.use(storeRouter());
 
 // Initialize GoogleGenAI client lazily or safely with User-Agent telemetry
 function getGenAiClient(customApiKey?: string): { client: GoogleGenAI; isCustom: boolean } | null {
   const apiKey = (customApiKey && typeof customApiKey === 'string' && customApiKey.trim().length > 10)
     ? customApiKey.trim()
-    : process.env.GEMINI_API_KEY;
+    : (PUBLIC_MODE ? undefined : process.env.GEMINI_API_KEY);
 
   if (!apiKey) return null;
   return {
@@ -179,6 +93,7 @@ async function generateCopilotWithFallback(
           contents: prompt,
           config: {
             responseMimeType: 'application/json',
+            responseJsonSchema: COPILOT_RESPONSE_SCHEMA,
             temperature: 0.2,
           },
         }),
@@ -209,7 +124,7 @@ app.get('/api/intelligence/copilot/status', (req, res) => {
     ? req.headers['x-gemini-api-key']
     : '';
   const personalConfigured = personalKey.trim().length > 10;
-  const serverConfigured = Boolean(process.env.GEMINI_API_KEY);
+  const serverConfigured = !PUBLIC_MODE && Boolean(process.env.GEMINI_API_KEY);
 
   res.json({
     configured: personalConfigured || serverConfigured,
@@ -275,323 +190,6 @@ app.post('/api/registry/benchmark', (req, res) => {
     observations: observations.length,
     metrics: benchmarkRegistry(validIds, observations),
   });
-});
-
-// Real-time URL verification for OSINT checks (handling CORS & uncertainty model for WAF/TLS)
-app.post('/api/osint/verify', async (req, res) => {
-  const { 
-    url, 
-    platformId, 
-    expectedStatus = 200, 
-    errorStatus = 404,
-    timeoutMs,
-    fastMode = false,
-    scanDepth,
-    wafRetryStrategy,
-    enableEvidenceChecks = false,
-    username = '',
-    detectorReliability = 60,
-  } = req.body;
-
-  if (!url || typeof url !== 'string') {
-    return res.status(400).json({ error: 'Valid URL is required' });
-  }
-
-  // Determine active scan depth and retry strategy
-  // 'fast': 2,500ms timeout threshold, single-pass probe, zero edge-protection retries
-  // 'deep': 6,500ms timeout threshold, adaptive browser-like headers + jittered retry for protected/403/429 responses
-  const effectiveDepth: 'fast' | 'deep' = scanDepth 
-    ? scanDepth 
-    : (fastMode ? 'fast' : 'deep');
-
-  const effectiveTimeout = timeoutMs && typeof timeoutMs === 'number'
-    ? Math.min(Math.max(timeoutMs, 1000), 12000)
-    : (effectiveDepth === 'fast' ? 2500 : 6500);
-
-  const effectiveRetryStrategy = wafRetryStrategy || (effectiveDepth === 'deep' ? 'adaptive' : 'none');
-
-  const startTime = Date.now();
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), effectiveTimeout);
-
-  try {
-    const response = await fetch(url, {
-      method: 'GET',
-      signal: controller.signal,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 MineiroUsernameIntelligence/1.6.0',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-      },
-    });
-    clearTimeout(timeoutId);
-
-    const responseTimeMs = Date.now() - startTime;
-    const statusCode = response.status;
-    const cfRay = response.headers.get('cf-ray');
-    const serverHeader = response.headers.get('server') || '';
-
-    // Mineiro Guard model: identify protected sites (Cloudflare, TLS fingerprint challenge, WAF)
-    const isCloudflareChallenge = cfRay || serverHeader.toLowerCase().includes('cloudflare');
-
-    // Check if edge protection or rate limiting made the response inconclusive
-    if (statusCode === 403 || statusCode === 429 || statusCode === 503 || isCloudflareChallenge) {
-      // IF FAST MODE OR NO RETRY STRATEGY: Fail-fast immediately
-      if (effectiveDepth === 'fast' || effectiveRetryStrategy === 'none') {
-        return res.json({
-          platformId,
-          url,
-          status: statusCode === 429 ? 'rate_limited' : 'uncertain',
-          statusCode,
-          responseTimeMs,
-          confidenceScore: statusCode === 429 ? 35 : 42,
-          evidenceLevel: 'uncertain',
-          evidenceSignals: [`http_status:${statusCode}`, isCloudflareChallenge ? 'edge_protection_detected' : 'request_blocked'],
-          uncertainReason: isCloudflareChallenge
-            ? 'Mineiro Guard: Cloudflare WAF challenge (Fast mode - 0 retries)'
-            : `HTTP ${statusCode} Anti-Bot Guard challenge (Fast mode - 0 retries)`,
-          wafRetried: false,
-          retryResolved: false,
-          scanDepth: 'fast',
-        });
-      }
-
-      // IF DEEP MODE & ADAPTIVE STRATEGY: Execute secondary probe with browser-compatible request headers & jittered backoff
-      const remainingTime = Math.max(effectiveTimeout - (Date.now() - startTime), 2500);
-      await new Promise(r => setTimeout(r, 200 + Math.floor(Math.random() * 150))); // 200-350ms jitter
-
-      const retryController = new AbortController();
-      const retryTimeoutId = setTimeout(() => retryController.abort(), remainingTime);
-
-      try {
-        const retryResponse = await fetch(url, {
-          method: 'GET',
-          signal: retryController.signal,
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-            'Accept-Language': 'en-US,en;q=0.9',
-            'Sec-Ch-Ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"',
-            'Sec-Ch-Ua-Mobile': '?0',
-            'Sec-Ch-Ua-Platform': '"macOS"',
-            'Sec-Fetch-Dest': 'document',
-            'Sec-Fetch-Mode': 'navigate',
-            'Sec-Fetch-Site': 'none',
-            'Sec-Fetch-User': '?1',
-            'Upgrade-Insecure-Requests': '1',
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache',
-            'Referer': 'https://www.google.com/',
-          },
-        });
-        clearTimeout(retryTimeoutId);
-
-        const retryStatus = retryResponse.status;
-        const retryRay = retryResponse.headers.get('cf-ray');
-        const retryServer = retryResponse.headers.get('server') || '';
-        const retryIsCf = retryRay || retryServer.toLowerCase().includes('cloudflare');
-
-        // Retry returned the expected status
-        if (retryStatus === expectedStatus) {
-          return res.json({
-            platformId,
-            url,
-            status: 'found',
-            statusCode: retryStatus,
-            responseTimeMs: Date.now() - startTime,
-            confidenceScore: 80,
-            evidenceLevel: 'probable',
-            evidenceSignals: [`http_status:${retryStatus}`, 'expected_status_match', 'adaptive_retry_conclusive'],
-            wafRetried: true,
-            retryResolved: true,
-            wafStrategyApplied: 'adaptive_browser_headers',
-            scanDepth: 'deep',
-          });
-        }
-
-        // Retry returned the configured absence status
-        if (retryStatus === errorStatus || retryStatus === 404) {
-          return res.json({
-            platformId,
-            url,
-            status: 'not_found',
-            statusCode: retryStatus,
-            responseTimeMs: Date.now() - startTime,
-            confidenceScore: 94,
-            evidenceLevel: 'absent',
-            evidenceSignals: [`http_status:${retryStatus}`, 'explicit_absence_status', 'adaptive_retry_conclusive'],
-            wafRetried: true,
-            retryResolved: true,
-            wafStrategyApplied: 'adaptive_browser_headers',
-            scanDepth: 'deep',
-          });
-        }
-
-        // Still blocked after retry
-        return res.json({
-          platformId,
-          url,
-          status: retryStatus === 429 ? 'rate_limited' : 'uncertain',
-          statusCode: retryStatus,
-          responseTimeMs: Date.now() - startTime,
-          confidenceScore: 45,
-          evidenceLevel: 'uncertain',
-          evidenceSignals: [`http_status:${retryStatus}`, 'adaptive_retry_inconclusive'],
-          uncertainReason: retryIsCf
-            ? 'Mineiro Guard: Persistent Cloudflare WAF protection after adaptive browser retry'
-            : `HTTP ${retryStatus} persistent protection challenge after adaptive browser retry`,
-          wafRetried: true,
-          retryResolved: false,
-          wafStrategyApplied: 'adaptive_browser_headers',
-          scanDepth: 'deep',
-        });
-      } catch (retryErr: any) {
-        clearTimeout(retryTimeoutId);
-        const retryIsTimeout = retryErr.name === 'AbortError';
-        return res.json({
-          platformId,
-          url,
-          status: 'uncertain',
-          statusCode: retryIsTimeout ? 408 : statusCode,
-          responseTimeMs: Date.now() - startTime,
-          confidenceScore: 40,
-          uncertainReason: retryIsTimeout
-            ? `Deep scan timeout reached threshold (${effectiveTimeout}ms) during adaptive retry`
-            : `Adaptive WAF retry network exception: ${retryErr.message}`,
-          wafRetried: true,
-          retryResolved: false,
-          wafStrategyApplied: 'adaptive_browser_headers',
-          scanDepth: 'deep',
-        });
-      }
-    }
-
-    let found = false;
-    let confidenceScore = 0;
-    let evidenceLevel: 'confirmed' | 'probable' | 'uncertain' | 'absent' = 'uncertain';
-    let evidenceSignals = [
-      `http_status:${statusCode}`,
-      statusCode === expectedStatus ? 'expected_status_match' : 'unexpected_status',
-    ];
-    let evidenceChecksPassed: number | undefined;
-    let evidenceChecksTotal: number | undefined;
-
-    let evidence: ReturnType<typeof evaluateEvidence> | null = null;
-    if (enableEvidenceChecks) {
-      const body = await readBodyPreview(response);
-      evidence = evaluateEvidence({
-        requestedUrl: url,
-        finalUrl: response.url || url,
-        username,
-        statusCode,
-        expectedStatus,
-        errorStatus,
-        body,
-        edgeProtected: Boolean(isCloudflareChallenge),
-      });
-      evidenceSignals = evidence.signals;
-      evidenceChecksPassed = evidence.passed;
-      evidenceChecksTotal = evidence.total;
-    } else {
-      try { await response.body?.cancel(); } catch {}
-    }
-
-    if (statusCode === errorStatus || statusCode === 404) {
-      found = false;
-      confidenceScore = Math.max(80, Math.min(98, Math.round((Number(detectorReliability) * 0.45) + 55)));
-      evidenceLevel = 'absent';
-    } else if (statusCode === expectedStatus) {
-      found = true;
-      const evidenceRatio = evidence ? evidence.passed / evidence.total : 0.65;
-      confidenceScore = Math.max(35, Math.min(97,
-        Math.round((Number(detectorReliability) * 0.6) + (evidenceRatio * 100 * 0.4))
-      ));
-      if (evidence?.soft404) {
-        found = false;
-        confidenceScore = Math.min(confidenceScore, 45);
-        evidenceLevel = 'uncertain';
-      } else {
-        evidenceLevel = enableEvidenceChecks && evidence && evidence.passed >= 6 ? 'confirmed' : 'probable';
-      }
-    } else {
-      found = statusCode >= 200 && statusCode < 300;
-      const evidenceRatio = evidence ? evidence.passed / evidence.total : 0.5;
-      confidenceScore = Math.max(30, Math.min(85,
-        Math.round((Number(detectorReliability) * 0.55) + (evidenceRatio * 100 * 0.45))
-      ));
-      evidenceLevel = 'uncertain';
-    }
-
-    return res.json({
-      platformId,
-      url,
-      status: evidenceLevel === 'uncertain' && found ? 'uncertain' : (found ? 'found' : 'not_found'),
-      statusCode,
-      responseTimeMs,
-      confidenceScore,
-      detectorReliability: Number(detectorReliability),
-      evidenceLevel,
-      evidenceSignals,
-      evidenceChecksPassed,
-      evidenceChecksTotal,
-      wafRetried: false,
-      retryResolved: false,
-      scanDepth: effectiveDepth,
-    });
-  } catch (err: any) {
-    clearTimeout(timeoutId);
-    const responseTimeMs = Date.now() - startTime;
-    const isTimeout = err.name === 'AbortError';
-
-    // In Deep mode, if initial probe timed out, attempt a secondary lightweight retry if time permits
-    if (isTimeout && effectiveDepth === 'deep' && effectiveRetryStrategy === 'adaptive') {
-      try {
-        const fallbackController = new AbortController();
-        const fallbackTimeoutId = setTimeout(() => fallbackController.abort(), 2000);
-        const fallbackResponse = await fetch(url, {
-          method: 'HEAD',
-          signal: fallbackController.signal,
-          headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/124.0.0.0 Safari/537.36',
-          },
-        });
-        clearTimeout(fallbackTimeoutId);
-        const fallbackStatus = fallbackResponse.status;
-        if (fallbackStatus === expectedStatus) {
-          return res.json({
-            platformId,
-            url,
-            status: 'found',
-            statusCode: fallbackStatus,
-            responseTimeMs: Date.now() - startTime,
-            confidenceScore: 88,
-            wafRetried: true,
-            retryResolved: true,
-            wafStrategyApplied: 'head_fallback_after_timeout',
-            scanDepth: 'deep',
-          });
-        }
-      } catch {
-        // Fallback also failed or timed out
-      }
-    }
-
-    return res.json({
-      platformId,
-      url,
-      status: isTimeout ? 'uncertain' : 'error',
-      statusCode: isTimeout ? 408 : 0,
-      responseTimeMs,
-      confidenceScore: isTimeout ? 40 : 10,
-      uncertainReason: isTimeout 
-        ? `Connection timed out at ${effectiveTimeout}ms threshold (${effectiveDepth.toUpperCase()} mode)`
-        : undefined,
-      wafRetried: isTimeout && effectiveDepth === 'deep',
-      retryResolved: false,
-      scanDepth: effectiveDepth,
-      error: err.message || 'Request failed',
-    });
-  }
 });
 
 // Email reconnaissance endpoint (MX records, Gravatar, Provider heuristics)
@@ -990,8 +588,11 @@ app.post('/api/intelligence/copilot', async (req, res) => {
 
   try {
     const generated = await generateCopilotWithFallback(clientInfo.client, prompt, model);
+    const evidenceIds = (Array.isArray(assessment.evidence) ? assessment.evidence : []).map((e: any) => String(e?.id));
+    const { output, droppedEvidenceIds } = sanitizeCopilotOutput(generated.parsed, evidenceIds);
     return res.json({
-      ...generated.parsed,
+      ...output,
+      droppedEvidenceIds,
       modelUsed: generated.modelUsed,
       attemptedModels: generated.attemptedModels,
       generatedAt: new Date().toISOString(),

@@ -100,6 +100,22 @@ A future Case Bundle export/import is the appropriate way to move investigations
 
 ## Environment variables
 
+### MINEIRO_PUBLIC
+
+Set to `1` for any shared or public deployment: stricter rate limits, server Gemini key ignored, SQLite store and avatar hashing disabled.
+
+### MINEIRO_DB
+
+Path of the SQLite file (default `data/mineiro.sqlite`). Mount a volume on `/app/data` in containers.
+
+### MINEIRO_TRUST_PROXY
+
+Set to `1` behind a reverse proxy so rate limiting uses the real client IP.
+
+### MINEIRO_HOST_CONCURRENCY / MINEIRO_CACHE_TTL_MS
+
+Per-host concurrent probe cap (default 4) and verify-result cache TTL (default 300000 ms).
+
 ### PORT
 
 HTTP port. Defaults to 3000.

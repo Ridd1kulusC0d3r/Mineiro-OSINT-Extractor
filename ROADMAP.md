@@ -2,6 +2,14 @@
 
 O roadmap é orientado por qualidade analítica e manutenção, não por quantidade de features.
 
+## Entregue (Unreleased)
+
+- SSRF-safe probing, rate limits, `npm ci` + lockfile
+- baseline diferencial anti-soft-404
+- detectores declarativos + canários semanais
+- SQLite Entity/Observation/Claim, export STIX 2.1
+- variantes, pivôs, dHash de avatar, Wayback, CNPJ
+
 ## Agora
 
 ### Registry quality

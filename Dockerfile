@@ -18,6 +18,9 @@ COPY package*.json ./
 RUN npm ci --omit=dev --no-audit --no-fund && npm cache clean --force
 
 COPY --from=build /app/dist ./dist
+COPY registry ./registry
+RUN mkdir -p /app/data && chown node:node /app/data
+VOLUME /app/data
 
 USER node
 EXPOSE 3000

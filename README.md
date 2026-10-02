@@ -70,7 +70,7 @@ Pré-requisito: **Node.js 22+**.
 ```bash
 git clone https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor.git
 cd Mineiro-OSINT-Extractor
-npm install --no-audit --no-fund
+npm ci --no-audit --no-fund
 npm run dev
 ```
 

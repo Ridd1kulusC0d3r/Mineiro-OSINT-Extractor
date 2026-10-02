@@ -10,4 +10,10 @@ services:
       - NODE_ENV=production
       - PORT=3000
       - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - MINEIRO_DB=/app/data/mineiro.sqlite
+    volumes:
+      - mineiro-data:/app/data
     restart: unless-stopped
+
+volumes:
+  mineiro-data:
