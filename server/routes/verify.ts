@@ -9,7 +9,7 @@ import { DECLARATIVE_DETECTORS } from '../detectors';
 import { withHostSlot } from '../hostLimiter';
 import { assertProbeableUrl, BlockedTargetError, safeFetch } from '../security/safeFetch';
 
-const VERSION = '1.6.0';
+const VERSION = '1.7.0';
 
 const DEFAULT_HEADERS = {
   'User-Agent': `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36 MineiroUsernameIntelligence/${VERSION}`,

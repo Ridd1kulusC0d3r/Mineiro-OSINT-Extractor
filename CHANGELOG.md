@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.7.0] - 2026-10-02
 
 ### Security
 - `/api/osint/verify` only accepts URLs that a registry detector can produce; DNS is resolved through a guarded lookup (private, loopback, link-local and metadata ranges blocked, DNS-rebinding safe) and every redirect hop is re-validated.
@@ -19,6 +19,12 @@
 ### OSINT
 - Username variants with Jaro-Winkler similarity, pivot extraction with depth/budget planning, avatar dHash, Wayback CDX summary, CNPJ lookup via BrasilAPI (company-level fields only).
 - Copilot: provider-enforced JSON schema and post-validation that drops evidence ids not present in the assessment.
+
+### Distribution and project hygiene
+- `pip install mineiro-osint`: self-contained wheel (~1.3 MB) with a `mineiro` command; uses system Node >= 22.5 or the Node shipped by `nodejs-wheel-binaries`; binds to 127.0.0.1; CI installs the wheel in a clean venv and boots it.
+- English `README.md` (default) with an animated demo; Portuguese kept in `README.pt-BR.md`.
+- Release workflow: pushing a `v*` tag builds the app, the wheel and a GitHub Release with these notes.
+- Server honors `HOST` (default `0.0.0.0` for containers).
 
 ### Engineering
 - Evidence engine extracted to `src/core`; Vitest suite with HTML fixtures.

@@ -3,7 +3,6 @@ import express from 'express';
 import path from 'path';
 import crypto from 'crypto';
 import dns from 'dns/promises';
-import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import { extractPlatformSignals } from './src/data/platformSignalExtractor';
 import { computeBehavioralProfile } from './src/data/behavioralEngine';
@@ -20,6 +19,8 @@ import { PUBLIC_MODE, rateLimit, securityHeaders } from './server/security/middl
 const TERMINAL_BANNER = `\n+------------------------------------------------------------------+\n|                                                                  |\n|   M   M  I  N   N  EEEEE  I  RRRR    OOO                       |\n|   MM MM  I  NN  N  E      I  R   R  O   O                      |\n|   M M M  I  N N N  EEEE   I  RRRR   O   O                      |\n|   M   M  I  N  NN  E      I  R  R   O   O                      |\n|   M   M  I  N   N  EEEEE  I  R   R   OOO                       |\n|                                                                  |\n|                USERNAME INTELLIGENCE // OSINT                       |\n|                                                                  |\n|   [ probe ] -> [ classify ] -> [ correlate ] -> [ export ]      |\n|                                                                  |\n|   public signals only  |  evidence over assumptions              |\n+------------------------------------------------------------------+\n`;
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
+// Containers need 0.0.0.0; the pip launcher sets HOST=127.0.0.1 so a local install is not exposed to the LAN.
+const HOST = process.env.HOST || '0.0.0.0';
 
 
 app.disable('x-powered-by');
@@ -45,7 +46,7 @@ function getGenAiClient(customApiKey?: string): { client: GoogleGenAI; isCustom:
       apiKey,
       httpOptions: {
         headers: {
-          'User-Agent': 'mineiro-username-intelligence/1.6.0',
+          'User-Agent': 'mineiro-username-intelligence/1.7.0',
         },
       },
     }),
@@ -140,7 +141,7 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     service: 'Mineiro Username Intelligence · OSINT Investigation Workbench',
-    version: '1.6.0',
+    version: '1.7.0',
     timestamp: new Date().toISOString(),
     geminiConfigured: Boolean(process.env.GEMINI_API_KEY),
     supportedDatabases: ['Mineiro Core (local direct probes)', 'Mineiro Evidence Engine', 'Mineiro Public Recon'],
@@ -1028,6 +1029,8 @@ Return strictly the raw JSON without markdown code fences or backticks.`;
 async function startServer() {
   try {
     if (process.env.NODE_ENV !== 'production') {
+      // Loaded lazily so the production bundle (and the pip package) does not need Vite.
+      const { createServer: createViteServer } = await import('vite');
       const vite = await createViteServer({
         server: { middlewareMode: true },
         appType: 'spa',
@@ -1041,10 +1044,10 @@ async function startServer() {
       });
     }
 
-    const server = app.listen(PORT, '0.0.0.0', () => {
+    const server = app.listen(PORT, HOST, () => {
       console.log('\n' + TERMINAL_BANNER + '\n');
-      console.log(`[ready] http://0.0.0.0:${PORT}`);
-      console.log('[mode] local-first OSINT probes | persistent cases | diff intelligence | v1.6.0');
+      console.log(`[ready] http://${HOST}:${PORT}`);
+      console.log('[mode] local-first OSINT probes | persistent cases | diff intelligence | v1.7.0');
     });
 
     server.on('error', (err: NodeJS.ErrnoException) => {

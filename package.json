@@ -1,7 +1,7 @@
 {
   "name": "mineiro-username-intelligence",
   "private": false,
-  "version": "1.6.0",
+  "version": "1.7.0",
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
@@ -17,14 +17,17 @@
     "intelligence:test": "tsx scripts/intelligence-smoke.ts",
     "colab:validate": "node scripts/validate-colab.mjs",
     "docs:validate": "node scripts/validate-docs.mjs",
-    "check": "npm run brand:validate && npm run i18n:validate && npm run graph:test && npm run case:test && npm run registry:validate && npm run detectors:validate && npm run lint && npm run test && npm run demo && npm run intelligence:test && npm run manual:validate && npm run colab:validate && npm run docs:validate && npm run build",
+    "check": "npm run version:check && npm run brand:validate && npm run i18n:validate && npm run graph:test && npm run case:test && npm run registry:validate && npm run detectors:validate && npm run lint && npm run test && npm run demo && npm run intelligence:test && npm run manual:validate && npm run colab:validate && npm run docs:validate && npm run build",
     "brand:validate": "node scripts/validate-brand.mjs",
     "i18n:validate": "tsx scripts/i18n-smoke.ts",
     "graph:test": "tsx scripts/graph-hunting-smoke.ts",
     "case:test": "tsx scripts/case-diff-smoke.ts",
     "test": "vitest run",
     "detectors:validate": "tsx scripts/detectors-validate.ts",
-    "detectors:health": "tsx scripts/detector-health.ts"
+    "detectors:health": "tsx scripts/detector-health.ts",
+    "build:bundle": "esbuild server.ts --bundle --platform=node --format=cjs --external:vite --minify --legal-comments=none --outfile=dist/server.bundle.cjs",
+    "build:python": "node scripts/build-python-package.mjs",
+    "version:check": "node scripts/check-version.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

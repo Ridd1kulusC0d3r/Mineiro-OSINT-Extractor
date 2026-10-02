@@ -1,71 +1,88 @@
 # Mineiro Username Intelligence
 
 <p align="center">
-  <img src="assets/mineiro-logo.png" alt="Mineiro" width="220">
+  <img src="assets/mineiro-logo.png" alt="Mineiro" width="200">
 </p>
 
-<p align="center"><strong>**OSINT Investigation Workbench** para presença pública de usernames, evidência, correlação cautelosa e relatórios auditáveis.</strong></p>
+<p align="center"><strong>OSINT Investigation Workbench</strong> for public username presence: evidence first, cautious correlation, auditable reports.</p>
 
 <p align="center">
   <a href="https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/actions/workflows/ci.yml/badge.svg"></a>
-  <img alt="Version" src="https://img.shields.io/badge/version-1.6.0-111111">
+  <img alt="Version" src="https://img.shields.io/badge/version-1.7.0-111111">
   <img alt="Node" src="https://img.shields.io/badge/node-22%2B-111111">
   <img alt="License" src="https://img.shields.io/badge/code-MIT-111111">
 </p>
 
 <p align="center">
-  <a href="https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Username_Intelligence_Colab.ipynb"><strong>▶ Abrir no Google Colab</strong></a>
+  <a href="https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Username_Intelligence_Colab.ipynb"><strong>▶ Open in Google Colab</strong></a>
   &nbsp;·&nbsp;
-  <a href="docs/GETTING-STARTED.md">Instalar localmente</a>
+  <a href="#quick-start">Install</a>
   &nbsp;·&nbsp;
-  <a href="docs/USER-GUIDE.md">Guia de uso</a>
+  <a href="docs/USER-GUIDE.md">User guide</a>
   &nbsp;·&nbsp;
-  <a href="docs/README.md">Documentação</a>
+  <a href="docs/README.md">Docs</a>
+  &nbsp;·&nbsp;
+  <a href="README.pt-BR.md">Português</a>
 </p>
+
+<p align="center">
+  <img src="assets/demo.gif" alt="Mineiro scanning a public handle across 49 platforms, with live progress, evidence-based verdicts and the correlation graph" width="860">
+</p>
+
+<p align="center"><sub>A Standard scan of a public open-source handle: live progress, per-platform verdicts (found / absent / uncertain), the Evidence Engine, and the correlation graph.</sub></p>
 
 ---
 
-## O que é
+## What it is
 
-O Mineiro consulta superfícies públicas associadas a um identificador e transforma respostas técnicas em uma avaliação estruturada.
+Mineiro checks public surfaces associated with an identifier (a username or e-mail) and turns raw technical responses into a structured assessment.
 
-Ele separa quatro coisas que ferramentas de username costumam misturar:
+It keeps apart four things that username tools usually blur together:
 
 ```text
-coleta  →  evidência  →  correlação  →  avaliação
+collection  →  evidence  →  correlation  →  assessment
 ```
 
-Um `FOUND` é um achado. Não é prova automática de identidade.
+A `FOUND` is an observation. It is **not** proof of identity.
 
-### O que você recebe
+### What you get
 
-- Registry com **985 detectores catalogados** e **984 escaneáveis**;
-- presets Quick, Standard e Full;
-- Evidence Engine com múltiplos sinais por resposta;
-- Source Quality e Detector Reliability separados;
-- Intelligence Priority Score para ordenar achados;
-- clusters de pegada pública;
-- grafo de correlação com provenance;
-- hipóteses principal e alternativa;
-- evidência contraditória e gaps;
-- Analytic Ledger rastreável por evidence ID;
-- relatório HTML, JSON, Markdown e CSV;
-- manifest de exportação com SHA-256;
-- AI Analyst Copilot opcional e marcado como `AI_SYNTHESIZED`.
+- A registry of **985 cataloged detectors** (984 scannable) with provenance and reliability metadata;
+- Quick, Standard and Full scan presets;
+- An Evidence Engine with several signals per response, plus a **differential baseline** that probes a handle that cannot exist and discards "200 OK" pages that look the same (soft-404s);
+- Detector Reliability and Source Quality kept separate from per-observation confidence;
+- Clusters of public footprint, a correlation graph with provenance, primary and alternative hypotheses, contradictory evidence and gaps;
+- HTML, JSON, Markdown, CSV and **STIX 2.1** exports, each with a SHA-256 manifest;
+- Declarative detectors (`registry/detectors/*.json`) with canary handles and a weekly health check;
+- A local SQLite store (Entity → Observation → Claim) where every claim must cite observations;
+- An optional AI Analyst Copilot, always labeled `AI_SYNTHESIZED` and unable to raise factual confidence.
 
-## Começar
+## Quick start
 
-### Google Colab
+### Option 1 — pip
 
-A forma mais rápida de testar o produto é o notebook oficial:
+```bash
+pip install mineiro-osint     # not on PyPI yet? see "Install from a release" below
+mineiro                       # opens http://127.0.0.1:3000
+```
+
+The package ships the full app (~1.3 MB). It uses your Node.js (>= 22.5) if present; otherwise it installs its own through `nodejs-wheel-binaries`, so there is nothing else to set up. It binds to `127.0.0.1` and stores data in `~/.mineiro`. Run `mineiro --check` for diagnostics.
+
+**Install from a release** (before the first PyPI publication):
+
+```bash
+pip install https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/releases/download/v1.7.0/mineiro_osint-1.7.0-py3-none-any.whl
+```
+
+### Option 2 — Google Colab
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Username_Intelligence_Colab.ipynb)
 
-Ele cuida de clone/update, dependências, validação do Registry, servidor, health check e abertura da interface pelo proxy do Colab.
+The official notebook clones the repo, installs dependencies, validates the registry, starts the server and opens the UI through the Colab proxy. Nothing to install locally.
 
-### Local
+### Option 3 — from source
 
-Pré-requisito: **Node.js 22+**.
+Requires **Node.js 22+**.
 
 ```bash
 git clone https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor.git
@@ -74,228 +91,103 @@ npm ci --no-audit --no-fund
 npm run dev
 ```
 
-Abra:
+Open `http://localhost:3000`. A guided setup is in [docs/GETTING-STARTED.md](docs/GETTING-STARTED.md), and Docker instructions are in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
+> The in-depth documentation under `docs/` is currently in Portuguese. This README and the CHANGELOG are the English entry points.
+
+## Investigation flow
 
 ```text
-http://localhost:3000
+Intelligence Requirement → Progressive Collection → Evidence → Correlation
+        → Hypotheses → Contradictions → Assessment → Pivots → Collection Plan
 ```
 
-Para uma instalação guiada, use [docs/GETTING-STARTED.md](docs/GETTING-STARTED.md).
+The requirement you choose changes which findings are relevant, not the observed facts. Available requirements: username presence, public account correlation, digital footprint mapping, developer footprint, threat-research alias mapping, brand impersonation monitoring.
 
-## Fluxo de investigação
+## Scan modes
 
-```text
-Intelligence Requirement
-        ↓
-Progressive Collection
-        ↓
-Evidence
-        ↓
-Correlation
-        ↓
-Hypotheses
-        ↓
-Contradictions
-        ↓
-Assessment
-        ↓
-Pivots
-        ↓
-Collection Plan
-```
-
-A pergunta escolhida muda a relevância dos findings, não os fatos observados.
-
-Requisitos disponíveis:
-
-- Username presence
-- Public account correlation
-- Digital footprint mapping
-- Developer footprint
-- Threat research alias mapping
-- Brand impersonation monitoring
-
-## Modos de scan
-
-| Modo | Escopo | Evidence Engine | Uso recomendado |
+| Mode | Scope | Evidence Engine | Use for |
 |---|---:|---:|---|
-| Quick | Top 20 | não | teste rápido e desenvolvimento |
-| Standard | Top 50 | sim | investigação normal |
-| Full | Registry escaneável | progressivo | cobertura ampla quando necessária |
+| Quick | Top 20 | no | fast checks and development |
+| Standard | Top 50 | yes (with differential baseline) | normal investigations |
+| Full | Whole scannable registry | progressive | broad coverage |
 
-O Full Scan usa duas fases. Primeiro faz discovery rápido; depois aprofunda somente candidatos encontrados, incertos ou rate-limited. Endpoints protegidos continuam inconclusivos. O Mineiro não tenta contornar CAPTCHA ou controles de acesso.
+Full scan runs in two phases: fast discovery first, then deeper checks only on candidates that were found, uncertain or rate-limited. Protected endpoints stay inconclusive. Mineiro does not try to defeat CAPTCHAs or access controls.
 
-## Como ler um resultado
+## Reading a result
 
-Não use um único score para responder perguntas diferentes.
+Do not use one score to answer different questions.
 
-| Campo | Responde |
+| Field | Answers |
 |---|---|
-| Detector Reliability | a regra desse site costuma ser confiável? |
-| Observation Confidence | esta consulta específica foi conclusiva? |
-| Correlation Confidence | o finding sustenta relação com outros achados? |
-| Source Quality | quão forte é a fonte pública observada? |
-| IPS | vale revisar este finding antes dos demais? |
+| Detector Reliability | Is this site's rule usually dependable? |
+| Observation Confidence | Was *this* query conclusive? |
+| Correlation Confidence | Do the findings support a relation between accounts? |
+| Source Quality | How strong is the public source observed? |
+| IPS | Is this finding worth reviewing before the others? |
 
-O modelo completo está em [docs/INTELLIGENCE-METHODOLOGY.md](docs/INTELLIGENCE-METHODOLOGY.md).
+Full model: [docs/INTELLIGENCE-METHODOLOGY.md](docs/INTELLIGENCE-METHODOLOGY.md).
 
-## Graph Hunting
+## What's new in 1.7
 
-A v1.5 transforma o grafo em uma superfície ativa de investigação:
+- **Safer probing.** The server only probes URLs a registry detector can produce, resolves DNS through a guard that blocks private, loopback, link-local and cloud-metadata ranges (rebinding-safe), and re-validates every redirect hop. Rate limits, security headers and a `MINEIRO_PUBLIC=1` mode for shared deployments.
+- **Fewer false positives.** Differential baseline (target vs. a random non-existent handle) and declarative detectors with canaries.
+- **Auditable evidence.** Every result carries `evidenceHash` (SHA-256), `collectedAt` and `detectorVersion`.
+- **Interoperable.** STIX 2.1 export; SQLite store with Entity → Observation → Claim.
+- **More OSINT.** Username variants with Jaro-Winkler similarity, pivot extraction with depth/budget limits, avatar perceptual hash, Wayback Machine timeline, Brazilian CNPJ lookup (company-level fields only).
+- **`pip install`** and a reproducible, locked build.
 
-- usernames semelhantes aparecem como nós candidatos;
-- candidatos podem ser escaneados diretamente do grafo;
-- pivot scans rodam em background sem substituir a investigação atual;
-- perfis encontrados pelo pivot entram no mesmo grafo;
-- arestas candidatas continuam tracejadas mesmo após o pivot;
-- consultas locais read-only destacam nós e relações;
-- export opcional para Neo4j/Cypher.
+See the [CHANGELOG](CHANGELOG.md) for details.
 
-Exemplos:
+## Graph hunting, cases and diffs
 
-```text
-MATCH candidate=true AND similarity>=70
-SHARED type=DOMAIN
-EDGE relationship=SAME_DOMAIN
-PATH from=TARGET to=PROFILE
-```
+- Similar usernames appear as candidate nodes and can be scanned straight from the graph; pivot scans run in the background and feed the same graph.
+- Read-only local graph queries (`MATCH candidate=true AND similarity>=70`, `SHARED type=DOMAIN`, `PATH from=TARGET to=PROFILE`), with optional Neo4j/Cypher export. Guide: [docs/GRAPH-HUNTING.md](docs/GRAPH-HUNTING.md).
+- Long-lived Cases (browser IndexedDB) with immutable snapshots and a Diff Intelligence view (`NEW`, `DISAPPEARED`, `CHANGED`, `UNCHANGED`, `CONFIDENCE_UP`, `CONFIDENCE_DOWN`). `DISAPPEARED` is a difference between collections, **not** proof that an account was deleted.
 
-Guia completo: [docs/GRAPH-HUNTING.md](docs/GRAPH-HUNTING.md).
-
-## Case Graph & Diff Intelligence
-
-A v1.6 adiciona memória persistente de investigação sem remover o cache rápido existente.
+## Architecture
 
 ```text
-Case
-├── collection snapshots
-├── pivot investigations
-├── persistent graph memory
-└── Diff Intelligence
-```
-
-Os Cases ficam no IndexedDB do navegador e sobrevivem a reloads. O cache dos 5 scans recentes continua disponível em localStorage para restauração rápida.
-
-O Diff Intelligence compara snapshots do mesmo alvo e classifica mudanças como:
-
-- `NEW`
-- `DISAPPEARED`
-- `CHANGED`
-- `UNCHANGED`
-- `CONFIDENCE_UP`
-- `CONFIDENCE_DOWN`
-
-`DISAPPEARED` representa mudança observada entre coletas e **não prova exclusão de conta**.
-
-### Deploy persistente
-
-Para demo/lab, continue usando Colab. Para uma URL persistente, use o container Docker em Cloud Run, Render, Railway, Fly.io ou VPS.
-
-Guia: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
-
-## Relatório
-
-A Intelligence View organiza a investigação em 22 seções, incluindo:
-
-- Executive Assessment;
-- Key Intelligence Judgments;
-- Collection Coverage;
-- Evidence Matrix;
-- Footprint Clusters;
-- Correlation Graph;
-- Identity Hypotheses;
-- Contradictory Evidence;
-- Intelligence Gaps;
-- Timeline;
-- High-Value Pivots;
-- Next Collection Plan;
-- Provenance;
-- Technical Appendix;
-- Integrity Snapshot;
-- Export Manifest.
-
-Cada export gera também um `.manifest.json` com o SHA-256 do payload e a lista exata de seções incluídas e excluídas.
-
-## Arquitetura
-
-```text
-React UI
+React UI ── Intelligence Report · Evidence Audit · Registry · AI Analyst Copilot
    │
-   ├── Intelligence Report
-   ├── Evidence Audit
-   ├── Registry
-   └── AI Analyst Copilot
-   │
-Express API
-   │
-   ├── Scan Orchestrator
-   ├── Evidence Engine
-   ├── Registry / Detector Bench
-   └── Intelligence Copilot
-   │
+Express API ── verify (guarded fetch) · extras (variants, pivots, avatar, Wayback, CNPJ) · store (SQLite, STIX)
+   │              └─ src/core: evidence · baseline · matchers · net · stix  (pure, unit-tested)
 Public endpoints
 ```
 
-Detalhes: [ARCHITECTURE.md](ARCHITECTURE.md) e [docs/ENGINEERING-V1.4.md](docs/ENGINEERING-V1.4.md).
+Details: [ARCHITECTURE.md](ARCHITECTURE.md).
 
-## Documentação
-
-| Quero... | Documento |
-|---|---|
-| rodar pela primeira vez | [Getting Started](docs/GETTING-STARTED.md) |
-| usar a ferramenta no dia a dia | [User Guide](docs/USER-GUIDE.md) |
-| rodar no Colab | [Colab oficial](docs/COLAB.md) |
-| subir em produção | [Deployment](docs/DEPLOYMENT.md) |
-| entender scores e relatório | [Metodologia](docs/INTELLIGENCE-METHODOLOGY.md) |
-| entender arquitetura | [Architecture](ARCHITECTURE.md) |
-| resolver um erro | [Troubleshooting](docs/TROUBLESHOOTING.md) |
-| revisar perguntas comuns | [FAQ](docs/FAQ.md) |
-| contribuir com detector | [Contributing](CONTRIBUTING.md) |
-| revisar licenças e proveniência | [Licenças](LICENSES_AND_PROVENANCE.md) |
-| verificar mudanças por versão | [Changelog](CHANGELOG.md) |
-
-A página de entrada da documentação está em [docs/README.md](docs/README.md).
-
-## Desenvolvimento
+## Development
 
 ```bash
-npm install --no-audit --no-fund
-npm run check
+npm ci --no-audit --no-fund
+npm test          # Vitest: evidence, baseline, SSRF guard, store
+npm run check     # the full CI gate
+npm run build:python   # stage the app inside the pip package
+npm run detectors:health   # live canary check of declarative detectors
 ```
 
-`npm run check` executa validação do Registry, TypeScript, demo sintética, smoke test analítico, manual e build.
+Contributing: [CONTRIBUTING.md](CONTRIBUTING.md). Security policy: [SECURITY.md](SECURITY.md).
 
-Comandos individuais:
+## Principles
 
-```bash
-npm run registry:validate
-npm run registry:stats
-npm run lint
-npm run demo
-npm run intelligence:test
-npm run manual:validate
-npm run build
-```
+1. **Observation is not identity.**
+2. **Inconclusive stays inconclusive.**
+3. **Provenance must survive all the way to the report.**
+4. **Contradictions deserve the same visibility as supporting evidence.**
+5. **AI summarizes and prioritizes; it does not fabricate factual confidence.**
+6. **Collecting more is not automatically investigating better.**
 
-## Princípios
+## Responsible use
 
-1. **Observação não é identidade.**
-2. **Inconclusivo continua inconclusivo.**
-3. **Provenance precisa sobreviver até o relatório.**
-4. **Contradição tem o mesmo direito de aparecer que evidência de suporte.**
-5. **IA resume e prioriza; não fabrica confiança factual.**
-6. **Coletar mais não é automaticamente investigar melhor.**
+Use only publicly accessible information, for a legitimate and authorized purpose. Respect applicable terms, rate limits, privacy and the law (including LGPD/GDPR).
 
-## Uso responsável
+The project provides no mechanism to bypass authentication, CAPTCHAs or access controls, and it does not score people.
 
-Use somente informações publicamente acessíveis e dentro de finalidade legítima e autorizada. Respeite termos aplicáveis, rate limits, privacidade e legislação.
+## License and provenance
 
-O projeto não fornece mecanismos para contornar autenticação, CAPTCHA ou controles de acesso.
-
-## Licença e proveniência
-
-O código original do Mineiro é MIT. O catálogo histórico possui entradas em auditoria de proveniência; consulte [LICENSES_AND_PROVENANCE.md](LICENSES_AND_PROVENANCE.md) antes de reutilizar o dataset fora deste projeto.
+Original Mineiro code is MIT. The historical catalog has entries still under provenance audit; read [LICENSES_AND_PROVENANCE.md](LICENSES_AND_PROVENANCE.md) before reusing the dataset outside this project.
 
 ---
 
-**Mineiro Username Intelligence v1.6.0** · OSINT Investigation Workbench · evidence first · local reporting
+**Mineiro Username Intelligence v1.7.0** · OSINT Investigation Workbench · evidence first · local reporting
