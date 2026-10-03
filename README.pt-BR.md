@@ -1,7 +1,7 @@
 # Mineiro Username Intelligence
 
 <p align="center">
-  <img src="assets/mineiro-logo.png" alt="Mineiro" width="220">
+  <img src="assets/mineiro-logo.png" alt="Mineiro" width="240" height="131" decoding="async">
 </p>
 
 <p align="center"><strong>**OSINT Investigation Workbench** para presença pública de usernames, evidência, correlação cautelosa e relatórios auditáveis.</strong></p>
