@@ -50,7 +50,7 @@
   "devDependencies": {
     "@types/d3": "^7.4.3",
     "@types/express": "^5.0.0",
-    "@types/node": "^22.14.0",
+    "@types/node": "^26.6.4",
     "@types/pngjs": "^6.0.5",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
