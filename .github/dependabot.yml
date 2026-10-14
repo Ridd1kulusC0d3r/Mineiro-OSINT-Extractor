@@ -12,3 +12,11 @@ updates:
       - "dependencies"
     commit-message:
       prefix: "deps"
+    ignore:
+      # Runtime is Node 22 LTS; keep the type definitions aligned with it.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+    groups:
+      # vite and its plugins declare peer ranges on each other and must move together.
+      vite-toolchain:
+        patterns: ["vite", "@vitejs/*", "@tailwindcss/vite"]
