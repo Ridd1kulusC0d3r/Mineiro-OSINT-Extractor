@@ -37,7 +37,7 @@
     "dotenv": "^18.0.3",
     "express": "^5.2.1",
     "jpeg-js": "^0.4.4",
-    "lucide-react": "^1.57.0",
+    "lucide-react": "^1.58.0",
     "motion": "^13.5.1",
     "pngjs": "^7.0.0",
     "react": "^19.0.1",
