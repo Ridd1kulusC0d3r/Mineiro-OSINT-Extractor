@@ -309,7 +309,7 @@ export function NetworkRelationshipGraph({
       label: `@${target}`,
       type: 'target',
       radius: targetNodeRadius,
-      color: '#FFFFFF',
+      color: '#ECE8DD',
       confidence: 100,
       details: 'Primary Investigation Target Core',
       profileCompleteness: aiMetrics.targetCompleteness,
@@ -389,10 +389,10 @@ export function NetworkRelationshipGraph({
       }
 
       const pColor = isFound
-        ? (CATEGORY_COLORS[res.category] || '#FFFFFF')
+        ? (CATEGORY_COLORS[res.category] || '#ECE8DD')
         : isUncertain
-        ? '#A3A3A3'
-        : '#737373';
+        ? '#B9B4A6'
+        : '#908B7D';
 
       const pRadius = calculateRadius(
         'platform',
@@ -462,7 +462,7 @@ export function NetworkRelationshipGraph({
           type: 'linkage',
           similarity: perm.similarityScore,
           radius: permRadius,
-          color: '#F5F5F5', // Mineiro Username Intelligence Neutral Light
+          color: '#ECE8DD', // Mineiro Username Intelligence Neutral Light
           details: `Permutation: ${perm.reason} [${perm.similarityScore}% similarity]`,
           profileCompleteness: perm.similarityScore,
           activityDensity: Math.round(perm.similarityScore * 0.8),
@@ -487,7 +487,7 @@ export function NetworkRelationshipGraph({
           type: 'email',
           similarity: ec.similarityScore,
           radius: emailRadius,
-          color: '#FFFFFF', // Mineiro Username Intelligence Cyan Signal
+          color: '#ECE8DD', // Mineiro Username Intelligence Cyan Signal
           details: `Email Correlation: ${ec.reason}`,
           profileCompleteness: ec.similarityScore,
           activityDensity: Math.round(ec.similarityScore * 0.85),
@@ -532,7 +532,7 @@ export function NetworkRelationshipGraph({
       .append('path')
       .attr('d', 'M 24 0 L 0 0 0 24')
       .attr('fill', 'none')
-      .attr('stroke', 'rgba(255, 255, 255, 0.04)')
+      .attr('stroke', 'rgba(236,232,221, 0.04)')
       .attr('stroke-width', 1);
 
     svg.append('rect')
@@ -583,11 +583,11 @@ export function NetworkRelationshipGraph({
       .enter()
       .append('line')
       .attr('stroke', (d: GraphLink) => {
-        if (d.type === 'hub') return 'rgba(255, 255, 255, 0.35)';
-        if (d.type === 'correlation') return 'rgba(255, 255, 255, 0.25)';
-        if (d.type === 'email') return 'rgba(255, 255, 255, 0.25)';
-        if (d.type === 'metadata-cluster') return 'rgba(255, 255, 255, 0.2)';
-        return 'rgba(255, 255, 255, 0.12)';
+        if (d.type === 'hub') return 'rgba(236,232,221, 0.35)';
+        if (d.type === 'correlation') return 'rgba(236,232,221, 0.25)';
+        if (d.type === 'email') return 'rgba(236,232,221, 0.25)';
+        if (d.type === 'metadata-cluster') return 'rgba(236,232,221, 0.2)';
+        return 'rgba(236,232,221, 0.12)';
       })
       .attr('stroke-width', (d: GraphLink) => (d.type === 'hub' ? 1.5 : d.type === 'metadata-cluster' ? 1.2 : 1))
       .attr('stroke-dasharray', (d: GraphLink) => {
@@ -632,7 +632,7 @@ export function NetworkRelationshipGraph({
       .append('circle')
       .attr('r', (d: GraphNode) => d.radius + 8)
       .attr('fill', 'none')
-      .attr('stroke', 'rgba(255, 255, 255, 0.3)')
+      .attr('stroke', 'rgba(236,232,221, 0.3)')
       .attr('stroke-width', 1.5)
       .attr('stroke-dasharray', '4 4')
       .attr('class', 'animate-spin');
@@ -667,7 +667,7 @@ export function NetworkRelationshipGraph({
     // Base Node Circles
     node.append('circle')
       .attr('r', (d: GraphNode) => d.radius)
-      .attr('fill', (d: GraphNode) => (d.type === 'target' ? '#FFFFFF' : '#0A0A0A'))
+      .attr('fill', (d: GraphNode) => (d.type === 'target' ? '#ECE8DD' : '#1B1915'))
       .attr('stroke', (d: GraphNode) => d.color)
       .attr('stroke-width', (d: GraphNode) => (d.type === 'target' ? 3 : 1.8));
 
@@ -682,7 +682,7 @@ export function NetworkRelationshipGraph({
       .text((d: GraphNode) => d.label)
       .attr('x', (d: GraphNode) => d.radius + 6)
       .attr('y', 3.5)
-      .attr('fill', (d: GraphNode) => (d.type === 'target' ? '#FFFFFF' : '#F5F5F5'))
+      .attr('fill', (d: GraphNode) => (d.type === 'target' ? '#ECE8DD' : '#ECE8DD'))
       .attr('font-size', (d: GraphNode) => (d.type === 'target' ? '12px' : d.type === 'category' ? '10px' : '9px'))
       .attr('font-weight', (d: GraphNode) => (d.type === 'target' || d.type === 'category' ? 'bold' : 'normal'))
       .attr('font-family', 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace')
@@ -767,7 +767,7 @@ export function NetworkRelationshipGraph({
               id="graph-sizing-completeness-btn"
               onClick={() => setSizingMode('completeness')}
               className={`px-2 py-1 text-[10px] uppercase transition-colors flex items-center gap-1 ${
-                sizingMode === 'completeness' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white'
+                sizingMode === 'completeness' ? 'bg-[#F0885A] text-black font-bold' : 'text-neutral-400 hover:text-white'
               }`}
               title="Scale nodes by Profile Completeness extracted from AI analysis"
             >
@@ -779,7 +779,7 @@ export function NetworkRelationshipGraph({
               id="graph-sizing-density-btn"
               onClick={() => setSizingMode('density')}
               className={`px-2 py-1 text-[10px] uppercase transition-colors flex items-center gap-1 ${
-                sizingMode === 'density' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white'
+                sizingMode === 'density' ? 'bg-[#F0885A] text-black font-bold' : 'text-neutral-400 hover:text-white'
               }`}
               title="Scale nodes by Activity Density & cluster concentration"
             >
@@ -791,7 +791,7 @@ export function NetworkRelationshipGraph({
               id="graph-sizing-uniform-btn"
               onClick={() => setSizingMode('uniform')}
               className={`px-2 py-1 text-[10px] uppercase transition-colors ${
-                sizingMode === 'uniform' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white'
+                sizingMode === 'uniform' ? 'bg-[#F0885A] text-black font-bold' : 'text-neutral-400 hover:text-white'
               }`}
               title="Standard uniform node radii"
             >
@@ -806,7 +806,7 @@ export function NetworkRelationshipGraph({
               id="graph-filter-all-btn"
               onClick={() => setFilterMode('all')}
               className={`px-2.5 py-1 text-[11px] uppercase transition-colors ${
-                filterMode === 'all' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white'
+                filterMode === 'all' ? 'bg-[#F0885A] text-black font-bold' : 'text-neutral-400 hover:text-white'
               }`}
             >
               All
@@ -816,7 +816,7 @@ export function NetworkRelationshipGraph({
               id="graph-filter-hits-btn"
               onClick={() => setFilterMode('found_only')}
               className={`px-2.5 py-1 text-[11px] uppercase transition-colors ${
-                filterMode === 'found_only' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white'
+                filterMode === 'found_only' ? 'bg-[#F0885A] text-black font-bold' : 'text-neutral-400 hover:text-white'
               }`}
             >
               Hits
@@ -826,7 +826,7 @@ export function NetworkRelationshipGraph({
               id="graph-filter-linkages-btn"
               onClick={() => setFilterMode('linkages')}
               className={`px-2.5 py-1 text-[11px] uppercase transition-colors ${
-                filterMode === 'linkages' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white'
+                filterMode === 'linkages' ? 'bg-[#F0885A] text-black font-bold' : 'text-neutral-400 hover:text-white'
               }`}
             >
               Linkage
@@ -836,7 +836,7 @@ export function NetworkRelationshipGraph({
               id="graph-filter-clusters-btn"
               onClick={() => setFilterMode('clusters')}
               className={`px-2.5 py-1 text-[11px] uppercase transition-colors ${
-                filterMode === 'clusters' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white'
+                filterMode === 'clusters' ? 'bg-[#F0885A] text-black font-bold' : 'text-neutral-400 hover:text-white'
               }`}
             >
               Hubs
@@ -903,7 +903,7 @@ export function NetworkRelationshipGraph({
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-white inline-block border border-neutral-400" />
+            <span className="w-3 h-3 rounded-full bg-[#F0885A] inline-block border border-neutral-400" />
             <span className="text-neutral-300">Target Core (Radius {nodes.find(n => n.type === 'target')?.radius || 22}px)</span>
           </div>
           <div className="flex items-center gap-2">
@@ -911,11 +911,11 @@ export function NetworkRelationshipGraph({
             <span className="text-neutral-300">Category Hubs (Dynamic Gauge)</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-white inline-block" />
+            <span className="w-2 h-2 rounded-full bg-[#F0885A] inline-block" />
             <span className="text-neutral-300">Confirmed Hits (Sized by AI Score)</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-3 h-0.5 bg-white inline-block border-t border-dotted border-white" />
+            <span className="w-3 h-0.5 bg-[#F0885A] inline-block border-t border-dotted border-[#F0885A]" />
             <span className="text-neutral-300">Shared Metadata Cluster Links</span>
           </div>
           <div className="flex items-center gap-2">
@@ -992,7 +992,7 @@ export function NetworkRelationshipGraph({
                 </div>
                 <div className="w-full bg-neutral-900 h-1.5 border border-neutral-800 overflow-hidden">
                   <div 
-                    className="bg-white h-full transition-all duration-300" 
+                    className="bg-[#F0885A] h-full transition-all duration-300" 
                     style={{ width: `${selectedNode.profileCompleteness}%` }}
                   />
                 </div>
@@ -1042,7 +1042,7 @@ export function NetworkRelationshipGraph({
                   href={selectedNode.url}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="px-2.5 py-1.5 bg-white text-black font-bold uppercase text-[10px] hover:bg-neutral-200 inline-flex items-center gap-1.5 tracking-wider"
+                  className="px-2.5 py-1.5 bg-[#F0885A] text-black font-bold uppercase text-[10px] hover:bg-neutral-200 inline-flex items-center gap-1.5 tracking-wider"
                 >
                   <ExternalLink className="w-3 h-3" />
                   Audit Profile
@@ -1053,7 +1053,7 @@ export function NetworkRelationshipGraph({
                 <button
                   type="button"
                   onClick={() => onPivotScan(selectedNode.label.replace(/^@/, ''))}
-                  className="px-2.5 py-1.5 border border-white bg-white text-black font-bold uppercase text-[10px] hover:bg-neutral-200 inline-flex items-center gap-1.5 tracking-wider"
+                  className="px-2.5 py-1.5 border border-[#F0885A] bg-[#F0885A] text-black font-bold uppercase text-[10px] hover:bg-neutral-200 inline-flex items-center gap-1.5 tracking-wider"
                 >
                   <Search className="w-3 h-3" />
                   Pivot Scan

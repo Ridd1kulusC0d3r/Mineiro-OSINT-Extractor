@@ -78,7 +78,7 @@ export function GeminiConfigModal({
         {/* Header */}
         <div className="flex justify-between items-center border-b border-neutral-800 pb-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-white text-black flex items-center justify-center font-bold">
+            <div className="w-8 h-8 bg-[#F0885A] text-black flex items-center justify-center font-bold">
               <Key className="w-4 h-4" />
             </div>
             <div>
@@ -135,7 +135,7 @@ export function GeminiConfigModal({
                 placeholder="AIzaSy..."
                 autoComplete="off"
                 spellCheck="false"
-                className="w-full bg-black border border-neutral-700 text-white px-3 py-2.5 pr-20 text-xs font-mono focus:border-white focus:outline-none tracking-wide"
+                className="w-full bg-black border border-neutral-700 text-white px-3 py-2.5 pr-20 text-xs font-mono focus:border-[#F0885A] focus:outline-none tracking-wide"
               />
               <button
                 type="button"
@@ -162,7 +162,7 @@ export function GeminiConfigModal({
                 setModelInput(e.target.value);
                 setTestResult(null);
               }}
-              className="w-full bg-black border border-neutral-700 text-white px-3 py-2 text-xs font-mono focus:border-white focus:outline-none"
+              className="w-full bg-black border border-neutral-700 text-white px-3 py-2 text-xs font-mono focus:border-[#F0885A] focus:outline-none"
             >
               <option value="gemini-3.8-flash">gemini-3.8-flash (Recommended · Stable)</option>
               <option value="gemini-3.7-flash">gemini-3.7-flash (Stable fallback)</option>
@@ -177,7 +177,7 @@ export function GeminiConfigModal({
           <div
             className={`p-3 border text-xs flex items-start gap-2.5 font-mono ${
               testResult.success
-                ? 'bg-black border-white text-white'
+                ? 'bg-black border-[#F0885A] text-white'
                 : 'bg-black border-neutral-600 text-neutral-300'
             }`}
           >
@@ -224,7 +224,7 @@ export function GeminiConfigModal({
             <button
               type="button"
               onClick={handleSave}
-              className="px-4 py-2 bg-white text-black font-bold uppercase tracking-wider hover:bg-neutral-200 transition-colors border border-white"
+              className="px-4 py-2 bg-[#F0885A] text-black font-bold uppercase tracking-wider hover:bg-neutral-200 transition-colors border border-[#F0885A]"
             >
               Save Configuration
             </button>

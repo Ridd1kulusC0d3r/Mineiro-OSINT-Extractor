@@ -88,17 +88,17 @@ export function GraphQueryPanel({ nodes, edges, onResult }: GraphQueryPanelProps
   };
 
   return (
-    <div className="rounded-[18px] border border-[#2b3035] bg-[#0f1214] p-5">
+    <div className="rounded-[18px] border border-[#37332B] bg-[#221F1A] p-5">
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
         <div>
-          <div className="flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#7e8690]">
+          <div className="flex items-center gap-2 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-[#908B7D]">
             <Braces className="h-4 w-4" />
             {copy.title}
           </div>
-          <p className="mt-2 text-sm text-[#8f969f]">{copy.subtitle}</p>
+          <p className="mt-2 text-sm text-[#908B7D]">{copy.subtitle}</p>
         </div>
         {lastResult && (
-          <div className="rounded-lg border border-[#343a40] px-3 py-2 font-mono text-xs text-[#c6cbd0]">
+          <div className="rounded-lg border border-[#4A453A] px-3 py-2 font-mono text-xs text-[#D6D1C3]">
             {lastResult.summary}
           </div>
         )}
@@ -113,12 +113,12 @@ export function GraphQueryPanel({ nodes, edges, onResult }: GraphQueryPanelProps
           }}
           placeholder={copy.placeholder}
           spellCheck={false}
-          className="min-w-0 flex-1 rounded-xl border border-[#30363c] bg-[#0a0d0f] px-4 py-3 font-mono text-sm text-[#edf0f2] outline-none focus:border-[#626a73]"
+          className="min-w-0 flex-1 rounded-xl border border-[#37332B] bg-[#1B1915] px-4 py-3 font-mono text-sm text-[#F3F0E8] outline-none focus:border-[#6F6A5E]"
         />
         <button
           type="button"
           onClick={() => execute()}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#59616a] bg-[#181c20] px-4 py-3 text-sm font-medium text-white hover:bg-[#20252a]"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#6F6A5E] bg-[#27241E] px-4 py-3 text-sm font-medium text-white hover:bg-[#27241E]"
         >
           <Play className="h-4 w-4" />
           {copy.run}
@@ -126,7 +126,7 @@ export function GraphQueryPanel({ nodes, edges, onResult }: GraphQueryPanelProps
         <button
           type="button"
           onClick={reset}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#30363c] px-4 py-3 text-sm text-[#a7adb4] hover:text-white"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#37332B] px-4 py-3 text-sm text-[#B9B4A6] hover:text-white"
         >
           <RotateCcw className="h-4 w-4" />
           {copy.reset}
@@ -134,7 +134,7 @@ export function GraphQueryPanel({ nodes, edges, onResult }: GraphQueryPanelProps
         <button
           type="button"
           onClick={exportCypher}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#30363c] px-4 py-3 text-sm text-[#a7adb4] hover:text-white"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#37332B] px-4 py-3 text-sm text-[#B9B4A6] hover:text-white"
         >
           <Download className="h-4 w-4" />
           {copy.export}
@@ -147,18 +147,18 @@ export function GraphQueryPanel({ nodes, edges, onResult }: GraphQueryPanelProps
             key={preset.id}
             type="button"
             onClick={() => execute(preset.query)}
-            className="rounded-lg border border-[#2d3338] px-3 py-1.5 text-xs text-[#9299a2] hover:border-[#505861] hover:text-white"
+            className="rounded-lg border border-[#37332B] px-3 py-1.5 text-xs text-[#908B7D] hover:border-[#6F6A5E] hover:text-white"
           >
             {copy.presets[preset.id]}
           </button>
         ))}
       </div>
 
-      <div className="mt-4 border-t border-[#262b30] pt-4">
-        <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#747c85]">{copy.syntax}</div>
-        <div className="mt-2 break-words font-mono text-[11px] leading-relaxed text-[#8c939c]">{copy.examples}</div>
+      <div className="mt-4 border-t border-[#37332B] pt-4">
+        <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#908B7D]">{copy.syntax}</div>
+        <div className="mt-2 break-words font-mono text-[11px] leading-relaxed text-[#908B7D]">{copy.examples}</div>
         {lastResult?.warnings?.length ? (
-          <div className="mt-3 rounded-lg border border-[#514438] bg-[#171310] p-3 text-xs text-[#c2b6aa]">
+          <div className="mt-3 rounded-lg border border-[#4A453A] bg-[#221F1A] p-3 text-xs text-[#B9B4A6]">
             {copy.warning}
             <ul className="mt-2 list-disc pl-4">
               {lastResult.warnings.map((warning) => <li key={warning}>{warning}</li>)}

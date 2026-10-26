@@ -1063,7 +1063,7 @@ export default function App() {
 
   return (
     <ToastProvider>
-      <div className="min-h-screen bg-[#050505] text-[#F5F5F5] flex flex-col selection:bg-[#FFFFFF] selection:text-[#050505]">
+      <div className="min-h-screen bg-[#131210] text-[#ECE8DD] flex flex-col selection:bg-[#F0885A] selection:text-[#131210]">
       {/* Top Header */}
       <Header
         onReset={handleReset}
@@ -1208,12 +1208,12 @@ export default function App() {
         {/* View: Platforms Grid */}
         {activeView === 'grid' && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between text-xs font-mono text-[#A3A3A3]">
+            <div className="flex items-center justify-between text-xs font-mono text-[#B9B4A6]">
               <span>
-                DISPLAYING <strong className="text-[#F5F5F5]">{visibleResults.length}</strong> PLATFORMS
+                DISPLAYING <strong className="text-[#ECE8DD]">{visibleResults.length}</strong> PLATFORMS
                 {searchFilter && ` MATCHING "${searchFilter}"`}
               </span>
-              <span className="text-[11px] text-[#737373]">
+              <span className="text-[11px] text-[#908B7D]">
                 CLICK LINK ICON TO AUDIT PROFILE DIRECTLY
               </span>
             </div>
@@ -1224,9 +1224,9 @@ export default function App() {
         {/* View: Dense Audit Table */}
         {activeView === 'table' && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between text-xs font-mono text-[#A3A3A3]">
+            <div className="flex items-center justify-between text-xs font-mono text-[#B9B4A6]">
               <span>TABULAR AUDIT LEDGER ({visibleResults.length} records)</span>
-              <span className="text-[11px] text-[#737373]">SORTED BY RECON ENGINE DISCOVERY</span>
+              <span className="text-[11px] text-[#908B7D]">SORTED BY RECON ENGINE DISCOVERY</span>
             </div>
             <PlatformTable results={visibleResults} />
           </div>
@@ -1348,18 +1348,18 @@ export default function App() {
       />
 
       {/* Modern Minimalist Footer */}
-      <footer className="border-t border-[#2A2A2A] bg-[#050505] py-5 font-mono text-xs text-[#A3A3A3]">
+      <footer className="border-t border-[#37332B] bg-[#131210] py-5 font-mono text-xs text-[#B9B4A6]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-1">
-          <div className="flex flex-wrap items-center justify-center gap-x-2 text-[#F5F5F5]">
-            <strong className="text-[#FFFFFF]">Mineiro Username Intelligence UNIFIED OSINT ENGINE</strong>
-            <span className="text-[#737373]">//</span>
-            <span className="text-[#A3A3A3]">LARGE LOCAL PLATFORM CATALOG</span>
-            <span className="text-[#737373]">•</span>
-            <span className="text-[#A3A3A3]">WAF & ANTI-BOT GUARD</span>
-            <span className="text-[#737373]">•</span>
-            <span className="text-[#A3A3A3]">EVIDENCE-BOUNDED AI COPILOT</span>
+          <div className="flex flex-wrap items-center justify-center gap-x-2 text-[#ECE8DD]">
+            <strong className="text-[#ECE8DD]">Mineiro Username Intelligence UNIFIED OSINT ENGINE</strong>
+            <span className="text-[#908B7D]">//</span>
+            <span className="text-[#B9B4A6]">LARGE LOCAL PLATFORM CATALOG</span>
+            <span className="text-[#908B7D]">•</span>
+            <span className="text-[#B9B4A6]">WAF & ANTI-BOT GUARD</span>
+            <span className="text-[#908B7D]">•</span>
+            <span className="text-[#B9B4A6]">EVIDENCE-BOUNDED AI COPILOT</span>
           </div>
-          <div className="text-[10px] text-[#737373]">
+          <div className="text-[10px] text-[#908B7D]">
             OSINT INVESTIGATION WORKBENCH · EVIDENCE · CORRELATION · REPORTING
           </div>
         </div>

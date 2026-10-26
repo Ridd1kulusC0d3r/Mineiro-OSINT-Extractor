@@ -54,24 +54,24 @@ export function AiWorkspace({
 
   return (
     <div className="space-y-6">
-      <section className="rounded-[22px] border border-[#2b3035] bg-[#101316] p-6">
+      <section className="rounded-[22px] border border-[#37332B] bg-[#1B1915] p-6">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <div className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-[#8d949d]">
+            <div className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-[#908B7D]">
               <BrainCircuit className="h-4 w-4" />
               AI Analyst
             </div>
-            <h1 className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-[#f4f5f6]">
+            <h1 className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-[#F3F0E8]">
               {tr('ai.workspaceTitle')}
             </h1>
-            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[#9097a0]">
+            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[#A19C8E]">
               {tr('ai.workspaceDesc')}
             </p>
           </div>
           <button
             type="button"
             onClick={onOpenConfig}
-            className="inline-flex items-center gap-2 rounded-xl border border-[#3a4148] px-4 py-2.5 text-sm text-[#d9dde1] hover:bg-[#171b1f]"
+            className="inline-flex items-center gap-2 rounded-xl border border-[#4A453A] px-4 py-2.5 text-sm text-[#ECE8DD] hover:bg-[#27241E]"
           >
             <Settings2 className="h-4 w-4" />
             Configure Gemini
@@ -79,20 +79,20 @@ export function AiWorkspace({
         </div>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-[16px] border border-[#292f34] p-4">
-            <div className="text-[10px] uppercase tracking-[0.14em] text-[#747c85]">{tr('ai.connection')}</div>
-            <div className="mt-2 flex items-center gap-2 text-sm text-[#e6e9ec]">
+          <div className="rounded-[16px] border border-[#37332B] p-4">
+            <div className="text-[10px] uppercase tracking-[0.14em] text-[#908B7D]">{tr('ai.connection')}</div>
+            <div className="mt-2 flex items-center gap-2 text-sm text-[#ECE8DD]">
               {status?.configured ? <CheckCircle2 className="h-4 w-4" /> : <TriangleAlert className="h-4 w-4" />}
               {status?.configured ? tr('ai.configured') : tr('ai.notConfigured')}
             </div>
           </div>
-          <div className="rounded-[16px] border border-[#292f34] p-4">
-            <div className="text-[10px] uppercase tracking-[0.14em] text-[#747c85]">{tr('ai.credentialSource')}</div>
-            <div className="mt-2 text-sm text-[#e6e9ec]">{status?.source === 'personal' ? tr('ai.personal') : status?.source === 'server' ? tr('ai.server') : status?.source === 'none' ? tr('ai.none') : apiKey ? tr('ai.personal') : tr('ai.unknown')}</div>
+          <div className="rounded-[16px] border border-[#37332B] p-4">
+            <div className="text-[10px] uppercase tracking-[0.14em] text-[#908B7D]">{tr('ai.credentialSource')}</div>
+            <div className="mt-2 text-sm text-[#ECE8DD]">{status?.source === 'personal' ? tr('ai.personal') : status?.source === 'server' ? tr('ai.server') : status?.source === 'none' ? tr('ai.none') : apiKey ? tr('ai.personal') : tr('ai.unknown')}</div>
           </div>
-          <div className="rounded-[16px] border border-[#292f34] p-4">
-            <div className="text-[10px] uppercase tracking-[0.14em] text-[#747c85]">{tr('ai.selectedModel')}</div>
-            <div className="mt-2 font-mono text-sm text-[#e6e9ec]">{model || status?.defaultModel || 'gemini-3.8-flash'}</div>
+          <div className="rounded-[16px] border border-[#37332B] p-4">
+            <div className="text-[10px] uppercase tracking-[0.14em] text-[#908B7D]">{tr('ai.selectedModel')}</div>
+            <div className="mt-2 font-mono text-sm text-[#ECE8DD]">{model || status?.defaultModel || 'gemini-3.8-flash'}</div>
           </div>
         </div>
       </section>

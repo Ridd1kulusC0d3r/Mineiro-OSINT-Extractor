@@ -367,7 +367,7 @@ export function CategoryHeatMap({
       .attr('y', (d: CategoryMetrics) => yScale(d.category) || 0)
       .attr('width', width + margin.left)
       .attr('height', yScale.bandwidth())
-      .attr('fill', (d: CategoryMetrics) => (d.category === selectedCategory ? '#FFFFFF' : 'transparent'))
+      .attr('fill', (d: CategoryMetrics) => (d.category === selectedCategory ? '#ECE8DD' : 'transparent'))
       .attr('fill-opacity', (d: CategoryMetrics) => (d.category === selectedCategory ? 0.08 : 0))
       .attr('pointer-events', 'none');
 
@@ -383,7 +383,7 @@ export function CategoryHeatMap({
       .attr('x', (d) => (xScale(d.id) || 0) + xScale.bandwidth() / 2)
       .attr('y', -14)
       .attr('text-anchor', 'middle')
-      .attr('fill', '#A3A3A3')
+      .attr('fill', '#B9B4A6')
       .attr('font-weight', 'bold')
       .text((d) => (isMobile ? d.short.substring(0, 4) : d.short));
 
@@ -409,7 +409,7 @@ export function CategoryHeatMap({
         .attr('cy', y)
         .attr('r', 4)
         .attr('fill', catColor)
-        .attr('stroke', cat.compositeIntensity > 60 ? '#FFFFFF' : 'transparent')
+        .attr('stroke', cat.compositeIntensity > 60 ? '#ECE8DD' : 'transparent')
         .attr('stroke-width', 1);
 
       // Category Name Text
@@ -418,7 +418,7 @@ export function CategoryHeatMap({
         .attr('class', 'font-mono text-xs font-bold')
         .attr('x', -margin.left + (isMobile ? 22 : 30))
         .attr('y', y - 2)
-        .attr('fill', cat.category === selectedCategory ? '#FFFFFF' : '#F5F5F5')
+        .attr('fill', cat.category === selectedCategory ? '#ECE8DD' : '#ECE8DD')
         .text(isMobile ? cat.label.substring(0, 10) : cat.label);
 
       // Sub-label (hit count / total)
@@ -427,7 +427,7 @@ export function CategoryHeatMap({
         .attr('class', 'font-mono text-[9px]')
         .attr('x', -margin.left + (isMobile ? 22 : 30))
         .attr('y', y + 10)
-        .attr('fill', '#737373')
+        .attr('fill', '#908B7D')
         .text(`${cat.foundCount} hits • ${cat.totalPlatforms} srcs`);
     });
 
@@ -481,17 +481,17 @@ export function CategoryHeatMap({
       .attr('height', yScale.bandwidth())
       .attr('rx', 4)
       .attr('ry', 4)
-      .attr('fill', '#0A0A0A')
-      .attr('stroke', '#2A2A2A')
+      .attr('fill', '#1B1915')
+      .attr('stroke', '#37332B')
       .attr('stroke-width', 1)
       .transition()
       .duration(450)
       .attr('fill', (d) => colorScale(d.value))
       .attr('stroke', (d) => {
-        if (d.value >= 75) return '#FFFFFF';
-        if (d.value >= 50) return '#737373';
-        if (d.value > 0) return '#FFFFFF';
-        return '#2A2A2A';
+        if (d.value >= 75) return '#ECE8DD';
+        if (d.value >= 50) return '#908B7D';
+        if (d.value > 0) return '#ECE8DD';
+        return '#37332B';
       })
       .attr('stroke-opacity', (d) => (d.value > 0 ? 0.6 : 0.8));
 
@@ -515,7 +515,7 @@ export function CategoryHeatMap({
       .attr('rx', 4)
       .attr('ry', 4)
       .attr('fill', 'none')
-      .attr('stroke', '#FFFFFF')
+      .attr('stroke', '#ECE8DD')
       .attr('stroke-width', 1.5)
       .attr('stroke-dasharray', '3 2')
       .attr('class', 'animate-pulse');
@@ -543,7 +543,7 @@ export function CategoryHeatMap({
             </span>
             <h3 className="text-sm font-bold text-white tracking-wider uppercase flex items-center gap-2">
               D3.js Category Activity & Threat Heat Map
-              <span className="px-2 py-0.5 text-[10px] bg-white text-black font-bold">
+              <span className="px-2 py-0.5 text-[10px] bg-[#F0885A] text-black font-bold">
                 MULTI-DIMENSIONAL
               </span>
             </h3>
@@ -562,7 +562,7 @@ export function CategoryHeatMap({
             onClick={() => setFilterActiveOnly(!filterActiveOnly)}
             className={`px-2.5 py-1.5 text-xs uppercase font-mono flex items-center gap-1.5 border transition-colors ${
               filterActiveOnly
-                ? 'bg-neutral-900 border-white text-white font-bold'
+                ? 'bg-neutral-900 border-[#F0885A] text-white font-bold'
                 : 'bg-black border-neutral-800 text-neutral-400 hover:text-white'
             }`}
             title="Toggle between displaying only categories with found profiles or full catalog"
@@ -637,7 +637,7 @@ export function CategoryHeatMap({
                 <span className="font-bold text-white uppercase">{hoveredCell.category}</span>
                 <span className="text-neutral-600">»</span>
                 <span className="text-white font-mono font-semibold">{hoveredCell.dimension}:</span>
-                <span className="px-2 py-0.5 bg-white text-black font-bold text-xs">
+                <span className="px-2 py-0.5 bg-[#F0885A] text-black font-bold text-xs">
                   {Math.round(hoveredCell.value)}%
                 </span>
                 <span className="text-neutral-400 font-sans text-[11px] sm:ml-2">
@@ -673,7 +673,7 @@ export function CategoryHeatMap({
                 <div className="flex items-center gap-2.5">
                   <span
                     className="w-3 h-3 rounded-none inline-block"
-                    style={{ backgroundColor: CATEGORY_COLORS[activeCategoryObj.category] || '#F5F5F5' }}
+                    style={{ backgroundColor: CATEGORY_COLORS[activeCategoryObj.category] || '#ECE8DD' }}
                   />
                   <div>
                     <h4 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">

@@ -99,7 +99,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
               transition={{ type: 'spring', damping: 25, stiffness: 350 }}
               className="pointer-events-auto bg-neutral-950 border border-neutral-700 shadow-2xl p-3.5 font-mono relative overflow-hidden"
               style={{
-                boxShadow: '0 12px 30px -4px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.1)',
+                boxShadow: '0 12px 30px -4px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(236,232,221, 0.1)',
               }}
             >
               {/* Subtle top indicator bar */}
@@ -108,7 +108,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
                   initial={{ width: '100%' }}
                   animate={{ width: '0%' }}
                   transition={{ duration: (toast.duration || 3800) / 1000, ease: 'linear' }}
-                  className="h-full bg-white"
+                  className="h-full bg-[#F0885A]"
                 />
               </div>
 

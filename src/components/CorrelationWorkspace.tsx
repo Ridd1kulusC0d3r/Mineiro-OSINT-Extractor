@@ -38,7 +38,7 @@ export function CorrelationWorkspace(props: CorrelationWorkspaceProps) {
         <button
           type="button"
           onClick={() => setTab('graph')}
-          className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm transition ${tab === 'graph' ? 'border-[#59616a] bg-[#181c20] text-white' : 'border-[#2d3339] text-[#8f969f] hover:text-white'}`}
+          className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm transition ${tab === 'graph' ? 'border-[#6F6A5E] bg-[#27241E] text-white' : 'border-[#37332B] text-[#908B7D] hover:text-white'}`}
         >
           <GitBranch className="h-4 w-4" />
           Relationship Graph
@@ -46,7 +46,7 @@ export function CorrelationWorkspace(props: CorrelationWorkspaceProps) {
         <button
           type="button"
           onClick={() => setTab('linkage')}
-          className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm transition ${tab === 'linkage' ? 'border-[#59616a] bg-[#181c20] text-white' : 'border-[#2d3339] text-[#8f969f] hover:text-white'}`}
+          className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm transition ${tab === 'linkage' ? 'border-[#6F6A5E] bg-[#27241E] text-white' : 'border-[#37332B] text-[#908B7D] hover:text-white'}`}
         >
           <GitFork className="h-4 w-4" />
           Similar Usernames
@@ -54,7 +54,7 @@ export function CorrelationWorkspace(props: CorrelationWorkspaceProps) {
         <button
           type="button"
           onClick={() => setTab('case')}
-          className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm transition ${tab === 'case' ? 'border-[#59616a] bg-[#181c20] text-white' : 'border-[#2d3339] text-[#8f969f] hover:text-white'}`}
+          className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm transition ${tab === 'case' ? 'border-[#6F6A5E] bg-[#27241E] text-white' : 'border-[#37332B] text-[#908B7D] hover:text-white'}`}
         >
           <FolderClock className="h-4 w-4" />
           Case & Diff

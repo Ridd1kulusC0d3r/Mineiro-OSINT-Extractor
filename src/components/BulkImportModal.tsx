@@ -177,7 +177,7 @@ export function BulkImportModal({
         <div className="p-5 border-b border-neutral-800 flex items-start justify-between bg-neutral-950">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 bg-white inline-block shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+              <span className="w-2.5 h-2.5 bg-[#F0885A] inline-block shadow-[0_0_8px_rgba(236,232,221,0.8)]" />
               <h2 className="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
                 <FileSpreadsheet className="w-4 h-4 text-white" />
                 BULK TARGET IMPORT // BATCH INVESTIGATION
@@ -206,7 +206,7 @@ export function BulkImportModal({
                 onClick={() => setActiveTab('upload')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 uppercase transition-colors ${
                   activeTab === 'upload'
-                    ? 'bg-white text-black font-bold'
+                    ? 'bg-[#F0885A] text-black font-bold'
                     : 'text-neutral-400 hover:text-white'
                 }`}
               >
@@ -218,7 +218,7 @@ export function BulkImportModal({
                 onClick={() => setActiveTab('paste')}
                 className={`flex items-center gap-1.5 px-3 py-1.5 uppercase transition-colors ${
                   activeTab === 'paste'
-                    ? 'bg-white text-black font-bold'
+                    ? 'bg-[#F0885A] text-black font-bold'
                     : 'text-neutral-400 hover:text-white'
                 }`}
               >
@@ -267,7 +267,7 @@ export function BulkImportModal({
                 onClick={() => fileInputRef.current?.click()}
                 className={`p-8 border-2 border-dashed text-center cursor-pointer transition-colors ${
                   dragActive
-                    ? 'border-white bg-neutral-900/60'
+                    ? 'border-[#F0885A] bg-neutral-900/60'
                     : fileName
                     ? 'border-neutral-600 bg-neutral-950/80 hover:border-neutral-500'
                     : 'border-neutral-800 bg-neutral-950/40 hover:border-neutral-700 hover:bg-neutral-950'
@@ -306,7 +306,7 @@ export function BulkImportModal({
                 onChange={(e) => handleTextChange(e.target.value)}
                 placeholder="satoshi&#10;vitalik&#10;deivsec&#10;octocat&#10;target@domain.com"
                 rows={6}
-                className="w-full bg-neutral-950 border border-neutral-800 p-3 text-white placeholder:text-neutral-600 focus:outline-none focus:border-white text-xs font-mono leading-relaxed"
+                className="w-full bg-neutral-950 border border-neutral-800 p-3 text-white placeholder:text-neutral-600 focus:outline-none focus:border-[#F0885A] text-xs font-mono leading-relaxed"
               />
             </div>
           )}
@@ -430,7 +430,7 @@ export function BulkImportModal({
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full bg-black border border-neutral-800 text-white text-xs p-2 focus:border-white focus:outline-none"
+                  className="w-full bg-black border border-neutral-800 text-white text-xs p-2 focus:border-[#F0885A] focus:outline-none"
                 >
                   {Object.entries(CATEGORY_LABELS).map(([catKey, info]) => (
                     <option key={catKey} value={catKey}>
@@ -457,7 +457,7 @@ export function BulkImportModal({
                       onClick={() => setConcurrency(rate.val)}
                       className={`px-2 py-1.5 text-[10px] uppercase border transition-colors ${
                         concurrency === rate.val
-                          ? 'border-white bg-white text-black font-bold'
+                          ? 'border-[#F0885A] bg-[#F0885A] text-black font-bold'
                           : 'border-neutral-800 bg-black text-neutral-400 hover:text-white'
                       }`}
                     >
@@ -505,7 +505,7 @@ export function BulkImportModal({
             type="button"
             onClick={handleSubmit}
             disabled={validTargets.length === 0}
-            className="px-6 py-2.5 bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase flex items-center gap-2 border border-white tracking-wider disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-[0_0_15px_rgba(255,255,255,0.15)]"
+            className="px-6 py-2.5 bg-[#F0885A] hover:bg-neutral-200 text-black font-bold text-xs uppercase flex items-center gap-2 border border-[#F0885A] tracking-wider disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-[0_0_15px_rgba(236,232,221,0.15)]"
           >
             <Play className="w-3.5 h-3.5 fill-black" />
             Launch Bulk Reconnaissance ({validTargets.length} Targets)

@@ -19,18 +19,18 @@ export function PlatformTable({ results }: PlatformTableProps) {
 
   if (results.length === 0) {
     return (
-      <div className="py-20 text-center space-y-3 font-mono border border-[#2A2A2A] bg-[#0A0A0A] rounded-md">
-        <div className="w-12 h-12 mx-auto border border-dashed border-[#737373] flex items-center justify-center text-[#A3A3A3]">
+      <div className="py-20 text-center space-y-3 font-mono border border-[#37332B] bg-[#1B1915] rounded-md">
+        <div className="w-12 h-12 mx-auto border border-dashed border-[#908B7D] flex items-center justify-center text-[#B9B4A6]">
           ?
         </div>
-        <p className="text-[#F5F5F5] text-sm font-bold tracking-wider">NO PLATFORMS MATCH CURRENT FILTER</p>
-        <p className="text-[#A3A3A3] text-xs">Adjust filter settings or run a reconnaissance scan above.</p>
+        <p className="text-[#ECE8DD] text-sm font-bold tracking-wider">NO PLATFORMS MATCH CURRENT FILTER</p>
+        <p className="text-[#B9B4A6] text-xs">Adjust filter settings or run a reconnaissance scan above.</p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-md border border-[#2A2A2A] bg-[#0A0A0A] overflow-hidden shadow-sm overflow-x-auto">
+    <div className="rounded-md border border-[#37332B] bg-[#1B1915] overflow-hidden shadow-sm overflow-x-auto">
       <table className="w-full table-fixed text-left text-xs font-mono">
         <colgroup>
           <col className="w-[130px]" />
@@ -42,7 +42,7 @@ export function PlatformTable({ results }: PlatformTableProps) {
           <col className="w-[90px]" />
           <col className="w-[85px]" />
         </colgroup>
-        <thead className="border-b border-[#2A2A2A] bg-[#050505] text-[#A3A3A3] uppercase text-[11px] tracking-wider">
+        <thead className="border-b border-[#37332B] bg-[#131210] text-[#B9B4A6] uppercase text-[11px] tracking-wider">
           <tr>
             <th className="py-3 px-4 font-semibold">Status</th>
             <th className="py-3 px-4 font-semibold">Platform</th>
@@ -54,7 +54,7 @@ export function PlatformTable({ results }: PlatformTableProps) {
             <th className="py-3 px-4 text-right font-semibold">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-[#2A2A2A]">
+        <tbody className="divide-y divide-[#37332B]">
           {results.map((item) => {
             const isFound = item.status === 'found';
             const isUncertain = item.status === 'uncertain';
@@ -70,51 +70,51 @@ export function PlatformTable({ results }: PlatformTableProps) {
                 key={item.id}
                 className={`transition-colors relative overflow-hidden ${
                   isFound
-                    ? 'bg-[#0A0A0A] hover:bg-[#111111] text-[#F5F5F5]'
+                    ? 'bg-[#1B1915] hover:bg-[#221F1A] text-[#ECE8DD]'
                     : isUncertain
-                    ? 'bg-[#050505]/80 hover:bg-[#0A0A0A] text-[#A3A3A3]'
+                    ? 'bg-[#131210]/80 hover:bg-[#1B1915] text-[#B9B4A6]'
                     : isScanning
-                    ? 'bg-[#0A0A0A] border-b border-[#FFFFFF]/40 text-[#FFFFFF]'
-                    : 'text-[#A3A3A3] hover:bg-[#050505]/50'
+                    ? 'bg-[#1B1915] border-b border-[#ECE8DD]/40 text-[#ECE8DD]'
+                    : 'text-[#B9B4A6] hover:bg-[#131210]/50'
                 }`}
               >
                 <td className="py-2.5 px-4 whitespace-nowrap">
                   {isFound && (
-                    <span className="inline-block px-2 py-0.5 rounded-sm bg-[#FFFFFF] text-[#050505] font-bold border border-[#FFFFFF] text-[10px] tracking-wider uppercase">
+                    <span className="inline-block px-2 py-0.5 rounded-sm bg-[#F0885A] text-[#131210] font-bold border border-[#F0885A] text-[10px] tracking-wider uppercase">
                       HIT // 200
                     </span>
                   )}
                   {isUncertain && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm border border-[#737373] border-dashed bg-[#050505] text-[#A3A3A3] text-[10px] font-medium uppercase">
-                      <AlertTriangle className="w-2.5 h-2.5 text-[#A3A3A3]" />
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm border border-[#908B7D] border-dashed bg-[#131210] text-[#B9B4A6] text-[10px] font-medium uppercase">
+                      <AlertTriangle className="w-2.5 h-2.5 text-[#B9B4A6]" />
                       UNCERTAIN
                     </span>
                   )}
                   {isNotFound && (
-                    <span className="inline-block px-1.5 py-0.5 rounded-sm bg-[#050505] border border-[#2A2A2A] text-[#737373] text-[10px]">
+                    <span className="inline-block px-1.5 py-0.5 rounded-sm bg-[#131210] border border-[#37332B] text-[#908B7D] text-[10px]">
                       404 ABSENT
                     </span>
                   )}
                   {isScanning && (
-                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm border border-[#FFFFFF] bg-[#050505] text-[#FFFFFF] text-[10px] font-semibold animate-pulse shadow-[0_0_10px_rgba(255, 255, 255,0.2)]">
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-sm border border-[#F0885A] bg-[#131210] text-[#ECE8DD] text-[10px] font-semibold animate-pulse shadow-[0_0_10px_rgba(236,232,221,0.2)]">
                       <span className="relative flex h-1.5 w-1.5">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FFFFFF] opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#FFFFFF]"></span>
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F0885A] opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-[#F0885A]"></span>
                       </span>
                       SCANNING
                     </span>
                   )}
                   {isRateLimited && (
-                    <span className="px-1.5 py-0.5 rounded-sm bg-[#050505] text-[#A3A3A3] border border-[#2A2A2A] text-[10px]">
+                    <span className="px-1.5 py-0.5 rounded-sm bg-[#131210] text-[#B9B4A6] border border-[#37332B] text-[10px]">
                       RATE_LMT
                     </span>
                   )}
                   {isPending && (
-                    <span className="text-[#737373] text-[10px] px-1.5 py-0.5">QUEUED</span>
+                    <span className="text-[#908B7D] text-[10px] px-1.5 py-0.5">QUEUED</span>
                   )}
                 </td>
 
-                <td className="py-2.5 px-4 font-medium whitespace-nowrap text-[#F5F5F5]">
+                <td className="py-2.5 px-4 font-medium whitespace-nowrap text-[#ECE8DD]">
                   <div className="flex items-center gap-2.5 min-w-0">
                     <PlatformFavicon
                       url={item.url}
@@ -125,7 +125,7 @@ export function PlatformTable({ results }: PlatformTableProps) {
                     />
                     <span className="truncate font-semibold">{item.platformName}</span>
                     {isScanning && (
-                      <span className="text-[9px] font-normal text-[#FFFFFF] font-mono tracking-wider animate-pulse shrink-0">
+                      <span className="text-[9px] font-normal text-[#ECE8DD] font-mono tracking-wider animate-pulse shrink-0">
                         [PROBING]
                       </span>
                     )}
@@ -138,46 +138,46 @@ export function PlatformTable({ results }: PlatformTableProps) {
                   >
                     <span 
                       className="w-1.5 h-1.5 rounded-full inline-block" 
-                      style={{ backgroundColor: isFound ? '#FFFFFF' : '#A3A3A3' }} 
+                      style={{ backgroundColor: isFound ? '#ECE8DD' : '#B9B4A6' }} 
                     />
                     {item.category}
                   </span>
                   {item.siteType && (
-                    <div className="mt-1 text-[9px] text-[#737373] lowercase truncate" title={item.siteType}>
+                    <div className="mt-1 text-[9px] text-[#908B7D] lowercase truncate" title={item.siteType}>
                       {item.siteType.replace(/_/g, ' ')}
                     </div>
                   )}
                 </td>
 
-                <td className="py-2.5 px-4 truncate text-[#A3A3A3]">
+                <td className="py-2.5 px-4 truncate text-[#B9B4A6]">
                   <a
                     href={item.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="hover:underline hover:text-[#FFFFFF] text-[#F5F5F5] transition-colors block truncate"
+                    className="hover:underline hover:text-[#ECE8DD] text-[#ECE8DD] transition-colors block truncate"
                     title={decodeURI(item.url)}
                   >
                     {decodeURI(item.url)}
                   </a>
                   {item.uncertainReason && (
-                    <div className="text-[10px] text-[#A3A3A3] truncate" title={item.uncertainReason}>
+                    <div className="text-[10px] text-[#B9B4A6] truncate" title={item.uncertainReason}>
                       {item.uncertainReason}
                     </div>
                   )}
                 </td>
 
-                <td className="py-2.5 px-4 whitespace-nowrap text-[#F5F5F5] text-[11px] text-right tabular-nums">
+                <td className="py-2.5 px-4 whitespace-nowrap text-[#ECE8DD] text-[11px] text-right tabular-nums">
                   {item.confidenceScore ? `${item.confidenceScore}%` : '—'}
                 </td>
 
-                <td className="py-2.5 px-4 whitespace-nowrap text-[#A3A3A3] text-[11px] text-right tabular-nums">
+                <td className="py-2.5 px-4 whitespace-nowrap text-[#B9B4A6] text-[11px] text-right tabular-nums">
                   {item.detectorReliability !== undefined ? `${item.detectorReliability}%` : '—'}
                   {item.evidenceChecksTotal ? (
-                    <div className="text-[9px] text-[#737373]">{item.evidenceChecksPassed ?? 0}/{item.evidenceChecksTotal} checks</div>
+                    <div className="text-[9px] text-[#908B7D]">{item.evidenceChecksPassed ?? 0}/{item.evidenceChecksTotal} checks</div>
                   ) : null}
                 </td>
 
-                <td className="py-2.5 px-4 whitespace-nowrap text-[#A3A3A3] text-right tabular-nums">
+                <td className="py-2.5 px-4 whitespace-nowrap text-[#B9B4A6] text-right tabular-nums">
                   {item.responseTimeMs !== undefined ? `${item.responseTimeMs}ms` : '—'}
                 </td>
 
@@ -185,11 +185,11 @@ export function PlatformTable({ results }: PlatformTableProps) {
                   <button
                     type="button"
                     onClick={() => handleCopy(item.url, item.id)}
-                    className="p-1.5 rounded-sm border border-[#2A2A2A] bg-[#050505] text-[#A3A3A3] hover:text-[#F5F5F5] hover:border-[#737373] transition-colors inline-block"
+                    className="p-1.5 rounded-sm border border-[#37332B] bg-[#131210] text-[#B9B4A6] hover:text-[#ECE8DD] hover:border-[#908B7D] transition-colors inline-block"
                     title="Copy Target URL"
                   >
                     {copiedId === item.id ? (
-                      <Check className="w-3.5 h-3.5 text-[#FFFFFF] inline" />
+                      <Check className="w-3.5 h-3.5 text-[#ECE8DD] inline" />
                     ) : (
                       <Copy className="w-3.5 h-3.5 inline" />
                     )}
@@ -198,7 +198,7 @@ export function PlatformTable({ results }: PlatformTableProps) {
                     href={item.url}
                     target="_blank"
                     rel="noreferrer"
-                    className="p-1.5 rounded-sm border border-[#2A2A2A] bg-[#050505] text-[#A3A3A3] hover:text-[#FFFFFF] hover:border-[#737373] transition-colors inline-block"
+                    className="p-1.5 rounded-sm border border-[#37332B] bg-[#131210] text-[#B9B4A6] hover:text-[#ECE8DD] hover:border-[#908B7D] transition-colors inline-block"
                     title="Open in new tab"
                   >
                     <ExternalLink className="w-3.5 h-3.5 inline" />

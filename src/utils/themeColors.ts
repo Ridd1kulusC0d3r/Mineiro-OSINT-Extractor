@@ -4,41 +4,41 @@ import { MINEIRO_PALETTE } from './mineiroPalette';
 /**
  * Mineiro Username Intelligence — Monochrome UI
  * Cores autorizadas:
- * Ink: #050505 | Ink 2: #0A0A0A | Line: #2A2A2A
- * Texto: #F5F5F5 | Texto 2: #A3A3A3 | Texto 3: #737373
- * White signal: #FFFFFF | Neutral absence: #737373
- * Bone: #FAFAFA | Ciano escuro: #A3A3A3 | Vermelho aberração: #FFFFFF
+ * Ink: #131210 | Ink 2: #1B1915 | Line: #37332B
+ * Texto: #ECE8DD | Texto 2: #B9B4A6 | Texto 3: #908B7D
+ * White signal: #ECE8DD | Neutral absence: #908B7D
+ * Bone: #F3F0E8 | Ciano escuro: #B9B4A6 | Vermelho aberração: #ECE8DD
  */
 
 // ==========================================
 // 1. Category Color Hierarchy (Mineiro Neutrals & Contorno)
 // ==========================================
 export const CATEGORY_COLORS: Record<string, string> = {
-  developer: MINEIRO_PALETTE.text,   // #F5F5F5
-  security: MINEIRO_PALETTE.text,    // #F5F5F5
-  social: MINEIRO_PALETTE.text2,     // #A3A3A3
-  gaming: MINEIRO_PALETTE.text2,     // #A3A3A3
-  crypto: MINEIRO_PALETTE.text,      // #F5F5F5
-  creative: MINEIRO_PALETTE.text,    // #F5F5F5
-  community: MINEIRO_PALETTE.text2,  // #A3A3A3
-  media: MINEIRO_PALETTE.text2,      // #A3A3A3
-  email: MINEIRO_PALETTE.cyan,       // #FFFFFF
-  tech: MINEIRO_PALETTE.text,        // #F5F5F5
-  finance: MINEIRO_PALETTE.text2,    // #A3A3A3
-  default: MINEIRO_PALETTE.text3,    // #737373
+  developer: MINEIRO_PALETTE.text,   // #ECE8DD
+  security: MINEIRO_PALETTE.text,    // #ECE8DD
+  social: MINEIRO_PALETTE.text2,     // #B9B4A6
+  gaming: MINEIRO_PALETTE.text2,     // #B9B4A6
+  crypto: MINEIRO_PALETTE.text,      // #ECE8DD
+  creative: MINEIRO_PALETTE.text,    // #ECE8DD
+  community: MINEIRO_PALETTE.text2,  // #B9B4A6
+  media: MINEIRO_PALETTE.text2,      // #B9B4A6
+  email: MINEIRO_PALETTE.cyan,       // #ECE8DD
+  tech: MINEIRO_PALETTE.text,        // #ECE8DD
+  finance: MINEIRO_PALETTE.text2,    // #B9B4A6
+  default: MINEIRO_PALETTE.text3,    // #908B7D
 };
 
 export const CATEGORY_BADGES: Record<string, { bg: string; text: string; border: string }> = {
-  developer: { bg: 'bg-[#0A0A0A]', text: 'text-[#F5F5F5]', border: 'border-[#2A2A2A]' },
-  security: { bg: 'bg-[#0A0A0A]', text: 'text-[#F5F5F5]', border: 'border-[#2A2A2A]' },
-  social: { bg: 'bg-[#0A0A0A]', text: 'text-[#A3A3A3]', border: 'border-[#2A2A2A]' },
-  gaming: { bg: 'bg-[#0A0A0A]', text: 'text-[#A3A3A3]', border: 'border-[#2A2A2A]' },
-  crypto: { bg: 'bg-[#0A0A0A]', text: 'text-[#F5F5F5]', border: 'border-[#2A2A2A]' },
-  creative: { bg: 'bg-[#0A0A0A]', text: 'text-[#F5F5F5]', border: 'border-[#2A2A2A]' },
-  community: { bg: 'bg-[#0A0A0A]', text: 'text-[#A3A3A3]', border: 'border-[#2A2A2A]' },
-  media: { bg: 'bg-[#0A0A0A]', text: 'text-[#A3A3A3]', border: 'border-[#2A2A2A]' },
-  email: { bg: 'bg-[#0A0A0A]', text: 'text-[#FFFFFF]', border: 'border-[#FFFFFF]/50' },
-  default: { bg: 'bg-[#050505]', text: 'text-[#737373]', border: 'border-[#2A2A2A]' },
+  developer: { bg: 'bg-[#1B1915]', text: 'text-[#ECE8DD]', border: 'border-[#37332B]' },
+  security: { bg: 'bg-[#1B1915]', text: 'text-[#ECE8DD]', border: 'border-[#37332B]' },
+  social: { bg: 'bg-[#1B1915]', text: 'text-[#B9B4A6]', border: 'border-[#37332B]' },
+  gaming: { bg: 'bg-[#1B1915]', text: 'text-[#B9B4A6]', border: 'border-[#37332B]' },
+  crypto: { bg: 'bg-[#1B1915]', text: 'text-[#ECE8DD]', border: 'border-[#37332B]' },
+  creative: { bg: 'bg-[#1B1915]', text: 'text-[#ECE8DD]', border: 'border-[#37332B]' },
+  community: { bg: 'bg-[#1B1915]', text: 'text-[#B9B4A6]', border: 'border-[#37332B]' },
+  media: { bg: 'bg-[#1B1915]', text: 'text-[#B9B4A6]', border: 'border-[#37332B]' },
+  email: { bg: 'bg-[#1B1915]', text: 'text-[#ECE8DD]', border: 'border-[#ECE8DD]/50' },
+  default: { bg: 'bg-[#131210]', text: 'text-[#908B7D]', border: 'border-[#37332B]' },
 };
 
 // ==========================================
@@ -47,52 +47,52 @@ export const CATEGORY_BADGES: Record<string, { bg: string; text: string; border:
 // ==========================================
 export const STATUS_COLORS = {
   found: {
-    hex: MINEIRO_PALETTE.cyan,       // #FFFFFF (confirmed public signal)
-    darkBg: MINEIRO_PALETTE.ink2,    // #0A0A0A
-    lightText: MINEIRO_PALETTE.cyan, // #FFFFFF
-    tailwindBadge: 'bg-[#FFFFFF] text-[#050505] font-bold border-[#FFFFFF]',
+    hex: MINEIRO_PALETTE.cyan,       // #ECE8DD (confirmed public signal)
+    darkBg: MINEIRO_PALETTE.ink2,    // #1B1915
+    lightText: MINEIRO_PALETTE.cyan, // #ECE8DD
+    tailwindBadge: 'bg-[#F0885A] text-[#131210] font-bold border-[#F0885A]',
     label: 'HIT // SINAL',
   },
   uncertain: {
-    hex: MINEIRO_PALETTE.text2,      // #A3A3A3
-    darkBg: MINEIRO_PALETTE.ink2,    // #0A0A0A
-    lightText: MINEIRO_PALETTE.text2,// #A3A3A3
-    tailwindBadge: 'bg-[#0A0A0A] text-[#A3A3A3] border-[#737373] border-dashed',
+    hex: MINEIRO_PALETTE.text2,      // #B9B4A6
+    darkBg: MINEIRO_PALETTE.ink2,    // #1B1915
+    lightText: MINEIRO_PALETTE.text2,// #B9B4A6
+    tailwindBadge: 'bg-[#1B1915] text-[#B9B4A6] border-[#908B7D] border-dashed',
     label: 'INCERTO (WAF)',
   },
   not_found: {
-    hex: MINEIRO_PALETTE.rose,       // #737373 (absence signal)
-    darkBg: MINEIRO_PALETTE.ink,     // #050505
-    lightText: MINEIRO_PALETTE.text3,// #737373
-    tailwindBadge: 'bg-[#050505] text-[#737373] border-[#2A2A2A]',
+    hex: MINEIRO_PALETTE.rose,       // #908B7D (absence signal)
+    darkBg: MINEIRO_PALETTE.ink,     // #131210
+    lightText: MINEIRO_PALETTE.text3,// #908B7D
+    tailwindBadge: 'bg-[#131210] text-[#908B7D] border-[#37332B]',
     label: 'AUSÊNCIA (404)',
   },
   scanning: {
-    hex: MINEIRO_PALETTE.cyan,       // #FFFFFF
-    darkBg: MINEIRO_PALETTE.ink2,    // #0A0A0A
-    lightText: MINEIRO_PALETTE.cyan, // #FFFFFF
-    tailwindBadge: 'bg-[#0A0A0A] text-[#FFFFFF] border-[#FFFFFF] animate-pulse',
+    hex: MINEIRO_PALETTE.cyan,       // #ECE8DD
+    darkBg: MINEIRO_PALETTE.ink2,    // #1B1915
+    lightText: MINEIRO_PALETTE.cyan, // #ECE8DD
+    tailwindBadge: 'bg-[#1B1915] text-[#ECE8DD] border-[#F0885A] animate-pulse',
     label: 'VARRENDO...',
   },
   rate_limited: {
-    hex: MINEIRO_PALETTE.text3,      // #737373
-    darkBg: MINEIRO_PALETTE.ink2,    // #0A0A0A
-    lightText: MINEIRO_PALETTE.text2,// #A3A3A3
-    tailwindBadge: 'bg-[#0A0A0A] text-[#A3A3A3] border-[#2A2A2A]',
+    hex: MINEIRO_PALETTE.text3,      // #908B7D
+    darkBg: MINEIRO_PALETTE.ink2,    // #1B1915
+    lightText: MINEIRO_PALETTE.text2,// #B9B4A6
+    tailwindBadge: 'bg-[#1B1915] text-[#B9B4A6] border-[#37332B]',
     label: 'RATE LIMITED (429)',
   },
   pending: {
-    hex: MINEIRO_PALETTE.text3,      // #737373
-    darkBg: MINEIRO_PALETTE.ink,     // #050505
-    lightText: MINEIRO_PALETTE.text3,// #737373
-    tailwindBadge: 'bg-[#050505] text-[#737373] border-[#2A2A2A]',
+    hex: MINEIRO_PALETTE.text3,      // #908B7D
+    darkBg: MINEIRO_PALETTE.ink,     // #131210
+    lightText: MINEIRO_PALETTE.text3,// #908B7D
+    tailwindBadge: 'bg-[#131210] text-[#908B7D] border-[#37332B]',
     label: 'AGUARDANDO',
   },
   error: {
-    hex: MINEIRO_PALETTE.rose,       // #737373
-    darkBg: MINEIRO_PALETTE.ink2,    // #0A0A0A
-    lightText: MINEIRO_PALETTE.rose, // #737373
-    tailwindBadge: 'bg-[#0A0A0A] text-[#737373] border-[#737373]',
+    hex: MINEIRO_PALETTE.rose,       // #908B7D
+    darkBg: MINEIRO_PALETTE.ink2,    // #1B1915
+    lightText: MINEIRO_PALETTE.rose, // #908B7D
+    tailwindBadge: 'bg-[#1B1915] text-[#908B7D] border-[#908B7D]',
     label: 'ERRO NA BASE',
   },
 } as const;
@@ -104,43 +104,43 @@ export const EXPOSURE_COLORS = {
   MINIMAL: {
     hex: MINEIRO_PALETTE.text3,
     label: 'MÍNIMA',
-    badge: 'text-[#737373] border-[#2A2A2A] bg-[#050505]',
+    badge: 'text-[#908B7D] border-[#37332B] bg-[#131210]',
     desc: 'Superfície de ataque irrelevante (0 a 1 alvo público)',
   },
   LOW: {
     hex: MINEIRO_PALETTE.text2,
     label: 'BAIXA',
-    badge: 'text-[#A3A3A3] border-[#2A2A2A] bg-[#0A0A0A]',
+    badge: 'text-[#B9B4A6] border-[#37332B] bg-[#1B1915]',
     desc: 'Presença digital contida (2 a 3 alvos públicos)',
   },
   MODERATE: {
     hex: MINEIRO_PALETTE.text,
     label: 'MODERADA',
-    badge: 'text-[#F5F5F5] border-[#2A2A2A] bg-[#0A0A0A]',
+    badge: 'text-[#ECE8DD] border-[#37332B] bg-[#1B1915]',
     desc: 'Exposição intermediária (4 a 8 serviços ativos)',
   },
   ELEVATED: {
     hex: MINEIRO_PALETTE.text,
     label: 'ELEVADA',
-    badge: 'text-[#F5F5F5] border-[#737373] bg-[#0A0A0A]',
+    badge: 'text-[#ECE8DD] border-[#908B7D] bg-[#1B1915]',
     desc: 'Alta correlação cruzada de perfis (9 a 15 serviços)',
   },
   SEVERE: {
     hex: MINEIRO_PALETTE.cyan,
     label: 'SEVERA',
-    badge: 'text-[#050505] bg-[#FFFFFF] border-[#FFFFFF] font-bold shadow-[0_0_12px_rgba(255, 255, 255,0.3)]',
+    badge: 'text-[#131210] bg-[#F0885A] border-[#F0885A] font-bold shadow-[0_0_12px_rgba(236,232,221,0.3)]',
     desc: 'Superfície crítica exposta (16+ contas identificadas)',
   },
 } as const;
 
 // ==========================================
 // 4. Heat Map Thermal Spectrum (0% -> 100% Mineiro Spectrum)
-// 0%: #050505 (Ink - Dormente)
-// 25%: #0A0A0A (Ink 2 - Painéis)
-// 50%: #2A2A2A (Line - Divisórias)
-// 75%: #737373 (Texto 3 - Discreto)
-// 90%: #A3A3A3 (Texto 2)
-// 100%: #FFFFFF (White - strongest contrast)
+// 0%: #131210 (Ink - Dormente)
+// 25%: #1B1915 (Ink 2 - Painéis)
+// 50%: #37332B (Line - Divisórias)
+// 75%: #908B7D (Texto 3 - Discreto)
+// 90%: #B9B4A6 (Texto 2)
+// 100%: #ECE8DD (White - strongest contrast)
 // ==========================================
 export const HEATMAP_STOPS = [
   { offset: 0, color: MINEIRO_PALETTE.ink, label: 'Dormente' },
@@ -187,7 +187,7 @@ export function getHeatmapIntensityColor(percentage: number): string {
  * Helper to pick high-contrast text color based on cell luminosity.
  */
 export function getContrastTextColor(percentage: number): string {
-  if (percentage === 0) return MINEIRO_PALETTE.text3; // #737373
-  if (percentage < 85) return MINEIRO_PALETTE.text;   // #F5F5F5
-  return MINEIRO_PALETTE.ink;                         // #050505 on top of #FFFFFF
+  if (percentage === 0) return MINEIRO_PALETTE.text3; // #908B7D
+  if (percentage < 85) return MINEIRO_PALETTE.text;   // #ECE8DD
+  return MINEIRO_PALETTE.ink;                         // #131210 on top of #ECE8DD
 }

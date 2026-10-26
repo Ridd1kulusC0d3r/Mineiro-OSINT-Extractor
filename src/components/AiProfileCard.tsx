@@ -80,7 +80,7 @@ export function AiProfileCard({
   if (isLoading) {
     return (
       <div className="border border-neutral-800 bg-neutral-950 p-8 text-center space-y-4 font-mono">
-        <div className="w-12 h-12 border-2 border-white border-t-transparent animate-spin mx-auto" />
+        <div className="w-12 h-12 border-2 border-[#F0885A] border-t-transparent animate-spin mx-auto" />
         <div className="space-y-1">
           <p className="text-white font-bold text-sm tracking-wider">
             SYNTHESIZING DIGITAL ATTACK SURFACE & AI PROFILE...
@@ -115,7 +115,7 @@ export function AiProfileCard({
             type="button"
             onClick={onRequestProfile}
             disabled={!target}
-            className="px-5 py-2.5 bg-white text-black font-mono font-bold text-xs uppercase hover:bg-neutral-200 border border-white tracking-wider disabled:opacity-40 disabled:cursor-not-allowed transition-all inline-flex items-center gap-2"
+            className="px-5 py-2.5 bg-[#F0885A] text-black font-mono font-bold text-xs uppercase hover:bg-neutral-200 border border-[#F0885A] tracking-wider disabled:opacity-40 disabled:cursor-not-allowed transition-all inline-flex items-center gap-2"
           >
             <Sparkles className="w-4 h-4 fill-black" />
             Generate Intelligence Dossier
@@ -126,7 +126,7 @@ export function AiProfileCard({
               onClick={onOpenGeminiConfig}
               className={`px-4 py-2.5 font-mono text-xs uppercase border transition-all inline-flex items-center gap-2 ${
                 hasPersonalKey
-                  ? 'border-white bg-white text-black font-bold'
+                  ? 'border-[#F0885A] bg-[#F0885A] text-black font-bold'
                   : 'border-neutral-700 bg-black text-neutral-300 hover:text-white hover:border-neutral-500'
               }`}
             >
@@ -141,7 +141,7 @@ export function AiProfileCard({
 
   const threatColor =
     report.threatLevel === 'Critical'
-      ? 'border-white bg-white text-black font-bold'
+      ? 'border-[#F0885A] bg-[#F0885A] text-black font-bold'
       : report.threatLevel === 'Elevated'
       ? 'border-neutral-400 text-white bg-neutral-900 font-bold'
       : 'border-neutral-700 text-neutral-300';
@@ -170,7 +170,7 @@ export function AiProfileCard({
               <span
                 className={`text-[10px] px-2 py-0.5 uppercase tracking-wider font-mono ${
                   report.technicalFootprint.isTechProfessional
-                    ? 'border border-white bg-neutral-900 text-white font-bold'
+                    ? 'border border-[#F0885A] bg-neutral-900 text-white font-bold'
                     : 'border border-neutral-700 bg-neutral-950 text-neutral-400'
                 }`}
               >
@@ -252,7 +252,7 @@ export function AiProfileCard({
               <button
                 type="button"
                 onClick={onOpenGeminiConfig}
-                className="px-3 py-1.5 border border-neutral-700 bg-neutral-900 text-white font-bold uppercase text-[11px] hover:border-white transition-colors tracking-wider inline-flex items-center gap-1.5"
+                className="px-3 py-1.5 border border-neutral-700 bg-neutral-900 text-white font-bold uppercase text-[11px] hover:border-[#F0885A] transition-colors tracking-wider inline-flex items-center gap-1.5"
               >
                 <Key className="w-3.5 h-3.5" />
                 Connect Personal Key
@@ -261,7 +261,7 @@ export function AiProfileCard({
             <button
               type="button"
               onClick={onRequestProfile}
-              className="px-3 py-1.5 bg-white text-black font-bold uppercase text-[11px] hover:bg-neutral-200 transition-colors tracking-wider inline-flex items-center gap-1.5"
+              className="px-3 py-1.5 bg-[#F0885A] text-black font-bold uppercase text-[11px] hover:bg-neutral-200 transition-colors tracking-wider inline-flex items-center gap-1.5"
             >
               <Sparkles className="w-3.5 h-3.5 fill-black" />
               Retry Analysis
@@ -282,7 +282,7 @@ export function AiProfileCard({
           </div>
           <div className="w-full bg-neutral-900 h-1.5 overflow-hidden">
             <div
-              className="bg-white h-full"
+              className="bg-[#F0885A] h-full"
               style={{ width: `${report.footprintScore}%` }}
             />
           </div>
@@ -362,7 +362,7 @@ export function AiProfileCard({
                   <span
                     className={`text-[9px] px-1.5 py-0.5 uppercase tracking-wider font-bold ${
                       report.technicalFootprint?.isTechProfessional
-                        ? 'bg-white text-black'
+                        ? 'bg-[#F0885A] text-black'
                         : 'border border-neutral-700 text-neutral-400 bg-black'
                     }`}
                   >
@@ -418,9 +418,9 @@ export function AiProfileCard({
               <span
                 className={`text-[10px] px-2.5 py-0.5 uppercase tracking-wider font-mono ${
                   report.threatActorAnalysis.isThreatActorSuspect
-                    ? 'bg-white text-black font-extrabold'
+                    ? 'bg-[#F0885A] text-black font-extrabold'
                     : report.threatActorAnalysis.threatActorCategory.includes('AUTHORIZED')
-                    ? 'border border-white bg-neutral-900 text-white font-bold'
+                    ? 'border border-[#F0885A] bg-neutral-900 text-white font-bold'
                     : 'border border-neutral-700 bg-neutral-950 text-neutral-300'
                 }`}
               >
@@ -457,7 +457,7 @@ export function AiProfileCard({
               </div>
               <div className="w-full bg-neutral-900 h-1.5 overflow-hidden">
                 <div
-                  className="bg-white h-full"
+                  className="bg-[#F0885A] h-full"
                   style={{ width: `${report.threatActorAnalysis.threatActorScore}%` }}
                 />
               </div>
@@ -505,7 +505,7 @@ export function AiProfileCard({
               <span
                 className={`text-[10px] px-2 py-0.5 uppercase tracking-wider font-mono ${
                   report.threatActorAnalysis.occupationCrossReference.consistencyVerdict === 'HIGH_RISK_DISCREPANCY'
-                    ? 'bg-white text-black font-extrabold'
+                    ? 'bg-[#F0885A] text-black font-extrabold'
                     : report.threatActorAnalysis.occupationCrossReference.consistencyVerdict === 'SUSPICIOUS_ANOMALY'
                     ? 'border border-neutral-400 bg-black text-white font-bold'
                     : 'border border-neutral-800 bg-neutral-900 text-neutral-300'
@@ -592,7 +592,7 @@ export function AiProfileCard({
                         <span
                           className={`text-[9px] px-1.5 py-0.2 uppercase font-mono font-bold ${
                             match.severity === 'critical'
-                              ? 'bg-white text-black'
+                              ? 'bg-[#F0885A] text-black'
                               : match.severity === 'high'
                               ? 'border border-neutral-400 text-white bg-black'
                               : 'border border-neutral-800 text-neutral-400'
@@ -836,7 +836,7 @@ export function AiProfileCard({
           <div className="space-y-1 text-neutral-300 text-[11px]">
             {report.inferredLocations?.map((loc, i) => (
               <div key={i} className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 bg-white inline-block" />
+                <span className="w-1.5 h-1.5 bg-[#F0885A] inline-block" />
                 {loc}
               </div>
             ))}

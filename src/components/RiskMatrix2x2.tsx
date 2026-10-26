@@ -337,9 +337,9 @@ export function RiskMatrix2x2({
       .attr('y', 0)
       .attr('width', innerWidth - midX)
       .attr('height', midY)
-      .attr('fill', '#FFFFFF')
+      .attr('fill', '#ECE8DD')
       .attr('fill-opacity', activeQuadrantFilter === 'critical' ? 0.14 : 0.05)
-      .attr('stroke', '#FFFFFF')
+      .attr('stroke', '#ECE8DD')
       .attr('stroke-opacity', activeQuadrantFilter === 'critical' ? 0.4 : 0.15);
 
     // Q2: Top-Left (Latent Vault: High Sensitivity, Low Activity)
@@ -348,9 +348,9 @@ export function RiskMatrix2x2({
       .attr('y', 0)
       .attr('width', midX)
       .attr('height', midY)
-      .attr('fill', '#737373')
+      .attr('fill', '#908B7D')
       .attr('fill-opacity', activeQuadrantFilter === 'latent' ? 0.14 : 0.04)
-      .attr('stroke', '#737373')
+      .attr('stroke', '#908B7D')
       .attr('stroke-opacity', activeQuadrantFilter === 'latent' ? 0.4 : 0.15);
 
     // Q3: Bottom-Right (Broad Surface: Low Sensitivity, High Activity)
@@ -359,9 +359,9 @@ export function RiskMatrix2x2({
       .attr('y', midY)
       .attr('width', innerWidth - midX)
       .attr('height', innerHeight - midY)
-      .attr('fill', '#FFFFFF')
+      .attr('fill', '#ECE8DD')
       .attr('fill-opacity', activeQuadrantFilter === 'surface' ? 0.14 : 0.04)
-      .attr('stroke', '#FFFFFF')
+      .attr('stroke', '#ECE8DD')
       .attr('stroke-opacity', activeQuadrantFilter === 'surface' ? 0.4 : 0.15);
 
     // Q4: Bottom-Left (Peripheral: Low Sensitivity, Low Activity)
@@ -370,17 +370,17 @@ export function RiskMatrix2x2({
       .attr('y', midY)
       .attr('width', midX)
       .attr('height', innerHeight - midY)
-      .attr('fill', '#737373')
+      .attr('fill', '#908B7D')
       .attr('fill-opacity', activeQuadrantFilter === 'peripheral' ? 0.14 : 0.03)
-      .attr('stroke', '#2A2A2A')
+      .attr('stroke', '#37332B')
       .attr('stroke-opacity', activeQuadrantFilter === 'peripheral' ? 0.4 : 0.15);
 
     // 2. Quadrant Watermark Labels
     const watermarkData = [
-      { text: 'CRITICAL RISK // PRIME TARGET', x: midX + 14, y: 22, color: '#FFFFFF', sub: 'High Sensitivity • High Activity' },
-      { text: 'LATENT VAULT // HIGH PRIVILEGE', x: 14, y: 22, color: '#737373', sub: 'High Sensitivity • Low Activity' },
-      { text: 'BROAD SURFACE // FREQUENT ENGAGEMENT', x: midX + 14, y: midY + 22, color: '#FFFFFF', sub: 'Low Sensitivity • High Activity' },
-      { text: 'PERIPHERAL // LOW EXPOSURE', x: 14, y: midY + 22, color: '#A3A3A3', sub: 'Low Sensitivity • Low Activity' },
+      { text: 'CRITICAL RISK // PRIME TARGET', x: midX + 14, y: 22, color: '#ECE8DD', sub: 'High Sensitivity • High Activity' },
+      { text: 'LATENT VAULT // HIGH PRIVILEGE', x: 14, y: 22, color: '#908B7D', sub: 'High Sensitivity • Low Activity' },
+      { text: 'BROAD SURFACE // FREQUENT ENGAGEMENT', x: midX + 14, y: midY + 22, color: '#ECE8DD', sub: 'Low Sensitivity • High Activity' },
+      { text: 'PERIPHERAL // LOW EXPOSURE', x: 14, y: midY + 22, color: '#B9B4A6', sub: 'Low Sensitivity • Low Activity' },
     ];
 
     watermarkData.forEach((wm) => {
@@ -397,7 +397,7 @@ export function RiskMatrix2x2({
       g.append('text')
         .attr('x', wm.x)
         .attr('y', wm.y + 12)
-        .attr('fill', '#737373')
+        .attr('fill', '#908B7D')
         .attr('font-size', '9px')
         .attr('font-family', 'monospace')
         .text(wm.sub);
@@ -410,7 +410,7 @@ export function RiskMatrix2x2({
       .attr('y1', 0)
       .attr('x2', midX)
       .attr('y2', innerHeight)
-      .attr('stroke', '#FFFFFF')
+      .attr('stroke', '#ECE8DD')
       .attr('stroke-width', 1.5)
       .attr('stroke-dasharray', '4,4')
       .attr('stroke-opacity', 0.4);
@@ -420,7 +420,7 @@ export function RiskMatrix2x2({
       .attr('y1', midY)
       .attr('x2', innerWidth)
       .attr('y2', midY)
-      .attr('stroke', '#FFFFFF')
+      .attr('stroke', '#ECE8DD')
       .attr('stroke-width', 1.5)
       .attr('stroke-dasharray', '4,4')
       .attr('stroke-opacity', 0.4);
@@ -432,7 +432,7 @@ export function RiskMatrix2x2({
         .attr('y1', 0)
         .attr('x2', xScale(val))
         .attr('y2', innerHeight)
-        .attr('stroke', '#2A2A2A')
+        .attr('stroke', '#37332B')
         .attr('stroke-width', 1)
         .attr('stroke-dasharray', '2,4');
 
@@ -441,7 +441,7 @@ export function RiskMatrix2x2({
         .attr('y1', yScale(val))
         .attr('x2', innerWidth)
         .attr('y2', yScale(val))
-        .attr('stroke', '#2A2A2A')
+        .attr('stroke', '#37332B')
         .attr('stroke-width', 1)
         .attr('stroke-dasharray', '2,4');
     });
@@ -453,7 +453,7 @@ export function RiskMatrix2x2({
       .attr('width', innerWidth)
       .attr('height', innerHeight)
       .attr('fill', 'none')
-      .attr('stroke', '#2A2A2A')
+      .attr('stroke', '#37332B')
       .attr('stroke-width', 1);
 
     // 5. Axis Labels
@@ -462,7 +462,7 @@ export function RiskMatrix2x2({
       .attr('x', margin.left + innerWidth / 2)
       .attr('y', height - 12)
       .attr('text-anchor', 'middle')
-      .attr('fill', '#F5F5F5')
+      .attr('fill', '#ECE8DD')
       .attr('font-size', '11px')
       .attr('font-family', 'monospace')
       .attr('font-weight', 'bold')
@@ -475,7 +475,7 @@ export function RiskMatrix2x2({
       .attr('x', -(margin.top + innerHeight / 2))
       .attr('y', 18)
       .attr('text-anchor', 'middle')
-      .attr('fill', '#F5F5F5')
+      .attr('fill', '#ECE8DD')
       .attr('font-size', '11px')
       .attr('font-family', 'monospace')
       .attr('font-weight', 'bold')
@@ -508,17 +508,17 @@ export function RiskMatrix2x2({
       const isSelected = selectedAccount?.id === node.id;
 
       // Color mapping by quadrant
-      let nodeColor = '#A3A3A3';
-      let ringColor = '#737373';
+      let nodeColor = '#B9B4A6';
+      let ringColor = '#908B7D';
       if (node.quadrant === 'critical') {
-        nodeColor = '#FFFFFF';
-        ringColor = '#FFFFFF';
+        nodeColor = '#ECE8DD';
+        ringColor = '#ECE8DD';
       } else if (node.quadrant === 'latent') {
-        nodeColor = '#737373';
-        ringColor = '#737373';
+        nodeColor = '#908B7D';
+        ringColor = '#908B7D';
       } else if (node.quadrant === 'surface') {
-        nodeColor = '#FFFFFF';
-        ringColor = '#FFFFFF';
+        nodeColor = '#ECE8DD';
+        ringColor = '#ECE8DD';
       }
 
       const clampedX = Math.max(14, Math.min(innerWidth - 14, node.x));
@@ -546,10 +546,10 @@ export function RiskMatrix2x2({
       // Base Node Circle
       accountG.append('circle')
         .attr('r', isSelected ? 10 : 8)
-        .attr('fill', '#0A0A0A')
-        .attr('stroke', isSelected ? '#FFFFFF' : nodeColor)
+        .attr('fill', '#1B1915')
+        .attr('stroke', isSelected ? '#ECE8DD' : nodeColor)
         .attr('stroke-width', isSelected ? 2.5 : 1.5)
-        .attr('filter', isSelected ? 'drop-shadow(0 0 6px rgba(255, 255, 255,0.6))' : 'none');
+        .attr('filter', isSelected ? 'drop-shadow(0 0 6px rgba(236,232,221,0.6))' : 'none');
 
       // Inner color pip
       accountG.append('circle')
@@ -560,7 +560,7 @@ export function RiskMatrix2x2({
       accountG.append('text')
         .attr('x', 11)
         .attr('y', 3.5)
-        .attr('fill', isSelected ? '#FFFFFF' : '#F5F5F5')
+        .attr('fill', isSelected ? '#ECE8DD' : '#ECE8DD')
         .attr('font-size', isSelected ? '10px' : '9px')
         .attr('font-family', 'monospace')
         .attr('font-weight', isSelected ? 'bold' : 'normal')
@@ -611,7 +611,7 @@ export function RiskMatrix2x2({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search platform/cat..."
-              className="pl-7 pr-6 py-1 bg-black border border-neutral-800 text-white text-[11px] placeholder:text-neutral-600 focus:outline-none focus:border-white w-40 sm:w-48 font-mono"
+              className="pl-7 pr-6 py-1 bg-black border border-neutral-800 text-white text-[11px] placeholder:text-neutral-600 focus:outline-none focus:border-[#F0885A] w-40 sm:w-48 font-mono"
             />
             {searchQuery && (
               <button
@@ -634,7 +634,7 @@ export function RiskMatrix2x2({
               onClick={() => setActiveQuadrantFilter('all')}
               className={`px-2.5 py-1 text-[11px] font-mono border transition-all ${
                 activeQuadrantFilter === 'all'
-                  ? 'bg-white text-black font-bold border-white'
+                  ? 'bg-[#F0885A] text-black font-bold border-[#F0885A]'
                   : 'bg-black text-neutral-400 border-neutral-800 hover:text-white hover:border-neutral-700'
               }`}
             >
@@ -730,7 +730,7 @@ export function RiskMatrix2x2({
                     setActiveQuadrantFilter('all');
                     setSearchQuery('');
                   }}
-                  className="px-3 py-1.5 bg-white text-black font-bold uppercase text-[10px] hover:bg-neutral-200 transition-colors"
+                  className="px-3 py-1.5 bg-[#F0885A] text-black font-bold uppercase text-[10px] hover:bg-neutral-200 transition-colors"
                 >
                   Reset Filters
                 </button>
@@ -850,7 +850,7 @@ export function RiskMatrix2x2({
                     href={selectedAccount.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 py-2 px-3 bg-white text-black font-bold text-center hover:bg-neutral-200 transition-colors flex items-center justify-center gap-1.5 uppercase text-[11px]"
+                    className="flex-1 py-2 px-3 bg-[#F0885A] text-black font-bold text-center hover:bg-neutral-200 transition-colors flex items-center justify-center gap-1.5 uppercase text-[11px]"
                   >
                     <span>Audit Live URL</span>
                     <ExternalLink className="w-3.5 h-3.5" />

@@ -69,7 +69,7 @@ export function StatsBar({
   const auditView = activeView === 'table' || activeView === 'grid';
 
   return (
-    <div className="border-b border-[#23282d] bg-[#0b0e10]">
+    <div className="border-b border-[#37332B] bg-[#131210]">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-3 py-3 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex min-w-0 items-center gap-5 overflow-x-auto">
@@ -81,8 +81,8 @@ export function StatsBar({
                   onClick={() => setActiveView(id)}
                   className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition ${
                     activeView === id
-                      ? 'bg-[#1a1f23] text-[#f1f2f3]'
-                      : 'text-[#858d96] hover:bg-[#14181b] hover:text-white'
+                      ? 'bg-[#27241E] text-[#ECE8DD]'
+                      : 'text-[#908B7D] hover:bg-[#221F1A] hover:text-white'
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5" />
@@ -95,24 +95,24 @@ export function StatsBar({
                   onClick={() => setActiveView('batch')}
                   className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium transition ${
                     activeView === 'batch'
-                      ? 'bg-[#1a1f23] text-[#f1f2f3]'
-                      : 'text-[#858d96] hover:bg-[#14181b] hover:text-white'
+                      ? 'bg-[#27241E] text-[#ECE8DD]'
+                      : 'text-[#908B7D] hover:bg-[#221F1A] hover:text-white'
                   }`}
                 >
                   <FileSpreadsheet className="h-3.5 w-3.5" />
                   Batch
-                  {batchCount > 0 && <span className="text-[#b9bec4]">{batchCount}</span>}
+                  {batchCount > 0 && <span className="text-[#B9B4A6]">{batchCount}</span>}
                 </button>
               )}
             </nav>
 
-            <div className="hidden h-4 w-px shrink-0 bg-[#2b3035] md:block" />
+            <div className="hidden h-4 w-px shrink-0 bg-[#37332B] md:block" />
 
-            <div className="hidden shrink-0 items-center gap-3 text-xs text-[#747c85] md:flex">
+            <div className="hidden shrink-0 items-center gap-3 text-xs text-[#908B7D] md:flex">
               <span className="tabular-nums">{percent}% {tr('stats.collected')}</span>
-              <div className="h-1.5 w-24 overflow-hidden rounded-full bg-[#1a1e22]">
+              <div className="h-1.5 w-24 overflow-hidden rounded-full bg-[#27241E]">
                 <div
-                  className={`h-full rounded-full bg-[#cfd3d7] transition-all ${isScanning ? 'animate-pulse' : ''}`}
+                  className={`h-full rounded-full bg-[#D6D1C3] transition-all ${isScanning ? 'animate-pulse' : ''}`}
                   style={{ width: `${percent}%` }}
                 />
               </div>
@@ -124,16 +124,16 @@ export function StatsBar({
           {auditView && (
             <div className="flex flex-wrap items-center gap-2">
               <div className="relative min-w-[210px] flex-1">
-                <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#616971]" />
+                <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#6F6A5E]" />
                 <input
                   id="filter-search-input"
                   value={searchFilter}
                   onChange={(event) => setSearchFilter(event.target.value)}
                   placeholder={tr('stats.filterEvidence')}
-                  className="h-9 w-full rounded-lg border border-[#2d3339] bg-[#101417] pl-9 pr-3 text-xs text-[#e7e9eb] outline-none placeholder:text-[#5d656e] focus:border-[#58616a]"
+                  className="h-9 w-full rounded-lg border border-[#37332B] bg-[#221F1A] pl-9 pr-3 text-xs text-[#ECE8DD] outline-none placeholder:text-[#6F6A5E] focus:border-[#6F6A5E]"
                 />
               </div>
-              <div className="flex h-9 items-center gap-1 rounded-lg border border-[#2d3339] bg-[#101417] p-1">
+              <div className="flex h-9 items-center gap-1 rounded-lg border border-[#37332B] bg-[#221F1A] p-1">
                 {(['all', 'found', 'uncertain', 'not_found'] as const).map((status) => (
                   <button
                     key={status}
@@ -141,8 +141,8 @@ export function StatsBar({
                     onClick={() => setStatusFilter(status)}
                     className={`rounded-md px-2 py-1 text-[10px] uppercase tracking-[0.08em] transition ${
                       statusFilter === status
-                        ? 'bg-[#e7e9eb] text-[#0b0e10]'
-                        : 'text-[#78818a] hover:text-white'
+                        ? 'bg-[#ECE8DD] text-[#131210]'
+                        : 'text-[#908B7D] hover:text-white'
                     }`}
                   >
                     {status === 'not_found' ? tr('stats.absent') : status === 'all' ? tr('stats.all') : status === 'uncertain' ? tr('stats.uncertain') : status}

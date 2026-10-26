@@ -92,24 +92,24 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
   };
 
   return (
-    <div className="rounded-lg border border-[#2A2A2A] bg-[#050505] font-mono text-xs flex flex-col h-[580px] overflow-hidden shadow-lg relative">
+    <div className="rounded-lg border border-[#37332B] bg-[#131210] font-mono text-xs flex flex-col h-[580px] overflow-hidden shadow-lg relative">
       {/* Terminal Titlebar */}
-      <div className="flex flex-wrap items-center justify-between px-4 py-2.5 border-b border-[#2A2A2A] bg-[#0A0A0A] gap-2 z-10">
-        <div className="flex items-center gap-2 text-[#A3A3A3]">
-          <TerminalIcon className="w-3.5 h-3.5 text-[#FFFFFF]" />
-          <span className="text-[#F5F5F5] font-bold tracking-wider text-xs">
+      <div className="flex flex-wrap items-center justify-between px-4 py-2.5 border-b border-[#37332B] bg-[#1B1915] gap-2 z-10">
+        <div className="flex items-center gap-2 text-[#B9B4A6]">
+          <TerminalIcon className="w-3.5 h-3.5 text-[#ECE8DD]" />
+          <span className="text-[#ECE8DD] font-bold tracking-wider text-xs">
             {t.consoleTitle}
           </span>
           {isScanning ? (
-            <span className="px-1.5 py-0.5 text-[9px] bg-[#FFFFFF] text-[#050505] font-bold rounded animate-pulse">
+            <span className="px-1.5 py-0.5 text-[9px] bg-[#F0885A] text-[#131210] font-bold rounded animate-pulse">
               {t.consoleLive}
             </span>
           ) : (
-            <span className="px-1.5 py-0.5 text-[9px] border border-[#2A2A2A] text-[#737373] uppercase rounded">
+            <span className="px-1.5 py-0.5 text-[9px] border border-[#37332B] text-[#908B7D] uppercase rounded">
               {t.consoleIdle}
             </span>
           )}
-          <span className="text-[#737373] text-[10px] hidden sm:inline">
+          <span className="text-[#908B7D] text-[10px] hidden sm:inline">
             ({filteredLogs.length}{filteredLogs.length !== logs.length ? ` of ${logs.length}` : ''} {t.consoleEvents})
           </span>
         </div>
@@ -122,12 +122,12 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
             onClick={() => setAutoScroll(!autoScroll)}
             className={`h-7 px-2.5 text-[10px] rounded border flex items-center gap-1 transition-all ${
               autoScroll
-                ? 'bg-[#111111] border-[#FFFFFF]/40 text-[#FFFFFF] font-medium'
-                : 'bg-[#050505] border-[#2A2A2A] text-[#737373] hover:text-[#A3A3A3]'
+                ? 'bg-[#221F1A] border-[#ECE8DD]/40 text-[#ECE8DD] font-medium'
+                : 'bg-[#131210] border-[#37332B] text-[#908B7D] hover:text-[#B9B4A6]'
             }`}
             title={autoScroll ? t.consoleScrollOn : t.consoleScrollOff}
           >
-            <ArrowDown className={`w-3 h-3 ${autoScroll ? 'text-[#FFFFFF]' : 'text-[#737373]'}`} />
+            <ArrowDown className={`w-3 h-3 ${autoScroll ? 'text-[#ECE8DD]' : 'text-[#908B7D]'}`} />
             <span>{autoScroll ? t.consoleScrollOn : t.consoleScrollOff}</span>
           </button>
 
@@ -136,13 +136,13 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
             type="button"
             id="terminal-copy-logs-btn"
             onClick={copyLogs}
-            className="h-7 px-2.5 rounded border border-[#2A2A2A] bg-[#0A0A0A] text-[#A3A3A3] hover:text-[#F5F5F5] hover:border-[#737373] transition-all flex items-center gap-1 text-[10px]"
+            className="h-7 px-2.5 rounded border border-[#37332B] bg-[#1B1915] text-[#B9B4A6] hover:text-[#ECE8DD] hover:border-[#908B7D] transition-all flex items-center gap-1 text-[10px]"
             title={t.consoleCopy}
           >
             {copied ? (
               <>
-                <Check className="w-3 h-3 text-[#FFFFFF]" />
-                <span className="text-[#FFFFFF] font-semibold">{t.consoleCopied}</span>
+                <Check className="w-3 h-3 text-[#ECE8DD]" />
+                <span className="text-[#ECE8DD] font-semibold">{t.consoleCopied}</span>
               </>
             ) : (
               <>
@@ -157,7 +157,7 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
             type="button"
             id="terminal-clear-logs-btn"
             onClick={onClearLogs}
-            className="h-7 px-2 rounded border border-[#2A2A2A] text-[#737373] hover:text-[#FFFFFF] hover:border-[#FFFFFF]/40 transition-all flex items-center justify-center"
+            className="h-7 px-2 rounded border border-[#37332B] text-[#908B7D] hover:text-[#ECE8DD] hover:border-[#ECE8DD]/40 transition-all flex items-center justify-center"
             title={t.consoleClear}
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -166,7 +166,7 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
       </div>
 
       {/* Log Level Filter & Search Bar */}
-      <div className="flex flex-wrap items-center justify-between px-4 py-2 border-b border-[#2A2A2A] bg-[#0A0A0A]/70 gap-2 z-10">
+      <div className="flex flex-wrap items-center justify-between px-4 py-2 border-b border-[#37332B] bg-[#1B1915]/70 gap-2 z-10">
         {/* Log Level Filter Pills */}
         <div className="flex flex-wrap items-center gap-1.5">
           <button
@@ -175,8 +175,8 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
             onClick={() => setSelectedLevel('all')}
             className={`h-7 px-2.5 rounded text-[11px] font-mono border transition-all whitespace-nowrap ${
               selectedLevel === 'all'
-                ? 'bg-[#F5F5F5] text-[#050505] font-bold border-[#F5F5F5] shadow-sm'
-                : 'bg-[#0A0A0A] text-[#A3A3A3] border-[#2A2A2A] hover:text-[#F5F5F5] hover:border-[#737373]'
+                ? 'bg-[#ECE8DD] text-[#131210] font-bold border-[#ECE8DD] shadow-sm'
+                : 'bg-[#1B1915] text-[#B9B4A6] border-[#37332B] hover:text-[#ECE8DD] hover:border-[#908B7D]'
             }`}
           >
             {t.consoleFilterAll} ({counts.all})
@@ -188,11 +188,11 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
             onClick={() => setSelectedLevel('info')}
             className={`h-7 px-2.5 rounded text-[11px] font-mono border flex items-center gap-1.5 transition-all whitespace-nowrap ${
               selectedLevel === 'info'
-                ? 'bg-[#FFFFFF]/15 text-[#FFFFFF] font-bold border-[#FFFFFF]/50'
-                : 'bg-[#0A0A0A] text-[#A3A3A3] border-[#2A2A2A] hover:text-[#F5F5F5]'
+                ? 'bg-[#ECE8DD]/15 text-[#ECE8DD] font-bold border-[#ECE8DD]/50'
+                : 'bg-[#1B1915] text-[#B9B4A6] border-[#37332B] hover:text-[#ECE8DD]'
             }`}
           >
-            <Info className="w-3 h-3 text-[#A3A3A3]" />
+            <Info className="w-3 h-3 text-[#B9B4A6]" />
             <span>{t.consoleFilterInfo} ({counts.info})</span>
           </button>
 
@@ -202,11 +202,11 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
             onClick={() => setSelectedLevel('success')}
             className={`h-7 px-2.5 rounded text-[11px] font-mono border flex items-center gap-1.5 transition-all whitespace-nowrap ${
               selectedLevel === 'success'
-                ? 'bg-[#FFFFFF]/20 text-[#FFFFFF] font-bold border-[#FFFFFF]/60'
-                : 'bg-[#0A0A0A] text-[#A3A3A3] border-[#2A2A2A] hover:text-[#FFFFFF]'
+                ? 'bg-[#ECE8DD]/20 text-[#ECE8DD] font-bold border-[#ECE8DD]/60'
+                : 'bg-[#1B1915] text-[#B9B4A6] border-[#37332B] hover:text-[#ECE8DD]'
             }`}
           >
-            <CheckCircle2 className="w-3 h-3 text-[#FFFFFF]" />
+            <CheckCircle2 className="w-3 h-3 text-[#ECE8DD]" />
             <span>{t.consoleFilterSuccess} ({counts.success})</span>
           </button>
 
@@ -216,11 +216,11 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
             onClick={() => setSelectedLevel('warn')}
             className={`h-7 px-2.5 rounded text-[11px] font-mono border flex items-center gap-1.5 transition-all whitespace-nowrap ${
               selectedLevel === 'warn'
-                ? 'bg-[#737373]/20 text-[#737373] font-bold border-[#737373]/50'
-                : 'bg-[#0A0A0A] text-[#A3A3A3] border-[#2A2A2A] hover:text-[#737373]'
+                ? 'bg-[#908B7D]/20 text-[#908B7D] font-bold border-[#908B7D]/50'
+                : 'bg-[#1B1915] text-[#B9B4A6] border-[#37332B] hover:text-[#908B7D]'
             }`}
           >
-            <AlertTriangle className="w-3 h-3 text-[#737373]" />
+            <AlertTriangle className="w-3 h-3 text-[#908B7D]" />
             <span>{t.consoleFilterWarn} ({counts.warn})</span>
           </button>
 
@@ -230,32 +230,32 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
             onClick={() => setSelectedLevel('error')}
             className={`h-7 px-2.5 rounded text-[11px] font-mono border flex items-center gap-1.5 transition-all whitespace-nowrap ${
               selectedLevel === 'error'
-                ? 'bg-[#FFFFFF]/20 text-[#FFFFFF] font-bold border-[#FFFFFF]/50'
-                : 'bg-[#0A0A0A] text-[#A3A3A3] border-[#2A2A2A] hover:text-[#FFFFFF]'
+                ? 'bg-[#ECE8DD]/20 text-[#ECE8DD] font-bold border-[#ECE8DD]/50'
+                : 'bg-[#1B1915] text-[#B9B4A6] border-[#37332B] hover:text-[#ECE8DD]'
             }`}
           >
-            <AlertOctagon className="w-3 h-3 text-[#FFFFFF]" />
+            <AlertOctagon className="w-3 h-3 text-[#ECE8DD]" />
             <span>{t.consoleFilterError} ({counts.error})</span>
           </button>
         </div>
 
         {/* Quick Text Filter Search */}
         <div className="relative flex items-center">
-          <Search className="w-3.5 h-3.5 text-[#737373] absolute left-2.5 pointer-events-none" />
+          <Search className="w-3.5 h-3.5 text-[#908B7D] absolute left-2.5 pointer-events-none" />
           <input
             id="terminal-search-input"
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t.consoleSearchPlaceholder}
-            className="h-7 pl-8 pr-6 bg-[#050505] border border-[#2A2A2A] rounded text-[#F5F5F5] text-xs placeholder:text-[#737373] focus:outline-none focus:border-[#FFFFFF] w-36 sm:w-48 font-mono transition-colors"
+            className="h-7 pl-8 pr-6 bg-[#131210] border border-[#37332B] rounded text-[#ECE8DD] text-xs placeholder:text-[#908B7D] focus:outline-none focus:border-[#F0885A] w-36 sm:w-48 font-mono transition-colors"
           />
           {searchQuery && (
             <button
               type="button"
               id="terminal-clear-search-btn"
               onClick={() => setSearchQuery('')}
-              className="absolute right-1.5 text-[10px] text-[#737373] hover:text-[#F5F5F5] px-1"
+              className="absolute right-1.5 text-[10px] text-[#908B7D] hover:text-[#ECE8DD] px-1"
               title="Clear Search"
             >
               ✕
@@ -267,14 +267,14 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
       {/* Terminal Stream with Mineiro Username Intelligence ASCII Background */}
       <div
         ref={scrollRef}
-        className="relative flex-1 p-4 overflow-y-auto space-y-1.5 bg-[#050505] text-[#F5F5F5] select-text leading-relaxed font-mono"
+        className="relative flex-1 p-4 overflow-y-auto space-y-1.5 bg-[#131210] text-[#ECE8DD] select-text leading-relaxed font-mono"
       >
         {/* Background Watermark: Mineiro Username Intelligence ASCII Logo */}
         <div 
           className="absolute inset-0 flex items-center justify-center pointer-events-none select-none overflow-hidden z-0" 
           aria-hidden="true"
         >
-          <pre className="text-[#FFFFFF]/[0.05] font-mono text-[9px] sm:text-xs md:text-sm lg:text-base font-black leading-tight text-center tracking-tighter">
+          <pre className="text-[#ECE8DD]/[0.05] font-mono text-[9px] sm:text-xs md:text-sm lg:text-base font-black leading-tight text-center tracking-tighter">
 {`
  ██╗     ██╗          ███╗   ███╗███████╗
  ██║     ██║          ████╗ ████║██╔════╝
@@ -288,8 +288,8 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
         </div>
 
         {/* Initial ASCII Header Banner */}
-        <div className="relative z-10 text-[#A3A3A3] pb-2 border-b border-[#2A2A2A]">
-          <pre className="text-[10px] text-[#FFFFFF] font-bold leading-tight">
+        <div className="relative z-10 text-[#B9B4A6] pb-2 border-b border-[#37332B]">
+          <pre className="text-[10px] text-[#ECE8DD] font-bold leading-tight">
 {`   _      _             __  __        
   | |    | |           |  \\/  |       
   | |    | |     __ _  | \\  / |  ___  
@@ -298,26 +298,26 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
   |______|______\\__,_| |_|  |_| \\___| 
   v2.5.0 // UNIFIED OSINT RECONNAISSANCE ENGINE`}
           </pre>
-          <p className="mt-2 text-[#A3A3A3] text-[11px]">
+          <p className="mt-2 text-[#B9B4A6] text-[11px]">
             {t.consoleReadyMsg}
           </p>
         </div>
 
         {logs.length === 0 ? (
-          <div className="relative z-10 text-[#737373] italic py-10 text-center">
+          <div className="relative z-10 text-[#908B7D] italic py-10 text-center">
             {t.consoleEmptyNotice}
           </div>
         ) : filteredLogs.length === 0 ? (
           <div className="relative z-10 py-12 flex flex-col items-center justify-center text-center space-y-3">
-            <Filter className="w-6 h-6 text-[#737373]" />
-            <span className="text-[#F5F5F5] font-bold uppercase text-[11px]">
+            <Filter className="w-6 h-6 text-[#908B7D]" />
+            <span className="text-[#ECE8DD] font-bold uppercase text-[11px]">
               {t.consoleNoFilteredEvents}
             </span>
             <button
               type="button"
               id="terminal-reset-filter-btn"
               onClick={handleResetFilters}
-              className="px-3 py-1 bg-[#F5F5F5] text-[#050505] font-bold uppercase text-[10px] hover:bg-white transition-colors"
+              className="px-3 py-1 bg-[#ECE8DD] text-[#131210] font-bold uppercase text-[10px] hover:bg-[#F0885A] transition-colors"
             >
               {t.clear}
             </button>
@@ -325,26 +325,26 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
         ) : (
           filteredLogs.map((log) => {
             let prefix = '[*]';
-            let textColor = 'text-[#A3A3A3]';
-            let badgeBg = 'bg-[#0A0A0A] border-[#2A2A2A] text-[#A3A3A3]';
+            let textColor = 'text-[#B9B4A6]';
+            let badgeBg = 'bg-[#1B1915] border-[#37332B] text-[#B9B4A6]';
 
             if (log.level === 'success') {
               prefix = '[+]';
-              textColor = 'text-[#F5F5F5] font-medium';
-              badgeBg = 'bg-[#0A0A0A] border-[#FFFFFF]/50 text-[#FFFFFF]';
+              textColor = 'text-[#ECE8DD] font-medium';
+              badgeBg = 'bg-[#1B1915] border-[#ECE8DD]/50 text-[#ECE8DD]';
             } else if (log.level === 'warn') {
               prefix = '[!]';
-              textColor = 'text-[#737373] font-medium';
-              badgeBg = 'bg-[#0A0A0A] border-[#737373]/50 text-[#737373]';
+              textColor = 'text-[#908B7D] font-medium';
+              badgeBg = 'bg-[#1B1915] border-[#908B7D]/50 text-[#908B7D]';
             } else if (log.level === 'error') {
               prefix = '[-]';
-              textColor = 'text-[#FFFFFF] font-medium';
-              badgeBg = 'bg-[#0A0A0A] border-[#FFFFFF]/50 text-[#FFFFFF]';
+              textColor = 'text-[#ECE8DD] font-medium';
+              badgeBg = 'bg-[#1B1915] border-[#ECE8DD]/50 text-[#ECE8DD]';
             }
 
             return (
               <div key={log.id} className={`relative z-10 flex items-start gap-2 ${textColor}`}>
-                <span className="text-[#737373] shrink-0 text-[10px] pt-0.5">{log.timestamp}</span>
+                <span className="text-[#908B7D] shrink-0 text-[10px] pt-0.5">{log.timestamp}</span>
                 <span
                   className={`shrink-0 px-1 py-0.2 text-[9px] uppercase font-bold border ${badgeBg}`}
                 >
@@ -352,7 +352,7 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
                 </span>
                 <span className="shrink-0 font-bold">{prefix}</span>
                 {log.target && (
-                  <span className="shrink-0 text-[#A3A3A3] text-[10px] border border-[#2A2A2A] px-1 bg-[#0A0A0A]">
+                  <span className="shrink-0 text-[#B9B4A6] text-[10px] border border-[#37332B] px-1 bg-[#1B1915]">
                     @{log.target}
                   </span>
                 )}
@@ -364,37 +364,37 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
       </div>
 
       {/* Terminal Footer Telemetry */}
-      <div className="relative z-10 flex flex-wrap items-center justify-between px-4 py-1.5 border-t border-[#2A2A2A] bg-[#0A0A0A] text-[10px] text-[#A3A3A3] gap-2">
+      <div className="relative z-10 flex flex-wrap items-center justify-between px-4 py-1.5 border-t border-[#37332B] bg-[#1B1915] text-[10px] text-[#B9B4A6] gap-2">
         <div className="flex items-center gap-3">
           <span>
-            TOTAL: <strong className="text-[#F5F5F5]">{counts.all}</strong>
+            TOTAL: <strong className="text-[#ECE8DD]">{counts.all}</strong>
           </span>
-          <span className="text-[#2A2A2A]">|</span>
+          <span className="text-[#37332B]">|</span>
           <span>
-            INFO: <strong className="text-[#A3A3A3]">{counts.info}</strong>
+            INFO: <strong className="text-[#B9B4A6]">{counts.info}</strong>
           </span>
-          <span className="text-[#2A2A2A]">|</span>
+          <span className="text-[#37332B]">|</span>
           <span>
-            SUCCESS: <strong className="text-[#FFFFFF]">{counts.success}</strong>
+            SUCCESS: <strong className="text-[#ECE8DD]">{counts.success}</strong>
           </span>
-          <span className="text-[#2A2A2A]">|</span>
+          <span className="text-[#37332B]">|</span>
           <span>
-            WARN: <strong className="text-[#737373]">{counts.warn}</strong>
+            WARN: <strong className="text-[#908B7D]">{counts.warn}</strong>
           </span>
-          <span className="text-[#2A2A2A]">|</span>
+          <span className="text-[#37332B]">|</span>
           <span>
-            ERROR: <strong className="text-[#FFFFFF]">{counts.error}</strong>
+            ERROR: <strong className="text-[#ECE8DD]">{counts.error}</strong>
           </span>
         </div>
 
         <div className="flex items-center gap-2">
           {selectedLevel !== 'all' && (
-            <span className="text-[#FFFFFF] uppercase font-semibold">
+            <span className="text-[#ECE8DD] uppercase font-semibold">
               Filter: {selectedLevel}
             </span>
           )}
           {searchQuery && (
-            <span className="text-[#A3A3A3]">
+            <span className="text-[#B9B4A6]">
               Query: &quot;{searchQuery}&quot;
             </span>
           )}

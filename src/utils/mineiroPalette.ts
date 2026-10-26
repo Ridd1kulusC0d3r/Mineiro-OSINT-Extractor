@@ -1,32 +1,34 @@
 /**
- * Mineiro Username Intelligence — monochrome identity system.
- * Black, white and neutral grays only. Status is communicated by labels,
- * iconography, borders and patterns instead of semantic color.
+ * Mineiro Username Intelligence — identity system aligned with LLmInjection:
+ * warm paper/ink neutrals plus one rust signal (#F0885A). Status is still
+ * communicated by labels, iconography, borders and patterns, not hue.
  */
 
 export const MINEIRO_PALETTE = {
-  black: '#000000',
-  ink: '#050505',
-  ink2: '#0A0A0A',
-  panel: '#111111',
-  line: '#2A2A2A',
-  lineStrong: '#4A4A4A',
-  muted: '#737373',
-  text2: '#A3A3A3',
-  text: '#F5F5F5',
-  white: '#FFFFFF',
-  bone: '#FAFAFA',
+  black: '#131210',
+  ink: '#131210',
+  ink2: '#1B1915',
+  panel: '#221F1A',
+  line: '#37332B',
+  lineStrong: '#4A453A',
+  muted: '#908B7D',
+  text2: '#B9B4A6',
+  text: '#ECE8DD',
+  white: '#ECE8DD',
+  bone: '#F3F0E8',
+  signal: '#F0885A',
+  signalInk: '#131210',
   // Compatibility aliases: still monochrome.
-  cyan: '#FFFFFF',
-  cyanDark: '#A3A3A3',
-  rose: '#737373',
-  text3: '#737373',
-  aberration: '#FFFFFF',
+  cyan: '#ECE8DD',
+  cyanDark: '#B9B4A6',
+  rose: '#908B7D',
+  text3: '#908B7D',
+  aberration: '#ECE8DD',
 } as const;
 
 export const MINEIRO_HEX_LIST = [
-  '#000000', '#050505', '#0A0A0A', '#111111', '#2A2A2A', '#4A4A4A',
-  '#737373', '#A3A3A3', '#F5F5F5', '#FAFAFA', '#FFFFFF',
+  '#131210', '#1B1915', '#221F1A', '#27241E', '#37332B', '#4A453A', '#6F6A5E',
+  '#908B7D', '#A19C8E', '#B9B4A6', '#D6D1C3', '#ECE8DD', '#F3F0E8', '#F0885A',
 ] as const;
 
 export const ALLOWED_HEX_SET = new Set<string>(MINEIRO_HEX_LIST.map((h) => h.toUpperCase()));

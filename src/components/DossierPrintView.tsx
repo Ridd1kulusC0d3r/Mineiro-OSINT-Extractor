@@ -19,7 +19,7 @@ export function DossierPrintView({
   const report = buildIntelligenceAssessment(results, target || 'target', 'account_correlation', language);
 
   return (
-    <div className="hidden print:block bg-white text-black p-8 max-w-5xl mx-auto font-sans text-xs space-y-7">
+    <div className="hidden print:block bg-[#F0885A] text-black p-8 max-w-5xl mx-auto font-sans text-xs space-y-7">
       <header className="border-b-2 border-black pb-5">
         <div className="font-mono text-[10px] tracking-[0.18em]">MINEIRO USERNAME INTELLIGENCE · OPEN-SOURCE INTELLIGENCE ASSESSMENT</div>
         <h1 className="mt-3 text-3xl font-bold tracking-tight">Public evidence, analytical gaps and next actions.</h1>

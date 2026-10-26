@@ -68,3 +68,21 @@ Evitar:
 - AI-powered em títulos sem necessidade
 
 A interface deve explicar o que faz sem tentar impressionar o usuário com adjetivos.
+
+## Paleta visual
+
+Alinhada ao projeto LLmInjection: neutros quentes de papel e tinta mais um único sinal ferrugem.
+Fonte única: `src/utils/mineiroPalette.ts` e as variáveis `--paper`, `--ink`, `--rule`, `--signal` em `src/index.css`.
+
+| Token | Hex |
+| --- | --- |
+| paper | `#131210` |
+| paper-2 | `#1B1915` |
+| surface | `#221F1A` |
+| rule | `#37332B` |
+| ink-3 | `#908B7D` |
+| ink-2 | `#B9B4A6` |
+| ink | `#ECE8DD` |
+| signal | `#F0885A` |
+
+O tema de alto contraste continua preto e branco puro por acessibilidade.

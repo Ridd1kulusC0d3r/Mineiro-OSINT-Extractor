@@ -323,46 +323,46 @@ export function WorldThreatMap({
       .attr('cx', '50%')
       .attr('cy', '50%')
       .attr('r', '50%');
-    gradCritical.append('stop').attr('offset', '0%').attr('stop-color', '#FFFFFF').attr('stop-opacity', 0.85);
-    gradCritical.append('stop').attr('offset', '40%').attr('stop-color', '#737373').attr('stop-opacity', 0.45);
-    gradCritical.append('stop').attr('offset', '75%').attr('stop-color', '#737373').attr('stop-opacity', 0.18);
-    gradCritical.append('stop').attr('offset', '100%').attr('stop-color', '#050505').attr('stop-opacity', 0);
+    gradCritical.append('stop').attr('offset', '0%').attr('stop-color', '#ECE8DD').attr('stop-opacity', 0.85);
+    gradCritical.append('stop').attr('offset', '40%').attr('stop-color', '#908B7D').attr('stop-opacity', 0.45);
+    gradCritical.append('stop').attr('offset', '75%').attr('stop-color', '#908B7D').attr('stop-opacity', 0.18);
+    gradCritical.append('stop').attr('offset', '100%').attr('stop-color', '#131210').attr('stop-opacity', 0);
 
     const gradHigh = defs.append('radialGradient')
       .attr('id', 'grad-density-high')
       .attr('cx', '50%')
       .attr('cy', '50%')
       .attr('r', '50%');
-    gradHigh.append('stop').attr('offset', '0%').attr('stop-color', '#737373').attr('stop-opacity', 0.8);
-    gradHigh.append('stop').attr('offset', '45%').attr('stop-color', '#FFFFFF').attr('stop-opacity', 0.35);
-    gradHigh.append('stop').attr('offset', '80%').attr('stop-color', '#A3A3A3').attr('stop-opacity', 0.12);
-    gradHigh.append('stop').attr('offset', '100%').attr('stop-color', '#050505').attr('stop-opacity', 0);
+    gradHigh.append('stop').attr('offset', '0%').attr('stop-color', '#908B7D').attr('stop-opacity', 0.8);
+    gradHigh.append('stop').attr('offset', '45%').attr('stop-color', '#ECE8DD').attr('stop-opacity', 0.35);
+    gradHigh.append('stop').attr('offset', '80%').attr('stop-color', '#B9B4A6').attr('stop-opacity', 0.12);
+    gradHigh.append('stop').attr('offset', '100%').attr('stop-color', '#131210').attr('stop-opacity', 0);
 
     const gradElevated = defs.append('radialGradient')
       .attr('id', 'grad-density-elevated')
       .attr('cx', '50%')
       .attr('cy', '50%')
       .attr('r', '50%');
-    gradElevated.append('stop').attr('offset', '0%').attr('stop-color', '#FFFFFF').attr('stop-opacity', 0.75);
-    gradElevated.append('stop').attr('offset', '50%').attr('stop-color', '#A3A3A3').attr('stop-opacity', 0.28);
-    gradElevated.append('stop').attr('offset', '100%').attr('stop-color', '#050505').attr('stop-opacity', 0);
+    gradElevated.append('stop').attr('offset', '0%').attr('stop-color', '#ECE8DD').attr('stop-opacity', 0.75);
+    gradElevated.append('stop').attr('offset', '50%').attr('stop-color', '#B9B4A6').attr('stop-opacity', 0.28);
+    gradElevated.append('stop').attr('offset', '100%').attr('stop-color', '#131210').attr('stop-opacity', 0);
 
     const gradModerate = defs.append('radialGradient')
       .attr('id', 'grad-density-moderate')
       .attr('cx', '50%')
       .attr('cy', '50%')
       .attr('r', '50%');
-    gradModerate.append('stop').attr('offset', '0%').attr('stop-color', '#A3A3A3').attr('stop-opacity', 0.65);
-    gradModerate.append('stop').attr('offset', '60%').attr('stop-color', '#737373').attr('stop-opacity', 0.2);
-    gradModerate.append('stop').attr('offset', '100%').attr('stop-color', '#050505').attr('stop-opacity', 0);
+    gradModerate.append('stop').attr('offset', '0%').attr('stop-color', '#B9B4A6').attr('stop-opacity', 0.65);
+    gradModerate.append('stop').attr('offset', '60%').attr('stop-color', '#908B7D').attr('stop-opacity', 0.2);
+    gradModerate.append('stop').attr('offset', '100%').attr('stop-color', '#131210').attr('stop-opacity', 0);
 
     // Ocean background
     g.append('path')
       .datum({ type: 'Sphere' } as any)
       .attr('class', 'sphere-bg')
       .attr('d', pathGenerator as any)
-      .attr('fill', '#050505')
-      .attr('stroke', '#2A2A2A')
+      .attr('fill', '#131210')
+      .attr('stroke', '#37332B')
       .attr('stroke-width', 1);
 
     // Graticule grid lines
@@ -373,7 +373,7 @@ export function WorldThreatMap({
         .attr('class', 'graticule-lines')
         .attr('d', pathGenerator as any)
         .attr('fill', 'none')
-        .attr('stroke', 'rgba(255, 255, 255, 0.05)')
+        .attr('stroke', 'rgba(236,232,221, 0.05)')
         .attr('stroke-width', 0.6)
         .attr('stroke-dasharray', '2 2');
     }
@@ -395,22 +395,22 @@ export function WorldThreatMap({
           if (matchKey && countryDensityMap[matchKey]) {
             const density = countryDensityMap[matchKey].totalDensity;
             // Visual heat highlight for countries hosting verified server endpoints
-            if (density > 200) return '#2A2A2A'; // High density sovereign hotspot
-            if (density > 100) return '#111111';
-            return '#0A0A0A';
+            if (density > 200) return '#37332B'; // High density sovereign hotspot
+            if (density > 100) return '#221F1A';
+            return '#1B1915';
           }
-          return '#050505';
+          return '#131210';
         })
         .attr('stroke', (d: any) => {
           const countryName = d.properties?.name || '';
           const matchKey = Object.keys(countryDensityMap).find((k) => matchesCountry(countryName, k));
           if (matchKey && countryDensityMap[matchKey]) {
             const density = countryDensityMap[matchKey].totalDensity;
-            if (density > 200) return '#FFFFFF';
-            if (density > 100) return '#737373';
-            return '#FFFFFF';
+            if (density > 200) return '#ECE8DD';
+            if (density > 100) return '#908B7D';
+            return '#ECE8DD';
           }
-          return '#2A2A2A';
+          return '#37332B';
         })
         .attr('stroke-width', (d: any) => {
           const countryName = d.properties?.name || '';
@@ -420,8 +420,8 @@ export function WorldThreatMap({
         .attr('cursor', 'pointer')
         .on('mouseover', function (event, d: any) {
           d3.select(this)
-            .attr('fill', '#2A2A2A')
-            .attr('stroke', '#FFFFFF');
+            .attr('fill', '#37332B')
+            .attr('stroke', '#ECE8DD');
         })
         .on('mouseout', function (event, d: any) {
           const countryName = d.properties?.name || '';
@@ -429,12 +429,12 @@ export function WorldThreatMap({
           if (matchKey && countryDensityMap[matchKey]) {
             const density = countryDensityMap[matchKey].totalDensity;
             d3.select(this)
-              .attr('fill', density > 200 ? '#2A2A2A' : density > 100 ? '#111111' : '#0A0A0A')
-              .attr('stroke', density > 200 ? '#FFFFFF' : density > 100 ? '#737373' : '#FFFFFF');
+              .attr('fill', density > 200 ? '#37332B' : density > 100 ? '#221F1A' : '#1B1915')
+              .attr('stroke', density > 200 ? '#ECE8DD' : density > 100 ? '#908B7D' : '#ECE8DD');
           } else {
             d3.select(this)
-              .attr('fill', '#050505')
-              .attr('stroke', '#2A2A2A');
+              .attr('fill', '#131210')
+              .attr('stroke', '#37332B');
           }
         });
     } catch (err) {
@@ -486,7 +486,7 @@ export function WorldThreatMap({
           clusterG.append('circle')
             .attr('r', haloRadius * 0.7)
             .attr('fill', 'none')
-            .attr('stroke', cluster.densityTier === 'CRITICAL' ? '#FFFFFF' : '#737373')
+            .attr('stroke', cluster.densityTier === 'CRITICAL' ? '#ECE8DD' : '#908B7D')
             .attr('stroke-width', 0.9)
             .attr('stroke-dasharray', '3 3')
             .attr('opacity', 0.6)
@@ -502,14 +502,14 @@ export function WorldThreatMap({
           .attr('y', -10)
           .attr('width', 70)
           .attr('height', 14)
-          .attr('fill', '#0A0A0A')
-          .attr('stroke', cluster.densityTier === 'CRITICAL' ? '#FFFFFF' : '#2A2A2A')
+          .attr('fill', '#1B1915')
+          .attr('stroke', cluster.densityTier === 'CRITICAL' ? '#ECE8DD' : '#37332B')
           .attr('stroke-width', 0.8);
 
         badgeG.append('text')
           .attr('x', 0)
           .attr('y', 0)
-          .attr('fill', '#F5F5F5')
+          .attr('fill', '#ECE8DD')
           .attr('font-size', '8px')
           .attr('font-family', 'monospace')
           .attr('font-weight', 'bold')
@@ -546,7 +546,7 @@ export function WorldThreatMap({
           .datum(lineData)
           .attr('d', lineGenerator)
           .attr('fill', 'none')
-          .attr('stroke', 'rgba(255, 255, 255, 0.15)')
+          .attr('stroke', 'rgba(236,232,221, 0.15)')
           .attr('stroke-width', 1)
           .attr('stroke-dasharray', '3 3');
 
@@ -555,7 +555,7 @@ export function WorldThreatMap({
           .datum(lineData)
           .attr('d', lineGenerator)
           .attr('fill', 'none')
-          .attr('stroke', origin.threatDensityWeight > 80 ? '#FFFFFF' : '#FFFFFF')
+          .attr('stroke', origin.threatDensityWeight > 80 ? '#ECE8DD' : '#ECE8DD')
           .attr('stroke-width', origin.threatDensityWeight > 80 ? 1.5 : 1)
           .attr('stroke-dasharray', '8 14')
           .style('animation', 'reconPulseDash 3s linear infinite');
@@ -571,25 +571,25 @@ export function WorldThreatMap({
       vantageGroup.append('circle')
         .attr('r', 16)
         .attr('fill', 'none')
-        .attr('stroke', '#FFFFFF')
+        .attr('stroke', '#ECE8DD')
         .attr('stroke-width', 0.8)
         .attr('opacity', 0.4)
         .style('animation', 'radarPing 2.5s cubic-bezier(0, 0.2, 0.8, 1) infinite');
 
       vantageGroup.append('circle')
         .attr('r', 4.5)
-        .attr('fill', '#050505')
-        .attr('stroke', '#FFFFFF')
+        .attr('fill', '#131210')
+        .attr('stroke', '#ECE8DD')
         .attr('stroke-width', 1.8);
 
       vantageGroup.append('circle')
         .attr('r', 1.8)
-        .attr('fill', '#FFFFFF');
+        .attr('fill', '#ECE8DD');
 
       vantageGroup.append('text')
         .attr('x', 8)
         .attr('y', -6)
-        .attr('fill', '#FFFFFF')
+        .attr('fill', '#ECE8DD')
         .attr('font-size', '9px')
         .attr('font-family', 'monospace')
         .attr('font-weight', 'bold')
@@ -629,7 +629,7 @@ export function WorldThreatMap({
         nodeG.append('circle')
           .attr('r', isSelected ? 22 : 16)
           .attr('fill', 'none')
-          .attr('stroke', isCritical ? '#FFFFFF' : isPhysical ? '#737373' : '#FFFFFF')
+          .attr('stroke', isCritical ? '#ECE8DD' : isPhysical ? '#908B7D' : '#ECE8DD')
           .attr('stroke-width', 1)
           .attr('stroke-dasharray', isPhysical ? '2 2' : 'none')
           .attr('opacity', 0.6)
@@ -639,21 +639,21 @@ export function WorldThreatMap({
       // Base server node circle
       nodeG.append('circle')
         .attr('r', isSelected || isHovered ? 7.5 : 5)
-        .attr('fill', isSelected ? '#FFFFFF' : '#050505')
-        .attr('stroke', isCritical ? '#FFFFFF' : isPhysical ? '#737373' : '#A3A3A3')
+        .attr('fill', isSelected ? '#ECE8DD' : '#131210')
+        .attr('stroke', isCritical ? '#ECE8DD' : isPhysical ? '#908B7D' : '#B9B4A6')
         .attr('stroke-width', isSelected ? 2.2 : 1.4)
         .attr('filter', isSelected ? 'url(#map-glow)' : 'none');
 
       // Inner pin core
       nodeG.append('circle')
         .attr('r', isSelected ? 3 : 2)
-        .attr('fill', isSelected ? '#050505' : isCritical ? '#FFFFFF' : isPhysical ? '#737373' : '#F5F5F5');
+        .attr('fill', isSelected ? '#131210' : isCritical ? '#ECE8DD' : isPhysical ? '#908B7D' : '#ECE8DD');
 
       // Platform & IP Tag
       nodeG.append('text')
         .attr('x', 8)
         .attr('y', 3)
-        .attr('fill', isSelected ? '#FFFFFF' : '#A3A3A3')
+        .attr('fill', isSelected ? '#ECE8DD' : '#B9B4A6')
         .attr('font-size', isSelected ? '10px' : '8.5px')
         .attr('font-family', 'monospace')
         .attr('font-weight', isSelected ? 'bold' : 'normal')
@@ -753,7 +753,7 @@ export function WorldThreatMap({
               onClick={() => setVisualizationMode('density')}
               className={`px-2.5 py-1 text-[11px] uppercase flex items-center gap-1.5 transition-colors ${
                 visualizationMode === 'density'
-                  ? 'bg-white text-black font-bold'
+                  ? 'bg-[#F0885A] text-black font-bold'
                   : 'text-neutral-400 hover:text-white'
               }`}
             >
@@ -766,7 +766,7 @@ export function WorldThreatMap({
               onClick={() => setVisualizationMode('vectors')}
               className={`px-2.5 py-1 text-[11px] uppercase flex items-center gap-1.5 transition-colors ${
                 visualizationMode === 'vectors'
-                  ? 'bg-white text-black font-bold'
+                  ? 'bg-[#F0885A] text-black font-bold'
                   : 'text-neutral-400 hover:text-white'
               }`}
             >
@@ -828,7 +828,7 @@ export function WorldThreatMap({
               onClick={() => setFilterJurisdiction(tab.id)}
               className={`px-2 py-1 text-[11px] uppercase transition-colors ${
                 filterJurisdiction === tab.id
-                  ? 'bg-white text-black font-bold'
+                  ? 'bg-[#F0885A] text-black font-bold'
                   : 'text-neutral-400 hover:text-white hover:bg-neutral-900 border border-neutral-800'
               }`}
             >
@@ -843,7 +843,7 @@ export function WorldThreatMap({
               onClick={() => setOnlyPhysicalRisk(!onlyPhysicalRisk)}
               className={`px-2 py-1 text-[11px] uppercase border transition-colors flex items-center gap-1 ${
                 onlyPhysicalRisk
-                  ? 'border-white bg-white text-black font-bold'
+                  ? 'border-[#F0885A] bg-[#F0885A] text-black font-bold'
                   : 'border-neutral-700 bg-black text-neutral-300 hover:border-neutral-500'
               }`}
             >
@@ -879,7 +879,7 @@ export function WorldThreatMap({
       {/* SVG Canvas Map Container */}
       <div 
         ref={containerRef}
-        className="relative w-full border border-[#2A2A2A] bg-[#050505] overflow-hidden select-none"
+        className="relative w-full border border-[#37332B] bg-[#131210] overflow-hidden select-none"
         style={{ minHeight: '380px' }}
       >
         <svg
@@ -934,7 +934,7 @@ export function WorldThreatMap({
 
         {/* Floating Forensic HUD Inspector (if node clicked or hovered) */}
         {activeFocus && (
-          <div className="absolute bottom-3 right-3 left-3 sm:left-auto sm:w-96 border border-white bg-black/95 backdrop-blur-md p-4 text-xs space-y-3 z-20 shadow-2xl">
+          <div className="absolute bottom-3 right-3 left-3 sm:left-auto sm:w-96 border border-[#F0885A] bg-black/95 backdrop-blur-md p-4 text-xs space-y-3 z-20 shadow-2xl">
             <div className="flex items-start justify-between gap-2 border-b border-neutral-800 pb-2">
               <div>
                 <div className="flex items-center gap-2">
@@ -1019,7 +1019,7 @@ export function WorldThreatMap({
                   </span>
                   <div className="flex-1 bg-neutral-800 h-1.5">
                     <div
-                      className={`h-1.5 ${activeFocus.threatDensityWeight > 80 ? 'bg-neutral-500' : 'bg-white'}`}
+                      className={`h-1.5 ${activeFocus.threatDensityWeight > 80 ? 'bg-neutral-500' : 'bg-[#F0885A]'}`}
                       style={{ width: `${activeFocus.threatDensityWeight}%` }}
                     />
                   </div>

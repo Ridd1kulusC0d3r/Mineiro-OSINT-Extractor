@@ -166,7 +166,7 @@ export function BatchOverviewCard({
               type="button"
               id="import-batch-hero-btn"
               onClick={onOpenImport}
-              className="px-3 py-1 bg-white text-black font-bold hover:bg-neutral-200 transition-colors flex items-center gap-1.5 uppercase text-[11px]"
+              className="px-3 py-1 bg-[#F0885A] text-black font-bold hover:bg-neutral-200 transition-colors flex items-center gap-1.5 uppercase text-[11px]"
             >
               <Upload className="w-3 h-3" />
               Import Targets CSV
@@ -231,7 +231,7 @@ export function BatchOverviewCard({
                 <button
                   type="button"
                   onClick={onResumeBatch}
-                  className="px-2.5 py-1.5 border border-white bg-white text-black font-bold flex items-center gap-1 uppercase hover:bg-neutral-200 transition-colors text-[11px]"
+                  className="px-2.5 py-1.5 border border-[#F0885A] bg-[#F0885A] text-black font-bold flex items-center gap-1 uppercase hover:bg-neutral-200 transition-colors text-[11px]"
                 >
                   <Play className="w-3 h-3 fill-black" />
                   Resume
@@ -253,7 +253,7 @@ export function BatchOverviewCard({
             type="button"
             id="view-batch-queue-btn"
             onClick={onViewBatch}
-            className="px-3 py-1.5 bg-white text-black font-bold hover:bg-neutral-200 transition-colors flex items-center gap-1.5 uppercase text-[11px]"
+            className="px-3 py-1.5 bg-[#F0885A] text-black font-bold hover:bg-neutral-200 transition-colors flex items-center gap-1.5 uppercase text-[11px]"
           >
             <span>Full Batch Queue</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -360,7 +360,7 @@ export function BatchOverviewCard({
         </div>
         <div className="w-full bg-neutral-900 h-2 border border-neutral-800 overflow-hidden">
           <div 
-            className="h-full bg-white transition-all duration-300"
+            className="h-full bg-[#F0885A] transition-all duration-300"
             style={{ width: `${stats.percentComplete}%` }}
           />
         </div>

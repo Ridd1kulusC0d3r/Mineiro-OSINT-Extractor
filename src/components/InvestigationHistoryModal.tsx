@@ -90,7 +90,7 @@ export function InvestigationHistoryModal({
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 bg-white text-black flex items-center justify-center font-bold">
+            <div className="w-7 h-7 bg-[#F0885A] text-black flex items-center justify-center font-bold">
               <History className="w-4 h-4" />
             </div>
             <div>
@@ -165,7 +165,7 @@ export function InvestigationHistoryModal({
                             onLoadCase(caseFile);
                             onClose();
                           }}
-                          className="inline-flex items-center gap-1.5 bg-white px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-black hover:bg-neutral-200"
+                          className="inline-flex items-center gap-1.5 bg-[#F0885A] px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-black hover:bg-neutral-200"
                         >
                           <ArrowRight className="h-3 w-3" />
                           {caseCopy.open}
@@ -326,7 +326,7 @@ export function InvestigationHistoryModal({
                       className={`px-3 py-1.5 text-xs font-mono font-bold flex items-center gap-1.5 transition-all uppercase tracking-wider ${
                         isActive
                           ? 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
-                          : 'bg-white text-black hover:bg-neutral-200'
+                          : 'bg-[#F0885A] text-black hover:bg-neutral-200'
                       }`}
                       title="Load this investigation into workspace without re-scanning"
                     >

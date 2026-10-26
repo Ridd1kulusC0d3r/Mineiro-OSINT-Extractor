@@ -198,7 +198,7 @@ export function DossierTimeline({
             onClick={() => setSelectedCategory('all')}
             className={`px-2 py-0.5 border uppercase transition-colors shrink-0 ${
               selectedCategory === 'all'
-                ? 'border-white bg-white text-black font-bold'
+                ? 'border-[#F0885A] bg-[#F0885A] text-black font-bold'
                 : 'border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-white'
             }`}
           >
@@ -213,7 +213,7 @@ export function DossierTimeline({
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-2 py-0.5 border uppercase transition-colors shrink-0 ${
                   selectedCategory === cat
-                    ? 'border-white bg-white text-black font-bold'
+                    ? 'border-[#F0885A] bg-[#F0885A] text-black font-bold'
                     : 'border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-white'
                 }`}
               >
@@ -232,7 +232,7 @@ export function DossierTimeline({
         {displayedMilestones.map((item, index) => {
           const phaseBadgeClass =
             item.temporalPhase === 'Genesis Milestone'
-              ? 'border-white bg-neutral-900 text-white font-bold'
+              ? 'border-[#F0885A] bg-neutral-900 text-white font-bold'
               : item.temporalPhase === 'Specialization'
               ? 'border-neutral-500 bg-black text-neutral-200'
               : 'border-neutral-800 bg-neutral-950 text-neutral-400';
@@ -247,12 +247,12 @@ export function DossierTimeline({
               <div
                 className={`absolute -left-6 sm:-left-8 top-3 w-5 h-5 -ml-[9.5px] rounded-none border flex items-center justify-center transition-all ${
                   item.isEarliest
-                    ? 'border-white bg-white text-black shadow-[0_0_8px_rgba(255,255,255,0.4)]'
-                    : 'border-neutral-700 bg-black text-neutral-300 group-hover:border-white group-hover:bg-neutral-900'
+                    ? 'border-[#F0885A] bg-[#F0885A] text-black shadow-[0_0_8px_rgba(236,232,221,0.4)]'
+                    : 'border-neutral-700 bg-black text-neutral-300 group-hover:border-[#F0885A] group-hover:bg-neutral-900'
                 }`}
               >
                 <div
-                  className={`w-1.5 h-1.5 ${item.isEarliest ? 'bg-black' : 'bg-white'}`}
+                  className={`w-1.5 h-1.5 ${item.isEarliest ? 'bg-black' : 'bg-[#F0885A]'}`}
                 />
               </div>
 
