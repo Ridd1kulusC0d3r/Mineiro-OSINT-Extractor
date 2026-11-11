@@ -131,6 +131,20 @@ JetBrains Mono, Menlo. Corpo em sans 15px. Mono só em rótulos (maiúsculo espa
 - `btn-primary` (signal), `btn` (secundário), `chip`, `field`, `status-*`, `dialog`.
 - `mast`: faixa com grade de 32px e halo radial em `signal-soft` (barra de alvo, exportação HTML, social preview).
 
+### Movimento
+
+Mesmo vocabulário do LLmInjection: curto, com saída suave, sempre explicando uma mudança de estado. Nada pisca em loop.
+
+| Token | Valor | Onde |
+| --- | --- | --- |
+| `--ease-out` | `cubic-bezier(0.2, 0.8, 0.2, 1)` | quase tudo |
+| `--dur-1` | 0,12 s | hover de cor e borda |
+| `--dur-2` | 0,18 s | elevação de cartão e botão, foco, abas |
+| `--dur-3` | 0,26 s | entrada de vista (4 px de subida), modal, linha de resultado chegando |
+| `--dur-4` | 0,45 s | barra de progresso, cross-fade de cor na troca de tema |
+
+Implementação em `src/styles/base.css`, seção 13. Com `prefers-reduced-motion` tudo some, e o smoke visual roda assim para continuar determinístico.
+
 ### Fora do app
 
 - Favicon: `public/favicon.svg`, quadrado `ink` com barra `signal`.

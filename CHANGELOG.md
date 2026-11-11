@@ -1,5 +1,10 @@
 # Changelog
 
+### Visual identity and motion
+- Motion tokens (`--ease-out`, `--dur-1..4`) following LLmInjection: views rise in, result rows fade in as the scan streams, dialogs pop, interactive cards lift, the progress bar glides and switching theme cross-fades colours. All of it is off under `prefers-reduced-motion`.
+- Batch queue and batch import dialog moved to the new vocabulary (eyebrow, sans titles, cards, pill tabs) and to i18n in EN/PT/ES; export dialog section toggles expose `aria-pressed`.
+- README GIFs re-recorded with `npm run gifs` after these changes.
+
 ### Documentation
 - New guides: `docs/CLI-E-API.md` (CLI, environment variables, REST reference with real responses), `docs/RECEITAS.md` (9 investigation recipes), `docs/PRIVACIDADE-E-DADOS.md`, `docs/GLOSSARIO.md`, `docs/CHEATSHEET.md`; rewritten `GETTING-STARTED`, `USER-GUIDE` (17 sections, real screenshots in `assets/docs`), `TROUBLESHOOTING`, `FAQ`, `GRAPH-HUNTING` and `INTELLIGENCE-METHODOLOGY` (now with every formula). Runnable examples in `examples/`.
 - `npm run docs:validate` now checks every relative link and heading anchor in all Markdown files.
