@@ -73,16 +73,16 @@ export function GeminiConfigModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-paper/80 backdrop-blur-sm flex items-center justify-center p-4 font-mono">
-      <div className="bg-paper-2 border border-rule max-w-xl w-full p-6 space-y-5 text-ink-2 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+    <div role="dialog" aria-modal="true" aria-labelledby="gemini-config-title" className="dialog-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="dialog max-w-xl w-full p-6 space-y-5 text-ink-2 animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
         <div className="flex justify-between items-center border-b border-rule pb-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-signal text-signal-ink flex items-center justify-center font-bold">
+            <div className="w-9 h-9 rounded-[var(--radius-sm)] bg-signal-soft text-signal flex items-center justify-center font-bold">
               <Key className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-ink uppercase tracking-wider">
+              <h2 id="gemini-config-title" className="text-lg font-bold text-ink">
                 {tr('gemini.title')}
               </h2>
               <p className="text-[11px] text-ink-3">

@@ -20,7 +20,9 @@ import {
   ParsedTarget, 
   generateSampleCsv 
 } from '../utils/csvParser';
-import { CATEGORY_LABELS } from '../data/platforms';
+import { CATEGORY_LABELS, countPlatformsForScope } from '../data/platforms';
+import type { PlatformScope } from '../types';
+import { useI18n } from '../utils/i18n';
 
 interface BulkImportModalProps {
   isOpen: boolean;
@@ -35,6 +37,8 @@ interface BulkImportModalProps {
   ) => void;
   currentCategory?: string;
   currentConcurrency?: number;
+  /** Escopo do preset ativo: é o que o lote executa para cada alvo. */
+  currentScope?: PlatformScope;
 }
 
 export function BulkImportModal({
@@ -43,7 +47,9 @@ export function BulkImportModal({
   onStartBulkScan,
   currentCategory = 'all',
   currentConcurrency = 8,
+  currentScope = 'top20',
 }: BulkImportModalProps) {
+  const { tr } = useI18n();
   const [activeTab, setActiveTab] = useState<'upload' | 'paste'>('upload');
   const [dragActive, setDragActive] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -56,7 +62,9 @@ export function BulkImportModal({
   // Options
   const [selectedCategory, setSelectedCategory] = useState<string>(currentCategory);
   const [concurrency, setConcurrency] = useState<number>(currentConcurrency);
-  const [autoAiProfile, setAutoAiProfile] = useState<boolean>(true);
+  // O perfil automático por IA está desligado desde a v1.4.1 (App.tsx força enableAutoAiProfile: false); o modal
+  // não oferece mais um interruptor que não tinha efeito (defeito 11).
+  const autoAiProfile = false;
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -168,17 +176,17 @@ export function BulkImportModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-paper/85 backdrop-blur-sm animate-in fade-in duration-200">
+    <div role="dialog" aria-modal="true" aria-labelledby="bulk-import-title" className="dialog-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
       <div 
-        className="bg-paper border border-rule w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden font-mono"
+        className="dialog w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-5 border-b border-rule flex items-start justify-between bg-paper-2">
+        <div className="mast p-5 border-b border-rule flex items-start justify-between">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 bg-signal inline-block shadow-[0_0_8px_color-mix(in_srgb,var(--ink)_80%,transparent)]" />
-              <h2 className="text-base font-bold text-ink uppercase tracking-wider flex items-center gap-2">
+              <h2 id="bulk-import-title" className="text-lg font-bold text-ink flex items-center gap-2">
                 <FileSpreadsheet className="w-4 h-4 text-ink" />
                 BULK TARGET IMPORT // BATCH INVESTIGATION
               </h2>
@@ -415,7 +423,7 @@ export function BulkImportModal({
           )}
 
           {/* Batch Scan Scope & Execution Configuration */}
-          <div className="p-4 border border-rule bg-paper-2 space-y-3">
+          <div className="card p-4 space-y-3">
             <div className="text-[11px] font-bold text-ink uppercase tracking-wider flex items-center gap-1.5 border-b border-rule pb-2">
               <Layers className="w-3.5 h-3.5" />
               Batch Execution Parameters
@@ -430,11 +438,11 @@ export function BulkImportModal({
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full bg-paper border border-rule text-ink text-xs p-2 focus:border-signal focus:outline-none"
+                  className="field w-full text-[13px] p-2"
                 >
                   {Object.entries(CATEGORY_LABELS).map(([catKey, info]) => (
                     <option key={catKey} value={catKey}>
-                      {info.label} ({info.count} platforms)
+                      {info.label} ({tr('modular.detectors', { count: countPlatformsForScope(currentScope, catKey) })})
                     </option>
                   ))}
                 </select>
@@ -445,21 +453,14 @@ export function BulkImportModal({
                 <label className="text-[10px] uppercase text-ink-3 tracking-wider block">
                   Probe Concurrency Rate
                 </label>
-                <div className="grid grid-cols-3 gap-1">
-                  {[
-                    { label: 'STEALTH (3)', val: 3 },
-                    { label: 'BALANCED (8)', val: 8 },
-                    { label: 'TURBO (16)', val: 16 }
-                  ].map((rate) => (
+                <div className="tabs tabs-sm tabs-seg">
+                  {[...new Set([3, 8, 16, currentConcurrency])].sort((x, y) => x - y).map((val) => ({ label: `${val}x`, val })).map((rate) => (
                     <button
                       key={rate.val}
                       type="button"
                       onClick={() => setConcurrency(rate.val)}
-                      className={`px-2 py-1.5 text-[10px] uppercase border transition-colors ${
-                        concurrency === rate.val
-                          ? 'border-signal bg-signal text-signal-ink font-bold'
-                          : 'border-rule bg-paper text-ink-3 hover:text-ink'
-                      }`}
+                      aria-pressed={concurrency === rate.val}
+                      className="tab justify-center"
                     >
                       {rate.label}
                     </button>
@@ -468,35 +469,26 @@ export function BulkImportModal({
               </div>
             </div>
 
-            {/* AI Profiling Toggle */}
-            <div className="pt-2 border-t border-rule flex items-center justify-between">
+            {/* O que de fato roda: escopo do preset, categoria escolhida, sem IA automática */}
+            <div className="pt-2 border-t border-rule-2 space-y-1.5 text-[12.5px] text-ink-2">
+              <div className="flex items-center gap-2">
+                <Layers className="w-3.5 h-3.5 text-ink-3" />
+                <span>{tr('batch.runsScope', { count: countPlatformsForScope(currentScope, selectedCategory) })}</span>
+              </div>
               <div className="flex items-center gap-2">
                 <Sparkles className="w-3.5 h-3.5 text-ink-3" />
-                <span className="text-ink-2 text-xs">
-                  Automate Gemini AI Profiling for discovered targets
-                </span>
+                <span>{tr('batch.noAutoAi')}</span>
               </div>
-              <button
-                type="button"
-                onClick={() => setAutoAiProfile(!autoAiProfile)}
-                className={`px-2.5 py-1 text-[10px] uppercase border transition-colors ${
-                  autoAiProfile
-                    ? 'border-ink-3/70 bg-paper-2/50 text-ink-2 font-bold'
-                    : 'border-rule bg-paper text-ink-3'
-                }`}
-              >
-                {autoAiProfile ? 'ENABLED' : 'DISABLED'}
-              </button>
             </div>
           </div>
         </div>
 
         {/* Footer CTA */}
-        <div className="p-4 border-t border-rule bg-paper-2 flex items-center justify-between">
+        <div className="p-4 border-t border-rule flex items-center justify-between">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 border border-rule bg-paper text-ink-3 hover:text-ink text-xs uppercase transition-colors"
+            className="btn"
           >
             Cancel
           </button>
@@ -505,9 +497,9 @@ export function BulkImportModal({
             type="button"
             onClick={handleSubmit}
             disabled={validTargets.length === 0}
-            className="px-6 py-2.5 bg-signal hover:bg-ink text-signal-ink font-bold text-xs uppercase flex items-center gap-2 border border-signal tracking-wider disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-[0_0_15px_color-mix(in_srgb,var(--ink)_15%,transparent)]"
+            className="btn-primary"
           >
-            <Play className="w-3.5 h-3.5 fill-paper" />
+            <Play className="w-3.5 h-3.5" />
             Launch Bulk Reconnaissance ({validTargets.length} Targets)
           </button>
         </div>

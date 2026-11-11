@@ -1,3 +1,4 @@
+import { useI18n } from '../utils/i18n';
 import { useState } from 'react';
 import { 
   FileSpreadsheet, 
@@ -46,6 +47,7 @@ export function BulkScanView({
   onRemoveQueuedItem,
   isScanning,
 }: BulkScanViewProps) {
+  const { tr } = useI18n();
   const [exportFormat, setExportFormat] = useState<'csv' | 'json'>('csv');
 
   if (!batch || batch.items.length === 0) {
@@ -231,7 +233,7 @@ export function BulkScanView({
             <div className="text-[10px] text-ink-3 uppercase">Platform Probes</div>
             <div className="text-2xl font-black text-ink">{totalScannedPlatforms}</div>
             <div className="text-[10px] text-ink-3">
-              Scope: {batch.selectedCategory.toUpperCase()}
+              {tr('batch.scopeLabel', { scope: batch.platformScope ?? '—', category: batch.selectedCategory })}
             </div>
           </div>
 

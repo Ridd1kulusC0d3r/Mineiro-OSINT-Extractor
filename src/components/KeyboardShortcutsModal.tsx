@@ -234,12 +234,12 @@ export function KeyboardShortcutsModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby="shortcuts-title"
-      className="fixed inset-0 z-50 bg-paper/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
+      className="dialog-backdrop fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-paper-2 border border-rule w-full max-w-2xl rounded-lg shadow-2xl overflow-hidden font-mono text-xs flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-150">
+      <div className="dialog w-full max-w-2xl overflow-hidden text-[13px] flex flex-col max-h-[90vh] animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3.5 border-b border-rule bg-paper">
           <div className="flex items-center gap-2.5">

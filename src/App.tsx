@@ -601,8 +601,9 @@ export default function App() {
       currentIndex: 0,
       isActive: true,
       isPaused: false,
-      autoAiProfile: options.autoAiProfile,
+      autoAiProfile: false,
       selectedCategory: options.category,
+      platformScope: scanConfig.platformScope,
       concurrency: options.concurrency,
       startedAt: new Date().toLocaleTimeString(),
     };
@@ -1298,6 +1299,7 @@ export default function App() {
         onStartBulkScan={handleStartBulkScan}
         currentCategory={selectedCategory}
         currentConcurrency={concurrency}
+        currentScope={scanConfig.platformScope}
       />
 
       {/* Gemini AI Personal Key & Configuration Modal */}

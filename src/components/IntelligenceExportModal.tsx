@@ -148,14 +148,12 @@ export function IntelligenceExportModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[80] bg-paper/75 backdrop-blur-sm p-4 md:p-8 overflow-y-auto">
-      <div className="mx-auto max-w-6xl rounded-[26px] border border-rule bg-card shadow-2xl">
+    <div role="dialog" aria-modal="true" aria-labelledby="export-title" className="dialog-backdrop fixed inset-0 z-[80] p-4 md:p-8 overflow-y-auto">
+      <div className="dialog mx-auto max-w-6xl">
         <div className="flex items-start justify-between gap-6 border-b border-rule px-6 py-6 md:px-8">
           <div>
-            <div className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-ink-3">
-              Report export · local only · {requirement}
-            </div>
-            <h2 className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-ink">{tr('export.title')}</h2>
+            <span className="eyebrow">{tr('export.eyebrow')} · {requirement}</span>
+            <h2 id="export-title" className="mt-3 text-3xl font-bold tracking-[-0.025em] text-ink">{tr('export.title')}</h2>
             <p className="mt-3 max-w-3xl text-sm leading-relaxed text-ink-3">
               {tr('export.subtitle')}
             </p>

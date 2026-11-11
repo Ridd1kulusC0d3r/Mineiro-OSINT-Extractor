@@ -26,9 +26,11 @@ import {
   DEFAULT_SCAN_CONFIGS, 
   CATEGORY_LABELS, 
   getPlatformsForScope,
-  PLATFORMS_DATABASE,
-  CATALOG_STATS
+  countPlatformsForPreset,
+  countPlatformsForScope,
+  CATALOG_STATS,
 } from '../data/platforms';
+import { useI18n, type UiMessageKey } from '../utils/i18n';
 
 interface ModularScanModalProps {
   isOpen: boolean;
@@ -41,6 +43,13 @@ interface ModularScanModalProps {
   isScanning?: boolean;
 }
 
+const PRESET_CARDS: Array<{ preset: ScanPreset; icon: typeof Zap; name: UiMessageKey; desc: UiMessageKey }> = [
+  { preset: 'quick', icon: Zap, name: 'modular.quickName', desc: 'modular.quickDesc' },
+  { preset: 'standard', icon: Layers, name: 'modular.standardName', desc: 'modular.standardDesc' },
+  { preset: 'deep', icon: Globe, name: 'modular.fullName', desc: 'modular.fullDesc' },
+  { preset: 'email_only', icon: Mail, name: 'modular.emailName', desc: 'modular.emailDesc' },
+];
+
 export function ModularScanModal({
   isOpen,
   onClose,
@@ -51,6 +60,7 @@ export function ModularScanModal({
   targetType = 'username',
   isScanning = false
 }: ModularScanModalProps) {
+  const { tr } = useI18n();
   const [localConfig, setLocalConfig] = useState<ModularScanConfig>(config);
 
   if (!isOpen) return null;
@@ -90,27 +100,27 @@ export function ModularScanModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-paper/85 backdrop-blur-md animate-in fade-in duration-200">
+    <div role="dialog" aria-modal="true" aria-labelledby="modular-scan-title" className="dialog-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
       <div 
-        className="bg-paper-2 border border-rule w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden"
+        className="dialog w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-rule flex items-center justify-between bg-paper/60">
+        <div className="mast p-4 sm:p-5 border-b border-rule flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 border border-rule bg-rule-2 flex items-center justify-center text-ink">
               <Sliders className="w-5 h-5 text-ink-3" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-base sm:text-lg font-mono font-bold text-ink tracking-wider uppercase">
+                <h2 id="modular-scan-title" className="text-lg font-bold text-ink">
                   Modular Reconnaissance Architecture
                 </h2>
                 <span className="text-[10px] font-mono px-2 py-0.5 bg-paper-2/60 border border-rule/80 text-ink-3 uppercase">
                   Customizable
                 </span>
               </div>
-              <p className="text-xs font-mono text-ink-3">
+              <p className="text-[13px] text-ink-3">
                 Enable or disable individual modules to accelerate simple scans or conduct deep forensic investigations.
               </p>
             </div>
@@ -124,7 +134,7 @@ export function ModularScanModal({
         </div>
 
         {/* Content Scrollable */}
-        <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 text-xs font-mono">
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-6 flex-1 text-[13px]">
           
           {/* Quick Presets Section */}
           <div className="space-y-2">
@@ -139,121 +149,35 @@ export function ModularScanModal({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
-              {/* Preset: Quick */}
-              <button
-                type="button"
-                onClick={() => handleApplyPreset('quick')}
-                className={`p-3 border text-left flex flex-col justify-between transition-all ${
-                  localConfig.preset === 'quick'
-                    ? 'border-ink-3 bg-paper-2/20 text-ink shadow-sm ring-1 ring-ink-3/50'
-                    : 'border-rule bg-paper/60 text-ink-3 hover:border-rule hover:text-ink'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-bold flex items-center gap-1.5 text-ink-3 text-xs">
-                      <Zap className="w-3.5 h-3.5" />
-                      ⚡ Quick Scan
-                    </span>
-                    <span className="text-[10px] px-1.5 py-0.5 bg-rule-2 border border-rule text-ink-2">
-                      ~1-2s
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-ink-3 leading-relaxed">
-                    Top 20 essential platforms (GitHub, X, Reddit, Telegram, etc). Ultra-fast mode for quick presence checks.
-                  </p>
-                </div>
-                <div className="mt-2 text-[10px] text-ink-3 flex items-center gap-2">
-                  <span>20 targets</span> • <span>Turbo (16x)</span> • <span>On-Demand AI</span>
-                </div>
-              </button>
-
-              {/* Preset: Standard */}
-              <button
-                type="button"
-                onClick={() => handleApplyPreset('standard')}
-                className={`p-3 border text-left flex flex-col justify-between transition-all ${
-                  localConfig.preset === 'standard'
-                    ? 'border-ink-3 bg-paper-2/20 text-ink ring-1 ring-ink-3/50'
-                    : 'border-rule bg-paper/60 text-ink-3 hover:border-rule hover:text-ink'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-bold flex items-center gap-1.5 text-ink-3 text-xs">
-                      <Layers className="w-3.5 h-3.5" />
-                      ⚖️ Balanced Standard
-                    </span>
-                    <span className="text-[10px] px-1.5 py-0.5 bg-rule-2 border border-rule text-ink-2">
-                      ~5s
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-ink-3 leading-relaxed">
-                    Top 50 platforms with Mineiro Guard WAF heuristic checks and automatic AI synthesis.
-                  </p>
-                </div>
-                <div className="mt-2 text-[10px] text-ink-3 flex items-center gap-2">
-                  <span>50 targets</span> • <span>WAF Deep</span> • <span>Auto AI</span>
-                </div>
-              </button>
-
-              {/* Preset: Deep Full Matrix */}
-              <button
-                type="button"
-                onClick={() => handleApplyPreset('deep')}
-                className={`p-3 border text-left flex flex-col justify-between transition-all ${
-                  localConfig.preset === 'deep'
-                    ? 'border-ink-3 bg-paper-2/20 text-ink ring-1 ring-ink-3/50'
-                    : 'border-rule bg-paper/60 text-ink-3 hover:border-rule hover:text-ink'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-bold flex items-center gap-1.5 text-ink-3 text-xs">
-                      <Globe className="w-3.5 h-3.5" />
-                      🌐 Full Matrix Deep
-                    </span>
-                    <span className="text-[10px] px-1.5 py-0.5 bg-paper-2 border border-rule text-ink">
-                      Deep
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-ink-2 leading-relaxed">
-                    Catálogo completo com {PLATFORMS_DATABASE.length} endpoints e evidence engine opcional.
-                  </p>
-                </div>
-                <div className="mt-2 text-[10px] text-ink-3 flex items-center gap-2">
-                  <span>{PLATFORMS_DATABASE.length} alvos</span> • <span>{CATALOG_STATS.optionalEvidenceChecks.toLocaleString()} checks lógicos</span> • <span>Exaustivo</span>
-                </div>
-              </button>
-
-              {/* Preset: Email Recon Only */}
-              <button
-                type="button"
-                onClick={() => handleApplyPreset('email_only')}
-                className={`p-3 border text-left flex flex-col justify-between transition-all ${
-                  localConfig.preset === 'email_only'
-                    ? 'border-ink-3 bg-paper-2/20 text-ink ring-1 ring-ink-3/50'
-                    : 'border-rule bg-paper/60 text-ink-3 hover:border-rule hover:text-ink'
-                }`}
-              >
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-bold flex items-center gap-1.5 text-ink-3 text-xs">
-                      <Mail className="w-3.5 h-3.5" />
-                      📧 Email & DNS Only
-                    </span>
-                    <span className="text-[10px] px-1.5 py-0.5 bg-rule-2 border border-rule text-ink-2">
-                      &lt;1s
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-ink-3 leading-relaxed">
-                    Only MX records, DNS servers, and Gravatar profile. Skips platform username probes.
-                  </p>
-                </div>
-                <div className="mt-2 text-[10px] text-ink-3 flex items-center gap-2">
-                  <span>0 platforms</span> • <span>Direct DNS</span> • <span>Gravatar</span>
-                </div>
-              </button>
+              {PRESET_CARDS.map(({ preset, icon: Icon, name, desc }) => {
+                const cfg = DEFAULT_SCAN_CONFIGS[preset];
+                const count = countPlatformsForPreset(preset, targetType);
+                const active = localConfig.preset === preset;
+                return (
+                  <button
+                    key={preset}
+                    type="button"
+                    onClick={() => handleApplyPreset(preset)}
+                    aria-pressed={active}
+                    className={`card p-3.5 text-left flex flex-col justify-between transition-[border-color,transform] hover:-translate-y-px ${
+                      active ? 'card-accent !border-signal' : 'hover:!border-rule'
+                    }`}
+                  >
+                    <div>
+                      <span className="flex items-center gap-1.5 text-[14px] font-semibold text-ink">
+                        <Icon className={`w-3.5 h-3.5 ${active ? 'text-signal' : 'text-ink-3'}`} />
+                        {tr(name)}
+                      </span>
+                      <p className="mt-1.5 text-[12.5px] text-ink-3 leading-relaxed">{tr(desc)}</p>
+                    </div>
+                    <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+                      <span className="chip">{tr('modular.detectors', { count })}</span>
+                      {preset !== 'email_only' && <span className="chip chip-quiet">{cfg.concurrency}x</span>}
+                      {cfg.enableEvidenceChecks && <span className="chip chip-quiet">Evidence Engine</span>}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -279,13 +203,13 @@ export function ModularScanModal({
                 </div>
 
                 {/* Scope selector tabs */}
-                <div className="flex flex-wrap items-center gap-1 bg-paper-2 p-1 border border-rule">
+                <div className="tabs tabs-sm tabs-seg flex-wrap" role="group" aria-label={tr('modular.scope')}>
                   {[
-                    { id: 'top20', label: '⚡ Top 20 (Rápido)', count: '20' },
-                    { id: 'top50', label: 'Top 50 (Popular)', count: '50' },
-                    { id: 'category', label: 'Por Categoria', count: 'Filtro' },
-                    { id: 'all', label: `🌐 Todas (${PLATFORMS_DATABASE.length}+)`, count: `${PLATFORMS_DATABASE.length}` },
-                    { id: 'none', label: 'Desativado', count: '0' },
+                    { id: 'top20', label: tr('modular.scopeTop', { count: countPlatformsForScope('top20', 'all', targetType) }) },
+                    { id: 'top50', label: tr('modular.scopeTop', { count: countPlatformsForScope('top50', 'all', targetType) }) },
+                    { id: 'category', label: tr('modular.scopeCategory') },
+                    { id: 'all', label: tr('modular.scopeAll', { count: countPlatformsForScope('all', 'all', targetType) }) },
+                    { id: 'none', label: tr('modular.scopeNone') },
                   ].map((scope) => (
                     <button
                       key={scope.id}
@@ -297,11 +221,8 @@ export function ModularScanModal({
                           platformScope: scope.id as PlatformScope,
                         });
                       }}
-                      className={`px-2 py-1 text-[11px] font-mono transition-colors ${
-                        localConfig.platformScope === scope.id
-                          ? 'bg-signal text-signal-ink font-bold'
-                          : 'text-ink-3 hover:text-ink'
-                      }`}
+                      aria-pressed={localConfig.platformScope === scope.id}
+                      className="tab"
                     >
                       {scope.label}
                     </button>
@@ -313,7 +234,7 @@ export function ModularScanModal({
               {localConfig.platformScope === 'category' && (
                 <div className="pt-2 border-t border-rule/80 space-y-1.5">
                   <span className="text-[10px] text-ink-3 uppercase">
-                    Select target forensic category:
+                    {tr('modular.pickCategory')}
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {Object.entries(CATEGORY_LABELS).map(([catKey, info]) => (
@@ -327,11 +248,8 @@ export function ModularScanModal({
                             selectedCategory: catKey,
                           });
                         }}
-                        className={`px-2 py-1 text-[11px] border transition-colors ${
-                          localConfig.selectedCategory === catKey
-                            ? 'bg-signal text-signal-ink font-bold border-signal'
-                            : 'bg-rule-2 border-rule text-ink-3 hover:text-ink'
-                        }`}
+                        aria-pressed={localConfig.selectedCategory === catKey}
+                        className={`chip ${localConfig.selectedCategory === catKey ? '!bg-ink !text-paper !border-ink' : 'hover:!text-ink'}`}
                       >
                         {info.label} ({info.count})
                       </button>
@@ -377,7 +295,7 @@ export function ModularScanModal({
                     }`}
                   >
                     <Zap className="w-3 h-3" />
-                    ⚡ Fast Mode (Direct HTTP)
+                    Fast Mode (Direct HTTP)
                   </button>
                   <button
                     type="button"
@@ -396,7 +314,7 @@ export function ModularScanModal({
                     }`}
                   >
                     <Shield className="w-3 h-3" />
-                    🛡️ Deep Mode (Mineiro Guard WAF Heuristics)
+                    Deep Mode (Mineiro Guard WAF Heuristics)
                   </button>
                 </div>
               </div>
@@ -545,13 +463,8 @@ export function ModularScanModal({
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5">
-                  {[
-                    { label: 'Stealth (4x)', val: 4 },
-                    { label: 'Default (8x)', val: 8 },
-                    { label: '⚡ Turbo (16x)', val: 16 },
-                    { label: '🚀 Hyper (24x)', val: 24 },
-                  ].map((item) => (
+                <div className="tabs tabs-sm tabs-seg" role="group" aria-label={tr('modular.concurrency')}>
+                  {[4, 6, 8, 10, 16, 24].map((val) => ({ label: `${val}x`, val })).map((item) => (
                     <button
                       key={item.val}
                       type="button"
@@ -562,11 +475,8 @@ export function ModularScanModal({
                           concurrency: item.val,
                         });
                       }}
-                      className={`px-2 py-1 text-[11px] border transition-colors ${
-                        localConfig.concurrency === item.val
-                          ? 'bg-signal text-signal-ink font-bold border-signal'
-                          : 'bg-rule-2 border-rule text-ink-3 hover:text-ink'
-                      }`}
+                      aria-pressed={localConfig.concurrency === item.val}
+                      className="tab"
                     >
                       {item.label}
                     </button>
@@ -582,7 +492,7 @@ export function ModularScanModal({
               <div className="flex items-center gap-1.5">
                 <span className="text-ink-3">Queued Targets:</span>
                 <span className="font-bold text-ink bg-rule-2 px-1.5 py-0.5 border border-rule">
-                  {platformCount} platforms
+                  {tr('modular.detectors', { count: platformCount })}
                 </span>
               </div>
               <div className="flex items-center gap-1.5">
@@ -594,9 +504,7 @@ export function ModularScanModal({
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="text-ink-3">AI:</span>
-                <span className={localConfig.enableAutoAiProfile ? 'text-ink-3' : 'text-ink-3'}>
-                  'Copilot on demand'
-                </span>
+                <span className="text-ink-3">{tr('modular.aiOnDemand')}</span>
               </div>
             </div>
 
@@ -619,7 +527,7 @@ export function ModularScanModal({
             <button
               type="button"
               onClick={handleSave}
-              className="flex-1 sm:flex-initial px-4 py-2 border border-rule bg-rule-2 hover:bg-rule-2 text-ink font-mono text-xs uppercase transition-colors"
+              className="btn flex-1 sm:flex-initial"
             >
               Save Configuration
             </button>
@@ -629,9 +537,9 @@ export function ModularScanModal({
                 type="button"
                 onClick={handleStartNow}
                 disabled={isScanning}
-                className="flex-1 sm:flex-initial px-5 py-2 bg-signal hover:bg-ink text-signal-ink font-mono font-bold text-xs uppercase flex items-center justify-center gap-1.5 border border-signal transition-colors"
+                className="btn-primary flex-1 sm:flex-initial"
               >
-                <Play className="w-3.5 h-3.5 fill-paper" />
+                <Play className="w-3.5 h-3.5" />
                 Start Scan Now
               </button>
             )}

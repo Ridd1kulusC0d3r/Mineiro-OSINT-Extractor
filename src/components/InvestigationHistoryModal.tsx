@@ -85,16 +85,16 @@ export function InvestigationHistoryModal({
   const usedSlots = cachedScans.length;
 
   return (
-    <div className="fixed inset-0 z-50 bg-paper/85 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-paper-2 border border-rule max-w-2xl w-full p-5 sm:p-6 space-y-4 font-mono text-ink shadow-2xl relative max-h-[90vh] flex flex-col">
+    <div role="dialog" aria-modal="true" aria-labelledby="history-title" className="dialog-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="dialog max-w-2xl w-full p-5 sm:p-6 space-y-4 text-ink relative max-h-[90vh] flex flex-col">
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-rule pb-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 bg-signal text-signal-ink flex items-center justify-center font-bold">
+            <div className="w-9 h-9 rounded-[var(--radius-sm)] bg-signal-soft text-signal flex items-center justify-center font-bold">
               <History className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-ink tracking-wider flex items-center gap-2">
+              <h2 id="history-title" className="text-lg font-bold text-ink flex items-center gap-2">
                 CACHED INVESTIGATION HISTORY
                 <span className="text-[10px] font-normal px-2 py-0.5 bg-rule-2 text-ink-3 border border-rule">
                   LOCALSTORAGE
