@@ -24,7 +24,18 @@ interface VisualNode extends HuntGraphNode {
 interface VisualEdge extends HuntGraphEdge {}
 
 const WIDTH = 1120;
-const HEIGHT = 660;
+const HEIGHT = 700;
+/**
+ * Anéis elípticos [raio x, raio y]: a tela é mais larga que alta, então cada anel se abre na horizontal e os
+ * anéis ficam separados por pelo menos ~70 px em y, para que rótulos de anéis vizinhos não se sobreponham
+ * (defeito 10 da linha de base). Candidatos ficam num anel próprio, entre perfis e entidades secundárias.
+ */
+const RINGS: Record<'primary' | 'profile' | 'candidate' | 'secondary', [number, number]> = {
+  primary: [120, 78],
+  profile: [255, 150],
+  candidate: [385, 222],
+  secondary: [505, 300],
+};
 
 export function RelationshipGraphView({ target, results, emailData, onPivotScan, pivotInvestigations }: RelationshipGraphViewProps) {
   const { tr, language } = useI18n();
@@ -97,24 +108,24 @@ export function RelationshipGraphView({ target, results, emailData, onPivotScan,
     const primary = observed.filter((node) => node.type === 'USERNAME' || node.type === 'EMAIL');
     primary.forEach((node, index) => {
       const angle = (Math.PI * 2 * index) / Math.max(1, primary.length);
-      nodes.push({ ...node, x: centerX + Math.cos(angle) * 115, y: centerY + Math.sin(angle) * 115 });
+      nodes.push({ ...node, x: centerX + Math.cos(angle) * RINGS.primary[0], y: centerY + Math.sin(angle) * RINGS.primary[1] });
     });
 
     const profileNodes = observed.filter((node) => node.type === 'PROFILE');
     profileNodes.slice(0, 24).forEach((node, index) => {
       const angle = (Math.PI * 2 * index) / Math.max(1, Math.min(24, profileNodes.length));
-      nodes.push({ ...node, x: centerX + Math.cos(angle) * 230, y: centerY + Math.sin(angle) * 230 });
+      nodes.push({ ...node, x: centerX + Math.cos(angle) * RINGS.profile[0], y: centerY + Math.sin(angle) * RINGS.profile[1] });
     });
 
     const secondary = observed.filter((node) =>
       ['PLATFORM', 'DOMAIN', 'PUBLIC_URL', 'DISPLAY_NAME', 'ORGANIZATION', 'PUBLIC_PROJECT'].includes(node.type)
     );
     secondary.slice(0, 28).forEach((node, index) => {
-      const angle = (Math.PI * 2 * index) / Math.max(1, Math.min(28, secondary.length));
-      nodes.push({ ...node, x: centerX + Math.cos(angle) * 310, y: centerY + Math.sin(angle) * 310 });
+      const step = (Math.PI * 2) / Math.max(1, Math.min(28, secondary.length));
+      const angle = step * index + step / 2; // meio passo de defasagem em relação ao anel de perfis
+      nodes.push({ ...node, x: centerX + Math.cos(angle) * RINGS.secondary[0], y: centerY + Math.sin(angle) * RINGS.secondary[1] });
     });
 
-    const candidateRadius = 285;
     linkage.permutations.slice(0, 16).forEach((item, index) => {
       const angle = -Math.PI / 2 + ((Math.PI * 2) / Math.max(1, Math.min(16, linkage.permutations.length))) * index;
       nodes.push({
@@ -129,8 +140,8 @@ export function RelationshipGraphView({ target, results, emailData, onPivotScan,
           hypothesis: item.hypothesis,
           pivotHandle: item.pivotHandle || item.label,
         },
-        x: centerX + Math.cos(angle) * candidateRadius,
-        y: centerY + Math.sin(angle) * candidateRadius,
+        x: centerX + Math.cos(angle) * RINGS.candidate[0],
+        y: centerY + Math.sin(angle) * RINGS.candidate[1],
       });
     });
 
@@ -321,17 +332,28 @@ export function RelationshipGraphView({ target, results, emailData, onPivotScan,
                 >
                   <circle
                     r={radius}
-                    fill={node.candidate ? PALETTE.card : node.type === 'TARGET' ? PALETTE.ink : PALETTE.rule2}
-                    stroke={node.candidate ? PALETTE.ink3 : isSelected ? PALETTE.ink : PALETTE.ink3}
+                    fill={node.candidate ? PALETTE.card : node.type === 'TARGET' ? PALETTE.signal : PALETTE.rule2}
+                    stroke={node.candidate ? PALETTE.ink3 : isSelected ? PALETTE.signal : node.type === 'TARGET' ? PALETTE.signal : PALETTE.ink3}
                     strokeWidth={isSelected ? 2.5 : matches && matchedNodes ? 2 : 1.2}
                     strokeDasharray={node.candidate ? '4 3' : undefined}
                   />
-                  {node.type === 'TARGET' && <text textAnchor="middle" dy="4" fontSize="10" fill={PALETTE.paper} fontWeight="700">TARGET</text>}
-                  <text textAnchor="middle" y={radius + 15} fontSize="10" fill={PALETTE.ink2}>
-                    {node.label.length > 24 ? `${node.label.slice(0, 21)}…` : node.label}
+                  {node.type === 'TARGET' && <text textAnchor="middle" dy="4" fontSize="10" fill={PALETTE.signalInk} fontWeight="700" fontFamily="var(--mono)">TARGET</text>}
+                  <text
+                    textAnchor="middle"
+                    y={radius + 15}
+                    fontSize="10.5"
+                    fontFamily="var(--mono)"
+                    fill={isSelected ? PALETTE.signal : PALETTE.ink}
+                    stroke={PALETTE.paper}
+                    strokeWidth={4}
+                    strokeLinejoin="round"
+                    paintOrder="stroke"
+                  >
+                    <title>{node.label}</title>
+                    {node.label.length > 22 ? `${node.label.slice(0, 20)}…` : node.label}
                   </text>
                   {node.candidate && typeof node.similarityScore === 'number' ? (
-                    <text textAnchor="middle" y={radius + 29} fontSize="9" fill={PALETTE.ink3}>
+                    <text textAnchor="middle" y={radius + 29} fontSize="9" fontFamily="var(--mono)" fill={PALETTE.ink3} stroke={PALETTE.paper} strokeWidth={3} paintOrder="stroke">
                       {node.similarityScore}%
                     </text>
                   ) : null}

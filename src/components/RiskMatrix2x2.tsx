@@ -338,10 +338,10 @@ export function RiskMatrix2x2({
       .attr('y', 0)
       .attr('width', innerWidth - midX)
       .attr('height', midY)
-      .attr('fill', PALETTE.ink)
-      .attr('fill-opacity', activeQuadrantFilter === 'critical' ? 0.14 : 0.05)
-      .attr('stroke', PALETTE.ink)
-      .attr('stroke-opacity', activeQuadrantFilter === 'critical' ? 0.4 : 0.15);
+      .attr('fill', PALETTE.seq3)
+      .attr('fill-opacity', activeQuadrantFilter === 'critical' ? 0.42 : 0.24)
+      .attr('stroke', PALETTE.rule)
+      .attr('stroke-opacity', activeQuadrantFilter === 'critical' ? 1 : 0.6);
 
     // Q2: Top-Left (Latent Vault: High Sensitivity, Low Activity)
     g.append('rect')
@@ -349,10 +349,10 @@ export function RiskMatrix2x2({
       .attr('y', 0)
       .attr('width', midX)
       .attr('height', midY)
-      .attr('fill', PALETTE.ink3)
-      .attr('fill-opacity', activeQuadrantFilter === 'latent' ? 0.14 : 0.04)
-      .attr('stroke', PALETTE.ink3)
-      .attr('stroke-opacity', activeQuadrantFilter === 'latent' ? 0.4 : 0.15);
+      .attr('fill', PALETTE.seq2)
+      .attr('fill-opacity', activeQuadrantFilter === 'latent' ? 0.42 : 0.22)
+      .attr('stroke', PALETTE.rule)
+      .attr('stroke-opacity', activeQuadrantFilter === 'latent' ? 1 : 0.6);
 
     // Q3: Bottom-Right (Broad Surface: Low Sensitivity, High Activity)
     g.append('rect')
@@ -360,10 +360,10 @@ export function RiskMatrix2x2({
       .attr('y', midY)
       .attr('width', innerWidth - midX)
       .attr('height', innerHeight - midY)
-      .attr('fill', PALETTE.ink)
-      .attr('fill-opacity', activeQuadrantFilter === 'surface' ? 0.14 : 0.04)
-      .attr('stroke', PALETTE.ink)
-      .attr('stroke-opacity', activeQuadrantFilter === 'surface' ? 0.4 : 0.15);
+      .attr('fill', PALETTE.seq1)
+      .attr('fill-opacity', activeQuadrantFilter === 'surface' ? 0.42 : 0.22)
+      .attr('stroke', PALETTE.rule)
+      .attr('stroke-opacity', activeQuadrantFilter === 'surface' ? 1 : 0.6);
 
     // Q4: Bottom-Left (Peripheral: Low Sensitivity, Low Activity)
     g.append('rect')
@@ -371,10 +371,10 @@ export function RiskMatrix2x2({
       .attr('y', midY)
       .attr('width', midX)
       .attr('height', innerHeight - midY)
-      .attr('fill', PALETTE.ink3)
-      .attr('fill-opacity', activeQuadrantFilter === 'peripheral' ? 0.14 : 0.03)
+      .attr('fill', PALETTE.seq0)
+      .attr('fill-opacity', activeQuadrantFilter === 'peripheral' ? 0.42 : 0.2)
       .attr('stroke', PALETTE.rule)
-      .attr('stroke-opacity', activeQuadrantFilter === 'peripheral' ? 0.4 : 0.15);
+      .attr('stroke-opacity', activeQuadrantFilter === 'peripheral' ? 1 : 0.6);
 
     // 2. Quadrant Watermark Labels
     const watermarkData = [
@@ -513,13 +513,13 @@ export function RiskMatrix2x2({
       let ringColor = PALETTE.ink3;
       if (node.quadrant === 'critical') {
         nodeColor = PALETTE.ink;
-        ringColor = PALETTE.ink;
+        ringColor = PALETTE.seq4;
       } else if (node.quadrant === 'latent') {
         nodeColor = PALETTE.ink3;
-        ringColor = PALETTE.ink3;
+        ringColor = PALETTE.seq2;
       } else if (node.quadrant === 'surface') {
         nodeColor = PALETTE.ink;
-        ringColor = PALETTE.ink;
+        ringColor = PALETTE.seq3;
       }
 
       const clampedX = Math.max(14, Math.min(innerWidth - 14, node.x));

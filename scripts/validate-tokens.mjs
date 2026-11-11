@@ -28,6 +28,8 @@ const TEXT_PAIRS = [
   ['signal-ink', 'signal'],
   ['paper', 'ink'],
   ['signal', 'signal-soft'],
+  // Texto sobre as células das escalas seq (heatmap, matriz de risco, mapa): src/theme/palette.ts, getContrastTextColor.
+  ['on-seq-low', 'seq-0'], ['on-seq-low', 'seq-1'], ['on-seq-mid', 'seq-2'], ['on-seq-high', 'seq-3'], ['on-seq-high', 'seq-4'],
 ];
 const AA = 4.5;
 

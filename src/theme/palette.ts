@@ -60,6 +60,9 @@ export const PALETTE = {
   seq2: cssVar('seq-2'),
   seq3: cssVar('seq-3'),
   seq4: cssVar('seq-4'),
+  onSeqLow: 'var(--on-seq-low)',
+  onSeqMid: 'var(--on-seq-mid)',
+  onSeqHigh: 'var(--on-seq-high)',
 } as const;
 
 /** Valor calculado de um token no tema ativo (por exemplo `#eeebe2`). */
@@ -210,15 +213,16 @@ export const EXPOSURE_COLORS = {
 } as const;
 
 // ==========================================
-// 4. Escala térmica do mapa de calor: do fundo (dormente) ao texto principal (sinal mais forte)
+// 4. Escala sequencial (heatmap, matriz, mapa): do fundo (dormente) às cinco etapas seq-0..4 de tokens.css,
+//    um único matiz (signal) em intensidade crescente.
 // ==========================================
 const HEATMAP_TOKENS: Array<{ offset: number; token: TokenName; label: string }> = [
-  { offset: 0, token: 'paper', label: 'Dormente' },
-  { offset: 0.25, token: 'paper-2', label: 'Baixa' },
-  { offset: 0.5, token: 'rule', label: 'Média' },
-  { offset: 0.75, token: 'ink-3', label: 'Elevada' },
-  { offset: 0.9, token: 'ink-2', label: 'Alta' },
-  { offset: 1.0, token: 'ink', label: 'Sinal Crítico' },
+  { offset: 0, token: 'paper-2', label: 'Dormente' },
+  { offset: 0.2, token: 'seq-0', label: 'Baixa' },
+  { offset: 0.4, token: 'seq-1', label: 'Média' },
+  { offset: 0.6, token: 'seq-2', label: 'Elevada' },
+  { offset: 0.8, token: 'seq-3', label: 'Alta' },
+  { offset: 1.0, token: 'seq-4', label: 'Sinal Crítico' },
 ];
 
 export const HEATMAP_STOPS = HEATMAP_TOKENS.map(({ offset, token, label }) => ({ offset, color: cssVar(token), label }));
@@ -239,11 +243,12 @@ export function getHeatmapIntensityColor(percentage: number): string {
 }
 
 /**
- * Texto legível sobre a célula: acima de 65% a célula já está perto da cor do texto (ink-3 → ink),
- * então o texto passa para a cor do fundo.
+ * Texto legível sobre a célula da escala seq. tokens.css define, por tema, a cor de texto para as etapas claras
+ * (--on-seq-low), a do meio (--on-seq-mid) e as fortes (--on-seq-high).
  */
 export function getContrastTextColor(percentage: number): string {
   if (percentage === 0) return PALETTE.ink3;
-  if (percentage < 65) return PALETTE.ink;
-  return PALETTE.paper;
+  if (percentage < 50) return 'var(--on-seq-low)';
+  if (percentage < 70) return 'var(--on-seq-mid)';
+  return 'var(--on-seq-high)';
 }

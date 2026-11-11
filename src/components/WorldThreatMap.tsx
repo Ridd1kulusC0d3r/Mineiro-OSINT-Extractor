@@ -324,9 +324,9 @@ export function WorldThreatMap({
       .attr('cx', '50%')
       .attr('cy', '50%')
       .attr('r', '50%');
-    gradCritical.append('stop').attr('offset', '0%').attr('stop-color', PALETTE.ink).attr('stop-opacity', 0.85);
-    gradCritical.append('stop').attr('offset', '40%').attr('stop-color', PALETTE.ink3).attr('stop-opacity', 0.45);
-    gradCritical.append('stop').attr('offset', '75%').attr('stop-color', PALETTE.ink3).attr('stop-opacity', 0.18);
+    gradCritical.append('stop').attr('offset', '0%').attr('stop-color', PALETTE.seq4).attr('stop-opacity', 0.85);
+    gradCritical.append('stop').attr('offset', '40%').attr('stop-color', PALETTE.seq3).attr('stop-opacity', 0.45);
+    gradCritical.append('stop').attr('offset', '75%').attr('stop-color', PALETTE.seq2).attr('stop-opacity', 0.18);
     gradCritical.append('stop').attr('offset', '100%').attr('stop-color', PALETTE.paper).attr('stop-opacity', 0);
 
     const gradHigh = defs.append('radialGradient')
@@ -334,9 +334,9 @@ export function WorldThreatMap({
       .attr('cx', '50%')
       .attr('cy', '50%')
       .attr('r', '50%');
-    gradHigh.append('stop').attr('offset', '0%').attr('stop-color', PALETTE.ink3).attr('stop-opacity', 0.8);
-    gradHigh.append('stop').attr('offset', '45%').attr('stop-color', PALETTE.ink).attr('stop-opacity', 0.35);
-    gradHigh.append('stop').attr('offset', '80%').attr('stop-color', PALETTE.ink2).attr('stop-opacity', 0.12);
+    gradHigh.append('stop').attr('offset', '0%').attr('stop-color', PALETTE.seq3).attr('stop-opacity', 0.8);
+    gradHigh.append('stop').attr('offset', '45%').attr('stop-color', PALETTE.seq2).attr('stop-opacity', 0.35);
+    gradHigh.append('stop').attr('offset', '80%').attr('stop-color', PALETTE.seq1).attr('stop-opacity', 0.12);
     gradHigh.append('stop').attr('offset', '100%').attr('stop-color', PALETTE.paper).attr('stop-opacity', 0);
 
     const gradElevated = defs.append('radialGradient')
@@ -344,8 +344,8 @@ export function WorldThreatMap({
       .attr('cx', '50%')
       .attr('cy', '50%')
       .attr('r', '50%');
-    gradElevated.append('stop').attr('offset', '0%').attr('stop-color', PALETTE.ink).attr('stop-opacity', 0.75);
-    gradElevated.append('stop').attr('offset', '50%').attr('stop-color', PALETTE.ink2).attr('stop-opacity', 0.28);
+    gradElevated.append('stop').attr('offset', '0%').attr('stop-color', PALETTE.seq2).attr('stop-opacity', 0.75);
+    gradElevated.append('stop').attr('offset', '50%').attr('stop-color', PALETTE.seq1).attr('stop-opacity', 0.28);
     gradElevated.append('stop').attr('offset', '100%').attr('stop-color', PALETTE.paper).attr('stop-opacity', 0);
 
     const gradModerate = defs.append('radialGradient')
@@ -353,8 +353,8 @@ export function WorldThreatMap({
       .attr('cx', '50%')
       .attr('cy', '50%')
       .attr('r', '50%');
-    gradModerate.append('stop').attr('offset', '0%').attr('stop-color', PALETTE.ink2).attr('stop-opacity', 0.65);
-    gradModerate.append('stop').attr('offset', '60%').attr('stop-color', PALETTE.ink3).attr('stop-opacity', 0.2);
+    gradModerate.append('stop').attr('offset', '0%').attr('stop-color', PALETTE.seq1).attr('stop-opacity', 0.65);
+    gradModerate.append('stop').attr('offset', '60%').attr('stop-color', PALETTE.seq0).attr('stop-opacity', 0.2);
     gradModerate.append('stop').attr('offset', '100%').attr('stop-color', PALETTE.paper).attr('stop-opacity', 0);
 
     // Ocean background
@@ -407,9 +407,9 @@ export function WorldThreatMap({
           const matchKey = Object.keys(countryDensityMap).find((k) => matchesCountry(countryName, k));
           if (matchKey && countryDensityMap[matchKey]) {
             const density = countryDensityMap[matchKey].totalDensity;
-            if (density > 200) return PALETTE.ink;
-            if (density > 100) return PALETTE.ink3;
-            return PALETTE.ink;
+            if (density > 200) return PALETTE.seq4;
+            if (density > 100) return PALETTE.seq3;
+            return PALETTE.seq2;
           }
           return PALETTE.rule;
         })
@@ -431,7 +431,7 @@ export function WorldThreatMap({
             const density = countryDensityMap[matchKey].totalDensity;
             d3.select(this)
               .attr('fill', density > 200 ? PALETTE.rule : density > 100 ? PALETTE.card : PALETTE.paper2)
-              .attr('stroke', density > 200 ? PALETTE.ink : density > 100 ? PALETTE.ink3 : PALETTE.ink);
+              .attr('stroke', density > 200 ? PALETTE.seq4 : density > 100 ? PALETTE.seq3 : PALETTE.seq2);
           } else {
             d3.select(this)
               .attr('fill', PALETTE.paper)
@@ -487,7 +487,7 @@ export function WorldThreatMap({
           clusterG.append('circle')
             .attr('r', haloRadius * 0.7)
             .attr('fill', 'none')
-            .attr('stroke', cluster.densityTier === 'CRITICAL' ? PALETTE.ink : PALETTE.ink3)
+            .attr('stroke', cluster.densityTier === 'CRITICAL' ? PALETTE.seq4 : PALETTE.seq2)
             .attr('stroke-width', 0.9)
             .attr('stroke-dasharray', '3 3')
             .attr('opacity', 0.6)
@@ -630,7 +630,7 @@ export function WorldThreatMap({
         nodeG.append('circle')
           .attr('r', isSelected ? 22 : 16)
           .attr('fill', 'none')
-          .attr('stroke', isCritical ? PALETTE.ink : isPhysical ? PALETTE.ink3 : PALETTE.ink)
+          .attr('stroke', isCritical ? PALETTE.seq4 : isPhysical ? PALETTE.ink3 : PALETTE.ink)
           .attr('stroke-width', 1)
           .attr('stroke-dasharray', isPhysical ? '2 2' : 'none')
           .attr('opacity', 0.6)
@@ -641,14 +641,14 @@ export function WorldThreatMap({
       nodeG.append('circle')
         .attr('r', isSelected || isHovered ? 7.5 : 5)
         .attr('fill', isSelected ? PALETTE.ink : PALETTE.paper)
-        .attr('stroke', isCritical ? PALETTE.ink : isPhysical ? PALETTE.ink3 : PALETTE.ink2)
+        .attr('stroke', isCritical ? PALETTE.seq4 : isPhysical ? PALETTE.ink3 : PALETTE.ink2)
         .attr('stroke-width', isSelected ? 2.2 : 1.4)
         .attr('filter', isSelected ? 'url(#map-glow)' : 'none');
 
       // Inner pin core
       nodeG.append('circle')
         .attr('r', isSelected ? 3 : 2)
-        .attr('fill', isSelected ? PALETTE.paper : isCritical ? PALETTE.ink : isPhysical ? PALETTE.ink3 : PALETTE.ink);
+        .attr('fill', isSelected ? PALETTE.paper : isCritical ? PALETTE.seq3 : isPhysical ? PALETTE.ink3 : PALETTE.ink);
 
       // Platform & IP Tag
       nodeG.append('text')

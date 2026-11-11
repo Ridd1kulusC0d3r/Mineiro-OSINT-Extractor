@@ -389,7 +389,7 @@ export function NetworkRelationshipGraph({
       }
 
       const pColor = isFound
-        ? (CATEGORY_COLORS[res.category] || PALETTE.ink)
+        ? PALETTE.signal
         : isUncertain
         ? PALETTE.ink2
         : PALETTE.ink3;
@@ -667,7 +667,7 @@ export function NetworkRelationshipGraph({
     // Base Node Circles
     node.append('circle')
       .attr('r', (d: GraphNode) => d.radius)
-      .attr('fill', (d: GraphNode) => (d.type === 'target' ? PALETTE.ink : PALETTE.paper2))
+      .attr('fill', (d: GraphNode) => (d.type === 'target' ? PALETTE.signal : PALETTE.paper2))
       .attr('stroke', (d: GraphNode) => d.color)
       .attr('stroke-width', (d: GraphNode) => (d.type === 'target' ? 3 : 1.8));
 
@@ -685,9 +685,12 @@ export function NetworkRelationshipGraph({
       .attr('fill', (d: GraphNode) => (d.type === 'target' ? PALETTE.ink : PALETTE.ink))
       .attr('font-size', (d: GraphNode) => (d.type === 'target' ? '12px' : d.type === 'category' ? '10px' : '9px'))
       .attr('font-weight', (d: GraphNode) => (d.type === 'target' || d.type === 'category' ? 'bold' : 'normal'))
-      .attr('font-family', 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace')
+      .attr('font-family', 'var(--mono)')
       .attr('pointer-events', 'none')
-      .attr('filter', 'drop-shadow(0px 1px 2px color-mix(in srgb, var(--paper) 90%, transparent))');
+      .attr('stroke', PALETTE.paper)
+      .attr('stroke-width', 4)
+      .attr('stroke-linejoin', 'round')
+      .attr('paint-order', 'stroke');
 
     // Simulation tick handler
     simulation.on('tick', () => {

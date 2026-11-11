@@ -411,7 +411,7 @@ export function CategoryHeatMap({
         .attr('cy', y)
         .attr('r', 4)
         .attr('fill', catColor)
-        .attr('stroke', cat.compositeIntensity > 60 ? PALETTE.ink : 'transparent')
+        .attr('stroke', cat.compositeIntensity > 60 ? PALETTE.signal : 'transparent')
         .attr('stroke-width', 1);
 
       // Category Name Text
@@ -490,9 +490,9 @@ export function CategoryHeatMap({
       .duration(450)
       .attr('fill', (d) => colorScale(d.value))
       .attr('stroke', (d) => {
-        if (d.value >= 75) return PALETTE.ink;
-        if (d.value >= 50) return PALETTE.ink3;
-        if (d.value > 0) return PALETTE.ink;
+        if (d.value >= 75) return PALETTE.seq4;
+        if (d.value >= 50) return PALETTE.seq3;
+        if (d.value > 0) return PALETTE.seq2;
         return PALETTE.rule;
       })
       .attr('stroke-opacity', (d) => (d.value > 0 ? 0.6 : 0.8));
