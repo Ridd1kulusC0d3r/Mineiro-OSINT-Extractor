@@ -184,51 +184,43 @@ export function BulkImportModal({
         {/* Header */}
         <div className="mast p-5 border-b border-rule flex items-start justify-between">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 bg-signal inline-block shadow-[0_0_8px_color-mix(in_srgb,var(--ink)_80%,transparent)]" />
-              <h2 id="bulk-import-title" className="text-lg font-bold text-ink flex items-center gap-2">
-                <FileSpreadsheet className="w-4 h-4 text-ink" />
-                BULK TARGET IMPORT // BATCH INVESTIGATION
-              </h2>
-            </div>
-            <p className="text-xs text-ink-3">
-              Import a list of handles or emails from a local CSV/TXT file to execute sequential batch reconnaissance.
-            </p>
+            <span className="eyebrow">{tr('batchImport.eyebrow')}</span>
+            <h2 id="bulk-import-title" className="text-xl font-semibold tracking-tight text-ink flex items-center gap-2">
+              <FileSpreadsheet className="w-4 h-4 text-ink-2" />
+              {tr('batchImport.title')}
+            </h2>
+            <p className="text-sm text-ink-2">{tr('batchImport.subtitle')}</p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 border border-rule bg-paper text-ink-3 hover:text-ink hover:border-ink-3 transition-colors"
+            className="btn btn-icon"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="p-5 overflow-y-auto space-y-5 flex-1 text-xs">
+        <div className="p-5 overflow-y-auto space-y-5 flex-1 text-sm">
           {/* Method Tabs & Sample Download */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-rule pb-3">
-            <div className="flex items-center border border-rule bg-paper-2 p-0.5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-rule-2 pb-4">
+            <div className="tabs tabs-sm" role="tablist">
               <button
                 type="button"
+                role="tab"
+                aria-selected={activeTab === 'upload'}
                 onClick={() => setActiveTab('upload')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 uppercase transition-colors ${
-                  activeTab === 'upload'
-                    ? 'bg-signal text-signal-ink font-bold'
-                    : 'text-ink-3 hover:text-ink'
-                }`}
+                className="tab"
               >
                 <Upload className="w-3.5 h-3.5" />
                 Upload CSV File
               </button>
               <button
                 type="button"
+                role="tab"
+                aria-selected={activeTab === 'paste'}
                 onClick={() => setActiveTab('paste')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 uppercase transition-colors ${
-                  activeTab === 'paste'
-                    ? 'bg-signal text-signal-ink font-bold'
-                    : 'text-ink-3 hover:text-ink'
-                }`}
+                className="tab"
               >
                 <FileText className="w-3.5 h-3.5" />
                 Paste List / Text
@@ -239,7 +231,7 @@ export function BulkImportModal({
               <button
                 type="button"
                 onClick={handleLoadSampleBatch}
-                className="px-2.5 py-1.5 border border-rule bg-paper-2 text-ink-3 hover:text-ink hover:border-rule uppercase text-[11px] transition-colors"
+                className="btn"
                 title="Populate with a ready-to-test sample batch"
               >
                 Load Demo Batch
@@ -247,7 +239,7 @@ export function BulkImportModal({
               <button
                 type="button"
                 onClick={downloadSampleCsvTemplate}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 border border-rule bg-paper-2 text-ink-2 hover:text-ink hover:border-ink-3 uppercase text-[11px] transition-colors"
+                className="btn"
                 title="Download CSV format template"
               >
                 <Download className="w-3 h-3" />

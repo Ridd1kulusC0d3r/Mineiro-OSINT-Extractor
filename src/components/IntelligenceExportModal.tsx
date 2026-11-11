@@ -173,7 +173,7 @@ export function IntelligenceExportModal({
 
             <div className="mt-5 grid gap-3 md:grid-cols-2">
               {labels.map(([key, title, description]) => (
-                <button key={key} type="button" onClick={() => toggle(key)} className={`rounded-[18px] border p-4 text-left transition ${sections[key] ? 'border-ink-3 bg-rule-2' : 'border-rule bg-paper opacity-65'}`}>
+                <button key={key} type="button" aria-pressed={!!sections[key]} onClick={() => toggle(key)} className={`rounded-[18px] border p-4 text-left transition ${sections[key] ? 'border-ink-3 bg-rule-2' : 'border-rule bg-paper opacity-65'}`}>
                   <div className="flex items-start justify-between gap-3">
                     <div><div className="text-sm font-medium text-ink">{title}</div><div className="mt-1.5 text-xs leading-relaxed text-ink-3">{description}</div></div>
                     <div className={`mt-0.5 flex h-5 w-5 items-center justify-center rounded-md border ${sections[key] ? 'border-ink bg-ink text-paper' : 'border-rule'}`}>{sections[key] && <Check className="h-3.5 w-3.5" />}</div>

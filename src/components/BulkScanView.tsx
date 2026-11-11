@@ -95,20 +95,14 @@ export function BulkScanView({
   };
 
   return (
-    <div className="space-y-6 font-mono text-xs">
+    <div className="space-y-6 text-sm">
       {/* Top Banner & Batch Controls */}
-      <div className="border border-rule bg-paper-2 p-5 space-y-4">
+      <div className="card p-6 space-y-5">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-rule pb-4">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 bg-signal inline-block shadow-[0_0_8px_color-mix(in_srgb,var(--ink)_80%,transparent)]" />
-              <h2 className="text-sm sm:text-base font-bold text-ink uppercase tracking-wider">
-                BULK TARGET INVESTIGATION QUEUE // {batch.name.toUpperCase()}
-              </h2>
-            </div>
-            <p className="text-ink-3 text-xs">
-              Sequential multi-target OSINT reconnaissance engine with automated forensic hit aggregation.
-            </p>
+            <span className="eyebrow">{tr('batch.eyebrow')}</span>
+            <h2 className="text-2xl font-semibold tracking-tight text-ink">{batch.name}</h2>
+            <p className="text-ink-2 text-sm max-w-2xl">{tr('batch.subtitle')}</p>
           </div>
 
           {/* Action Toolbar */}
@@ -193,19 +187,16 @@ export function BulkScanView({
         {/* Global Batch Progress */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-ink-3 text-xs">
-            <span className="flex items-center gap-2">
-              <span>BATCH PROGRESS:</span>
-              <strong className="text-ink">
-                {completedItems.length} / {batch.items.length} TARGETS COMPLETED ({percentComplete}%)
-              </strong>
+            <span className="text-ink tabular-nums">
+              {tr('batch.progress', { done: completedItems.length, total: batch.items.length, percent: percentComplete })}
             </span>
-            <span>
-              STATUS: <strong className="text-ink">{batch.isActive ? (batch.isPaused ? 'PAUSED' : 'SCANNING BATCH') : 'COMPLETED'}</strong>
+            <span className={`chip ${batch.isActive && !batch.isPaused ? 'chip-signal' : 'chip-quiet'}`}>
+              {batch.isActive ? (batch.isPaused ? tr('batch.statusPaused') : tr('batch.statusRunning')) : tr('batch.statusDone')}
             </span>
           </div>
-          <div className="w-full bg-paper h-2.5 border border-rule overflow-hidden">
+          <div className="w-full h-2 rounded-full bg-paper-2 border border-rule-2 overflow-hidden" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percentComplete}>
             <div
-              className={`h-full bg-signal transition-all duration-300 ${batch.isActive && !batch.isPaused ? 'animate-pulse' : ''}`}
+              className="h-full rounded-full bg-signal"
               style={{ width: `${percentComplete}%` }}
             />
           </div>
@@ -213,33 +204,33 @@ export function BulkScanView({
 
         {/* Aggregate KPI Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-          <div className="p-3 border border-rule bg-paper space-y-1">
-            <div className="text-[10px] text-ink-3 uppercase">Total Targets</div>
-            <div className="text-2xl font-black text-ink">{batch.items.length}</div>
+          <div className="card p-4 space-y-1.5">
+            <div className="label-mono text-ink-3">Total Targets</div>
+            <div className="stat-num">{batch.items.length}</div>
             <div className="text-[10px] text-ink-3">
               {queuedItems.length} Queued • {completedItems.length} Done
             </div>
           </div>
 
-          <div className="p-3 border border-rule bg-paper space-y-1">
-            <div className="text-[10px] text-ink-3 uppercase">Cumulative Hits</div>
-            <div className="text-2xl font-black text-ink">{totalHits}</div>
+          <div className="card p-4 space-y-1.5">
+            <div className="label-mono text-ink-3">Cumulative Hits</div>
+            <div className="stat-num">{totalHits}</div>
             <div className="text-[10px] text-ink-3">
               Discovered profiles
             </div>
           </div>
 
-          <div className="p-3 border border-rule bg-paper space-y-1">
-            <div className="text-[10px] text-ink-3 uppercase">Platform Probes</div>
-            <div className="text-2xl font-black text-ink">{totalScannedPlatforms}</div>
+          <div className="card p-4 space-y-1.5">
+            <div className="label-mono text-ink-3">Platform Probes</div>
+            <div className="stat-num">{totalScannedPlatforms}</div>
             <div className="text-[10px] text-ink-3">
               {tr('batch.scopeLabel', { scope: batch.platformScope ?? '—', category: batch.selectedCategory })}
             </div>
           </div>
 
-          <div className="p-3 border border-rule bg-paper space-y-1">
-            <div className="text-[10px] text-ink-3 uppercase">Batch State</div>
-            <div className="text-2xl font-black text-ink">
+          <div className="card p-4 space-y-1.5">
+            <div className="label-mono text-ink-3">Batch State</div>
+            <div className="stat-num">
               {batch.isActive ? (batch.isPaused ? 'PAUSED' : 'ACTIVE') : 'DONE'}
             </div>
             <div className="text-[10px] text-ink-3">
@@ -259,12 +250,11 @@ export function BulkScanView({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
             <div className="flex items-center gap-3">
               <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-ink-3 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-ink-3"></span>
+                <span className="mast-dot" />
               </span>
               <div>
                 <span className="text-[10px] uppercase text-ink-3 tracking-wider block font-bold">
-                  ACTIVE RECONNAISSANCE IN PROGRESS
+                  {tr('batch.activeNow')}
                 </span>
                 <h3 className="text-base font-bold text-ink flex items-center gap-2">
                   <span>{activeItem.type === 'username' ? `@${activeItem.target}` : activeItem.target}</span>
@@ -299,22 +289,20 @@ export function BulkScanView({
       )}
 
       {/* Target Queue Table */}
-      <div className="border border-rule bg-paper-2 space-y-2">
-        <div className="p-4 border-b border-rule flex items-center justify-between">
+      <div className="tbl-wrap">
+        <div className="p-4 border-b border-rule-2 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <Layers className="w-4 h-4 text-ink" />
-            <h3 className="text-xs font-bold text-ink uppercase tracking-wider">
-              BATCH TARGET RECONNAISSANCE QUEUE ({batch.items.length})
-            </h3>
+            <h3 className="card-title">{tr('batch.queueTitle', { count: batch.items.length })}</h3>
           </div>
           <span className="text-ink-3 text-[11px]">
-            Click "Inspect Dossier" on any target to view detailed analytics & D3 graphs
+            {tr('batch.queueHint')}
           </span>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-paper border-b border-rule text-ink-3 text-[10px] uppercase">
+          <table className="tbl">
+            <thead>
               <tr>
                 <th className="py-2.5 px-4 w-12">#</th>
                 <th className="py-2.5 px-4">Target Identifier</th>
@@ -326,7 +314,7 @@ export function BulkScanView({
                 <th className="py-2.5 px-4 text-right">Dossier Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-rule font-mono">
+            <tbody>
               {batch.items.map((item, idx) => {
                 const isScanning = item.status === 'scanning';
                 const isCompleted = item.status === 'completed';

@@ -218,11 +218,11 @@ const STEPS = [
   ['batch-queue', async (page) => {
     await headerButton(page, /^Batch/);
     const dialog = modal(page);
-    await dialog.getByRole('button', { name: /Paste List/ }).click();
+    await dialog.getByRole('tab', { name: /Paste List/ }).click();
     await dialog.locator('textarea').fill(BATCH_TARGETS.join('\n'));
     await dialog.getByRole('button', { name: /Launch Bulk Reconnaissance/ }).click();
     await dialog.waitFor({ state: 'detached' });
-    await page.getByText(`${BATCH_TARGETS.length} / ${BATCH_TARGETS.length} TARGETS COMPLETED`).waitFor({ timeout: 60000 });
+    await page.locator('[role="progressbar"][aria-valuenow="100"]').last().waitFor({ timeout: 60000 }); // fila de lote concluída
     await settle(page, 800);
   }],
   ['start-recent-cases', async (page) => {
