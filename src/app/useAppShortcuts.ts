@@ -1,7 +1,8 @@
-import { useGlobalShortcuts } from '../hooks/useGlobalShortcuts';
+import { focusFilterInput, focusTargetInput, useGlobalShortcuts } from '../hooks/useGlobalShortcuts';
 import type { Modals } from '../hooks/useModals';
 import type { Scan } from '../hooks/useScan';
 import type { AddLog } from '../hooks/useScanLog';
+import type { ShortcutAction } from './shortcuts';
 import type { AppView } from './views';
 
 interface AppShortcutsOptions {
@@ -13,77 +14,33 @@ interface AppShortcutsOptions {
   setSearchFilter: (value: string) => void;
 }
 
-/** Wires the global keyboard shortcuts and returns the handler for rows clicked in the shortcuts sheet. */
+/**
+ * Runs shortcut actions (src/app/shortcuts.ts) for both the keyboard and the rows of the shortcuts sheet, and wires
+ * the keyboard listener. Returns the runner for the sheet.
+ */
 export function useAppShortcuts({ scan, modals, addLog, setActiveView, searchFilter, setSearchFilter }: AppShortcutsOptions) {
-  // Global Keyboard Shortcuts Manager (⌘K, Esc, /, 1-7, ⌘Enter, ⌘E, ⌘B, ⌘H, ⌘M, ?)
-  useGlobalShortcuts({
-    onStartScan: () => {
-      if (!scan.isScanning && scan.target.trim()) {
-        scan.startScan();
-      }
-    },
-    onResetWorkspace: scan.reset,
-    onToggleShortcutsModal: () => modals.toggle('shortcuts'),
-    onOpenExport: () => modals.open('export'),
-    onOpenBulkImport: () => modals.open('bulk'),
-    onOpenHistory: () => modals.open('history'),
-    onOpenModular: () => modals.open('modular'),
-    onToggleScanDepth: scan.flipScanDepth,
-    onCloseActiveModal: modals.closeTopmost,
-    onChangeView: (view) => {
+  const runAction = (action: ShortcutAction) => {
+    if (action.startsWith('view:')) {
+      const view = action.slice('view:'.length) as AppView;
       setActiveView(view);
       addLog(`[SHORTCUT] Switched view to: ${view.toUpperCase()}`, 'info');
-    },
-    isScanning: scan.isScanning,
-    target: scan.target,
-    setTarget: scan.setTarget,
-    searchFilter,
-    setSearchFilter,
-  });
-
-  return (actionId: string) => {
-    switch (actionId) {
-      case 'focus-target': {
-        const el = document.getElementById('target-input') as HTMLInputElement | null;
-        if (el) {
-          el.focus();
-          el.select();
-        }
+      return;
+    }
+    switch (action) {
+      case 'focus-target':
+        focusTargetInput();
         break;
-      }
       case 'start-scan':
-        if (scan.target.trim() && !scan.isScanning) {
-          scan.startScan();
-        }
+        if (!scan.isScanning && scan.target.trim()) scan.startScan();
         break;
-      case 'esc-clear':
+      case 'esc-clear': // from the sheet only: the Escape key itself is layered in useGlobalShortcuts
         scan.setTarget('');
         break;
-      case 'focus-filter': {
-        const el = document.getElementById('filter-search-input') as HTMLInputElement | null;
-        if (el) {
-          el.focus();
-          el.select();
-        }
+      case 'focus-filter':
+        focusFilterInput();
         break;
-      }
-      case 'view-dashboard':
-        setActiveView('intelligence');
-        break;
-      case 'view-grid':
-        setActiveView('grid');
-        break;
-      case 'view-table':
-        setActiveView('table');
-        break;
-      case 'view-profile':
-        setActiveView('ai');
-        break;
-      case 'view-linkage':
-        setActiveView('linkage');
-        break;
-      case 'view-terminal':
-        setActiveView('terminal');
+      case 'toggle-depth':
+        scan.flipScanDepth();
         break;
       case 'open-export':
         modals.open('export');
@@ -97,12 +54,20 @@ export function useAppShortcuts({ scan, modals, addLog, setActiveView, searchFil
       case 'open-modular':
         modals.open('modular');
         break;
-      case 'toggle-depth':
-        scan.flipScanDepth();
-        break;
       case 'toggle-help':
         modals.toggle('shortcuts');
         break;
     }
   };
+
+  useGlobalShortcuts({
+    onAction: runAction,
+    onCloseActiveModal: modals.closeTopmost,
+    target: scan.target,
+    setTarget: scan.setTarget,
+    searchFilter,
+    setSearchFilter,
+  });
+
+  return runAction;
 }

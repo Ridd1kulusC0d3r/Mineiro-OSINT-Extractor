@@ -12,6 +12,7 @@ import type { Modals } from '../hooks/useModals';
 import type { AddLog } from '../hooks/useScanLog';
 import type { useBulkBatch } from '../hooks/useBulkBatch';
 import type { useSettings } from '../hooks/useSettings';
+import { SHORTCUTS, type ShortcutAction } from './shortcuts';
 
 interface AppModalsProps {
   modals: Modals;
@@ -21,7 +22,7 @@ interface AppModalsProps {
   settings: ReturnType<typeof useSettings>;
   requirement: IntelligenceRequirement;
   addLog: AddLog;
-  onShortcutAction: (actionId: string) => void;
+  onShortcutAction: (action: ShortcutAction) => void;
 }
 
 /** Every overlay of the app, plus the hidden print layout. Each one renders nothing while closed. */
@@ -105,6 +106,7 @@ export function AppModals({ modals, scan, cases, batch, settings, requirement, a
       <KeyboardShortcutsModal
         isOpen={modals.isOpen.shortcuts}
         onClose={() => modals.close('shortcuts')}
+        shortcuts={SHORTCUTS}
         onActionTrigger={onShortcutAction}
       />
     </>
