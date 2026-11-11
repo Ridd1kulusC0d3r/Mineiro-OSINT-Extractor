@@ -17,3 +17,6 @@ python/*.egg-info/
 python/LICENSE
 __pycache__/
 *.egg-info/
+assets/src/raw/
+assets/src/gif-frames/
+assets/src/.frame-*.html

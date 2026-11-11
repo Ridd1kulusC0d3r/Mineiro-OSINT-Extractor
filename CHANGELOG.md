@@ -1,5 +1,16 @@
 # Changelog
 
+### Documentation
+- New guides: `docs/CLI-E-API.md` (CLI, environment variables, REST reference with real responses), `docs/RECEITAS.md` (9 investigation recipes), `docs/PRIVACIDADE-E-DADOS.md`, `docs/GLOSSARIO.md`, `docs/CHEATSHEET.md`; rewritten `GETTING-STARTED`, `USER-GUIDE` (17 sections, real screenshots in `assets/docs`), `TROUBLESHOOTING`, `FAQ`, `GRAPH-HUNTING` and `INTELLIGENCE-METHODOLOGY` (now with every formula). Runnable examples in `examples/`.
+- `npm run docs:validate` now checks every relative link and heading anchor in all Markdown files.
+- README no longer implies that STIX/SQLite are used by the UI or that nothing leaves the machine (favicon lookups and the optional AI copilot do).
+
+### Fixes found while verifying the docs
+- A local-server refusal (400/429) was shown as "not found"; it is now an `ERROR` result with the reason.
+- A leading `@` is stripped from usernames instead of being probed as `%40name`.
+- Corrected keyboard-shortcut and bulk-import texts; removed the unused Google Fonts request.
+- Codeberg detector sends an honest User-Agent; `detectorVersion` reports `declarative:<lastVerified>`.
+
 ## [1.7.0] - 2026-10-02
 
 ### Security
@@ -25,6 +36,16 @@
 - English `README.md` (default) with an animated demo; Portuguese kept in `README.pt-BR.md`.
 - Release workflow: pushing a `v*` tag builds the app, the wheel and a GitHub Release with these notes.
 - Server honors `HOST` (default `0.0.0.0` for containers).
+
+### UI fixes
+- Start screen v2: search form in the hero (focused on desktop, not on touch devices), forgiving input (a pasted profile URL suggests the handle, an e-mail typed in username mode offers to switch, spaces and a leading `@` are handled; Enter applies a fix instead of scanning wrong input), "continue where you left off" with the 3 latest cases, system status from `/api/health` (new `publicMode` field), WCAG A/AA contrast fixes (axe-core: 0 violations), 14 new i18n keys. `npm run e2e:start` runs 17 end-to-end checks. Plan for next steps: `docs/PLANO-PAGINA-INICIAL.md`.
+- New start screen: until the first scan, the main page used to be a ~10,000 px wall of empty report sections ("0", empty matrix). It is now a focused landing (~1,760 px): value proposition, public example handles, selectable scan modes (Quick / Standard / Full), a "how to read a verdict" legend, the four-step method, trust statements and shortcuts to batch import and cases. Fully localized (EN/PT/ES, 32 new keys), keyboard-accessible, no horizontal overflow on phones. The report appears as soon as a scan starts.
+- Intelligence Report: the hero, executive description and collection-coverage metrics were hard-coded in Portuguese; they now use the i18n catalogs (EN/PT/ES, 191 keys).
+- Intelligence Report: long URLs in the Known/Assessed/Unknown panel no longer overflow into the next column.
+
+### Presentation
+- New README: banner, animated demo, feature cards, pipeline / differential-baseline / architecture diagrams, screenshot gallery, collapsible install options. Visuals are generated from real app screenshots and reproducible (`npm run assets:capture`, `npm run assets:render`).
+- Social preview image (1280x640), `CODE_OF_CONDUCT.md`, `CITATION.cff`, release-note categories, English contributing summary, repository settings checklist in `docs/RELEASING.md`.
 
 ### Engineering
 - Evidence engine extracted to `src/core`; Vitest suite with HTML fixtures.

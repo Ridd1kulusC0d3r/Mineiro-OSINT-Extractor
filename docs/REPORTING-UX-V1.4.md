@@ -1,5 +1,8 @@
 # Reporting UX — Mineiro v1.4
 
+> [!NOTE]
+> **Documento histórico (v1.4).** Descreve o desenho da época; pode divergir da versão atual. Para o estado vigente, veja [ARCHITECTURE.md](../ARCHITECTURE.md), [INTELLIGENCE-METHODOLOGY.md](INTELLIGENCE-METHODOLOGY.md) e [USER-GUIDE.md](USER-GUIDE.md).
+
 ## Direção visual
 
 A v1.4 abandona o dashboard excessivamente fragmentado como tela principal.

@@ -16,7 +16,7 @@ async function check(id: string, handle: string, expected: 'present' | 'absent')
   const reg = getRegistryDetector(id)!;
   const url = buildDetectorUrl(reg.urlPattern, handle);
   try {
-    const { response, finalUrl } = await safeFetch(url, { signal: AbortSignal.timeout(15000), headers: { 'User-Agent': 'MineiroDetectorHealth/1.0' } });
+    const { response, finalUrl } = await safeFetch(url, { signal: AbortSignal.timeout(15000), headers: { 'User-Agent': 'MineiroDetectorHealth/1.0 (+https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor)' } });
     const body = await readBodyPreview(response as any);
     const verdict = evaluateMatchers(detectors.get(id)!, { status: response.status, finalUrl, body }).verdict;
     if (verdict !== expected) failures.push(`${id}: ${handle} expected ${expected}, got ${verdict} (HTTP ${response.status})`);

@@ -87,7 +87,7 @@ Encerra o processo da sessão.
 %cd /content/Mineiro-OSINT-Extractor
 !git checkout main
 !git pull --ff-only
-!npm install --no-audit --no-fund --prefer-offline
+!npm ci --no-audit --no-fund --prefer-offline
 ```
 
 Depois execute novamente a célula **Start Mineiro**.

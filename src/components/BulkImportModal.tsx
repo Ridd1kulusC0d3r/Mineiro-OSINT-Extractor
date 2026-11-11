@@ -299,7 +299,7 @@ export function BulkImportModal({
           {activeTab === 'paste' && (
             <div className="space-y-1.5">
               <label className="text-[11px] uppercase tracking-wider text-neutral-400 block">
-                Target Identifiers (one per line, or comma-separated):
+                Target Identifiers (one per line; the first column is used):
               </label>
               <textarea
                 value={rawText}

@@ -1,0 +1,35 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="common.css">
+<style>
+  body { width: 1600px; height: 480px; background: var(--black); position: relative; overflow: hidden; }
+  .dots { position: absolute; inset: 0; background-image: radial-gradient(#242424 1px, transparent 1.2px); background-size: 28px 28px; opacity: .7;
+          -webkit-mask-image: linear-gradient(90deg, #000 0%, transparent 70%); mask-image: linear-gradient(90deg, #000 0%, transparent 70%); }
+  svg.ridges { position: absolute; left: 0; bottom: 0; width: 1600px; height: 480px; }
+  .wrap { position: absolute; inset: 0; display: flex; align-items: center; gap: 64px; padding: 0 96px; }
+  .logo { height: 330px; width: auto; filter: drop-shadow(0 0 30px rgba(255,255,255,.07)); }
+  .eyebrow { font-size: 14px; }
+  h1 { font-weight: 800; font-size: 150px; line-height: .92; letter-spacing: -.055em; margin-top: 14px; }
+  h2 { font-weight: 600; font-size: 40px; letter-spacing: -.02em; margin-top: 10px; }
+  .sub { font-family: var(--mono); font-size: 19px; color: var(--text2); margin-top: 8px; letter-spacing: .02em; }
+  .tag { font-size: 23px; color: var(--text2); margin-top: 24px; }
+  .tag b { color: var(--text); font-weight: 600; }
+  .chips { display: flex; gap: 12px; margin-top: 26px; font-size: 15px; }
+</style></head>
+<body>
+  <div class="dots"></div>
+  <svg class="ridges" viewBox="0 0 1600 480"></svg>
+  <div class="wrap">
+    <img class="logo" src="logo-light.png" alt="">
+    <div>
+      <div class="eyebrow">Open-source intelligence assessment</div>
+      <h1>Mineiro</h1>
+      <h2>Username Intelligence</h2>
+      <div class="sub">OSINT Investigation Workbench</div>
+      <div class="tag">Public username presence, <b>evidence first</b>. Observation is not identity.</div>
+      <div class="chips"><span class="chip">985 detectors</span><span class="chip">evidence hashes</span><span class="chip">STIX 2.1</span><span class="chip">pip install mineiro-osint</span></div>
+    </div>
+  </div>
+  <script src="ridges.js"></script>
+  <script>ridges(document.querySelector('svg.ridges'), 1600, 480);</script>
+</body></html>
