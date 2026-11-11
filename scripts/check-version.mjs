@@ -24,6 +24,17 @@ for (const file of serverFiles) {
   });
 }
 
+// The browser client takes it from package.json too (src/version.ts, inlined by Vite); the console banner shows it.
+found['src/version.ts'] = /import \{ version \} from '\.\.\/package\.json'/.test(read('src/version.ts')) && /APP_VERSION[^=]*=\s*version/.test(read('src/version.ts')) ? pkg : 'does not read package.json';
+const terminal = read('src/components/TerminalLogs.tsx');
+found['src/components/TerminalLogs.tsx banner'] = /\$\{APP_VERSION\}/.test(terminal) && !/\bv\d+\.\d+\.\d+\b/.test(terminal) ? pkg : 'banner does not use APP_VERSION';
+const clientFiles = fs.readdirSync('src', { recursive: true }).map((f) => `src/${f}`).filter((f) => /\.tsx?$/.test(f) && f !== 'src/version.ts');
+for (const file of clientFiles) {
+  read(file).split('\n').forEach((line, index) => {
+    if (literal.test(line)) found[`${file}:${index + 1} (hard-coded version)`] = line.trim();
+  });
+}
+
 const tag = process.argv[2];
 if (tag) found[`tag ${tag}`] = tag.replace(/^v/, '');
 
