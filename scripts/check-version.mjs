@@ -9,7 +9,7 @@ const found = {
   'package-lock.json': JSON.parse(read('package-lock.json')).version,
   'python/pyproject.toml': read('python/pyproject.toml').match(/^version\s*=\s*"([^"]+)"/m)?.[1],
   'python/src/mineiro_osint/__init__.py': read('python/src/mineiro_osint/__init__.py').match(/__version__\s*=\s*"([^"]+)"/)?.[1],
-  'server.ts (health)': read('server.ts').match(/version:\s*'([\d.]+)'/)?.[1],
+  'server/routes/registry.ts (health)': read('server/routes/registry.ts').match(/version:\s*'([\d.]+)'/)?.[1],
   'server/routes/verify.ts': read('server/routes/verify.ts').match(/VERSION\s*=\s*'([\d.]+)'/)?.[1],
   'README.md badge': read('README.md').match(/badge\/version-([\d.]+)-/)?.[1],
   'README.pt-BR.md badge': read('README.pt-BR.md').match(/badge\/version-([\d.]+)-/)?.[1],
