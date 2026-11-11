@@ -71,14 +71,14 @@ export function LanguageSelector({ variant = 'auto', className = '' }: LanguageS
       {/* Segmented View for Tablet & Desktop (or explicit segmented variant) */}
       <div
         id="language-selector-segmented"
-        className={`hidden sm:flex items-center bg-paper-2 border border-rule rounded-md p-0.5 text-xs ${
+        className={`tabs tabs-sm tabs-seg hidden sm:flex ${
           variant === 'dropdown' ? '!hidden' : ''
         }`}
         role="group"
         aria-label={tr('lang.select')}
       >
-        <div className="flex items-center text-ink-2 px-1.5 py-1" title={tr('lang.select')}>
-          <Globe className="w-3.5 h-3.5 text-ink" />
+        <div className="flex items-center text-ink-3 pl-2 pr-1" title={tr('lang.select')}>
+          <Globe className="w-3.5 h-3.5" />
         </div>
 
         <div className="flex items-center gap-0.5">
@@ -91,11 +91,7 @@ export function LanguageSelector({ variant = 'auto', className = '' }: LanguageS
                 type="button"
                 onClick={() => handleSelectLanguage(option.code)}
                 aria-pressed={isSelected}
-                className={`px-2 py-1 uppercase rounded-sm text-[11px] font-bold tracking-wider transition-all select-none ${
-                  isSelected
-                    ? 'bg-signal text-signal-ink shadow-[0_0_8px_color-mix(in_srgb,var(--ink)_30%,transparent)]'
-                    : 'text-ink-2 hover:text-ink hover:bg-paper'
-                }`}
+                className="tab select-none"
                 title={`${option.label} (${option.nativeLabel})`}
               >
                 {option.code}
@@ -113,7 +109,7 @@ export function LanguageSelector({ variant = 'auto', className = '' }: LanguageS
           onClick={() => setIsOpen((prev) => !prev)}
           aria-expanded={isOpen}
           aria-haspopup="listbox"
-          className="flex items-center gap-1.5 px-2.5 h-8.5 bg-paper-2 border border-rule hover:border-ink-3 rounded-md text-xs text-ink font-bold tracking-wider transition-colors"
+          className="btn btn-icon gap-1.5 px-3"
           title={`${tr('lang.active')}: ${currentOption.nativeLabel}`}
         >
           <Globe className="w-3.5 h-3.5 text-ink" />
@@ -131,7 +127,7 @@ export function LanguageSelector({ variant = 'auto', className = '' }: LanguageS
             id="language-selector-menu"
             role="listbox"
             aria-label={tr('lang.available')}
-            className="absolute right-0 top-full mt-1.5 w-44 bg-paper-2 border border-rule rounded-md shadow-2xl p-1 z-50 animate-in fade-in zoom-in-95 duration-100 divide-y divide-rule/40"
+            className="dialog absolute right-0 top-full mt-1.5 w-44 p-1 z-50 divide-y divide-rule-2"
           >
             <div className="px-2.5 py-1.5 text-[10px] text-ink-2 uppercase tracking-wider font-semibold">
               {tr('lang.select')}

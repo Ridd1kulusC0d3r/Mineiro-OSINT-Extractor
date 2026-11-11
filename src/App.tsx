@@ -11,6 +11,7 @@ import { PlatformTable } from './components/PlatformTable';
 import { EmailReconCard } from './components/EmailReconCard';
 import { TerminalLogs } from './components/TerminalLogs';
 import { IntelligenceExportModal } from './components/IntelligenceExportModal';
+import { AuditViewHeader } from './components/AuditViewHeader';
 import { DossierPrintView } from './components/DossierPrintView';
 import { GeminiConfigModal } from './components/GeminiConfigModal';
 import { CorrelationWorkspace } from './components/CorrelationWorkspace';
@@ -35,6 +36,7 @@ import {
   CachedInvestigation
 } from './types';
 import { ParsedTarget } from './utils/csvParser';
+import { useI18n } from './utils/i18n';
 import type { IntelligenceRequirement } from './intelligence/types';
 import type { GraphPivotInvestigation } from './graph/types';
 import type { CaseCollectionSnapshot, MineiroCase } from './cases/types';
@@ -49,6 +51,7 @@ import {
 } from './utils/scanStorage';
 
 export default function App() {
+  const { tr } = useI18n();
   const [target, setTarget] = useState('');
   const [targetType, setTargetType] = useState<'username' | 'email'>('username');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -1228,15 +1231,10 @@ export default function App() {
         {/* View: Platforms Grid */}
         {activeView === 'grid' && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between text-xs font-mono text-ink-2">
-              <span>
-                DISPLAYING <strong className="text-ink">{visibleResults.length}</strong> PLATFORMS
-                {searchFilter && ` MATCHING "${searchFilter}"`}
-              </span>
-              <span className="text-[11px] text-ink-3">
-                CLICK LINK ICON TO AUDIT PROFILE DIRECTLY
-              </span>
-            </div>
+            <AuditViewHeader
+              title={tr('grid.title', { count: visibleResults.length })}
+              hint={searchFilter ? tr('grid.matching', { query: searchFilter }) : tr('grid.hint')}
+            />
             <PlatformGrid results={visibleResults} target={target} />
           </div>
         )}
@@ -1244,10 +1242,7 @@ export default function App() {
         {/* View: Dense Audit Table */}
         {activeView === 'table' && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between text-xs font-mono text-ink-2">
-              <span>TABULAR AUDIT LEDGER ({visibleResults.length} records)</span>
-              <span className="text-[11px] text-ink-3">SORTED BY RECON ENGINE DISCOVERY</span>
-            </div>
+            <AuditViewHeader title={tr('table.title', { count: visibleResults.length })} hint={tr('table.hint')} />
             <PlatformTable results={visibleResults} />
           </div>
         )}
@@ -1367,21 +1362,15 @@ export default function App() {
         onActionTrigger={handleShortcutAction}
       />
 
-      {/* Modern Minimalist Footer */}
-      <footer className="border-t border-rule bg-paper py-5 font-mono text-xs text-ink-2">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-1">
-          <div className="flex flex-wrap items-center justify-center gap-x-2 text-ink">
-            <strong className="text-ink">Mineiro Username Intelligence UNIFIED OSINT ENGINE</strong>
-            <span className="text-ink-3">//</span>
-            <span className="text-ink-2">LARGE LOCAL PLATFORM CATALOG</span>
-            <span className="text-ink-3">•</span>
-            <span className="text-ink-2">WAF & ANTI-BOT GUARD</span>
-            <span className="text-ink-3">•</span>
-            <span className="text-ink-2">EVIDENCE-BOUNDED AI COPILOT</span>
+      {/* Rodapé */}
+      <footer className="border-t border-rule bg-paper py-6">
+        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-3 px-4 font-mono text-[11.5px] text-ink-3 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2.5">
+            <span className="mast-dot" aria-hidden="true" />
+            <strong className="font-sans text-[13px] font-semibold text-ink">Mineiro Username Intelligence</strong>
+            <span>· OSINT Investigation Workbench</span>
           </div>
-          <div className="text-[10px] text-ink-3">
-            OSINT INVESTIGATION WORKBENCH · EVIDENCE · CORRELATION · REPORTING
-          </div>
+          <div>{tr('footer.tagline')}</div>
         </div>
       </footer>
     </div>
