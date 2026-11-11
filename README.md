@@ -18,6 +18,8 @@
 <p align="center">
   <a href="https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Username_Intelligence_Colab.ipynb"><strong>▶ Open in Google Colab</strong></a>
   &nbsp;·&nbsp;
+  <a href="https://codespaces.new/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor?quickstart=1"><strong>▶ Open in GitHub Codespaces</strong></a>
+  &nbsp;·&nbsp;
   <a href="#quick-start">Install</a>
   &nbsp;·&nbsp;
   <a href="docs/USER-GUIDE.md">User guide</a>
@@ -157,6 +159,17 @@ packaging/install-linux.sh --from-source   # or build and install this checkout
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Username_Intelligence_Colab.ipynb)
 
 The official notebook clones the repo, installs dependencies, validates the registry, starts the server and opens the UI through the Colab proxy. Nothing to install locally.
+
+</details>
+
+<details>
+<summary><b>Option 2b · GitHub Codespaces</b> (runs inside GitHub, nothing to install)</summary>
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor?quickstart=1)
+
+Click the badge (or **Code → Codespaces → Create codespace** on the repository page). The codespace installs the dependencies, builds the app, starts the server and opens the UI in a preview tab; the first start takes a few minutes. If the tab does not open, use the **Ports** panel and open port `3000` ("Mineiro UI").
+
+The forwarded port is **private**: only you, signed in to GitHub, can open it. Do not switch it to public. Probes leave from GitHub's network, and cases live in the browser, so export reports before deleting the codespace. Codespaces uses your account's free monthly quota; stop the codespace when you finish. The setup is in [`.devcontainer/devcontainer.json`](.devcontainer/devcontainer.json).
 
 </details>
 

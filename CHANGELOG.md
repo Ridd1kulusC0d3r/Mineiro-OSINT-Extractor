@@ -8,6 +8,7 @@ Architectural refactor and new visual identity (`docs/REFACTOR_PLAN.md`, stages 
 - `packaging/install-linux.sh` for Debian, Ubuntu, Kali, Parrot and Amazon Linux 2023: installs the `mineiro-osint` wheel into its own virtual environment and links `mineiro` into `~/.local/bin` (`--prefix` to change it), so externally managed Pythons (PEP 668) need no `--break-system-packages`. Installs the release wheel checked against `SHA256SUMS.txt`, a local `--wheel`, or a `--from-source` build; Node.js 22+ comes from `nodejs-wheel-binaries` when the system has none; `sudo` is only used for missing distribution packages. `--dry-run` prints every step; `--uninstall` removes it.
 - New workflow `linux-matrix.yml` runs the installer and a smoke test (`mineiro --version`, page and API answer 200) in `debian:stable`, `ubuntu:24.04`, `kalilinux/kali-rolling`, `parrotsec/core` and `amazonlinux:2023`.
 - `mineiro` now stops the Node server on SIGTERM too (it only did on Ctrl+C).
+- New run option, GitHub Codespaces: `.devcontainer/devcontainer.json` installs, builds, starts the server and opens the UI on the private forwarded port 3000.
 
 ### Baseline and checks (stage 0)
 - `npm run visual`: every screen in the three themes with Playwright, console errors and external requests reported. `npm run api:baseline`: stored replies of every route that answers without network or key, compared with `-- --check`.

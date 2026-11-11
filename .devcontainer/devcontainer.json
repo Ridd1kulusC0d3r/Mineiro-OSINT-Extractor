@@ -1,0 +1,20 @@
+// GitHub Codespaces / Dev Containers: builds the app and serves it on port 3000.
+// The forwarded port stays private (only the signed-in owner of the codespace can open it).
+{
+  "name": "Mineiro Username Intelligence",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22-bookworm",
+  "postCreateCommand": "npm ci --no-audit --no-fund && npm run build",
+  "postAttachCommand": "npm start",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "Mineiro UI",
+      "onAutoForward": "openPreview"
+    }
+  },
+  "customizations": {
+    "codespaces": {
+      "openFiles": ["docs/GETTING-STARTED.md"]
+    }
+  }
+}

@@ -107,6 +107,12 @@ Abra o notebook oficial:
 
 A VM do Colab é **temporária**: exporte os relatórios antes de fechar. **Nunca** cole chaves de API em células de um notebook compartilhado. Mais em [COLAB.md](COLAB.md).
 
+### Alternativa: GitHub Codespaces
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor?quickstart=1)
+
+Roda dentro do GitHub, sem instalar nada: o codespace instala, compila, sobe o servidor e abre a interface (porta `3000`, painel **Ports**). A porta é privada, só você abre; não a torne pública. Exporte os relatórios antes de apagar o codespace e pare-o ao terminar, porque ele consome a cota mensal da sua conta.
+
 ---
 
 ## 4. Opção C · Código-fonte

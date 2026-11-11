@@ -140,6 +140,14 @@ A forma mais rápida de testar o produto é o notebook oficial:
 
 Ele cuida de clone/update, dependências, validação do Registry, servidor, health check e abertura da interface pelo proxy do Colab.
 
+### GitHub Codespaces (roda dentro do GitHub)
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor?quickstart=1)
+
+Clique no selo (ou em **Code → Codespaces → Create codespace** na página do repositório). O codespace instala as dependências, compila o app, sobe o servidor e abre a interface numa aba de preview; a primeira inicialização leva alguns minutos. Se a aba não abrir, use o painel **Ports** e abra a porta `3000` ("Mineiro UI").
+
+A porta encaminhada é **privada**: só você, logado no GitHub, consegue abrir. Não mude para pública. As sondagens saem da rede do GitHub, e os casos ficam no navegador: exporte os relatórios antes de apagar o codespace. O Codespaces consome a cota mensal gratuita da sua conta; pare o codespace ao terminar. A configuração está em [`.devcontainer/devcontainer.json`](.devcontainer/devcontainer.json).
+
 ### Local
 
 Pré-requisito: **Node.js 22+**.
