@@ -245,6 +245,20 @@ describe('POST /api/osint/verify with stubbed outbound fetch', () => {
   });
 });
 
+describe('unknown API routes', () => {
+  it.each([
+    ['GET', '/api/does-not-exist'],
+    ['POST', '/api/osint/nope'],
+    ['GET', '/api/osint/verify'], // exists only as POST
+    ['GET', '/api'],
+  ])('%s %s -> JSON 404, not the SPA (defect 6)', async (method, path) => {
+    const res = await json(path, { method, ...(method === 'POST' ? { body: {} } : {}) });
+    expect(res.status).toBe(404);
+    expect(res.type).toContain('application/json');
+    expect(res.body).toEqual({ error: 'Unknown API route', method, path });
+  });
+});
+
 describe('rate limiting', () => {
   it('answers 429 with Retry-After once the ai bucket (60/min outside public mode) is empty', async () => {
     const isolated = await start();

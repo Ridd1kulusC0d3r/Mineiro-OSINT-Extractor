@@ -1,4 +1,5 @@
 import express, { type Express } from 'express';
+import { apiNotFound } from './errors';
 import { copilotRouter } from './routes/copilot';
 import { emailRouter } from './routes/email';
 import { extrasRouter } from './routes/extras';
@@ -11,7 +12,7 @@ import { PUBLIC_MODE, rateLimit, securityHeaders } from './security/middleware';
 
 /**
  * Builds the Express app: middleware, rate limits and every /api router. No listen, no Vite, no static files:
- * server.ts adds those. Each call gets its own rate-limit buckets, so tests can start isolated instances.
+ * server.ts adds those after it, so an unknown /api path never reaches the SPA fallback. Each call gets its own rate-limit buckets, so tests can start isolated instances.
  */
 export function createApp(): Express {
   const app = express();
@@ -31,6 +32,7 @@ export function createApp(): Express {
   app.use(emailRouter());
   app.use(geminiRouter());
   app.use(profileRouter());
+  app.use('/api', apiNotFound);
 
   return app;
 }
