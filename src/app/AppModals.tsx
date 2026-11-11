@@ -1,10 +1,8 @@
-import { IntelligenceExportModal } from '../components/IntelligenceExportModal';
+import { lazy, Suspense } from 'react';
 import { DossierPrintView } from '../components/DossierPrintView';
-import { GeminiConfigModal } from '../components/GeminiConfigModal';
 import { BulkImportModal } from '../components/BulkImportModal';
 import { ModularScanModal } from '../components/ModularScanModal';
-import { InvestigationHistoryModal } from '../components/InvestigationHistoryModal';
-import { KeyboardShortcutsModal } from '../components/KeyboardShortcutsModal';
+import { DialogFallback, LazyBoundary, MountWhenOpened } from '../components/LazyFallback';
 import type { IntelligenceRequirement } from '../intelligence/types';
 import type { Scan } from '../hooks/useScan';
 import type { Cases } from '../hooks/useCases';
@@ -13,6 +11,14 @@ import type { AddLog } from '../hooks/useScanLog';
 import type { useBulkBatch } from '../hooks/useBulkBatch';
 import type { useSettings } from '../hooks/useSettings';
 import { SHORTCUTS, type ShortcutAction } from './shortcuts';
+
+// Dialogs closed at start-up load on first open (baseline defect 22) and then stay mounted, so they keep their
+// state between openings as before. ModularScanModal and BulkImportModal stay in the start-up bundle: they copy
+// the scan configuration into their state when they mount, and mounting them later would change what they show.
+const IntelligenceExportModal = lazy(() => import('../components/IntelligenceExportModal').then((m) => ({ default: m.IntelligenceExportModal })));
+const GeminiConfigModal = lazy(() => import('../components/GeminiConfigModal').then((m) => ({ default: m.GeminiConfigModal })));
+const InvestigationHistoryModal = lazy(() => import('../components/InvestigationHistoryModal').then((m) => ({ default: m.InvestigationHistoryModal })));
+const KeyboardShortcutsModal = lazy(() => import('../components/KeyboardShortcutsModal').then((m) => ({ default: m.KeyboardShortcutsModal })));
 
 interface AppModalsProps {
   modals: Modals;
@@ -60,22 +66,34 @@ export function AppModals({ modals, scan, cases, batch, settings, requirement, a
       />
 
       {/* Gemini AI Personal Key & Configuration Modal */}
-      <GeminiConfigModal
-        isOpen={modals.isOpen.gemini}
-        onClose={() => modals.close('gemini')}
-        personalKey={settings.geminiKey}
-        selectedModel={settings.geminiModel}
-        onSavePersonalKey={settings.saveGeminiSettings}
-      />
+      <MountWhenOpened isOpen={modals.isOpen.gemini}>
+        <LazyBoundary silent>
+          <Suspense fallback={<DialogFallback />}>
+            <GeminiConfigModal
+              isOpen={modals.isOpen.gemini}
+              onClose={() => modals.close('gemini')}
+              personalKey={settings.geminiKey}
+              selectedModel={settings.geminiModel}
+              onSavePersonalKey={settings.saveGeminiSettings}
+            />
+          </Suspense>
+        </LazyBoundary>
+      </MountWhenOpened>
 
       {/* Export Dossier Modal (HTML, JSON, Markdown, CSV) */}
-      <IntelligenceExportModal
-        isOpen={modals.isOpen.export}
-        onClose={() => modals.close('export')}
-        target={target}
-        results={results}
-        requirement={requirement}
-      />
+      <MountWhenOpened isOpen={modals.isOpen.export}>
+        <LazyBoundary silent>
+          <Suspense fallback={<DialogFallback />}>
+            <IntelligenceExportModal
+              isOpen={modals.isOpen.export}
+              onClose={() => modals.close('export')}
+              target={target}
+              results={results}
+              requirement={requirement}
+            />
+          </Suspense>
+        </LazyBoundary>
+      </MountWhenOpened>
 
       {/* Hidden printable report layout rendered when window.print() is called */}
       <DossierPrintView
@@ -87,28 +105,40 @@ export function AppModals({ modals, scan, cases, batch, settings, requirement, a
       />
 
       {/* Persistent cases (IndexedDB) and the localStorage cache of the last 5 scans */}
-      <InvestigationHistoryModal
-        isOpen={modals.isOpen.history}
-        onClose={() => modals.close('history')}
-        cachedScans={cases.cachedScans}
-        currentTarget={target}
-        currentTargetType={targetType}
-        onLoadInvestigation={scan.openCachedInvestigation}
-        onDeleteInvestigation={cases.deleteCached}
-        onClearAllHistory={cases.clearCached}
-        persistentCases={cases.persistentCases}
-        currentCaseId={cases.currentCaseId}
-        onLoadCase={scan.openCase}
-        onDeleteCase={cases.deleteCase}
-      />
+      <MountWhenOpened isOpen={modals.isOpen.history}>
+        <LazyBoundary silent>
+          <Suspense fallback={<DialogFallback />}>
+            <InvestigationHistoryModal
+              isOpen={modals.isOpen.history}
+              onClose={() => modals.close('history')}
+              cachedScans={cases.cachedScans}
+              currentTarget={target}
+              currentTargetType={targetType}
+              onLoadInvestigation={scan.openCachedInvestigation}
+              onDeleteInvestigation={cases.deleteCached}
+              onClearAllHistory={cases.clearCached}
+              persistentCases={cases.persistentCases}
+              currentCaseId={cases.currentCaseId}
+              onLoadCase={scan.openCase}
+              onDeleteCase={cases.deleteCase}
+            />
+          </Suspense>
+        </LazyBoundary>
+      </MountWhenOpened>
 
       {/* Global Keyboard Shortcuts Cheat Sheet Modal */}
-      <KeyboardShortcutsModal
-        isOpen={modals.isOpen.shortcuts}
-        onClose={() => modals.close('shortcuts')}
-        shortcuts={SHORTCUTS}
-        onActionTrigger={onShortcutAction}
-      />
+      <MountWhenOpened isOpen={modals.isOpen.shortcuts}>
+        <LazyBoundary silent>
+          <Suspense fallback={<DialogFallback />}>
+            <KeyboardShortcutsModal
+              isOpen={modals.isOpen.shortcuts}
+              onClose={() => modals.close('shortcuts')}
+              shortcuts={SHORTCUTS}
+              onActionTrigger={onShortcutAction}
+            />
+          </Suspense>
+        </LazyBoundary>
+      </MountWhenOpened>
     </>
   );
 }

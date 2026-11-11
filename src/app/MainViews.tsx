@@ -1,4 +1,4 @@
-import { DashboardView } from '../components/DashboardView';
+import { lazy, Suspense } from 'react';
 import { IntelligenceReportView } from '../components/IntelligenceReportView';
 import { HomeView } from '../components/HomeView';
 import { PlatformGrid } from '../components/PlatformGrid';
@@ -6,8 +6,7 @@ import { PlatformTable } from '../components/PlatformTable';
 import { EmailReconCard } from '../components/EmailReconCard';
 import { TerminalLogs } from '../components/TerminalLogs';
 import { AuditViewHeader } from '../components/AuditViewHeader';
-import { CorrelationWorkspace } from '../components/CorrelationWorkspace';
-import { AiWorkspace } from '../components/AiWorkspace';
+import { LazyBoundary, ViewFallback } from '../components/LazyFallback';
 import { BulkScanView } from '../components/BulkScanView';
 import { useI18n } from '../utils/i18n';
 import type { IntelligenceRequirement } from '../intelligence/types';
@@ -17,6 +16,12 @@ import type { Cases } from '../hooks/useCases';
 import type { Modals } from '../hooks/useModals';
 import type { useBulkBatch } from '../hooks/useBulkBatch';
 import type { AppView } from './views';
+
+// Views that are not on screen at start-up load on first use (baseline defect 22): each is its own chunk, and the
+// D3 charts and the world atlas they pull in stay out of the start-up bundle.
+const DashboardView = lazy(() => import('../components/DashboardView').then((m) => ({ default: m.DashboardView })));
+const CorrelationWorkspace = lazy(() => import('../components/CorrelationWorkspace').then((m) => ({ default: m.CorrelationWorkspace })));
+const AiWorkspace = lazy(() => import('../components/AiWorkspace').then((m) => ({ default: m.AiWorkspace })));
 
 interface MainViewsProps {
   activeView: AppView;
@@ -98,40 +103,48 @@ export function MainViews({
 
       {/* View: Post-Scan Unified OSINT Dashboard (legacy, no tab) */}
       {activeView === 'dashboard' && (
-        <DashboardView
-          target={target}
-          targetType={targetType}
-          results={results}
-          emailData={emailData}
-          aiProfile={scan.aiProfile}
-          onViewGrid={() => setActiveView('grid')}
-          onViewTable={() => setActiveView('table')}
-          onViewProfile={() => setActiveView('ai')}
-          onViewTerminal={() => setActiveView('terminal')}
-          onOpenExport={() => modals.open('export')}
-          onPivotScan={scan.pivotScan}
-          isScanning={isScanning}
-          onRequestAiProfile={() => setActiveView('ai')}
-          isAiLoading={false /* legacy automatic AI profiling was removed in v1.4.1 */}
-          bulkBatch={bulkBatch}
-          onViewBatch={() => setActiveView('batch')}
-          onOpenImport={() => modals.open('bulk')}
-          onInspectBatchTarget={scan.openBatchItem}
-          onPauseBatch={batch.pauseBatch}
-          onResumeBatch={batch.resumeBatch}
-        />
+        <LazyBoundary minHeight={900}>
+          <Suspense fallback={<ViewFallback minHeight={900} />}>
+            <DashboardView
+              target={target}
+              targetType={targetType}
+              results={results}
+              emailData={emailData}
+              aiProfile={scan.aiProfile}
+              onViewGrid={() => setActiveView('grid')}
+              onViewTable={() => setActiveView('table')}
+              onViewProfile={() => setActiveView('ai')}
+              onViewTerminal={() => setActiveView('terminal')}
+              onOpenExport={() => modals.open('export')}
+              onPivotScan={scan.pivotScan}
+              isScanning={isScanning}
+              onRequestAiProfile={() => setActiveView('ai')}
+              isAiLoading={false /* legacy automatic AI profiling was removed in v1.4.1 */}
+              bulkBatch={bulkBatch}
+              onViewBatch={() => setActiveView('batch')}
+              onOpenImport={() => modals.open('bulk')}
+              onInspectBatchTarget={scan.openBatchItem}
+              onPauseBatch={batch.pauseBatch}
+              onResumeBatch={batch.resumeBatch}
+            />
+          </Suspense>
+        </LazyBoundary>
       )}
 
       {/* View: Correlation workspace */}
       {activeView === 'linkage' && (
-        <CorrelationWorkspace
-          target={target}
-          results={results}
-          emailData={emailData}
-          onPivotScan={scan.pivotScan}
-          caseFile={cases.currentCase}
-          onLoadSnapshot={scan.openSnapshot}
-        />
+        <LazyBoundary minHeight={560}>
+          <Suspense fallback={<ViewFallback minHeight={560} />}>
+            <CorrelationWorkspace
+              target={target}
+              results={results}
+              emailData={emailData}
+              onPivotScan={scan.pivotScan}
+              caseFile={cases.currentCase}
+              onLoadSnapshot={scan.openSnapshot}
+            />
+          </Suspense>
+        </LazyBoundary>
       )}
 
       {/* View: Platforms Grid */}
@@ -155,14 +168,18 @@ export function MainViews({
 
       {/* View: AI Analyst Workspace */}
       {(activeView === 'ai' || activeView === 'profile') && (
-        <AiWorkspace
-          target={target}
-          results={results}
-          apiKey={geminiKey}
-          model={geminiModel}
-          requirement={requirement}
-          onOpenConfig={() => modals.open('gemini')}
-        />
+        <LazyBoundary minHeight={560}>
+          <Suspense fallback={<ViewFallback minHeight={560} />}>
+            <AiWorkspace
+              target={target}
+              results={results}
+              apiKey={geminiKey}
+              model={geminiModel}
+              requirement={requirement}
+              onOpenConfig={() => modals.open('gemini')}
+            />
+          </Suspense>
+        </LazyBoundary>
       )}
 
       {/* View: Live Terminal Console */}

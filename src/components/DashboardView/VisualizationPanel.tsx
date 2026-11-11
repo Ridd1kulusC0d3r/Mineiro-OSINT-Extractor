@@ -1,12 +1,15 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { Activity, Flame, GitFork, Globe, Network, ShieldAlert } from 'lucide-react';
 import type { AiProfileReport, EmailReconData, ScanResult } from '../../types';
 import type { GraphPivotInvestigation } from '../../graph/types';
-import { WorldThreatMap } from '../WorldThreatMap';
-import { NetworkRelationshipGraph } from '../NetworkRelationshipGraph';
 import { AccountLinkageView } from '../AccountLinkageView';
-import { CategoryHeatMap } from '../CategoryHeatMap';
-import { RiskMatrix2x2 } from '../RiskMatrix2x2';
+import { LazyBoundary, ViewFallback } from '../LazyFallback';
+
+// Each D3 chart is its own chunk, loaded when its tab is first opened (the world map also brings the atlas).
+const NetworkRelationshipGraph = lazy(() => import('../NetworkRelationshipGraph').then((m) => ({ default: m.NetworkRelationshipGraph })));
+const WorldThreatMap = lazy(() => import('../WorldThreatMap').then((m) => ({ default: m.WorldThreatMap })));
+const CategoryHeatMap = lazy(() => import('../CategoryHeatMap').then((m) => ({ default: m.CategoryHeatMap })));
+const RiskMatrix2x2 = lazy(() => import('../RiskMatrix2x2').then((m) => ({ default: m.RiskMatrix2x2 })));
 
 interface VisualizationPanelProps {
   target: string;
@@ -105,52 +108,56 @@ export function VisualizationPanel({ target, targetType, results, emailData, aiP
       </div>
 
       <div className="p-4 sm:p-5">
-        {activeVizTab === 'network' && (
-          <NetworkRelationshipGraph
-            results={results}
-            target={target}
-            emailData={emailData}
-            aiProfile={aiProfile}
-            onPivotScan={onPivotScan}
-          />
-        )}
+        <LazyBoundary minHeight={520}>
+          <Suspense fallback={<ViewFallback minHeight={520} />}>
+            {activeVizTab === 'network' && (
+              <NetworkRelationshipGraph
+                results={results}
+                target={target}
+                emailData={emailData}
+                aiProfile={aiProfile}
+                onPivotScan={onPivotScan}
+              />
+            )}
 
-        {activeVizTab === 'geo' && (
-          <WorldThreatMap
-            results={results}
-            target={target}
-            emailData={emailData}
-          />
-        )}
+            {activeVizTab === 'geo' && (
+              <WorldThreatMap
+                results={results}
+                target={target}
+                emailData={emailData}
+              />
+            )}
 
-        {activeVizTab === 'linkage' && (
-          <AccountLinkageView
-            target={target}
-            results={results}
-            emailData={emailData}
-            onPivotScan={onPivotScan || (async (newTarget) => ({ id: `noop-${Date.now()}`, sourceTarget: target, target: newTarget, foundCount: 0, uncertainCount: 0, totalScanned: 0, results: [], scannedAt: new Date().toISOString() }))}
-          />
-        )}
+            {activeVizTab === 'linkage' && (
+              <AccountLinkageView
+                target={target}
+                results={results}
+                emailData={emailData}
+                onPivotScan={onPivotScan || (async (newTarget) => ({ id: `noop-${Date.now()}`, sourceTarget: target, target: newTarget, foundCount: 0, uncertainCount: 0, totalScanned: 0, results: [], scannedAt: new Date().toISOString() }))}
+              />
+            )}
 
-        {activeVizTab === 'heatmap' && (
-          <CategoryHeatMap
-            results={results}
-            target={target}
-            targetType={targetType}
-            emailData={emailData}
-            aiProfile={aiProfile}
-            onPivotScan={onPivotScan}
-          />
-        )}
+            {activeVizTab === 'heatmap' && (
+              <CategoryHeatMap
+                results={results}
+                target={target}
+                targetType={targetType}
+                emailData={emailData}
+                aiProfile={aiProfile}
+                onPivotScan={onPivotScan}
+              />
+            )}
 
-        {activeVizTab === 'risk_matrix' && (
-          <RiskMatrix2x2
-            results={results}
-            target={target}
-            aiProfile={aiProfile}
-            onPivotScan={onPivotScan}
-          />
-        )}
+            {activeVizTab === 'risk_matrix' && (
+              <RiskMatrix2x2
+                results={results}
+                target={target}
+                aiProfile={aiProfile}
+                onPivotScan={onPivotScan}
+              />
+            )}
+          </Suspense>
+        </LazyBoundary>
       </div>
     </div>
   );
