@@ -20,3 +20,6 @@ __pycache__/
 assets/src/raw/
 assets/src/gif-frames/
 assets/src/.frame-*.html
+
+# visual smoke output (npm run visual)
+artifacts/
