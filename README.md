@@ -30,10 +30,17 @@
 </p>
 
 <p align="center">
-  <img src="assets/demo.gif" alt="Mineiro scanning a public handle across 49 platforms, with live progress, evidence-based verdicts and the correlation graph" width="860">
+  <img src="assets/gifs/scan.gif" alt="Typing a handle, running a Standard scan over 49 platforms and watching the cards resolve into found, uncertain and absent, then the intelligence report" width="860">
 </p>
 
-<p align="center"><sub>A Standard scan of a public open-source handle: live progress, per-platform verdicts (absent / uncertain / found), the Evidence Engine and the correlation graph. Real UI, no mockups.</sub></p>
+<p align="center"><sub>A Standard scan from handle to report. Real UI recorded offline: the handle is made up and the verdicts are synthetic, so nothing here is a finding about a real account.</sub></p>
+
+<table>
+  <tr>
+    <td width="50%"><img src="assets/gifs/report.gif" alt="Evidence matrix, correlation graph query and the intelligence report scrolling through its sections" width="100%"><br><sub><b>From verdicts to assessment.</b> Evidence ledger, correlation and the report.</sub></td>
+    <td width="50%"><img src="assets/gifs/themes.gif" alt="The platforms view switching between the dark, light and high-contrast themes" width="100%"><br><sub><b>Three themes.</b> Dark, light and high contrast.</sub></td>
+  </tr>
+</table>
 
 ---
 

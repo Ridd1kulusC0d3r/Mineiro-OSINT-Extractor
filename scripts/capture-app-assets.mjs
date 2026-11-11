@@ -1,10 +1,9 @@
 // Captures real screenshots (and optionally the demo GIF) from a running Mineiro instance.
 //   npm run build && NODE_ENV=production PORT=3400 node dist/server.cjs &
-//   node scripts/capture-app-assets.mjs --url http://localhost:3400 [--gif] [--offline]
+//   node scripts/capture-app-assets.mjs --url http://localhost:3400 [--offline]
 // --offline answers /api/osint/verify with fixed verdicts (derived from platform and handle) and blocks every
 // request that leaves the local instance, so the README captures do not depend on the network or on live sites.
-// Needs ffmpeg for --gif and a Chromium (CHROME_PATH or Playwright's own).
-import { execFileSync } from 'node:child_process';
+// Needs a Chromium (CHROME_PATH or Playwright's own). The GIFs come from scripts/capture-gifs.mjs.
 import fs from 'node:fs';
 import path from 'node:path';
 import { chromium } from 'playwright-core';
@@ -17,7 +16,6 @@ const URL_ = arg('url', 'http://localhost:3400');
 // A public open-source organisation handle (never a private person). Offline verdicts are synthetic, so --offline
 // uses a made-up handle by default: fixed answers must not be shown as findings about a real organisation.
 const HANDLE = arg('handle', process.argv.includes('--offline') ? 'mineiro-demo' : 'forgejo');
-const WANT_GIF = process.argv.includes('--gif');
 const WANT_DOCS = process.argv.includes('--docs');
 const OFFLINE = process.argv.includes('--offline');
 
@@ -140,47 +138,7 @@ if (!process.argv.includes('--docs-only')) {
   await ctx.close();
 }
 
-// ---- 2. demo GIF (1280x720 frames, ~3 fps) ----
-if (WANT_GIF) {
-  const frames = path.resolve('assets/src/gif-frames');
-  fs.rmSync(frames, { recursive: true, force: true });
-  fs.mkdirSync(frames, { recursive: true });
-  const ctx = await browser.newContext({ viewport: { width: 1280, height: 720 } });
-  const page = await ctx.newPage();
-  let n = 0;
-  const snap = async (times = 1) => {
-    for (let i = 0; i < times; i++) await page.screenshot({ path: `${frames}/f${String(n++).padStart(4, '0')}.png` });
-  };
-  await page.goto(URL_, { waitUntil: 'networkidle' });
-  await page.locator('#lang-btn-en').click();
-  await page.waitForTimeout(400);
-  await snap(4);
-  const input = page.locator('input[type=text]').first();
-  await input.click();
-  for (const [i, ch] of [...HANDLE].entries()) { await input.type(ch, { delay: 60 }); if (i % 2) await snap(1); }
-  await page.locator('button', { hasText: /^Standard/ }).first().click();
-  await page.waitForTimeout(300);
-  await snap(2);
-  await page.locator('button[type=submit]').first().click();
-  await tab(page, 'Platforms');
-  const t0 = Date.now();
-  while (Date.now() - t0 < 60000) {
-    await snap(1);
-    await page.waitForTimeout(450);
-    if (/100%/.test(await page.evaluate(() => document.body.innerText))) break;
-  }
-  await snap(4);
-  for (const name of ['Evidence', 'Correlation']) { await tab(page, name); await snap(4); }
-  await ctx.close();
-
-  execFileSync('ffmpeg', [
-    '-loglevel', 'error', '-y', '-framerate', '3', '-i', `${frames}/f%04d.png`,
-    '-vf', 'scale=960:-1:flags=lanczos,tpad=stop_mode=clone:stop_duration=2,split[a][b];[a]palettegen=max_colors=96:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=4',
-    '-loop', '0', 'assets/demo.gif',
-  ]);
-  console.log('wrote assets/demo.gif');
-}
-
+// ---- 2. the GIFs are recorded by scripts/capture-gifs.mjs (npm run gifs) ----
 
 // ---- 3. documentation screens (modals cropped to their panel) ----
 if (WANT_DOCS) {

@@ -26,8 +26,17 @@
 </p>
 
 <p align="center">
-  <img src="assets/demo.gif" alt="Mineiro varrendo um handle público em 49 plataformas, com progresso ao vivo, veredictos por evidência e grafo de correlação" width="860">
+  <img src="assets/gifs/scan.gif" alt="Digitando um handle, rodando um scan Standard em 49 plataformas e vendo os cartões virarem found, uncertain e absent, até o relatório de inteligência" width="860">
 </p>
+
+<p align="center"><sub>Um scan Standard, do handle ao relatório. Interface real gravada offline: o handle é inventado e os veredictos são sintéticos, então nada aqui é achado sobre uma conta real.</sub></p>
+
+<table>
+  <tr>
+    <td width="50%"><img src="assets/gifs/report.gif" alt="Matriz de evidência, consulta ao grafo de correlação e o relatório de inteligência rolando pelas seções" width="100%"><br><sub><b>Do veredicto à avaliação.</b> Evidência, correlação e relatório.</sub></td>
+    <td width="50%"><img src="assets/gifs/themes.gif" alt="A tela de plataformas alternando entre os temas escuro, claro e alto contraste" width="100%"><br><sub><b>Três temas.</b> Escuro, claro e alto contraste.</sub></td>
+  </tr>
+</table>
 
 ---
 

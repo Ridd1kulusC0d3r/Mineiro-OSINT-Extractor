@@ -161,7 +161,7 @@ Selecione o cartão **Standard** (recomendado). Ele liga os 8 checks de evidênc
 Pressione **Enter** ou **Run scan**. A interface mostra o relatório (aba **Intelligence**) e a barra do topo exibe o progresso (`33% collected · 0 found`). A demonstração abaixo abre a aba **Platforms** para mostrar os cartões chegando ao vivo:
 
 <p align="center">
-  <img src="../assets/demo.gif" alt="Demonstração: digitar o handle, rodar o scan Standard e ver os cartões chegando" width="860">
+  <img src="../assets/gifs/scan.gif" alt="Demonstração: digitar o handle, rodar o scan Standard e ver os cartões chegando" width="860">
 </p>
 
 Dá para parar a qualquer momento com **Stop**. No **Console** você acompanha cada evento.

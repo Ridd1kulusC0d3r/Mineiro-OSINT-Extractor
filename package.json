@@ -32,6 +32,7 @@
     "assets:capture": "node scripts/capture-app-assets.mjs --url http://localhost:3400",
     "assets:render": "node scripts/render-assets.mjs",
     "e2e:start": "node scripts/e2e-start-page.mjs --url http://localhost:3400",
+    "gifs": "node scripts/capture-gifs.mjs",
     "visual": "node scripts/visual-smoke.mjs",
     "api:baseline": "node scripts/api-baseline.mjs"
   },
