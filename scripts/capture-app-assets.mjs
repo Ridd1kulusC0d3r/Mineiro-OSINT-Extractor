@@ -1,6 +1,8 @@
 // Captures real screenshots (and optionally the demo GIF) from a running Mineiro instance.
 //   npm run build && NODE_ENV=production PORT=3400 node dist/server.cjs &
-//   node scripts/capture-app-assets.mjs --url http://localhost:3400 [--gif]
+//   node scripts/capture-app-assets.mjs --url http://localhost:3400 [--gif] [--offline]
+// --offline answers /api/osint/verify with fixed verdicts (derived from platform and handle) and blocks every
+// request that leaves the local instance, so the README captures do not depend on the network or on live sites.
 // Needs ffmpeg for --gif and a Chromium (CHROME_PATH or Playwright's own).
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
@@ -12,9 +14,43 @@ const arg = (name, fallback) => {
   return i === -1 ? fallback : process.argv[i + 1] && !process.argv[i + 1].startsWith('--') ? process.argv[i + 1] : true;
 };
 const URL_ = arg('url', 'http://localhost:3400');
-const HANDLE = arg('handle', 'forgejo'); // a public open-source organisation handle: never use a private person
+// A public open-source organisation handle (never a private person). Offline verdicts are synthetic, so --offline
+// uses a made-up handle by default: fixed answers must not be shown as findings about a real organisation.
+const HANDLE = arg('handle', process.argv.includes('--offline') ? 'mineiro-demo' : 'forgejo');
 const WANT_GIF = process.argv.includes('--gif');
 const WANT_DOCS = process.argv.includes('--docs');
+const OFFLINE = process.argv.includes('--offline');
+
+/** Same idea as scripts/visual-smoke.mjs: a verdict that depends only on platform and handle. */
+function cannedVerify(body) {
+  const { platformId = 'unknown', url = '', username = '', detectorReliability = 70 } = body;
+  let h = 2166136261;
+  for (const ch of `${platformId}|${username}`) h = Math.imul(h ^ ch.charCodeAt(0), 16777619);
+  h >>>= 0;
+  const b = h % 10;
+  const status = b < 3 ? 'found' : b === 3 ? 'uncertain' : b === 4 ? 'rate_limited' : 'not_found';
+  const statusCode = { found: 200, uncertain: 403, rate_limited: 429, not_found: 404 }[status];
+  return {
+    platformId, url, status, statusCode, responseTimeMs: 120 + (h % 700), detectorReliability, collectedAt: new Date().toISOString(),
+    confidenceScore: status === 'found' ? 70 + (h % 25) : status === 'not_found' ? 88 : 40,
+    evidenceLevel: status === 'found' ? 'probable' : status === 'not_found' ? 'absent' : 'uncertain',
+    evidenceSignals: [`http_status:${statusCode}`], evidenceChecksPassed: status === 'found' ? 5 + (h % 3) : undefined, evidenceChecksTotal: status === 'found' ? 8 : undefined,
+    uncertainReason: status === 'uncertain' || status === 'rate_limited' ? `HTTP ${statusCode} protection challenge` : undefined,
+  };
+}
+
+async function offlineRoutes(ctx) {
+  if (!OFFLINE) return;
+  const base = new URL(URL_);
+  await ctx.route('**/*', (route) => {
+    const u = new URL(route.request().url());
+    if (u.host !== base.host) return route.abort('blockedbyclient');
+    if (u.pathname === '/api/osint/verify' && route.request().method() === 'POST') {
+      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(cannedVerify(route.request().postDataJSON() || {})) });
+    }
+    return route.continue();
+  });
+}
 const RAW = path.resolve('assets/src/raw');
 fs.mkdirSync(RAW, { recursive: true });
 
@@ -23,7 +59,9 @@ function chromePath() {
   const base = '/opt/pw-browsers';
   if (fs.existsSync(base)) {
     const dir = fs.readdirSync(base).find((d) => /^chromium-\d+$/.test(d));
-    if (dir) return path.join(base, dir, 'chrome-linux', 'chrome');
+    // Playwright 1.63 installs chrome-linux64; older builds used chrome-linux.
+    const exe = dir && ['chrome-linux64', 'chrome-linux'].map((d) => path.join(base, dir, d, 'chrome')).find((f) => fs.existsSync(f));
+    if (exe) return exe;
   }
   return undefined; // Playwright default
 }
@@ -55,7 +93,8 @@ const tab = async (page, name) => {
 
 // ---- 1. still screenshots at 2x ----
 if (!process.argv.includes('--docs-only')) {
-  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 });
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2, colorScheme: 'dark' });
+  await offlineRoutes(ctx);
   const page = await ctx.newPage();
   await runScan(page, `${RAW}/home.png`);
   await page.locator('button[type=submit]').first().click();

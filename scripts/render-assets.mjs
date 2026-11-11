@@ -17,7 +17,9 @@ function chromePath() {
   const base = '/opt/pw-browsers';
   if (fs.existsSync(base)) {
     const dir = fs.readdirSync(base).find((d) => /^chromium-\d+$/.test(d));
-    if (dir) return path.join(base, dir, 'chrome-linux', 'chrome');
+    // Playwright 1.63 installs chrome-linux64; older builds used chrome-linux.
+    const exe = dir && ['chrome-linux64', 'chrome-linux'].map((d) => path.join(base, dir, d, 'chrome')).find((f) => fs.existsSync(f));
+    if (exe) return exe;
   }
   return undefined;
 }
@@ -69,18 +71,18 @@ function pngSize(file) {
 const frameHtml = (f) => {
   const imgs = f.files
     .map((file, i) => `<img src="${pathToFileURL(path.join(RAW, file))}" style="display:block;width:100%;${f.crop && i === 0 ? `height:${f.crop * 100}%;object-fit:cover;object-position:top;` : ''}">`)
-    .join(f.files.length > 1 ? '<div style="height:1px;background:#1a1a1a"></div>' : '');
+    .join(f.files.length > 1 ? '<div style="height:1px;background:var(--rule-2)"></div>' : '');
   const body = f.maxHeight ? `<div style="max-height:${f.maxHeight}px;overflow:hidden">${imgs}</div>` : imgs;
   const natural = f.natural ? Math.round(pngSize(path.join(RAW, f.files[0])).w / 2) : 1280;
   const bar = f.chrome
-    ? `<div style="display:flex;align-items:center;gap:8px;height:38px;padding:0 16px;background:#0a0a0a;border-bottom:1px solid #2a2a2a">
-         <i style="width:11px;height:11px;border-radius:50%;background:#2a2a2a"></i><i style="width:11px;height:11px;border-radius:50%;background:#2a2a2a"></i><i style="width:11px;height:11px;border-radius:50%;background:#2a2a2a"></i>
-         <span style="margin-left:14px;font:400 12px 'JetBrains Mono',monospace;color:#737373">${f.chrome}</span></div>`
+    ? `<div style="display:flex;align-items:center;gap:8px;height:38px;padding:0 16px;background:var(--paper-2);border-bottom:1px solid var(--rule)">
+         <i style="width:11px;height:11px;border-radius:50%;background:var(--rule)"></i><i style="width:11px;height:11px;border-radius:50%;background:var(--rule)"></i><i style="width:11px;height:11px;border-radius:50%;background:var(--rule)"></i>
+         <span style="margin-left:14px;font:400 12px 'JetBrains Mono',monospace;color:var(--ink-3)">${f.chrome}</span></div>`
     : '';
   const cropWrap = '';
   return `<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="${pathToFileURL(path.join(SRC, 'common.css'))}">
     <style>body{padding:28px;width:${natural + 56}px;background:transparent}
-    .card{border:1px solid #2a2a2a;border-radius:14px;overflow:hidden;background:#000;box-shadow:0 18px 50px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.4)}</style></head>
+    .card{border:1px solid var(--rule);border-radius:14px;overflow:hidden;background:var(--paper);box-shadow:0 18px 50px rgba(0,0,0,.45),0 2px 6px rgba(0,0,0,.4)}</style></head>
     <body><div class="card" style="${cropWrap}">${bar}${body}</div></body></html>`;
 };
 
