@@ -117,6 +117,21 @@ O pacote leva o app completo (~1,3 MB). Usa o seu Node.js (>= 22.5) se existir; 
 pip install https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/releases/download/v1.8.0/mineiro_osint-1.8.0-py3-none-any.whl
 ```
 
+### Linux (script de instalação)
+
+Debian, Ubuntu, Kali, Parrot e Amazon Linux 2023:
+
+```bash
+git clone https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor.git
+cd Mineiro-OSINT-Extractor
+packaging/install-linux.sh --dry-run       # mostra cada passo, não muda nada
+packaging/install-linux.sh                 # wheel da release, conferida com SHA256SUMS.txt
+packaging/install-linux.sh --from-source   # ou compila e instala este clone
+~/.local/bin/mineiro
+```
+
+[`packaging/install-linux.sh`](packaging/install-linux.sh) instala o pacote pip num ambiente virtual próprio (`~/.local/share/mineiro-osint/venv`) e cria o link `~/.local/bin/mineiro`; funciona em sistemas com Python gerenciado externamente (PEP 668) sem `--break-system-packages`. Só usa `sudo` para instalar Python 3 com `venv` quando falta; o Node.js 22 vem com o pacote se o sistema não tiver. Opções: `--prefix DIR`, `--wheel ARQUIVO`, `--version X.Y.Z`, `--uninstall`, `--help`. O CI roda o script nas cinco distros (`.github/workflows/linux-matrix.yml`).
+
 ### Google Colab
 
 A forma mais rápida de testar o produto é o notebook oficial:
@@ -143,6 +158,13 @@ http://localhost:3000
 ```
 
 Para uma instalação guiada, use [docs/GETTING-STARTED.md](docs/GETTING-STARTED.md).
+
+## Novidades da 1.8
+
+- **Script de instalação para Linux** (Debian, Ubuntu, Kali, Parrot, Amazon Linux 2023), testado no CI nas cinco.
+- **Nova identidade visual** com temas escuro, claro e alto contraste a partir de um único conjunto de tokens de cor; ícones das plataformas locais por padrão (nenhuma consulta de favicon sem você ligar).
+- **Servidor mais sólido:** rotas em módulos com testes, erros em JSON para rota desconhecida e corpo inválido, escuta em `127.0.0.1` por padrão.
+- **Cliente mais enxuto:** cliente de API tipado, motor de scan fora do React, componentes grandes divididos, telas pesadas carregadas sob demanda.
 
 ## Novidades da 1.7
 

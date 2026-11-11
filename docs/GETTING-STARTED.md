@@ -72,6 +72,26 @@ mineiro --check                    # diagnóstico: pacote e Node
 
 Referência completa das opções: [CLI-E-API.md](CLI-E-API.md#1-comando-mineiro-pip). Se algo falhar: [TROUBLESHOOTING.md](TROUBLESHOOTING.md#a-instalação-e-inicialização).
 
+### Linux: script de instalação
+
+No Debian, Ubuntu, Kali, Parrot e Amazon Linux 2023, [`packaging/install-linux.sh`](../packaging/install-linux.sh) faz o mesmo que a opção pip sem você criar o ambiente virtual:
+
+```bash
+git clone https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor.git
+cd Mineiro-OSINT-Extractor
+packaging/install-linux.sh --dry-run       # mostra cada passo antes, não muda nada
+packaging/install-linux.sh                 # baixa a wheel da release e confere o SHA-256
+~/.local/bin/mineiro
+```
+
+- Instala em `~/.local/share/mineiro-osint/venv` e cria o link `~/.local/bin/mineiro` (`--prefix DIR` muda o lugar). Se `~/.local/bin` não estiver no `PATH`, o script diz como incluir.
+- Não mexe no Python do sistema: funciona onde o pip recusa instalar fora de um venv (PEP 668, "externally-managed-environment") e nunca usa `--break-system-packages`.
+- Usa `sudo` só para instalar o que falta da distribuição (Python 3 com `venv`). O Node.js 22 vem com o pacote quando o sistema não tem.
+- `--from-source` compila e instala o clone em vez de baixar a release; `--wheel ARQUIVO` instala uma wheel que você já tem.
+- Rodar de novo atualiza ou repara; `--uninstall` remove o programa (os dados em `~/.mineiro` ficam).
+
+Em outras distribuições o script para com uma mensagem clara; use a opção pip acima.
+
 ---
 
 ## 3. Opção B · Google Colab
@@ -221,6 +241,7 @@ Seus números vão variar com a rede, o horário e as defesas de cada site. **Mu
 | Instalação | Atualizar | Desinstalar |
 |---|---|---|
 | pip | `pip install -U mineiro-osint` | `pip uninstall mineiro-osint` |
+| Script Linux | rode `packaging/install-linux.sh` de novo | `packaging/install-linux.sh --uninstall` |
 | Código-fonte | `git pull --ff-only && npm ci` | apague a pasta |
 | Colab | rode a célula de atualização ([COLAB.md](COLAB.md)) | feche o notebook |
 

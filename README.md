@@ -136,6 +136,22 @@ pip install https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/releases/
 </details>
 
 <details>
+<summary><b>Option 1b · Linux installer</b> (Debian, Ubuntu, Kali, Parrot, Amazon Linux 2023)</summary>
+
+```bash
+git clone https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor.git
+cd Mineiro-OSINT-Extractor
+packaging/install-linux.sh --dry-run       # prints every step, changes nothing
+packaging/install-linux.sh                 # release wheel, checked against SHA256SUMS.txt
+packaging/install-linux.sh --from-source   # or build and install this checkout
+~/.local/bin/mineiro
+```
+
+[`packaging/install-linux.sh`](packaging/install-linux.sh) installs the pip package into its own virtual environment (`~/.local/share/mineiro-osint/venv`) and links `~/.local/bin/mineiro`, so it works on systems whose Python is externally managed (PEP 668) without `--break-system-packages`. It uses `sudo` only to install Python 3 with `venv` when missing; Node.js 22 comes with the package when the system has none. Options: `--prefix DIR`, `--wheel FILE`, `--version X.Y.Z`, `--uninstall`, `--help`. CI runs it on all five distributions (`.github/workflows/linux-matrix.yml`).
+
+</details>
+
+<details>
 <summary><b>Option 2 · Google Colab</b></summary>
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/blob/main/notebooks/Mineiro_Username_Intelligence_Colab.ipynb)
@@ -185,6 +201,13 @@ Do not use one score to answer different questions.
 | IPS | Is this finding worth reviewing before the others? |
 
 Full model: [docs/INTELLIGENCE-METHODOLOGY.md](docs/INTELLIGENCE-METHODOLOGY.md).
+
+## What's in 1.8
+
+- **Linux installer** for Debian, Ubuntu, Kali, Parrot and Amazon Linux 2023, tested in CI on all five.
+- **New visual identity** with dark, light and high-contrast themes built from one set of colour tokens; platform icons are local by default (no favicon requests unless you turn them on).
+- **Sturdier server:** routes in modules with tests, JSON errors for unknown routes and bad bodies, listens on `127.0.0.1` by default.
+- **Leaner client:** typed API client, scan engine outside React, large components split, heavy views loaded on demand.
 
 ## What's in 1.7
 

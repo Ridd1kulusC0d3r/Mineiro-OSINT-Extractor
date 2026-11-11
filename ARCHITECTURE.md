@@ -305,12 +305,13 @@ Design rules:
 ## Server layout
 
 ```text
-server.ts                 bootstrap: env, banner, Vite (dev) or dist/ + SPA fallback (production), listen
+server.ts                 bootstrap: env, banner, Vite (dev) or serveClient(dist/) (production), listen
 server/
-  app.ts                  createApp(): headers, JSON body (2 MB), rate limits, routers, /api 404, error handler
+  app.ts                  createApp(): headers, JSON body (2 MB), rate limits, routers, /api 404, error handler;
+                          serveClient(): dist/ files, 404 for a missing /assets/ file, index.html for the rest
   config.ts               listenHost() (HOST, default 127.0.0.1) and listenPort() (PORT, default 3000)
   version.ts              VERSION from package.json (health, User-Agent, banner)
-  errors.ts               apiNotFound (JSON 404 for any unanswered /api path) and the final errorHandler
+  errors.ts               apiNotFound (JSON 404 for any unanswered /api path), requireJsonBody, the final errorHandler
   routes/
     registry.ts           /api/health, /api/registry/{stats,detectors,benchmark}
     verify.ts             /api/osint/verify
@@ -327,8 +328,8 @@ server/
 
 - `createApp()` never listens and never touches Vite or `dist/`, so `tests/routes.test.ts` starts it on port 0 and
   calls it with `fetch`, with the outbound `undici` fetch and DNS stubbed. Each call has its own rate-limit buckets.
-- Errors: body-parser errors become a fixed JSON 4xx (`Malformed JSON body`, `Request body too large`); anything
-  unexpected becomes `500 {"error":"Internal server error"}`. Messages and stacks go to the server log only.
+- Errors: body-parser errors become a fixed JSON 4xx (`Malformed JSON body`, `Request body too large`); a POST to
+  `email-recon` or `gemini-validate` without a JSON body gets `400 JSON body required`; anything unexpected becomes `500 {"error":"Internal server error"}`. Messages and stacks go to the server log only.
 - Listening: `127.0.0.1` unless `HOST` is set. The Docker image and `docker-compose.yml` set `HOST=0.0.0.0`; the pip
   `mineiro` command passes its own `--host`.
 - SSRF guard (`src/core/net.ts`, used by `safeFetch` before connecting and at DNS resolution): blocked IPv4 ranges are
@@ -416,3 +417,27 @@ runScan({ target, targetType, config }, {
 
 `tests/scan-engine.test.ts` drives it with a stubbed verifier: ordering and completeness, the concurrency ceiling,
 cancellation, the two-phase path, refusals, transport errors and rate limits.
+
+## Catalog site types
+
+`siteType` (`src/data/siteType.ts`) starts from the catalog category: each category has a default type (`developer` →
+`developer_platform`, `gaming` → `gaming`, `media` → `entertainment_media`, ...) and the name, description and URL may
+only refine it to a type that fits that category (a developer entry can become `package_registry` or
+`community_forum`, never `video_streaming`). Keywords match whole words or word prefixes, never a fragment inside
+another word. `tests/siteType.test.ts` pins well-known platforms.
+
+## Linux packaging
+
+```text
+packaging/install-linux.sh   distro check (/etc/os-release) -> missing apt/dnf packages (sudo) -> venv
+                             -> wheel (release + SHA256SUMS.txt | --wheel | --from-source build) -> PREFIX/bin/mineiro
+.github/workflows/linux-matrix.yml   the installer + smoke test in five distribution containers
+```
+
+- The installer only adds distribution packages that are missing (Python 3 with `venv`, CA certificates) and installs
+  everything else in `PREFIX/share/mineiro-osint/venv`; the system Python is never modified (PEP 668).
+- Node.js: the `mineiro` launcher prefers a system Node >= 22.5 and otherwise runs the one from
+  `nodejs-wheel-binaries`, a dependency of the wheel. `--from-source` builds with that same Node when the system has
+  none.
+- The script's `VERSION` is the release it downloads by default; `npm run version:check` keeps it equal to
+  `package.json`.
