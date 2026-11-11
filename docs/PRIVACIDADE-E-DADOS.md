@@ -43,7 +43,7 @@ A origem é o endereço completo: `http://localhost:3000`, `http://127.0.0.1:300
 | **Chave do Gemini** | `localStorage` | `mineiro_gemini_key` | A chave, **em texto puro**. |
 | Modelo do Gemini | `localStorage` | `mineiro_gemini_model` | Nome do modelo escolhido. |
 | Idioma | `localStorage` | `mineiro_language_preference` | `en`, `pt` ou `es`. |
-| Tema | `localStorage` | `mineiro_theme_preference` | `dark`, `bone` ou `high-contrast`. |
+| Tema | `localStorage` | `mineiro_theme_preference` | `dark`, `light` ou `high-contrast` (o antigo `bone` é lido como `light`). |
 | Sessão atual | memória da aba | | Resultados em tela, Console, fila de **lote**. Some ao recarregar. |
 
 Não usamos `sessionStorage` nem *cookies*.

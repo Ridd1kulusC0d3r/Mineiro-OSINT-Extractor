@@ -14,7 +14,7 @@ export interface Translations {
   historyTitle: string;
   themeTooltip: string;
   themeDark: string;
-  themeBone: string;
+  themeLight: string;
   themeHighContrast: string;
   apiKey: string;
   aboutEngine: string;
@@ -154,9 +154,9 @@ const translations: Record<Language, Translations> = {
     scanned: 'SCANNED',
     history: 'History',
     historyTitle: 'Investigation History (Cached in localStorage)',
-    themeTooltip: 'Theme: Dark Obsidian / Bone Light / High Contrast',
+    themeTooltip: 'Theme: Dark / Light / High Contrast',
     themeDark: 'Dark Obsidian',
-    themeBone: 'Bone / Light',
+    themeLight: 'Light',
     themeHighContrast: 'High Contrast',
     apiKey: 'Gemini AI Key',
     aboutEngine: 'About Architecture',
@@ -288,9 +288,9 @@ const translations: Record<Language, Translations> = {
     scanned: 'VERIFICADOS',
     history: 'Histórico',
     historyTitle: 'Histórico de Investigações (Salvo localmente)',
-    themeTooltip: 'Tema: Escuro Obsidiana / Bone Claro / Alto Contraste',
+    themeTooltip: 'Tema: Escuro / Claro / Alto Contraste',
     themeDark: 'Escuro Obsidiana',
-    themeBone: 'Bone / Claro',
+    themeLight: 'Claro',
     themeHighContrast: 'Alto Contraste',
     apiKey: 'Chave Gemini AI',
     aboutEngine: 'Sobre a Arquitetura',
@@ -422,9 +422,9 @@ const translations: Record<Language, Translations> = {
     scanned: 'ESCANEADOS',
     history: 'Historial',
     historyTitle: 'Historial de Investigaciones (Guardado localmente)',
-    themeTooltip: 'Tema: Oscuro Obsidiana / Bone Claro / Alto Contraste',
+    themeTooltip: 'Tema: Oscuro / Claro / Alto Contraste',
     themeDark: 'Oscuro Obsidiana',
-    themeBone: 'Bone / Claro',
+    themeLight: 'Claro',
     themeHighContrast: 'Alto Contraste',
     apiKey: 'Clave Gemini AI',
     aboutEngine: 'Sobre la Arquitectura',

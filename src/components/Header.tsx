@@ -8,7 +8,7 @@ import {
   LayoutDashboard,
   RefreshCw,
 } from 'lucide-react';
-import { ThemeMode, getSavedTheme, applyTheme } from '../theme/theme';
+import { ThemeMode, getSavedTheme, applyTheme, nextTheme } from '../theme/theme';
 import { LanguageSelector } from './LanguageSelector';
 import { useI18n } from '../utils/i18n';
 
@@ -51,7 +51,7 @@ export function Header({
   }, [theme]);
 
   const toggleTheme = () => {
-    const next: ThemeMode = theme === 'dark' ? 'bone' : theme === 'bone' ? 'high-contrast' : 'dark';
+    const next: ThemeMode = nextTheme(theme);
     setTheme(next);
     applyTheme(next);
   };

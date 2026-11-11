@@ -22,7 +22,7 @@ const KNOWN_EXTERNAL_HOSTS = [
   'icons.duckduckgo.com', // PlatformFavicon fallback
 ];
 
-const THEMES = ['dark', 'bone', 'high-contrast'];
+const THEMES = ['dark', 'light', 'high-contrast'];
 const LANGUAGE = 'en';
 const TARGET = 'mineiro-smoke';
 const BATCH_TARGETS = ['mineiro-smoke-a', 'mineiro-smoke-b'];

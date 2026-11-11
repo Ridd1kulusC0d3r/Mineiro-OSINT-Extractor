@@ -54,7 +54,7 @@ Este é o manual de referência da interface: cada tela, cada controle, o que el
 | **Batch** | Abre a importação em lote (CSV/TXT). |
 | **AI** | Abre a área do copiloto de IA (e a configuração do Gemini). Aparece só em telas largas (≥ `lg`). |
 | **EN · PT · ES** | Idioma. Padrão: português. |
-| **Theme** | Alterna `dark → bone → high-contrast`. Veja [§15](#15-idioma-tema-e-atalhos). |
+| **Theme** | Alterna `dark → light → high-contrast`. Veja [§15](#15-idioma-tema-e-atalhos). |
 | **Export** | Constrói e baixa o relatório. Desabilitado até existir resultado. |
 | **⟲ (Clear workspace)** | Limpa a sessão **em memória** e volta à tela inicial. Não apaga casos nem cache. |
 | **Barra de alvo** | Alvo, modo (usuário/e-mail), preset, configuração avançada (⚙) e Run/Stop. |
@@ -563,7 +563,7 @@ Erros e limites: [TROUBLESHOOTING.md](TROUBLESHOOTING.md#e-copiloto-de-ia-gemini
 
 ### Tema
 
-O botão **Theme** cicla `dark → bone → high-contrast`. Na primeira visita, o alto contraste é escolhido se o sistema operacional pede mais contraste. Hoje **só o alto contraste altera visualmente a interface**: `bone` e `dark` são praticamente idênticos.
+O botão **Theme** cicla `dark → light → high-contrast`. Na primeira visita, o tema segue o sistema operacional: alto contraste se ele pede mais contraste, claro se ele está no modo claro, escuro nos demais casos. O alto contraste é preto e branco puros. Quem tinha salvo o antigo `bone` passa a abrir no `light`.
 
 ### Atalhos
 
