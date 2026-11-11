@@ -6,6 +6,7 @@ import { DashboardView } from './components/DashboardView';
 import { IntelligenceReportView } from './components/IntelligenceReportView';
 import { HomeView } from './components/HomeView';
 import { readVerifyOutcome } from './core/verifyOutcome';
+import { api, isApiError } from './api/client';
 import { PlatformGrid } from './components/PlatformGrid';
 import { PlatformTable } from './components/PlatformTable';
 import { EmailReconCard } from './components/EmailReconCard';
@@ -103,7 +104,7 @@ export default function App() {
   // Results & Recon State
   const [results, setResults] = useState<ScanResult[]>([]);
   const [aiProfile, setAiProfile] = useState<AiProfileReport | null>(null);
-  const [isAiLoading, setIsAiLoading] = useState<boolean>(false);
+  const isAiLoading = false; // legacy automatic AI profiling was removed in v1.4.1 (DashboardView still reads the flag)
   const [emailData, setEmailData] = useState<EmailReconData | null>(null);
   const [isEmailLoading, setIsEmailLoading] = useState<boolean>(false);
   const [logs, setLogs] = useState<ScanLog[]>([]);
@@ -288,12 +289,7 @@ export default function App() {
       if (publishToWorkspace) setIsEmailLoading(true);
       addLog(`[DNS RECON] Probing MX records & Gravatar for ${cleanTarget}...`, 'info');
       try {
-        const res = await fetch('/api/osint/email-recon', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: cleanTarget }),
-        });
-        const data = await res.json();
+        const data = await api.emailRecon({ email: cleanTarget });
         targetEmailData = data;
         if (publishToWorkspace) setEmailData(data);
         if (data.mxRecordsFound) {
@@ -356,10 +352,11 @@ export default function App() {
             const targetUrl = item.url;
 
             try {
-              const res = await fetch('/api/osint/verify', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
+              let httpOk = true;
+              let httpStatus = 200;
+              let data: any;
+              try {
+                data = await api.verify({
                   url: targetUrl,
                   platformId: item.platformId,
                   expectedStatus: platform?.expectedStatus || 200,
@@ -373,11 +370,15 @@ export default function App() {
                   baseline: options.evidence,
                   username: usernamePart,
                   detectorReliability: platform?.detectorReliability || 60,
-                }),
-              });
-
-              const data = await res.json().catch(() => ({}));
-              const outcome = readVerifyOutcome(res.ok, res.status, data);
+                });
+              } catch (refusal) {
+                // A reply from the local server that is not 2xx: verifyOutcome reads its JSON body. No reply: transport error below.
+                if (!isApiError(refusal) || refusal.network || refusal.aborted) throw refusal;
+                httpOk = false;
+                httpStatus = refusal.status;
+                data = refusal.body ?? {};
+              }
+              const outcome = readVerifyOutcome(httpOk, httpStatus, data);
               item.status = outcome.status;
               item.statusCode = outcome.statusCode;
               item.responseTimeMs = data.responseTimeMs;
@@ -740,70 +741,6 @@ export default function App() {
     const updatedItems = bulkBatch.items.filter((item) => item.id !== id);
     setBulkBatch({ ...bulkBatch, items: updatedItems });
     addLog(`Removed target from batch queue.`, 'info');
-  };
-
-  // Request AI Intelligence Dossier from server-side Gemini
-  const fetchAiProfile = async (targetHandle: string, foundList: ScanResult[]) => {
-    setIsAiLoading(true);
-    const modelNote = personalGeminiKey ? ` (Personal Key • ${selectedGeminiModel})` : '';
-    addLog(`Synthesizing target intelligence profile with Gemini AI${modelNote}...`, 'info');
-
-    try {
-      const res = await fetch('/api/osint/profile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(personalGeminiKey ? { 'x-gemini-api-key': personalGeminiKey } : {}),
-        },
-        body: JSON.stringify({
-          target: targetHandle,
-          targetType,
-          foundPlatforms: foundList.map((f) => ({
-            platformName: f.platformName,
-            category: f.category,
-            url: f.url,
-          })),
-          emailData,
-          model: selectedGeminiModel,
-          customApiKey: personalGeminiKey || undefined,
-        }),
-      });
-
-      if (!res.ok) throw new Error('Failed to generate profile');
-      const data: AiProfileReport = await res.json();
-      setAiProfile(data);
-
-      // Persist AI profile report into existing cached investigation
-      const updatedCache = updateInvestigationInCache(targetHandle, targetType, { aiProfile: data });
-      setCachedScans(updatedCache);
-
-      // Refresh local integrity snapshot after optional AI synthesis
-      try {
-        await takeInvestigationSnapshot({
-          target: targetHandle,
-          targetType,
-          results,
-          emailData,
-          aiProfile: data,
-        });
-        setCachedScans(getCachedInvestigations());
-        addLog(`[SNAPSHOT] Investigation integrity snapshot refreshed.`, 'info');
-      } catch (err) {
-        // ignore
-      }
-
-      if (data.fallbackNotice) {
-        addLog(data.fallbackNotice, 'warn');
-        addLog(`Dossier synthesized: Archetype "${data.archetype}" [Threat Level: ${data.threatLevel}]`, 'info');
-      } else {
-        const keyType = data.isCustomKey ? ' [Personal Key]' : '';
-        addLog(`AI Profiling completed via ${data.modelUsed || 'Gemini'}${keyType}: Archetype "${data.archetype}" [Threat Level: ${data.threatLevel}]`, 'success');
-      }
-    } catch (err: any) {
-      addLog(`AI Profiling request notice: ${err.message}`, 'warn');
-    } finally {
-      setIsAiLoading(false);
-    }
   };
 
   // Local State Persistence Handlers (Cache of last 5 scans in localStorage)

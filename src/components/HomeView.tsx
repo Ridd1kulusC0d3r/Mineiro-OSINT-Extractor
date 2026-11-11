@@ -6,6 +6,7 @@ import { PLATFORMS_DATABASE, countPlatformsForPreset } from '../data/platforms';
 import { StatusBadge } from './StatusBadge';
 import type { ScanPreset } from '../types';
 import { useI18n, type UiMessageKey } from '../utils/i18n';
+import { api } from '../api/client';
 
 interface HomeViewProps {
   target: string;
@@ -69,9 +70,8 @@ export function HomeView({
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch('/api/health', { signal: controller.signal })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => data && setHealth(data))
+    api.health({ signal: controller.signal })
+      .then((data) => setHealth(data))
       .catch(() => undefined); // status is decorative: stay silent when offline
     return () => controller.abort();
   }, []);

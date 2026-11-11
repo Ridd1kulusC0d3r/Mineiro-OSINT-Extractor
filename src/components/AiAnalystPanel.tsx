@@ -5,6 +5,7 @@ import { buildIntelligenceAssessment } from '../intelligence/assessment';
 import type { AnalystCopilotOutput } from '../ai/analystCopilot';
 import type { IntelligenceRequirement } from '../intelligence/types';
 import { useI18n } from '../utils/i18n';
+import { api, isApiError } from '../api/client';
 
 interface AiAnalystPanelProps {
   target: string;
@@ -31,24 +32,17 @@ export function AiAnalystPanel({ target, results, apiKey, model, requirement = '
         ...assessment,
         evidence: assessment.evidence.slice(0, 100),
       };
-      const res = await fetch('/api/intelligence/copilot', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(apiKey ? { 'x-gemini-api-key': apiKey } : {}),
-        },
-        body: JSON.stringify({
-          targetLabel: target,
-          assessment: prioritizedAssessment,
-          analystQuestion: question.trim() || undefined,
-          model,
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || tr('ai.requestFailed'));
+      const data = await api.copilot({
+        targetLabel: target,
+        assessment: prioritizedAssessment,
+        analystQuestion: question.trim() || undefined,
+        model,
+      }, { geminiKey: apiKey });
       setOutput(data);
     } catch (err: any) {
-      setError(err?.message || tr('ai.requestFailed'));
+      // A refusal from the server shows its own reason; without one, the generic message (as before).
+      const refused = isApiError(err) && !err.network && !err.aborted && err.status > 0;
+      setError(refused ? err.serverMessage || tr('ai.requestFailed') : err?.message || tr('ai.requestFailed'));
     } finally {
       setIsLoading(false);
     }
