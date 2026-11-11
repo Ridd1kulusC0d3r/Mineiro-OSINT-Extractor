@@ -3,6 +3,8 @@
 // global fetch throw, so no test can reach the real network.
 import dns from 'node:dns';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import type http from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -29,6 +31,8 @@ const realFetch = globalThis.fetch;
 const VERSION = JSON.parse(fs.readFileSync('package.json', 'utf8')).version;
 
 let createApp: typeof import('../server/app').createApp;
+let serveClient: typeof import('../server/app').serveClient;
+let errorHandler: typeof import('../server/errors').errorHandler;
 let registry: typeof import('../src/registry/registry');
 let net: typeof import('../src/core/net');
 
@@ -79,7 +83,8 @@ beforeAll(async () => {
     return realFetch(input, init);
   });
 
-  ({ createApp } = await import('../server/app'));
+  ({ createApp, serveClient } = await import('../server/app'));
+  ({ errorHandler } = await import('../server/errors'));
   registry = await import('../src/registry/registry');
   net = await import('../src/core/net');
   app = await start();
@@ -318,20 +323,81 @@ describe('error handling', () => {
     expect(await res.json()).toEqual({ error: 'Request body too large' });
   });
 
-  it('turns an unexpected exception into a generic JSON 500 without the internal message', async () => {
+  it('turns an unexpected exception into a generic JSON 500 without the internal message', () => {
     const quiet = vi.spyOn(console, 'error').mockImplementation(() => {});
     try {
-      // No content-type: req.body stays undefined and the route throws while destructuring it.
-      const res = await realFetch(`${app.base}/api/osint/email-recon`, { method: 'POST' });
-      const text = await res.text();
-      expect(res.status).toBe(500);
-      expect(res.headers.get('content-type')).toContain('application/json');
-      expect(JSON.parse(text)).toEqual({ error: 'Internal server error' });
-      expect(text).not.toMatch(leaks);
+      const sent: { status?: number; body?: unknown } = {};
+      const res = {
+        headersSent: false,
+        status(code: number) { sent.status = code; return this; },
+        json(body: unknown) { sent.body = body; return this; },
+      };
+      errorHandler(new TypeError("Cannot destructure property 'email' of 'req.body'"), { method: 'POST', originalUrl: '/api/x?y=1' } as any, res as any, () => {});
+      expect(sent).toEqual({ status: 500, body: { error: 'Internal server error' } });
+      expect(JSON.stringify(sent.body)).not.toMatch(leaks);
       expect(quiet).toHaveBeenCalled();
     } finally {
       quiet.mockRestore();
     }
+  });
+
+  it.each([
+    ['/api/osint/email-recon', undefined, undefined],
+    ['/api/osint/email-recon', 'text/plain', 'email=a@example.com'],
+    ['/api/osint/gemini-validate', undefined, undefined],
+    ['/api/osint/gemini-validate', 'text/plain', 'x'],
+  ])('POST %s without a JSON body (content-type %s) -> JSON 400, not a 500', async (path, type, body) => {
+    const res = await realFetch(app.base + path, { method: 'POST', headers: type ? { 'content-type': type } : {}, body });
+    const text = await res.text();
+    expect(res.status).toBe(400);
+    expect(res.headers.get('content-type')).toContain('application/json');
+    expect(JSON.parse(text)).toEqual({ error: 'JSON body required (Content-Type: application/json)' });
+    expect(text).not.toMatch(leaks);
+    expect(outbound.calls).toHaveLength(0);
+  });
+});
+
+describe('production client (serveClient)', () => {
+  let client: Running;
+  let dir: string;
+
+  beforeAll(async () => {
+    dir = fs.mkdtempSync(path.join(os.tmpdir(), 'mineiro-dist-'));
+    fs.mkdirSync(path.join(dir, 'assets'));
+    fs.writeFileSync(path.join(dir, 'index.html'), '<!doctype html><title>spa</title>');
+    fs.writeFileSync(path.join(dir, 'assets', 'app-1234.js'), 'export {};');
+    const server: http.Server = await new Promise((resolve) => {
+      const s = serveClient(createApp(), dir).listen(0, '127.0.0.1', () => resolve(s));
+    });
+    const { port } = server.address() as AddressInfo;
+    client = { base: `http://127.0.0.1:${port}`, close: () => new Promise((resolve) => server.close(() => resolve())) };
+  });
+
+  afterAll(async () => {
+    await client?.close();
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('serves an existing asset', async () => {
+    const res = await realFetch(`${client.base}/assets/app-1234.js`);
+    expect(res.status).toBe(200);
+    expect(res.headers.get('content-type')).toMatch(/javascript/);
+  });
+
+  it.each(['/assets/missing-0000.js', '/assets/old/chunk.css', '/assets/'])('answers a missing %s with 404, not index.html', async (asset) => {
+    const res = await realFetch(client.base + asset);
+    expect(res.status).toBe(404);
+    expect(res.headers.get('content-type')).not.toMatch(/html/);
+    expect(await res.text()).not.toContain('<title>spa</title>');
+  });
+
+  it('answers client routes with index.html and keeps the JSON 404 for unknown API routes', async () => {
+    const page = await realFetch(`${client.base}/cases/42`);
+    expect(page.status).toBe(200);
+    expect(await page.text()).toContain('<title>spa</title>');
+    const api = await realFetch(`${client.base}/api/does-not-exist`);
+    expect(api.status).toBe(404);
+    expect(await api.json()).toMatchObject({ error: 'Unknown API route' });
   });
 });
 

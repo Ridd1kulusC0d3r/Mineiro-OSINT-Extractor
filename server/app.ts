@@ -1,3 +1,4 @@
+import path from 'node:path';
 import express, { type Express } from 'express';
 import { apiNotFound, errorHandler } from './errors';
 import { copilotRouter } from './routes/copilot';
@@ -12,7 +13,7 @@ import { PUBLIC_MODE, rateLimit, securityHeaders } from './security/middleware';
 
 /**
  * Builds the Express app: middleware, rate limits and every /api router. No listen, no Vite, no static files:
- * server.ts adds those after it, so an unknown /api path never reaches the SPA fallback. Each call gets its own rate-limit buckets, so tests can start isolated instances.
+ * server.ts adds those after it (serveClient below in production), so an unknown /api path never reaches the SPA fallback. Each call gets its own rate-limit buckets, so tests can start isolated instances.
  */
 export function createApp(): Express {
   const app = express();
@@ -35,5 +36,21 @@ export function createApp(): Express {
   app.use('/api', apiNotFound);
   app.use(errorHandler);
 
+  return app;
+}
+
+/**
+ * Production client: the built files in distPath, then index.html for every other GET so client routes load.
+ * A file missing under /assets/ is a 404: those are hashed bundle names, and answering an old one with
+ * index.html (status 200, text/html) hides the error and breaks the module load in a stale tab.
+ */
+export function serveClient(app: Express, distPath: string): Express {
+  app.use(express.static(distPath));
+  app.use('/assets', (_req, res) => {
+    res.status(404).type('text/plain').send('Not found');
+  });
+  app.get('/{*splat}', (_req, res) => {
+    res.sendFile(path.join(distPath, 'index.html'));
+  });
   return app;
 }

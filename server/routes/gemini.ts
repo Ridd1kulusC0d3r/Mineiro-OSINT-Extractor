@@ -1,11 +1,12 @@
 import { Router } from 'express';
+import { requireJsonBody } from '../errors';
 import { classifyGeminiError, COPILOT_MODELS, getGenAiClient, normalizeCopilotModel, parseCleanJson, withTimeout } from '../services/gemini';
 
 export function geminiRouter(): Router {
   const router = Router();
 
   // Endpoint to validate a personal Gemini API key or check system key status
-  router.post('/api/osint/gemini-validate', async (req, res) => {
+  router.post('/api/osint/gemini-validate', requireJsonBody, async (req, res) => {
     const customKey = req.body.apiKey || (req.headers['x-gemini-api-key'] as string);
     const selectedModel = normalizeCopilotModel(req.body.model);
 
