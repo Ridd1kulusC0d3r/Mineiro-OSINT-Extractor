@@ -259,6 +259,41 @@ describe('unknown API routes', () => {
   });
 });
 
+describe('error handling', () => {
+  const leaks = /SyntaxError|Unexpected token|at .+\(|node_modules|Cannot destructure|req\.body/;
+
+  it('answers malformed JSON with a JSON 400 (defect 7)', async () => {
+    const res = await call('/api/osint/verify', { raw: '{not json' });
+    const text = await res.text();
+    expect(res.status).toBe(400);
+    expect(res.headers.get('content-type')).toContain('application/json');
+    expect(JSON.parse(text)).toEqual({ error: 'Malformed JSON body' });
+    expect(text).not.toMatch(leaks);
+  });
+
+  it('answers an oversized body with a JSON 413', async () => {
+    const res = await call('/api/osint/pivots', { raw: JSON.stringify({ sources: [{ text: 'x'.repeat(2.2 * 1024 * 1024) }] }) });
+    expect(res.status).toBe(413);
+    expect(await res.json()).toEqual({ error: 'Request body too large' });
+  });
+
+  it('turns an unexpected exception into a generic JSON 500 without the internal message', async () => {
+    const quiet = vi.spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      // No content-type: req.body stays undefined and the route throws while destructuring it.
+      const res = await realFetch(`${app.base}/api/osint/email-recon`, { method: 'POST' });
+      const text = await res.text();
+      expect(res.status).toBe(500);
+      expect(res.headers.get('content-type')).toContain('application/json');
+      expect(JSON.parse(text)).toEqual({ error: 'Internal server error' });
+      expect(text).not.toMatch(leaks);
+      expect(quiet).toHaveBeenCalled();
+    } finally {
+      quiet.mockRestore();
+    }
+  });
+});
+
 describe('rate limiting', () => {
   it('answers 429 with Retry-After once the ai bucket (60/min outside public mode) is empty', async () => {
     const isolated = await start();

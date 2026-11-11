@@ -1,5 +1,5 @@
 import express, { type Express } from 'express';
-import { apiNotFound } from './errors';
+import { apiNotFound, errorHandler } from './errors';
 import { copilotRouter } from './routes/copilot';
 import { emailRouter } from './routes/email';
 import { extrasRouter } from './routes/extras';
@@ -33,6 +33,7 @@ export function createApp(): Express {
   app.use(geminiRouter());
   app.use(profileRouter());
   app.use('/api', apiNotFound);
+  app.use(errorHandler);
 
   return app;
 }
