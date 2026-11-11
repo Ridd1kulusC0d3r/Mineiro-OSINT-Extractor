@@ -7,7 +7,7 @@ coverage/
 .env*
 !.env.example
 
-data/
+/data/
 detector-health.md
 
 python/src/mineiro_osint/_app/
