@@ -26,7 +26,7 @@ Uma ferramenta de investigação lida com informação sensível por natureza: o
 - **Seus casos e relatórios ficam no seu computador** (navegador e, opcionalmente, um arquivo SQLite). Não há conta, nuvem do projeto, nem telemetria.
 - A ferramenta **precisa falar com os sites que você consulta**: eles recebem o *handle* pesquisado e o seu IP.
 - Por padrão **nada é enviado a IA**. Se você usar o copiloto, um resumo da investigação vai ao **Google (Gemini)**.
-- O navegador ainda contata **serviços de ícones do Google e do DuckDuckGo** (só o domínio da plataforma, nunca o handle). Veja [§3](#3-o-que-sai-da-sua-máquina).
+- Abrir o app não contata terceiros: cada plataforma aparece com um monograma local. Ícones reais do Google e do DuckDuckGo só se você ligar **Ícones dos sites** (desligado por padrão). Veja [§3](#3-o-que-sai-da-sua-máquina).
 
 ---
 
@@ -44,6 +44,7 @@ A origem é o endereço completo: `http://localhost:3000`, `http://127.0.0.1:300
 | Modelo do Gemini | `localStorage` | `mineiro_gemini_model` | Nome do modelo escolhido. |
 | Idioma | `localStorage` | `mineiro_language_preference` | `en`, `pt` ou `es`. |
 | Tema | `localStorage` | `mineiro_theme_preference` | `dark`, `light` ou `high-contrast` (o antigo `bone` é lido como `light`). |
+| Ícones dos sites | `localStorage` | `mineiro_remote_favicons` | `1` quando você liga os ícones remotos (Google/DuckDuckGo); ausente = desligado, que é o padrão. |
 | Sessão atual | memória da aba | | Resultados em tela, Console, fila de **lote**. Some ao recarregar. |
 
 Não usamos `sessionStorage` nem *cookies*.
@@ -70,7 +71,7 @@ Esta é a lista **completa** de destinos externos, na versão 1.7.0.
 | **Cada site consultado** (até 984) | Em todo scan | O **handle** na URL, o seu **IP**, o *User-Agent* e cabeçalhos padrão. Também um segundo pedido com um **handle aleatório** (controle da baseline). | Escolhendo o preset e o escopo. |
 | **Resolvedor DNS** do seu sistema | Reconhecimento de e-mail | Consulta MX do **domínio** do e-mail. | Evite o modo e-mail. |
 | **gravatar.com** | Reconhecimento de e-mail | O **MD5 do e-mail** em minúsculas (`HEAD`). | Idem. |
-| **google.com/s2/favicons** e **icons.duckduckgo.com** | O navegador mostra uma plataforma na tela | O **domínio da plataforma** (por exemplo `github.com`) e o IP do navegador. Nunca o handle. Sem *referrer*. | Hoje só bloqueando no navegador/firewall. [Pendência no plano](PLANO-PAGINA-INICIAL.md). |
+| **google.com/s2/favicons** e **icons.duckduckgo.com** | Só se você ligar **Ícones dos sites** nas abas Evidence/Platforms (desligado por padrão; fica em `localStorage`, chave `mineiro_remote_favicons` = `1`) | O **domínio da plataforma** (por exemplo `github.com`) e o IP do navegador. Nunca o handle. Sem *referrer*. | Sim: deixe a opção desligada (padrão). Desligada, o app mostra um monograma local e não faz essas requisições. |
 | **Google (Gemini)** | Só se você clicar em **Analyze** no copiloto | Veja [§6](#6-a-chave-do-gemini) | Sim: não use o copiloto. |
 | **web.archive.org** | Só se você chamar `/api/osint/wayback` (API) | A URL do perfil | Sim. |
 | **brasilapi.com.br** | Só se você chamar `/api/osint/br/cnpj` (API) | O CNPJ | Sim. |

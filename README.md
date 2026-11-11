@@ -52,7 +52,7 @@ It keeps apart four things that username tools usually blur together: **collecti
   <tr>
     <td valign="top" width="33%"><b>Auditable reports</b><br><sub>HTML, JSON, Markdown and CSV from the UI, each with an integrity manifest (SHA-256). STIX 2.1 is available through the API.</sub></td>
     <td valign="top" width="33%"><b>Cautious correlation</b><br><sub>Similar usernames, shared domains and avatar hashes become <i>candidate</i> edges. A claim must cite observations.</sub></td>
-    <td valign="top" width="33%"><b>Runs locally</b><br><sub><code>pip install</code>, Colab or from source. Optional SQLite store in your home directory. Investigations stay in your browser; the app sends only the probe requests, plus site-icon lookups (favicon services) and the AI copilot if you enable it. See <a href="docs/PRIVACIDADE-E-DADOS.md">privacy</a>.</sub></td>
+    <td valign="top" width="33%"><b>Runs locally</b><br><sub><code>pip install</code>, Colab or from source. Optional SQLite store in your home directory. Investigations stay in your browser; the app sends only the probe requests, plus the AI copilot and site-icon lookups (favicon services) if you turn them on; both are off by default. See <a href="docs/PRIVACIDADE-E-DADOS.md">privacy</a>.</sub></td>
   </tr>
 </table>
 
