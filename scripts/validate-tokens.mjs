@@ -3,7 +3,7 @@
 // Falha quando:
 //  1. src/styles/tokens.css não define todos os tokens nos três temas (dark, light, high-contrast);
 //  2. os fallbacks de src/theme/palette.ts diferem do tema dark de tokens.css;
-//  3. há hex literal em src/**/*.ts(x) fora de src/styles e src/theme (exceções da Etapa 2 em scripts/lib/color-scope.mjs);
+//  3. há hex literal em src/**/*.ts(x) fora de src/styles e src/theme (exceções em scripts/lib/color-scope.mjs, hoje nenhuma);
 //  4. há classe da escala antiga (*-neutral-N, *-white, *-black) fora dessas exceções;
 //  5. um par texto/fundo dos tokens fica abaixo do contraste WCAG AA (4,5:1) em algum tema.
 import fs from 'node:fs';
@@ -66,6 +66,25 @@ else if (themes.dark) {
   }
 }
 
+// ---------- 2b. tokens.ts (exportação HTML) e bloco de impressão ----------
+const tokensTs = read('src/theme/tokens.ts');
+for (const theme of ['dark', 'light']) {
+  const block = tokensTs.match(new RegExp(`\\b${theme}:\\s*\\{([^}]*)\\}`));
+  if (!block) { errors.push(`tokens.ts: tema ${theme} não encontrado`); continue; }
+  const values = Object.fromEntries([...block[1].matchAll(/'?([\w-]+)'?:\s*'(#[0-9a-fA-F]{6})'/g)].map((m) => [m[1], m[2].toLowerCase()]));
+  for (const token of TOKENS) {
+    if (themes[theme] && values[token] !== themes[theme][token]) errors.push(`tokens.ts: ${theme}['${token}'] = ${values[token]} difere de tokens.css (${themes[theme][token]})`);
+  }
+}
+const printBlock = css.match(/@media print\s*\{\s*:root,\s*:root\[data-theme\]\s*\{([^}]*)\}/);
+if (!printBlock) errors.push('tokens.css: bloco @media print com a versão clara não encontrado');
+else if (themes.light) {
+  const values = Object.fromEntries([...printBlock[1].matchAll(/--([\w-]+):\s*(#[0-9a-fA-F]{6})\s*;/g)].map((m) => [m[1], m[2].toLowerCase()]));
+  for (const token of TOKENS.filter((t) => t !== 'paper' && t !== 'paper-2')) {
+    if (values[token] !== themes.light[token]) errors.push(`tokens.css: impressão --${token} = ${values[token]} difere do tema light (${themes.light[token]})`);
+  }
+}
+
 // ---------- 3 e 4. cor literal fora das pastas de origem ----------
 const HEX = /(?<![&\w])#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3,4})\b/g;
 const LEGACY_CLASS = /(?<![\w-])(?:[\w-]+:)*-?(?:bg|text|border(?:-[xytrblse])?|divide|ring|outline|from|via|to|fill|stroke|accent|caret|decoration|shadow|placeholder)-(?:neutral-\d{2,3}|white|black)(?![\w-])/g;
@@ -117,4 +136,4 @@ if (errors.length) {
   process.exit(1);
 }
 for (const line of contrastLines) console.log(`[tokens] AA ok: ${line}`);
-console.log(`[tokens] OK: 0 hex literal e 0 classe antiga em src/ fora de src/styles e src/theme; exceções da Etapa 2: ${DEFERRED_TO_STAGE_2.length}.`);
+console.log(`[tokens] OK: 0 hex literal e 0 classe antiga em src/ fora de src/styles e src/theme; exceções: ${DEFERRED_TO_STAGE_2.length}.`);

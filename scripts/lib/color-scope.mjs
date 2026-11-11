@@ -6,15 +6,10 @@ import path from 'node:path';
 export const COLOR_SOURCE_DIRS = ['src/styles', 'src/theme'];
 
 /**
- * Fora do escopo da Etapa 1, de propósito. São a exportação HTML e a impressão, que ganham a versão clara
- * para impressão com os mesmos tokens na Etapa 2 (docs/REFACTOR_PLAN.md, Etapa 2, passo 5). Até lá ficam
- * como estão: o codemod não as toca e o validador não as cobra. Remover cada linha quando a Etapa 2 chegar.
+ * Exceções ao validador. Vazia desde a Etapa 2 (docs/REFACTOR_PLAN.md): exportação HTML, gerador de relatório e
+ * impressão passaram a usar os tokens (src/theme/tokens.ts e o bloco @media print de tokens.css).
  */
-export const DEFERRED_TO_STAGE_2 = [
-  'src/intelligence/reportExport.ts', // CSS embutido no HTML exportado (#131210, #F3F0E8, ...)
-  'src/utils/reportGenerator.ts', // gerador do relatório exportado
-  'src/components/DossierPrintView.tsx', // relatório de impressão (bg-[#F0885A], escala neutral/black legada)
-];
+export const DEFERRED_TO_STAGE_2 = [];
 
 const toPosix = (file) => file.split(path.sep).join('/');
 

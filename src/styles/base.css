@@ -317,5 +317,8 @@
   .mast { background: var(--paper) !important; }
   .card, .tbl-wrap, .dialog { box-shadow: none !important; }
   .no-print { display: none !important; }
+  /* Imprimir o app imprime o dossiê (DossierPrintView), não a tela: o resto do shell sai. */
+  .app-shell > :not(.dossier-print) { display: none !important; }
+  .app-shell { min-height: 0 !important; }
   .print-only { display: block !important; }
 }

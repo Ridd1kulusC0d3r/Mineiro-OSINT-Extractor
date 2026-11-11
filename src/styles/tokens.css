@@ -126,6 +126,7 @@
     --shadow-1: none;
     --shadow-2: none;
     --grid-line: transparent;
+    --glass: #ffffff;
     --on-seq-low: #15140f;
     --on-seq-mid: #15140f;
     --on-seq-high: #ffffff;

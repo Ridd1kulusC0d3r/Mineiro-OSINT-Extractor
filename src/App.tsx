@@ -1071,7 +1071,7 @@ export default function App() {
 
   return (
     <ToastProvider>
-      <div className="min-h-screen bg-paper text-ink flex flex-col selection:bg-signal selection:text-signal-ink">
+      <div className="app-shell min-h-screen bg-paper text-ink flex flex-col selection:bg-signal selection:text-signal-ink">
       {/* Top Header */}
       <Header
         onReset={handleReset}
