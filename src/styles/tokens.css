@@ -1,0 +1,88 @@
+/*
+ * Tokens de cor do Mineiro Username Intelligence (docs/REFACTOR_PLAN.md, seção 3).
+ * Única fonte de cor da interface. O tema ativo vem de <html data-theme="…">, aplicado por src/theme/theme.ts.
+ * JS, D3, SVG e canvas leem estes valores por src/theme/palette.ts; os valores de fallback lá precisam
+ * ser iguais aos do tema dark daqui (scripts/validate-tokens.mjs confere, e também o contraste AA).
+ */
+
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #100f0d;
+  --paper-2: #1a1916;
+  --card: #1c1b17;
+  --ink: #eeebe2;
+  --ink-2: #bdb8aa;
+  --ink-3: #958f81;
+  --rule: #36332b;
+  --rule-2: #26241f;
+  --signal: #f0885a;
+  --signal-ink: #131210;
+  --signal-soft: #3a2418;
+  --seq-0: #3a2a21;
+  --seq-1: #6b3d25;
+  --seq-2: #a85a30;
+  --seq-3: #e07f4e;
+  --seq-4: #f6b48f;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --paper: #f6f5f1;
+  --paper-2: #ecebe4;
+  --card: #ffffff;
+  --ink: #15140f;
+  --ink-2: #45423a;
+  --ink-3: #625e55;
+  --rule: #d6d2c6;
+  --rule-2: #e6e3da;
+  --signal: #b43c0e;
+  --signal-ink: #ffffff;
+  --signal-soft: #f7e6dc;
+  --seq-0: #f5ddcf;
+  --seq-1: #e9b394;
+  --seq-2: #d4804f;
+  --seq-3: #b43c0e;
+  --seq-4: #7c2406;
+}
+
+/* Preto e branco puros: fundo, texto e bordas mudam. Só as escalas (seq) usam cinza, porque precisam de gradação. */
+:root[data-theme="high-contrast"] {
+  color-scheme: dark;
+  --paper: #000000;
+  --paper-2: #000000;
+  --card: #000000;
+  --ink: #ffffff;
+  --ink-2: #ffffff;
+  --ink-3: #ffffff;
+  --rule: #ffffff;
+  --rule-2: #ffffff;
+  --signal: #ffffff;
+  --signal-ink: #000000;
+  --signal-soft: #000000;
+  --seq-0: #262626;
+  --seq-1: #595959;
+  --seq-2: #8c8c8c;
+  --seq-3: #bfbfbf;
+  --seq-4: #ffffff;
+}
+
+/* Classes semânticas do Tailwind: bg-paper, text-ink-2, border-rule, bg-signal/20 etc. */
+@theme inline {
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-card: var(--card);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-rule: var(--rule);
+  --color-rule-2: var(--rule-2);
+  --color-signal: var(--signal);
+  --color-signal-ink: var(--signal-ink);
+  --color-signal-soft: var(--signal-soft);
+  --color-seq-0: var(--seq-0);
+  --color-seq-1: var(--seq-1);
+  --color-seq-2: var(--seq-2);
+  --color-seq-3: var(--seq-3);
+  --color-seq-4: var(--seq-4);
+}
