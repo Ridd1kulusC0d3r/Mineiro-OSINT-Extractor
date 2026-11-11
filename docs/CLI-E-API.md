@@ -95,7 +95,7 @@ Defina-as no shell ou em um arquivo `.env` na raiz (veja `.env.example`). **Nunc
 | Variável | Padrão | Efeito |
 |---|---|---|
 | `PORT` | `3000` | Porta HTTP. |
-| `HOST` | `0.0.0.0` (código-fonte/Docker) · `127.0.0.1` (comando `mineiro`) | Endereço de escuta. |
+| `HOST` | `127.0.0.1` (código-fonte e comando `mineiro`) · `0.0.0.0` (Docker) | Endereço de escuta. |
 | `NODE_ENV` | | `production` serve o `dist/` já compilado; qualquer outro valor usa o Vite em modo desenvolvimento. |
 | `GEMINI_API_KEY` | vazio | Chave do Gemini no **servidor**, para o copiloto de IA. Opcional. Ignorada em modo público. |
 | `MINEIRO_PUBLIC` | desligado | `1` ativa o modo para instâncias compartilhadas ([seção 6](#6-limites-de-taxa-e-modo-público)). |
