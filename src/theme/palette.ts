@@ -1,5 +1,5 @@
 import * as d3 from 'd3';
-import { MINEIRO_PALETTE } from './mineiroPalette';
+import { MINEIRO_PALETTE } from '../utils/mineiroPalette';
 
 /**
  * Mineiro Username Intelligence — Monochrome UI

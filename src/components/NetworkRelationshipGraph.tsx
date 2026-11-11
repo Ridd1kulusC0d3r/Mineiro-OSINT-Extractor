@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { ScanResult, EmailReconData, AiProfileReport } from '../types';
 import { generateAccountLinkageDossier } from '../data/accountLinkage';
-import { CATEGORY_COLORS } from '../utils/themeColors';
+import { CATEGORY_COLORS } from '../theme/palette';
 
 export type SizingMode = 'completeness' | 'density' | 'uniform';
 

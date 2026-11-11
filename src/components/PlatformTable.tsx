@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ExternalLink, Copy, Check, AlertTriangle } from 'lucide-react';
 import { ScanResult } from '../types';
 import { PlatformFavicon } from './PlatformFavicon';
-import { CATEGORY_BADGES } from '../utils/themeColors';
+import { CATEGORY_BADGES } from '../theme/palette';
 
 interface PlatformTableProps {
   results: ScanResult[];

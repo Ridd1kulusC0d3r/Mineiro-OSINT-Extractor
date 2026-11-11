@@ -36,7 +36,7 @@ import { useToast } from './Toast';
 import { 
   CATEGORY_COLORS, 
   EXPOSURE_COLORS 
-} from '../utils/themeColors';
+} from '../theme/palette';
 
 interface DashboardViewProps {
   target: string;

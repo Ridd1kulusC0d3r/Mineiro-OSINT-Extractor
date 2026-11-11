@@ -29,7 +29,7 @@ import {
   getContrastTextColor,
   HEATMAP_STOPS,
   EXPOSURE_COLORS
-} from '../utils/themeColors';
+} from '../theme/palette';
 
 interface CategoryHeatMapProps {
   results: ScanResult[];
