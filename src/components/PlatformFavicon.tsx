@@ -5,6 +5,7 @@ import {
   getDuckDuckGoFaviconUrl, 
   getPlatformMonogram 
 } from '../utils/favicon';
+import { useRemoteFavicons } from '../utils/faviconPreference';
 
 interface PlatformFaviconProps {
   url: string;
@@ -44,15 +45,7 @@ const SIZE_CONFIGS = {
 };
 
 const CATEGORY_BORDER_COLORS: Record<string, string> = {
-  developer: 'border-rule/80 bg-paper-2/40 text-ink-2',
-  social: 'border-rule/80 bg-paper-2/40 text-ink-2',
-  gaming: 'border-rule/80 bg-paper-2/40 text-ink-2',
-  security: 'border-rule/80 bg-paper-2/40 text-ink-2',
-  crypto: 'border-rule/80 bg-paper-2/40 text-ink-2',
-  creative: 'border-rule/80 bg-paper-2/40 text-ink-2',
-  community: 'border-rule/80 bg-paper-2/40 text-ink-2',
-  media: 'border-rule/80 bg-paper-2/40 text-ink-2',
-  default: 'border-rule bg-rule-2 text-ink-2'
+  default: 'border-rule bg-paper-2 text-ink-2'
 };
 
 export function PlatformFavicon({
@@ -64,6 +57,7 @@ export function PlatformFavicon({
   className = '',
   showTooltip = true
 }: PlatformFaviconProps) {
+  const [remoteEnabled] = useRemoteFavicons();
   const [loadStage, setLoadStage] = useState<'primary' | 'fallback' | 'failed'>('primary');
   const [isLoaded, setIsLoaded] = useState(false);
 
@@ -93,12 +87,13 @@ export function PlatformFavicon({
     setIsLoaded(true);
   };
 
-  // If no valid domain could be resolved, immediately show monogram
-  if (!domain || loadStage === 'failed') {
+  // Monograma local por padrão; favicon remoto só com a opção ligada (src/utils/faviconPreference.ts).
+  if (!remoteEnabled || !domain || loadStage === 'failed') {
     return (
       <div
         title={tooltipText}
-        className={`inline-flex items-center justify-center font-mono font-bold select-none border shrink-0 ${sizeCfg.wrapper} ${sizeCfg.text} ${categoryStyle} ${className}`}
+        aria-hidden={showTooltip ? undefined : true}
+        className={`inline-flex items-center justify-center rounded-md font-mono font-bold select-none border shrink-0 ${sizeCfg.wrapper} ${sizeCfg.text} ${categoryStyle} ${className}`}
       >
         {monogram}
       </div>
@@ -112,7 +107,7 @@ export function PlatformFavicon({
   return (
     <div
       title={tooltipText}
-      className={`relative inline-flex items-center justify-center p-0.5 border border-rule bg-paper-2 shrink-0 overflow-hidden ${sizeCfg.wrapper} ${className}`}
+      className={`relative inline-flex items-center justify-center rounded-md p-0.5 border border-rule bg-paper-2 shrink-0 overflow-hidden ${sizeCfg.wrapper} ${className}`}
     >
       {/* Underlying fallback monogram while image loads */}
       {!isLoaded && (

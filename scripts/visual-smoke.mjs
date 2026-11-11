@@ -6,21 +6,17 @@
 // The run is offline and deterministic: /api/osint/verify is answered by canned responses (the real scan path in
 // App.tsx runs, only the network probe is replaced), every request that is not for the local server is blocked and
 // recorded, Date is frozen, Math.random is seeded, motion is reduced and the UI language is fixed to English.
-// Exits 1 when a page throws, the console logs an error, a screen cannot be reached, or a request tries to leave
-// the machine to a host that is not in KNOWN_EXTERNAL_HOSTS.
+// Exits 1 when a page throws, the console logs an error, a screen cannot be reached, or any request tries to leave
+// the machine (the app is local-first: opening it must not contact third parties).
 import fs from 'node:fs';
 import path from 'node:path';
 import { chromium } from '@playwright/test';
 import { ROOT, startServer } from './lib/local-server.mjs';
 
-// Hosts the app is known to contact today. They are still blocked (never reached) and listed in the report,
-// but do not fail the run. Etapa 2 of docs/REFACTOR_PLAN.md removes these requests and must empty this list.
-const KNOWN_EXTERNAL_HOSTS = [
-  'fonts.googleapis.com', // index.html Google Fonts (removed before this baseline; kept so a regression is visible)
-  'fonts.gstatic.com',
-  'www.google.com', // PlatformFavicon: https://www.google.com/s2/favicons
-  'icons.duckduckgo.com', // PlatformFavicon fallback
-];
+// Hosts allowed to be contacted while the screens open. Empty since Etapa 2 of docs/REFACTOR_PLAN.md: Google Fonts
+// left index.html and PlatformFavicon draws a local monogram unless the user turns remote icons on
+// (src/utils/faviconPreference.ts). Any external request is still blocked, recorded and fails the run.
+const KNOWN_EXTERNAL_HOSTS = [];
 
 const THEMES = ['dark', 'light', 'high-contrast'];
 const LANGUAGE = 'en';
