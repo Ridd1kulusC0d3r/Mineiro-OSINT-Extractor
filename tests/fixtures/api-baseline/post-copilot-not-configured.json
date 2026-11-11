@@ -1,0 +1,27 @@
+{
+  "request": {
+    "method": "POST",
+    "path": "/api/intelligence/copilot",
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": "{\"assessment\":{\"evidence\":[],\"findings\":[],\"gaps\":[]}}"
+  },
+  "status": 503,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "referrer-policy": "no-referrer",
+    "cross-origin-opener-policy": "same-origin",
+    "permissions-policy": "camera=(), microphone=(), geolocation=()"
+  },
+  "body": {
+    "error": "Gemini is not configured. Add a personal API key in AI settings or configure GEMINI_API_KEY on the server.",
+    "errorType": "not_configured",
+    "provenance": {
+      "type": "AI_SYNTHESIZED",
+      "factualConfidenceRaised": false
+    }
+  }
+}

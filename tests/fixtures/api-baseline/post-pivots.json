@@ -1,0 +1,36 @@
+{
+  "request": {
+    "method": "POST",
+    "path": "/api/osint/pivots",
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": "{\"sources\":[{\"text\":\"site https://github.com/example-org and contact team@example.org\",\"origin\":\"fixture\",\"depth\":1}]}"
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "referrer-policy": "no-referrer",
+    "cross-origin-opener-policy": "same-origin",
+    "permissions-policy": "camera=(), microphone=(), geolocation=()"
+  },
+  "body": {
+    "accepted": [
+      {
+        "type": "email",
+        "value": "team@example.org",
+        "origin": "fixture",
+        "depth": 1
+      },
+      {
+        "type": "url",
+        "value": "https://github.com/example-org",
+        "origin": "fixture",
+        "depth": 1
+      }
+    ],
+    "skipped": []
+  }
+}
