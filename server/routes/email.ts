@@ -1,12 +1,13 @@
 import crypto from 'crypto';
 import dns from 'dns/promises';
 import { Router } from 'express';
+import { requireJsonBody } from '../errors';
 
 export function emailRouter(): Router {
   const router = Router();
 
   // Email reconnaissance endpoint (MX records, Gravatar, Provider heuristics)
-  router.post('/api/osint/email-recon', async (req, res) => {
+  router.post('/api/osint/email-recon', requireJsonBody, async (req, res) => {
     const { email } = req.body;
     if (!email || typeof email !== 'string' || !email.includes('@')) {
       return res.status(400).json({ error: 'Valid email address is required' });

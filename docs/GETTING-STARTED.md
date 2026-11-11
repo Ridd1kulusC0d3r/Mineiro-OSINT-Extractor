@@ -50,12 +50,12 @@ mineiro
 
 > [!NOTE]
 > Se `pip install mineiro-osint` ainda não encontrar o pacote no PyPI, instale pela *wheel* da release:
-> `pip install https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/releases/download/v1.7.0/mineiro_osint-1.7.0-py3-none-any.whl`
+> `pip install https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/releases/download/v1.8.0/mineiro_osint-1.8.0-py3-none-any.whl`
 
 O terminal mostra algo como:
 
 ```text
-Mineiro 1.7.0 -> http://127.0.0.1:3000  (Ctrl+C to stop)
+Mineiro 1.8.0 -> http://127.0.0.1:3000  (Ctrl+C to stop)
 Public signals only. Use within a legitimate and authorized purpose.
 ```
 
@@ -71,6 +71,26 @@ mineiro --check                    # diagnóstico: pacote e Node
 ```
 
 Referência completa das opções: [CLI-E-API.md](CLI-E-API.md#1-comando-mineiro-pip). Se algo falhar: [TROUBLESHOOTING.md](TROUBLESHOOTING.md#a-instalação-e-inicialização).
+
+### Linux: script de instalação
+
+No Debian, Ubuntu, Kali, Parrot e Amazon Linux 2023, [`packaging/install-linux.sh`](../packaging/install-linux.sh) faz o mesmo que a opção pip sem você criar o ambiente virtual:
+
+```bash
+git clone https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor.git
+cd Mineiro-OSINT-Extractor
+packaging/install-linux.sh --dry-run       # mostra cada passo antes, não muda nada
+packaging/install-linux.sh                 # baixa a wheel da release e confere o SHA-256
+~/.local/bin/mineiro
+```
+
+- Instala em `~/.local/share/mineiro-osint/venv` e cria o link `~/.local/bin/mineiro` (`--prefix DIR` muda o lugar). Se `~/.local/bin` não estiver no `PATH`, o script diz como incluir.
+- Não mexe no Python do sistema: funciona onde o pip recusa instalar fora de um venv (PEP 668, "externally-managed-environment") e nunca usa `--break-system-packages`.
+- Usa `sudo` só para instalar o que falta da distribuição (Python 3 com `venv`). O Node.js 22 vem com o pacote quando o sistema não tem.
+- `--from-source` compila e instala o clone em vez de baixar a release; `--wheel ARQUIVO` instala uma wheel que você já tem.
+- Rodar de novo atualiza ou repara; `--uninstall` remove o programa (os dados em `~/.mineiro` ficam).
+
+Em outras distribuições o script para com uma mensagem clara; use a opção pip acima.
 
 ---
 
@@ -119,7 +139,7 @@ curl -s localhost:3000/api/health
 Esperado (resumido):
 
 ```json
-{ "status": "ok", "version": "1.7.0", "geminiConfigured": false, "publicMode": false }
+{ "status": "ok", "version": "1.8.0", "geminiConfigured": false, "publicMode": false }
 ```
 
 E a tela inicial deve aparecer no navegador:
@@ -221,6 +241,7 @@ Seus números vão variar com a rede, o horário e as defesas de cada site. **Mu
 | Instalação | Atualizar | Desinstalar |
 |---|---|---|
 | pip | `pip install -U mineiro-osint` | `pip uninstall mineiro-osint` |
+| Script Linux | rode `packaging/install-linux.sh` de novo | `packaging/install-linux.sh --uninstall` |
 | Código-fonte | `git pull --ff-only && npm ci` | apague a pasta |
 | Colab | rode a célula de atualização ([COLAB.md](COLAB.md)) | feche o notebook |
 

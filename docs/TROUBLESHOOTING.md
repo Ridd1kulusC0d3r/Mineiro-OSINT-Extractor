@@ -29,7 +29,7 @@ curl -s localhost:3000/api/health    # o servidor está de pé?
 Resultado saudável de `mineiro --check`:
 
 ```text
-mineiro 1.7.0
+mineiro 1.8.0
 app bundle : ok (…/mineiro_osint/_app)
 node       : /usr/bin/node
 ```

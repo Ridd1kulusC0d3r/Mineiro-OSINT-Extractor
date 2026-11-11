@@ -1,10 +1,11 @@
 // Visual smoke: opens every reachable screen of the built app in the three themes and saves a PNG of each.
 //   npm run visual                      (builds first when dist/ is missing)
 //   node scripts/visual-smoke.mjs --theme dark --only report,console
-// Output: artifacts/visual/<theme>/<screen>.png (1440x900 viewport; full page, except modals) and artifacts/visual/report.json.
+// Output: artifacts/visual/<theme>/<screen>.png (1440x900 viewport; full page, except modals and the dashboard chart
+// cards, which are element captures) and artifacts/visual/report.json.
 //
-// The run is offline and deterministic: /api/osint/verify is answered by canned responses (the real scan path in
-// App.tsx runs, only the network probe is replaced), every request that is not for the local server is blocked and
+// The run is offline and deterministic: /api/osint/verify is answered by canned responses (the real scan path:
+// useScan -> src/scan/engine.ts -> src/api/client.ts runs, only the network probe is replaced), every request that is not for the local server is blocked and
 // recorded, Date is frozen, Math.random is seeded, motion is reduced and the UI language is fixed to English.
 // Exits 1 when a page throws, the console logs an error, a screen cannot be reached, or any request tries to leave
 // the machine (the app is local-first: opening it must not contact third parties).
@@ -138,6 +139,9 @@ async function openPage(browser, baseUrl, theme, problems, external) {
 // ---------- helpers ----------
 const settle = async (page, ms = 400) => {
   await page.waitForLoadState('networkidle').catch(() => undefined);
+  // Views and dialogs that load on first use show a placeholder until their chunk has arrived and rendered
+  // (src/components/LazyFallback.tsx): wait for the real content, not for a fixed time.
+  await page.waitForFunction(() => !document.querySelector('[data-lazy-fallback]'), null, { timeout: 15000 });
   await page.waitForTimeout(ms);
 };
 
@@ -213,8 +217,17 @@ const STEPS = [
     await page.keyboard.press('Escape');
     await page.getByRole('dialog').waitFor({ state: 'detached' });
     await page.keyboard.press('1');
+    // The dashboard and its force graph load on first use: wait for the graph's nodes, then for the layout.
+    await page.locator('#viz-tab-network-btn').waitFor();
+    await page.locator('svg .nodes .node').first().waitFor();
     await settle(page, 6000); // the D3 force graph needs ~300 ticks to come to rest
   }],
+  // The legacy dashboard's other chart tabs. Each capture is the visualization card only, so a difference in one
+  // chart is not diluted by the rest of the page.
+  ['dashboard-map', (page) => vizTab(page, 'geo', mapDrawn)],
+  ['dashboard-linkage', (page) => vizTab(page, 'linkage')],
+  ['dashboard-heatmap', (page) => vizTab(page, 'heatmap')],
+  ['dashboard-risk-matrix', (page) => vizTab(page, 'risk-matrix')],
   ['batch-queue', async (page) => {
     await headerButton(page, /^Batch/);
     const dialog = modal(page);
@@ -234,6 +247,27 @@ const STEPS = [
 async function tab(page, name) {
   await page.getByRole('button', { name, exact: true }).first().click();
   await settle(page);
+}
+
+/**
+ * Opens a chart tab of the legacy dashboard. Returns what the runner captures: the visualization card, and `ready`,
+ * which the runner awaits again after it resizes the viewport for the capture.
+ */
+async function vizTab(page, id, ready = async () => undefined) {
+  const button = page.locator(`#viz-tab-${id}-btn`);
+  await button.click();
+  await settle(page, 600);
+  await ready(page);
+  return { capture: page.locator('div.card', { has: button }), ready };
+}
+
+/** The world map sizes itself from its container (ResizeObserver): wait until the drawing matches that width. */
+async function mapDrawn(page) {
+  await page.waitForFunction(() => {
+    const svg = document.querySelector('#world-threat-d3-svg');
+    const width = svg?.parentElement?.clientWidth ?? 0;
+    return width > 320 && !!svg.querySelector('.country-path') && Number(svg.getAttribute('width')) === width;
+  });
 }
 
 async function headerButton(page, name) {
@@ -265,14 +299,29 @@ try {
     for (const [name, step] of STEPS) {
       setScreen(name);
       try {
-        await step(page);
+        const target = await step(page); // a step may return { capture: locator, ready } to capture one element
         await settle(page, 300);
         if (only && !only.has(name)) continue;
         const file = path.join(dir, `${name}.png`);
         await page.mouse.move(VIEWPORT.width - 2, VIEWPORT.height - 2); // no hover state on the captured controls
         // A modal is a fixed overlay sized to the viewport: a full-page capture would show the page below it uncovered.
         const fullPage = !(await modal(page).count()) && !(await page.getByRole('dialog').count());
-        await page.screenshot({ path: file, fullPage, animations: 'disabled', caret: 'hide' });
+        if (target?.capture) {
+          // The viewport grows to the page height and the element is captured from the top of the page: an element
+          // capture would scroll it under the sticky header, and a full-page capture resizes the page mid-capture,
+          // which makes ResizeObserver-driven charts (the world map) redraw while the PNG is being taken.
+          const height = await page.evaluate(() => document.documentElement.scrollHeight);
+          await page.setViewportSize({ width: VIEWPORT.width, height: Math.max(VIEWPORT.height, height) });
+          await page.evaluate(() => window.scrollTo(0, 0));
+          await settle(page, 300);
+          await target.ready?.(page);
+          const box = await target.capture.boundingBox();
+          const clip = { x: Math.floor(box.x), y: Math.floor(box.y), width: Math.ceil(box.width), height: Math.ceil(box.height) };
+          await page.screenshot({ path: file, clip, animations: 'disabled', caret: 'hide' });
+          await page.setViewportSize(VIEWPORT);
+        } else {
+          await page.screenshot({ path: file, fullPage, animations: 'disabled', caret: 'hide' });
+        }
         const overflowX = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth);
         captured.push({ theme, screen: name, file: path.relative(ROOT, file), overflowX });
         console.log(`[shot] ${theme}/${name}.png${overflowX ? '  (horizontal overflow)' : ''}`);

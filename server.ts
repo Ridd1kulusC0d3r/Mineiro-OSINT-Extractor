@@ -1,7 +1,6 @@
 import 'dotenv/config';
-import express from 'express';
 import path from 'path';
-import { createApp } from './server/app';
+import { createApp, serveClient } from './server/app';
 import { listenHost, listenPort } from './server/config';
 import { VERSION } from './server/version';
 
@@ -21,11 +20,7 @@ async function startServer() {
       });
       app.use(vite.middlewares);
     } else {
-      const distPath = path.join(process.cwd(), 'dist');
-      app.use(express.static(distPath));
-      app.get('/{*splat}', (req, res) => {
-        res.sendFile(path.join(distPath, 'index.html'));
-      });
+      serveClient(app, path.join(process.cwd(), 'dist'));
     }
 
     const server = app.listen(PORT, HOST, () => {

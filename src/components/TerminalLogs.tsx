@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { ScanLog } from '../types';
 import { useI18n } from '../utils/i18n';
+import { APP_VERSION } from '../version';
 
 export type LogLevelFilter = 'all' | 'info' | 'success' | 'warn' | 'error';
 
@@ -296,7 +297,7 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
   | |    | |    / _\` | | |\\/| | / _ \\ 
   | |____| |___| (_| | | |  | ||  __/ 
   |______|______\\__,_| |_|  |_| \\___| 
-  v2.5.0 // UNIFIED OSINT RECONNAISSANCE ENGINE`}
+  v${APP_VERSION} // UNIFIED OSINT RECONNAISSANCE ENGINE`}
           </pre>
           <p className="mt-2 text-ink-2 text-[11px]">
             {t.consoleReadyMsg}

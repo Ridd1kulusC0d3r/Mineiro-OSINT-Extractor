@@ -48,6 +48,15 @@ Antes do Pull Request:
 npm run check
 ```
 
+Conforme o que mudou, rode também:
+
+| Mudou | Rode |
+|---|---|
+| tela, tema ou componente | `npm run visual` (0 problemas, 0 requisições externas) |
+| rota ou resposta da API | `npm run api:baseline -- --check`; se a mudança for de propósito, `npm run api:baseline` e explique no commit cada fixture alterada |
+| `packaging/install-linux.sh` | `shellcheck packaging/install-linux.sh` e `packaging/install-linux.sh --dry-run`; o workflow `linux-matrix.yml` roda o script nas cinco distros no PR |
+| pacote pip | `npm run build:python` e `PYTHONPATH=src python -m unittest discover -s tests` dentro de `python/` |
+
 ## Alterações no Registry
 
 Um detector novo ou alterado deve:

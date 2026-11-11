@@ -1,0 +1,1 @@
+export { ModularScanModal } from './ModularScanModal';

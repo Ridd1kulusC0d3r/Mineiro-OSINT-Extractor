@@ -1,6 +1,4 @@
-import * as d3 from 'd3';
-import { useEffect, useState } from 'react';
-import { THEME_CHANGE_EVENT } from './theme';
+import { scaleLinear } from 'd3';
 
 /**
  * Única fonte de cor para JS, D3, SVG e canvas (docs/REFACTOR_PLAN.md, Etapa 1).
@@ -9,7 +7,9 @@ import { THEME_CHANGE_EVENT } from './theme';
  * - `PALETTE.x` é uma referência CSS (`var(--x)`): serve para atributos SVG, `style` e D3 `.attr()`/`.style()`
  *   e acompanha a troca de tema sem novo render.
  * - `resolvePalette()` lê os valores calculados do tema ativo, para o que precisa da cor em si
- *   (interpolação de escala D3, canvas). Quem usa deve recalcular com `useThemeVersion()`.
+ *   (interpolação de escala D3, canvas). Quem usa deve recalcular com `useThemeVersion()` (./useThemeVersion.ts).
+ *
+ * Sem React: módulos de cálculo puro (`*.logic.ts`) importam daqui.
  */
 
 export const TOKEN_NAMES = [
@@ -77,17 +77,6 @@ export function resolveToken(name: TokenName): string {
 /** Todos os tokens resolvidos no tema ativo. */
 export function resolvePalette(): Record<TokenName, string> {
   return Object.fromEntries(TOKEN_NAMES.map((name) => [name, resolveToken(name)])) as Record<TokenName, string>;
-}
-
-/** Número que muda a cada troca de tema; use como dependência de efeitos que pintam com cores resolvidas. */
-export function useThemeVersion(): number {
-  const [version, setVersion] = useState(0);
-  useEffect(() => {
-    const bump = () => setVersion((v) => v + 1);
-    window.addEventListener(THEME_CHANGE_EVENT, bump);
-    return () => window.removeEventListener(THEME_CHANGE_EVENT, bump);
-  }, []);
-  return version;
 }
 
 // ==========================================
@@ -230,8 +219,7 @@ export const HEATMAP_STOPS = HEATMAP_TOKENS.map(({ offset, token, label }) => ({
 /** Escala D3 calibrada nas cores resolvidas do tema ativo (interpolação precisa da cor, não de `var()`). */
 export function createHeatmapColorScale(domainMin = 0, domainMax = 100) {
   const span = domainMax - domainMin;
-  return d3
-    .scaleLinear<string>()
+  return scaleLinear<string>()
     .domain(HEATMAP_TOKENS.map(({ offset }) => domainMin + span * offset))
     .range(HEATMAP_TOKENS.map(({ token }) => resolveToken(token)))
     .clamp(true);

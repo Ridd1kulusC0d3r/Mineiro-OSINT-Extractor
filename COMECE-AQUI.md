@@ -11,11 +11,22 @@ Depois escolha **Runtime → Run all**.
 ## Python (`pip`)
 
 ```bash
-pip install https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/releases/download/v1.7.0/mineiro_osint-1.7.0-py3-none-any.whl
+pip install https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/releases/download/v1.8.0/mineiro_osint-1.8.0-py3-none-any.whl
 mineiro
 ```
 
 Abre `http://127.0.0.1:3000`. Usa o Node.js 22+ do sistema ou baixa um sozinho.
+
+## Linux (Debian, Ubuntu, Kali, Parrot, Amazon Linux 2023)
+
+```bash
+git clone https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor.git
+cd Mineiro-OSINT-Extractor
+packaging/install-linux.sh
+~/.local/bin/mineiro
+```
+
+Instala num ambiente virtual próprio, sem tocar no Python do sistema. Detalhes em [docs/GETTING-STARTED.md](docs/GETTING-STARTED.md#linux-script-de-instalação).
 
 ## Do código-fonte
 

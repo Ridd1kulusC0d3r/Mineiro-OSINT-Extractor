@@ -1,44 +1,20 @@
 import React, { useState, useMemo } from 'react';
-import {
-  Keyboard,
-  X,
-  Search,
-  Zap,
-  Target,
-  FileSpreadsheet,
-  Download,
-  History,
-  Sliders,
-  Terminal,
-  LayoutDashboard,
-  Grid,
-  Table,
-  Sparkles,
-  Network,
-  CornerDownLeft,
-  ArrowRight,
-} from 'lucide-react';
+import { Keyboard, X, Search, ArrowRight } from 'lucide-react';
 import { useI18n } from '../utils/i18n';
+import type { ShortcutAction, ShortcutDef } from '../app/shortcuts';
 
 interface KeyboardShortcutsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onActionTrigger?: (action: string) => void;
-}
-
-interface ShortcutItem {
-  id: string;
-  category: 'recon' | 'views' | 'modals';
-  keys: string[];
-  actionId: string;
-  label: string;
-  description: string;
-  icon: React.ComponentType<{ className?: string }>;
+  /** The shortcut list (src/app/shortcuts.ts): the same one the keyboard handler matches. */
+  shortcuts: ShortcutDef[];
+  onActionTrigger?: (action: ShortcutAction) => void;
 }
 
 export function KeyboardShortcutsModal({
   isOpen,
   onClose,
+  shortcuts: definitions,
   onActionTrigger,
 }: KeyboardShortcutsModalProps) {
   const { t } = useI18n();
@@ -47,159 +23,13 @@ export function KeyboardShortcutsModal({
   const isMac = typeof window !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
   const modKey = isMac ? '⌘' : 'Ctrl';
 
-  const shortcuts: ShortcutItem[] = useMemo(
-    () => [
-      // Recon & Execution
-      {
-        id: 'focus-target',
-        category: 'recon',
-        keys: [modKey, 'K'],
-        actionId: 'focus-target',
-        label: t.shortcutFocusTarget || 'Focus / Select Target Input',
-        description: 'Immediately jumps cursor to target handle/email field and highlights contents.',
-        icon: Target,
-      },
-      {
-        id: 'start-scan',
-        category: 'recon',
-        keys: [modKey, 'Enter'],
-        actionId: 'start-scan',
-        label: t.shortcutStartScan || 'Execute Recon Scan Immediately',
-        description: 'Launches full active reconnaissance on the current target with selected configuration.',
-        icon: Zap,
-      },
-      {
-        id: 'esc-clear',
-        category: 'recon',
-        keys: ['Esc'],
-        actionId: 'esc-clear',
-        label: t.shortcutEsc || 'Clear Target / Dismiss / Close Active Modal',
-        description: 'Closes open overlays, dismisses menus, clears input field text, or blurs focus.',
-        icon: CornerDownLeft,
-      },
-      {
-        id: 'filter-search',
-        category: 'recon',
-        keys: ['/'],
-        actionId: 'focus-filter',
-        label: t.shortcutFilterSearch || 'Jump to Platform Filter Search',
-        description: 'Quickly filters platform results by name or URL (Evidence and Platforms tabs).',
-        icon: Search,
-      },
-      {
-        id: 'toggle-depth',
-        category: 'recon',
-        keys: ['D'],
-        actionId: 'toggle-depth',
-        label: t.shortcutToggleDepth || 'Toggle Scan Depth (Fast ⚡ / Deep 🛡️)',
-        description: 'Switches the probe timeout between Fast (2.5 s) and Deep (6.5 s). Blocked sites stay UNCERTAIN: no retries, no bypass.',
-        icon: Zap,
-      },
-
-      // Navigation & Views
-      {
-        id: 'view-1',
-        category: 'views',
-        keys: ['1'],
-        actionId: 'view-dashboard',
-        label: t.shortcutViewDashboard || 'Switch to Executive Dashboard',
-        description: 'High-level metrics, verified hits, dominant category distribution, and WAF watchlists.',
-        icon: LayoutDashboard,
-      },
-      {
-        id: 'view-2',
-        category: 'views',
-        keys: ['2'],
-        actionId: 'view-grid',
-        label: t.shortcutViewGrid || 'Switch to Profile Matrix Grid',
-        description: 'Visual cards showing verified endpoints, direct links, and status tags.',
-        icon: Grid,
-      },
-      {
-        id: 'view-3',
-        category: 'views',
-        keys: ['3'],
-        actionId: 'view-table',
-        label: t.shortcutViewTable || 'Switch to Forensic Audit Table',
-        description: 'Dense, forensic table format for rapid analytical audits and URL copying.',
-        icon: Table,
-      },
-      {
-        id: 'view-4',
-        category: 'views',
-        keys: ['4'],
-        actionId: 'view-profile',
-        label: t.shortcutViewDossier || 'Switch to Autonomous AI Dossier',
-        description: 'AI Analyst Copilot: optional, evidence-bounded synthesis (needs a Gemini key).',
-        icon: Sparkles,
-      },
-      {
-        id: 'view-5',
-        category: 'views',
-        keys: ['5'],
-        actionId: 'view-linkage',
-        label: t.shortcutViewLinkages || 'Switch to Permutations & Linkages',
-        description: 'Discovered cross-profile correlations, permuted handles, and pivot vectors.',
-        icon: Network,
-      },
-      {
-        id: 'view-6',
-        category: 'views',
-        keys: ['6'],
-        actionId: 'view-terminal',
-        label: t.shortcutViewConsole || 'Switch to Live CLI Terminal Console',
-        description: 'Real-time telemetry stream, raw HTTP probe logs, and WAF challenge events.',
-        icon: Terminal,
-      },
-
-      // Modals & Workflows
-      {
-        id: 'export-dossier',
-        category: 'modals',
-        keys: [modKey, 'E'],
-        actionId: 'open-export',
-        label: t.shortcutExport || 'Export Forensic Dossier',
-        description: 'Build the report: HTML, JSON, Markdown or CSV, each with a SHA-256 integrity manifest.',
-        icon: Download,
-      },
-      {
-        id: 'bulk-import',
-        category: 'modals',
-        keys: [modKey, 'B'],
-        actionId: 'open-bulk',
-        label: t.shortcutBulk || 'Open Bulk Target CSV Ingestion',
-        description: 'Import a CSV/TXT list and scan the targets one after another.',
-        icon: FileSpreadsheet,
-      },
-      {
-        id: 'history-cache',
-        category: 'modals',
-        keys: [modKey, 'H'],
-        actionId: 'open-history',
-        label: t.shortcutHistory || 'Open Local Investigation History',
-        description: 'Browse, compare, and instantly restore the last 5 cached investigations.',
-        icon: History,
-      },
-      {
-        id: 'modular-config',
-        category: 'modals',
-        keys: [modKey, 'M'],
-        actionId: 'open-modular',
-        label: t.shortcutModular || 'Open Modular Presets & WAF Config',
-        description: 'Customize platform scopes, anti-bot response handling, and concurrent probe limits.',
-        icon: Sliders,
-      },
-      {
-        id: 'help-toggle',
-        category: 'modals',
-        keys: ['?'],
-        actionId: 'toggle-help',
-        label: t.shortcutHelp || 'Toggle Keyboard Shortcuts Cheat Sheet',
-        description: 'Quick reference overlay accessible anytime across the application.',
-        icon: Keyboard,
-      },
-    ],
-    [t, modKey]
+  const shortcuts = useMemo(
+    () => definitions.map((item) => ({
+      ...item,
+      label: (t[item.labelKey] as string) || item.label,
+      keys: item.caps.map((cap) => (cap === 'mod' ? modKey : cap)),
+    })),
+    [definitions, t, modKey]
   );
 
   const filteredShortcuts = useMemo(() => {
@@ -221,10 +51,10 @@ export function KeyboardShortcutsModal({
     { id: 'modals', label: t.shortcutCatModals || 'Workflows & Modals' },
   ] as const;
 
-  const handleExecuteAction = (actionId: string) => {
+  const handleExecuteAction = (action: ShortcutAction) => {
     onClose();
     if (onActionTrigger) {
-      setTimeout(() => onActionTrigger(actionId), 50);
+      setTimeout(() => onActionTrigger(action), 50);
     }
   };
 
@@ -319,14 +149,14 @@ export function KeyboardShortcutsModal({
                       return (
                         <div
                           key={item.id}
-                          onClick={() => handleExecuteAction(item.actionId)}
+                          onClick={() => handleExecuteAction(item.action)}
                           className="group flex items-center justify-between p-2 rounded-md bg-paper border border-rule hover:border-ink/60 hover:bg-card transition-all cursor-pointer"
                           role="button"
                           tabIndex={0}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' || e.key === ' ') {
                               e.preventDefault();
-                              handleExecuteAction(item.actionId);
+                              handleExecuteAction(item.action);
                             }
                           }}
                         >

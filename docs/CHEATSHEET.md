@@ -69,7 +69,7 @@ A interface mostra "20 / 50 / 985" por arredondamento. **A nova tentativa adapta
 | `7` | Batch |
 
 > [!NOTE]
-> Divergências entre o atalho real e o modal de atalhos: a tecla `1` abre o **Dashboard** pelo teclado, mas o clique na linha do modal leva à aba Intelligence; a tecla `7` funciona, mas não está listada no modal. Os atalhos sem modificador também disparam com um modal aberto, se nenhum campo estiver focado.
+> A tecla e a linha do modal de atalhos fazem a mesma coisa: as duas vêm da mesma lista (`src/app/shortcuts.ts`). A tecla `1` abre o painel antigo (Dashboard), que não tem aba. Os atalhos sem modificador também disparam com um modal aberto, se nenhum campo estiver focado.
 
 ---
 

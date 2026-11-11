@@ -50,8 +50,8 @@ Or in the web UI: repository home → the ⚙ next to **About** → paste the de
    ```
 3. Tag and push. The tag **must** be `v` + the version in `package.json`:
    ```bash
-   git tag v1.7.0
-   git push origin v1.7.0
+   git tag v1.8.0
+   git push origin v1.8.0
    ```
 4. The **Release** workflow then: checks version consistency, runs lint/tests/detector validation, builds the app and the wheel, smoke-installs the wheel in a clean venv, and creates the GitHub Release with the CHANGELOG notes, the `.whl` and `SHA256SUMS.txt`.
 

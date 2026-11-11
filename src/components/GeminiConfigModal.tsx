@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Key, Sparkles, CheckCircle2, XCircle, ExternalLink, X, Eye, EyeOff, ShieldCheck, Cpu } from 'lucide-react';
 import { useI18n } from '../utils/i18n';
+import { api, isApiError } from '../api/client';
 
 interface GeminiConfigModalProps {
   isOpen: boolean;
@@ -33,14 +34,8 @@ export function GeminiConfigModal({
     setTestResult(null);
 
     try {
-      const res = await fetch('/api/osint/gemini-validate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ apiKey: apiKeyInput.trim(), model: modelInput }),
-      });
-
-      const data = await res.json();
-      if (res.ok && data.valid) {
+      const data = await api.validateGemini({ apiKey: apiKeyInput.trim(), model: modelInput });
+      if (data.valid) {
         setTestResult({
           success: true,
           message: `${data.message} Tested Model: ${data.modelTested}`,
@@ -48,13 +43,15 @@ export function GeminiConfigModal({
       } else {
         setTestResult({
           success: false,
-          message: data.error || data.message || tr('gemini.validationFailed'),
+          message: data.message || tr('gemini.validationFailed'),
         });
       }
     } catch (err: any) {
+      // The server answered (a 400 with the provider's reason): show its words, as for a 200 with valid=false.
+      const refused = isApiError(err) && !err.network && !err.aborted && err.status > 0;
       setTestResult({
         success: false,
-        message: err.message || tr('gemini.connectionError'),
+        message: refused ? err.serverMessage || tr('gemini.validationFailed') : err.message || tr('gemini.connectionError'),
       });
     } finally {
       setIsTesting(false);

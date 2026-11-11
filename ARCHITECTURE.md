@@ -305,12 +305,13 @@ Design rules:
 ## Server layout
 
 ```text
-server.ts                 bootstrap: env, banner, Vite (dev) or dist/ + SPA fallback (production), listen
+server.ts                 bootstrap: env, banner, Vite (dev) or serveClient(dist/) (production), listen
 server/
-  app.ts                  createApp(): headers, JSON body (2 MB), rate limits, routers, /api 404, error handler
+  app.ts                  createApp(): headers, JSON body (2 MB), rate limits, routers, /api 404, error handler;
+                          serveClient(): dist/ files, 404 for a missing /assets/ file, index.html for the rest
   config.ts               listenHost() (HOST, default 127.0.0.1) and listenPort() (PORT, default 3000)
   version.ts              VERSION from package.json (health, User-Agent, banner)
-  errors.ts               apiNotFound (JSON 404 for any unanswered /api path) and the final errorHandler
+  errors.ts               apiNotFound (JSON 404 for any unanswered /api path), requireJsonBody, the final errorHandler
   routes/
     registry.ts           /api/health, /api/registry/{stats,detectors,benchmark}
     verify.ts             /api/osint/verify
@@ -327,8 +328,8 @@ server/
 
 - `createApp()` never listens and never touches Vite or `dist/`, so `tests/routes.test.ts` starts it on port 0 and
   calls it with `fetch`, with the outbound `undici` fetch and DNS stubbed. Each call has its own rate-limit buckets.
-- Errors: body-parser errors become a fixed JSON 4xx (`Malformed JSON body`, `Request body too large`); anything
-  unexpected becomes `500 {"error":"Internal server error"}`. Messages and stacks go to the server log only.
+- Errors: body-parser errors become a fixed JSON 4xx (`Malformed JSON body`, `Request body too large`); a POST to
+  `email-recon` or `gemini-validate` without a JSON body gets `400 JSON body required`; anything unexpected becomes `500 {"error":"Internal server error"}`. Messages and stacks go to the server log only.
 - Listening: `127.0.0.1` unless `HOST` is set. The Docker image and `docker-compose.yml` set `HOST=0.0.0.0`; the pip
   `mineiro` command passes its own `--host`.
 - SSRF guard (`src/core/net.ts`, used by `safeFetch` before connecting and at DNS resolution): blocked IPv4 ranges are
@@ -337,3 +338,106 @@ server/
   global unicast `2000::/3` is allowed, minus `2001::/23`, `2001:db8::/32`, `2002::/16` and `3fff::/20`; IPv4-mapped
   addresses follow the IPv4 rule. Anything that does not parse as an IP literal is blocked.
 - `npm run api:baseline -- --check` compares 33 normalized responses with `tests/fixtures/api-baseline/`.
+
+## Client layout
+
+```text
+src/main.tsx              mounts <App/> inside the I18nProvider
+src/app/
+  App.tsx                 composition: calls the hooks, lays out Header, TargetBar, StatsBar, MainViews, AppModals, footer
+  MainViews.tsx           the main canvas: one view at a time (report, evidence, platforms, correlation, AI, console, batch,
+                          legacy dashboard); correlation, AI and the legacy dashboard load on first use
+  AppModals.tsx           every overlay plus the hidden print layout; export, Gemini, cases and shortcuts load on first
+                          open and then stay mounted
+  shortcuts.ts            the one list of keyboard shortcuts: the key handler matches it, the shortcuts sheet renders it
+  useAppShortcuts.ts      runs a shortcut action, from the keyboard or from a row of the sheet
+  views.ts                AppView
+src/hooks/
+  useScan.ts              single-target workspace (target, results, e-mail recon), scan configuration, the engine wired to
+                          the local server, graph pivots, opening saved work into the workspace
+  useCases.ts             persistent cases (IndexedDB `mineiro_cases_v1`) and the last-5 cache (localStorage
+                          `mineiro_cached_scans_v1`), integrity snapshots
+  useSettings.ts          personal Gemini key and model (localStorage `mineiro_gemini_key`, `mineiro_gemini_model`)
+  useBulkBatch.ts         the batch queue; never touches the single-scan workspace
+  useModals.ts            which overlay is open; Esc closes them in a fixed order
+  useScanLog.ts           console event stream; useResultFilters.ts: Evidence/Platforms filters
+  useGlobalShortcuts.ts   keydown listener over src/app/shortcuts.ts
+src/scan/
+  engine.ts               runScan(job, deps): scope, chunked concurrency, two-phase full scan, progress/log callbacks,
+                          stop/pause/skip. No React, DOM or storage.
+  batch.ts                runBatch: the targets of a batch in sequence, with a pause/skip/abort control object
+src/api/
+  client.ts               one typed function per /api route; createApiClient({ baseUrl, fetch }) for non-browser callers
+  errors.ts               ApiError: status (0 = no response), serverMessage, network, aborted, body
+  types.ts                request/response shapes of those routes
+src/components/           presentation only
+  LazyFallback.tsx        placeholders and error boundary for lazily loaded views and dialogs
+  WorldThreatMap/         one folder per large component; index.ts keeps the old import path:
+    WorldThreatMap.tsx      state, effects and layout
+    MapToolbar.tsx, ...     sections of the JSX
+    worldThreatMap.logic.ts pure computation (tested in tests/worldThreatMap.logic.test.ts)
+    worldThreatMap.render.ts  imperative D3 drawing, called from an effect
+  NetworkRelationshipGraph/, RiskMatrix2x2/, CategoryHeatMap/   same layout (the legacy dashboard's D3 charts)
+  DashboardView/          legacy dashboard (only the 1 shortcut opens it); dashboard.logic.ts
+  ModularScanModal/, BulkImportModal/                            modularScan.logic.ts / bulkImport.logic.ts
+src/core, data, registry, intelligence, graph, cases     pure domain (no React, no Express)
+```
+
+No file in `src/components` is above 500 lines. Fixed tables a component used to embed live in `src/data`
+(`worldMapHosts.ts`, `categoryThreatWeights.ts`); purely presentational constants stay next to the component
+(`CategoryHeatMap/dimensions.ts`, `ModularScanModal/presetCards.ts`).
+
+Start-up bundle: views and dialogs that are not on screen at start-up are `React.lazy` chunks, and each D3 chart of
+the legacy dashboard is its own chunk (the world map carries the atlas). `npm run build` lists the chunks; the
+start-up JavaScript is the `index-*.js` entry plus the shared `jsx-runtime-*.js` it preloads. The production server
+serves them from `dist/assets` with `express.static` (ETag, `max-age=0`); the pip package copies all of `dist/`.
+
+Rules, enforced by `tests/boundaries.test.ts`:
+
+- `src/core`, `data`, `registry`, `intelligence`, `graph`, `cases` and `scan` import neither `react`, `react-dom` nor
+  `express`, nor anything from `src/components`, `src/hooks` or `src/app`.
+- `src/components` imports nothing from `server/`.
+- Inside `src/components`, `*.logic.ts` (pure computation) and `*.render.ts` (D3 drawing) import no React, UI kit
+  (`lucide-react`, `motion`), component (`.tsx`), hook or app module; `*.logic.ts` also uses no DOM global. The
+  theme modules they may import (`src/theme/palette.ts`, `tokens.ts`, `theme.ts`) stay React-free; the React hook
+  `useThemeVersion` lives in `src/theme/useThemeVersion.ts`.
+- Only `src/api/client.ts` calls `fetch('/api/...')`.
+
+The scan engine takes its collaborators as parameters, so the same module can run where there is no browser:
+
+```ts
+runScan({ target, targetType, config }, {
+  verify,           // (VerifyRequest, { signal }) => Promise<VerifyResponse>; throw ApiError for a server refusal
+  emailRecon,       // optional: (email, { signal }) => Promise<EmailReconData>
+  control,          // { signal, isPaused?, isSkipped?, announceAbort? }
+  onProgress, onLog, onEmailLoading, onEmailData,
+  now, random, sleep, resolveScope,   // defaults: Date.now, Math.random, setTimeout, the bundled catalog
+}) // -> { results, emailData, foundCount, uncertainCount, totalScanned }
+```
+
+`tests/scan-engine.test.ts` drives it with a stubbed verifier: ordering and completeness, the concurrency ceiling,
+cancellation, the two-phase path, refusals, transport errors and rate limits.
+
+## Catalog site types
+
+`siteType` (`src/data/siteType.ts`) starts from the catalog category: each category has a default type (`developer` →
+`developer_platform`, `gaming` → `gaming`, `media` → `entertainment_media`, ...) and the name, description and URL may
+only refine it to a type that fits that category (a developer entry can become `package_registry` or
+`community_forum`, never `video_streaming`). Keywords match whole words or word prefixes, never a fragment inside
+another word. `tests/siteType.test.ts` pins well-known platforms.
+
+## Linux packaging
+
+```text
+packaging/install-linux.sh   distro check (/etc/os-release) -> missing apt/dnf packages (sudo) -> venv
+                             -> wheel (release + SHA256SUMS.txt | --wheel | --from-source build) -> PREFIX/bin/mineiro
+.github/workflows/linux-matrix.yml   the installer + smoke test in five distribution containers
+```
+
+- The installer only adds distribution packages that are missing (Python 3 with `venv`, CA certificates) and installs
+  everything else in `PREFIX/share/mineiro-osint/venv`; the system Python is never modified (PEP 668).
+- Node.js: the `mineiro` launcher prefers a system Node >= 22.5 and otherwise runs the one from
+  `nodejs-wheel-binaries`, a dependency of the wheel. `--from-source` builds with that same Node when the system has
+  none.
+- The script's `VERSION` is the release it downloads by default; `npm run version:check` keeps it equal to
+  `package.json`.

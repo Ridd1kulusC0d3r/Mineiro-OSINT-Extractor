@@ -8,6 +8,17 @@ export function apiNotFound(req: Request, res: Response) {
   res.status(404).json({ error: 'Unknown API route', method: req.method, path: req.originalUrl.split('?')[0] });
 }
 
+/**
+ * For POST routes that read fields from the body. Without a JSON body (no body, or another content type) Express 5
+ * leaves req.body undefined and reading a field from it throws, which used to end as a generic 500.
+ */
+export function requireJsonBody(req: Request, res: Response, next: NextFunction) {
+  if (req.body === null || typeof req.body !== 'object') {
+    return res.status(400).json({ error: 'JSON body required (Content-Type: application/json)' });
+  }
+  return next();
+}
+
 interface HttpError extends Error { status?: number; statusCode?: number; type?: string; expose?: boolean }
 
 const BODY_ERRORS: Record<string, string> = {

@@ -4,6 +4,7 @@ import type { ScanResult } from '../types';
 import type { IntelligenceRequirement } from '../intelligence/types';
 import { AiAnalystPanel } from './AiAnalystPanel';
 import { useI18n } from '../utils/i18n';
+import { api } from '../api/client';
 
 interface AiWorkspaceProps {
   target: string;
@@ -32,10 +33,7 @@ export function AiWorkspace({
 
   useEffect(() => {
     let cancelled = false;
-    fetch('/api/intelligence/copilot/status', {
-      headers: apiKey ? { 'x-gemini-api-key': apiKey } : undefined,
-    })
-      .then((res) => res.json())
+    api.copilotStatus({ geminiKey: apiKey })
       .then((data) => {
         if (!cancelled) setStatus(data);
       })
