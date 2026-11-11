@@ -1,6 +1,8 @@
 // Import boundaries of the client (docs/REFACTOR_PLAN.md, section 2):
 // - the domain and the scan engine are plain TypeScript: no React, no Express, nothing from the UI layers;
-// - presentation components never reach into the server.
+// - presentation components never reach into the server;
+// - inside src/components, `*.logic.ts` (pure computation, unit-tested) and `*.render.ts` (imperative D3 drawing)
+//   are React-free: no React, no UI kit, no component (.tsx), hook or app module. Logic files also touch no DOM.
 // Every static import, re-export, dynamic import() and require() is checked, including type-only imports.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -11,6 +13,10 @@ const SRC = path.join(ROOT, 'src');
 
 const PURE_DIRS = ['core', 'data', 'registry', 'intelligence', 'graph', 'cases', 'scan'];
 const FORBIDDEN_PACKAGES = ['react', 'react-dom', 'express'];
+/** Packages a React-free component module (`*.logic.ts`, `*.render.ts`) may not import. */
+const REACT_PACKAGES = ['react', 'react-dom', 'lucide-react', 'motion', 'framer-motion'];
+/** Shared modules those files may import; they must stay React-free themselves. */
+const REACT_FREE_SHARED = [path.join(SRC, 'theme', 'palette.ts'), path.join(SRC, 'theme', 'tokens.ts'), path.join(SRC, 'theme', 'theme.ts')];
 const UI_DIRS = ['components', 'hooks', 'app'].map((d) => path.join(SRC, d));
 const SERVER_DIRS = [path.join(ROOT, 'server'), path.join(ROOT, 'server.ts')];
 
@@ -98,6 +104,32 @@ describe('import boundaries', () => {
     const files = filesUnder(path.join(SRC, 'components'));
     expect(files.length).toBeGreaterThan(20);
     const violations = check(files, (_spec, resolved) => (resolved && isInside(resolved, SERVER_DIRS) ? 'server code' : null));
+    expect(violations, format(violations)).toEqual([]);
+  });
+
+  it('component logic (*.logic.ts) and D3 render (*.render.ts) modules are React-free', () => {
+    const files = filesUnder(path.join(SRC, 'components')).filter((f) => /\.(logic|render)\.ts$/.test(f));
+    expect(files.length).toBeGreaterThan(0);
+    const violations = check(files, (spec, resolved) => {
+      if (REACT_PACKAGES.includes(packageName(spec))) return `package ${packageName(spec)}`;
+      if (resolved && isInside(resolved, ['hooks', 'app'].map((d) => path.join(SRC, d)))) return 'UI layer (hooks, app)';
+      if (resolved && (resolved.endsWith('.tsx') || fs.existsSync(`${resolved}.tsx`))) return 'React component (.tsx)';
+      if (resolved && resolved.startsWith(path.join(SRC, 'theme')) && !REACT_FREE_SHARED.some((f) => f === resolved || f === `${resolved}.ts`)) {
+        return 'theme module outside the React-free list';
+      }
+      return null;
+    });
+    for (const file of files.filter((f) => f.endsWith('.logic.ts'))) {
+      const code = fs.readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:'"`])\/\/.*$/gm, '$1');
+      if (/\b(document|window|getComputedStyle|ResizeObserver)\b/.test(code)) {
+        violations.push({ file: path.relative(ROOT, file), spec: '(DOM global)', rule: 'logic modules touch no DOM' });
+      }
+    }
+    expect(violations, format(violations)).toEqual([]);
+  });
+
+  it('the shared theme modules that logic files import stay React-free', () => {
+    const violations = check(REACT_FREE_SHARED, (spec) => (REACT_PACKAGES.includes(packageName(spec)) ? `package ${packageName(spec)}` : null));
     expect(violations, format(violations)).toEqual([]);
   });
 
