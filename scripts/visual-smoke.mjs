@@ -37,9 +37,13 @@ const arg = (name) => {
 const themes = arg('theme') ? arg('theme').split(',') : THEMES;
 const only = arg('only') ? new Set(arg('only').split(',')) : null;
 
-/** Chromium: CHROME_PATH, else the build Playwright 1.63 expects (installed or under PLAYWRIGHT_BROWSERS_PATH). */
+/**
+ * Chromium: Playwright's own build (1.63 expects build 1243, found in PLAYWRIGHT_BROWSERS_PATH or the default
+ * cache). CHROME_PATH is ignored on purpose: a different browser renders different pixels and the PNGs are
+ * compared across stages. MINEIRO_VISUAL_CHROME overrides it when a contributor has no Playwright browser.
+ */
 function launchOptions() {
-  const explicit = process.env.CHROME_PATH;
+  const explicit = process.env.MINEIRO_VISUAL_CHROME;
   if (explicit && fs.existsSync(explicit)) return { executablePath: explicit };
   return {};
 }
@@ -250,6 +254,8 @@ const unreachable = [];
 const server = await startServer();
 console.log(`[server] ${server.url}`);
 const browser = await chromium.launch(launchOptions());
+const browserVersion = browser.version();
+console.log(`[browser] chromium ${browserVersion}`);
 try {
   for (const theme of themes) {
     const dir = path.join(OUT, theme);
@@ -267,6 +273,7 @@ try {
         await settle(page, 300);
         if (only && !only.has(name)) continue;
         const file = path.join(dir, `${name}.png`);
+        await page.mouse.move(VIEWPORT.width - 2, VIEWPORT.height - 2); // no hover state on the captured controls
         // A modal is a fixed overlay sized to the viewport: a full-page capture would show the page below it uncovered.
         const fullPage = !(await modal(page).count()) && !(await page.getByRole('dialog').count());
         await page.screenshot({ path: file, fullPage, animations: 'disabled', caret: 'hide' });
@@ -291,7 +298,7 @@ const unknownExternal = external.filter((item) => !item.known);
 const hosts = [...new Set(external.map((item) => `${item.host}${item.known ? ' (known)' : ''}`))];
 fs.mkdirSync(OUT, { recursive: true });
 fs.writeFileSync(path.join(OUT, 'report.json'), `${JSON.stringify({
-  generatedWith: 'scripts/visual-smoke.mjs', language: LANGUAGE, viewport: VIEWPORT, fixedTime: FIXED_TIME,
+  generatedWith: 'scripts/visual-smoke.mjs', browser: browserVersion, language: LANGUAGE, viewport: VIEWPORT, fixedTime: FIXED_TIME,
   captured, unreachable, problems, externalHosts: hosts,
   externalRequests: external.length, externalSample: external.slice(0, 50),
 }, null, 2)}\n`);
