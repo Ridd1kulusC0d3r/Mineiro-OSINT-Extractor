@@ -92,7 +92,7 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
   };
 
   return (
-    <div className="rounded-lg border border-rule bg-paper font-mono text-xs flex flex-col h-[580px] overflow-hidden shadow-lg relative">
+    <div className="card font-mono text-xs flex flex-col h-[580px] overflow-hidden relative !bg-paper">
       {/* Terminal Titlebar */}
       <div className="flex flex-wrap items-center justify-between px-4 py-2.5 border-b border-rule bg-paper-2 gap-2 z-10">
         <div className="flex items-center gap-2 text-ink-2">
@@ -101,11 +101,11 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
             {t.consoleTitle}
           </span>
           {isScanning ? (
-            <span className="px-1.5 py-0.5 text-[9px] bg-signal text-signal-ink font-bold rounded animate-pulse">
+            <span className="chip chip-signal !text-[9px] animate-pulse">
               {t.consoleLive}
             </span>
           ) : (
-            <span className="px-1.5 py-0.5 text-[9px] border border-rule text-ink-3 uppercase rounded">
+            <span className="chip chip-quiet !text-[9px]">
               {t.consoleIdle}
             </span>
           )}
@@ -136,7 +136,7 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
             type="button"
             id="terminal-copy-logs-btn"
             onClick={copyLogs}
-            className="h-7 px-2.5 rounded border border-rule bg-paper-2 text-ink-2 hover:text-ink hover:border-ink-3 transition-all flex items-center gap-1 text-[10px]"
+            className="btn !h-7 !px-2.5 !py-0 !text-[10px] font-mono"
             title={t.consoleCopy}
           >
             {copied ? (
@@ -157,7 +157,7 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
             type="button"
             id="terminal-clear-logs-btn"
             onClick={onClearLogs}
-            className="h-7 px-2 rounded border border-rule text-ink-3 hover:text-ink hover:border-ink/40 transition-all flex items-center justify-center"
+            className="btn btn-icon !h-7 !w-7 !p-0"
             title={t.consoleClear}
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -248,7 +248,7 @@ export function TerminalLogs({ logs, onClearLogs, isScanning }: TerminalLogsProp
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t.consoleSearchPlaceholder}
-            className="h-7 pl-8 pr-6 bg-paper border border-rule rounded text-ink text-xs placeholder:text-ink-3 focus:outline-none focus:border-signal w-36 sm:w-48 font-mono transition-colors"
+            className="field !rounded-full h-7 pl-8 pr-6 text-xs w-36 sm:w-48 font-mono"
           />
           {searchQuery && (
             <button

@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { FileCheck2, GitMerge, History, Layers, ListChecks, Play, Search, ShieldCheck, Upload } from 'lucide-react';
 import type { MineiroCase } from '../cases/types';
 import { analyzeTarget, type TargetMode } from '../core/target';
-import { PLATFORMS_DATABASE } from '../data/platforms';
+import { PLATFORMS_DATABASE, countPlatformsForPreset } from '../data/platforms';
+import { StatusBadge } from './StatusBadge';
 import type { ScanPreset } from '../types';
 import { useI18n, type UiMessageKey } from '../utils/i18n';
 
@@ -24,10 +25,11 @@ interface HomeViewProps {
 // Public open-source organisations only: never a private individual.
 const EXAMPLES = ['forgejo', 'nodejs', 'rust-lang'];
 
-const MODES: Array<{ preset: ScanPreset; name: UiMessageKey; desc: UiMessageKey; count: string; recommended?: boolean }> = [
-  { preset: 'quick', name: 'home.modeQuickName', desc: 'home.modeQuickDesc', count: '20' },
-  { preset: 'standard', name: 'home.modeStandardName', desc: 'home.modeStandardDesc', count: '50', recommended: true },
-  { preset: 'deep', name: 'home.modeFullName', desc: 'home.modeFullDesc', count: '985' },
+// A contagem de cada modo vem do escopo real (countPlatformsForPreset), não de um rótulo fixo (defeito 18).
+const MODES: Array<{ preset: ScanPreset; name: UiMessageKey; desc: UiMessageKey; recommended?: boolean }> = [
+  { preset: 'quick', name: 'home.modeQuickName', desc: 'home.modeQuickDesc' },
+  { preset: 'standard', name: 'home.modeStandardName', desc: 'home.modeStandardDesc', recommended: true },
+  { preset: 'deep', name: 'home.modeFullName', desc: 'home.modeFullDesc' },
 ];
 
 const STEPS: Array<{ title: UiMessageKey; desc: UiMessageKey; Icon: typeof Search }> = [
@@ -37,10 +39,10 @@ const STEPS: Array<{ title: UiMessageKey; desc: UiMessageKey; Icon: typeof Searc
   { title: 'home.stepAssessTitle', desc: 'home.stepAssessDesc', Icon: ListChecks },
 ];
 
-const VERDICTS: Array<{ label: string; desc: UiMessageKey; dashed?: boolean }> = [
-  { label: 'FOUND', desc: 'home.verdictFound' },
-  { label: 'ABSENT', desc: 'home.verdictAbsent' },
-  { label: 'UNCERTAIN', desc: 'home.verdictUncertain', dashed: true },
+const VERDICTS: Array<{ status: 'found' | 'not_found' | 'uncertain'; desc: UiMessageKey }> = [
+  { status: 'found', desc: 'home.verdictFound' },
+  { status: 'not_found', desc: 'home.verdictAbsent' },
+  { status: 'uncertain', desc: 'home.verdictUncertain' },
 ];
 
 interface HealthInfo {
@@ -113,27 +115,25 @@ export function HomeView({
   const issue = analysis.issue ? issueText[analysis.issue] : null;
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-10 md:py-14" data-testid="home-view">
+    <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-10 md:py-12" data-testid="home-view">
       {/* Hero */}
       <section className="grid gap-10 lg:grid-cols-[1.4fr_.6fr] lg:items-start">
         <div>
-          <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-3">{tr('home.eyebrow')}</div>
-          <h1 className="mt-5 text-[clamp(2.3rem,5vw,4.4rem)] font-semibold leading-[1] tracking-[-0.05em] text-ink">{tr('home.title')}</h1>
+          <span className="eyebrow">{tr('home.eyebrow')}</span>
+          <h1 className="mt-4 text-[clamp(2.3rem,5vw,4rem)] font-extrabold leading-[1.02] tracking-[-0.035em] text-ink">{tr('home.title')}</h1>
           <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-2">{tr('home.lead')}</p>
 
           {/* Search lives where the eyes are, not only in the top bar. */}
-          <form onSubmit={handleSubmit} className="mt-8 rounded-[22px] border border-rule bg-card p-3 sm:p-4" role="search">
+          <form onSubmit={handleSubmit} className="card mt-8 p-3 sm:p-4 !shadow-[var(--shadow-2)]" role="search">
             <div className="flex flex-col gap-3 sm:flex-row">
-              <div className="flex h-12 shrink-0 rounded-xl border border-rule bg-paper p-1" role="group" aria-label={tr('home.eyebrow')}>
+              <div className="tabs tabs-seg h-12 shrink-0 !shadow-none" role="group" aria-label={tr('target.mode')}>
                 {(['username', 'email'] as const).map((mode) => (
                   <button
                     key={mode}
                     type="button"
                     aria-pressed={targetType === mode}
                     onClick={() => setTargetType(mode)}
-                    className={`rounded-lg px-4 text-sm transition ${focusRing} ${
-                      targetType === mode ? 'bg-ink text-paper' : 'text-ink-2 hover:text-ink'
-                    }`}
+                    className="tab"
                   >
                     {tr(mode === 'username' ? 'target.username' : 'target.email')}
                   </button>
@@ -156,13 +156,13 @@ export function HomeView({
                   autoCapitalize="none"
                   spellCheck={false}
                   inputMode={targetType === 'email' ? 'email' : 'text'}
-                  className={`h-12 w-full rounded-xl border border-rule bg-paper pl-10 pr-4 font-mono text-base text-ink placeholder:text-ink-3 ${focusRing}`}
+                  className="field h-12 w-full pl-10 pr-4 font-mono !text-base placeholder:font-sans"
                 />
               </div>
               <button
                 type="submit"
                 disabled={!target.trim()}
-                className={`inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-ink px-6 text-sm font-semibold text-paper transition hover:bg-ink disabled:cursor-not-allowed disabled:opacity-40 ${focusRing}`}
+                className="btn-primary h-12 !px-6 !text-sm"
               >
                 <Play className="h-4 w-4" aria-hidden="true" /> {tr('target.run')}
               </button>
@@ -173,14 +173,14 @@ export function HomeView({
                 <span className="flex flex-wrap items-center gap-x-3 gap-y-1 text-ink-2">
                   <span>{issue.message}</span>
                   {issue.action && (
-                    <button type="button" onClick={applySuggestion} className={`rounded-md border border-rule px-2 py-0.5 font-mono text-ink hover:border-ink-3 ${focusRing}`}>
+                    <button type="button" onClick={applySuggestion} className="chip hover:!border-signal hover:!text-signal">
                       {issue.action}
                     </button>
                   )}
                 </span>
               ) : (
                 <span>
-                  {activeMode && <>{tr(activeMode.name)} · {activeMode.count} {tr('target.detectorsScope')} · </>}
+                  {activeMode && <>{tr(activeMode.name)} · {countPlatformsForPreset(activeMode.preset, targetType)} {tr('target.detectorsScope')} · </>}
                   {tr('home.searchHint')}
                 </span>
               )}
@@ -188,7 +188,7 @@ export function HomeView({
           </form>
 
           <div className="mt-6">
-            <div className="text-[11px] uppercase tracking-[0.17em] text-ink-3">{tr('home.exampleLabel')}</div>
+            <div className="label-mono">{tr('home.exampleLabel')}</div>
             <div className="mt-3 flex flex-wrap gap-2">
               {EXAMPLES.map((handle) => (
                 <button
@@ -199,7 +199,7 @@ export function HomeView({
                     setTarget(handle);
                     inputRef.current?.focus();
                   }}
-                  className={`rounded-full border border-rule bg-card px-4 py-2 font-mono text-sm text-ink transition hover:border-ink-3 hover:bg-paper-2 ${focusRing}`}
+                  className="btn font-mono !text-ink"
                 >
                   @{handle}
                 </button>
@@ -210,13 +210,13 @@ export function HomeView({
         </div>
 
         {/* Verdict legend: teaches how to read results before the first scan */}
-        <aside className="rounded-[22px] border border-rule bg-card p-6" aria-label={tr('home.verdictTitle')}>
-          <div className="text-[11px] uppercase tracking-[0.17em] text-ink-3">{tr('home.verdictTitle')}</div>
+        <aside className="card card-accent p-6" aria-label={tr('home.verdictTitle')}>
+          <div className="label-mono">{tr('home.verdictTitle')}</div>
           <ul className="mt-5 space-y-5">
-            {VERDICTS.map(({ label, desc, dashed }) => (
-              <li key={label} className="flex items-start gap-4">
-                <span className={`mt-0.5 shrink-0 rounded-md border px-2 py-1 font-mono text-[10px] tracking-[0.1em] text-ink ${dashed ? 'border-dashed border-ink-3' : 'border-rule'}`}>
-                  {label}
+            {VERDICTS.map(({ status, desc }) => (
+              <li key={status} className="grid grid-cols-[110px_1fr] items-start gap-3">
+                <span className="mt-0.5">
+                  <StatusBadge status={status} />
                 </span>
                 <span className="text-sm leading-relaxed text-ink-2">{tr(desc)}</span>
               </li>
@@ -228,7 +228,7 @@ export function HomeView({
       {/* Continue where you left off */}
       {recentCases.length > 0 && (
         <section className="mt-12" aria-labelledby="home-recent">
-          <h2 id="home-recent" className="text-[11px] uppercase tracking-[0.17em] text-ink-3">{tr('home.recentTitle')}</h2>
+          <h2 id="home-recent" className="label-mono">{tr('home.recentTitle')}</h2>
           <ul className="mt-4 grid gap-3 md:grid-cols-3">
             {recentCases.map((item) => {
               const latest = [...item.collections].sort((a, b) => b.collectedAt.localeCompare(a.collectedAt))[0];
@@ -237,7 +237,7 @@ export function HomeView({
                   <button
                     type="button"
                     onClick={() => onOpenCase(item)}
-                    className={`w-full rounded-[18px] border border-rule bg-card p-5 text-left transition hover:border-rule hover:bg-paper-2 ${focusRing}`}
+                    className="card w-full p-5 text-left transition-[border-color,transform] hover:-translate-y-px hover:!border-rule"
                   >
                     <div className="flex items-center justify-between gap-3">
                       <span className="truncate font-mono text-base text-ink">{item.primaryTargetType === 'username' ? '@' : ''}{item.primaryTarget}</span>
@@ -256,28 +256,29 @@ export function HomeView({
 
       {/* Modes */}
       <section className="mt-12" aria-labelledby="home-modes">
-        <h2 id="home-modes" className="text-[11px] uppercase tracking-[0.17em] text-ink-3">{tr('home.modesTitle')}</h2>
+        <h2 id="home-modes" className="label-mono">{tr('home.modesTitle')}</h2>
         <div className="mt-4 grid gap-4 md:grid-cols-3">
-          {MODES.map(({ preset, name, desc, count, recommended }) => {
+          {MODES.map(({ preset, name, desc, recommended }) => {
             const selected = activePreset === preset;
+            const count = countPlatformsForPreset(preset, targetType);
             return (
               <button
                 key={preset}
                 type="button"
                 aria-pressed={selected}
                 onClick={() => onSelectPreset(preset)}
-                className={`group rounded-[22px] border p-6 text-left transition ${focusRing} ${
-                  selected ? 'border-ink bg-paper-2' : 'border-rule bg-card hover:border-rule'
+                className={`card group p-6 text-left transition-[border-color,transform] hover:-translate-y-px ${
+                  selected ? 'card-accent !border-signal' : 'hover:!border-rule'
                 }`}
               >
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-xl font-semibold tracking-[-0.02em] text-ink">{tr(name)}</span>
-                  <span className="font-mono text-sm text-ink-3">{count}</span>
+                  <span className="text-xl font-bold tracking-[-0.02em] text-ink">{tr(name)}</span>
+                  <span className="chip">{tr('modular.detectors', { count })}</span>
                 </div>
-                <p className="mt-3 text-sm leading-relaxed text-ink-2">{tr(desc)}</p>
+                <p className="mt-3 text-sm leading-relaxed text-ink-2">{tr(desc, { count })}</p>
                 <div className="mt-5 flex min-h-[26px] items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-3">
-                  {selected && <span className="rounded border border-ink-3 px-2 py-1 text-ink">{tr('home.selected')}</span>}
-                  {recommended && !selected && <span className="rounded border border-dashed border-rule px-2 py-1">{tr('home.recommended')}</span>}
+                  {selected && <span className="chip chip-signal">{tr('home.selected')}</span>}
+                  {recommended && !selected && <span className="chip chip-quiet !border-dashed">{tr('home.recommended')}</span>}
                 </div>
               </button>
             );
@@ -287,12 +288,12 @@ export function HomeView({
 
       {/* How it works */}
       <section className="mt-12" aria-labelledby="home-steps">
-        <h2 id="home-steps" className="text-[11px] uppercase tracking-[0.17em] text-ink-3">{tr('home.stepsTitle')}</h2>
+        <h2 id="home-steps" className="label-mono">{tr('home.stepsTitle')}</h2>
         <ol className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map(({ title, desc, Icon }, index) => (
-            <li key={title} className="rounded-[22px] border border-rule bg-card p-6">
+            <li key={title} className="card p-6">
               <div className="flex items-center justify-between">
-                <Icon className="h-5 w-5 text-ink-2" aria-hidden="true" />
+                <Icon className="h-5 w-5 text-signal" aria-hidden="true" />
                 <span className="font-mono text-xs text-ink-3">{String(index + 1).padStart(2, '0')}</span>
               </div>
               <div className="mt-5 text-lg font-semibold tracking-[-0.02em] text-ink">{tr(title)}</div>
@@ -313,12 +314,12 @@ export function HomeView({
           ))}
         </ul>
         <div className="flex shrink-0 flex-wrap gap-3 md:flex-nowrap">
-          <button type="button" onClick={onOpenBatch} className={`inline-flex items-center gap-2 rounded-xl border border-rule px-4 py-2.5 text-sm text-ink-2 transition hover:border-rule hover:bg-paper-2 ${focusRing}`}>
+          <button type="button" onClick={onOpenBatch} className="btn">
             <Upload className="h-4 w-4" aria-hidden="true" /> {tr('home.batch')}
           </button>
-          <button type="button" onClick={onOpenCases} className={`inline-flex items-center gap-2 rounded-xl border border-rule px-4 py-2.5 text-sm text-ink-2 transition hover:border-rule hover:bg-paper-2 ${focusRing}`}>
+          <button type="button" onClick={onOpenCases} className="btn">
             <History className="h-4 w-4" aria-hidden="true" /> {tr('home.cases')}
-            {casesCount > 0 && <span className="rounded-md border border-rule px-1.5 font-mono text-xs">{casesCount}</span>}
+            {casesCount > 0 && <span className="chip !px-1.5">{casesCount}</span>}
           </button>
         </div>
       </section>
