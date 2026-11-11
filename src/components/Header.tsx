@@ -8,7 +8,7 @@ import {
   LayoutDashboard,
   RefreshCw,
 } from 'lucide-react';
-import { ThemeMode, getSavedTheme, applyTheme } from '../utils/theme';
+import { ThemeMode, getSavedTheme, applyTheme } from '../theme/theme';
 import { LanguageSelector } from './LanguageSelector';
 import { useI18n } from '../utils/i18n';
 
