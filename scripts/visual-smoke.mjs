@@ -139,6 +139,9 @@ async function openPage(browser, baseUrl, theme, problems, external) {
 // ---------- helpers ----------
 const settle = async (page, ms = 400) => {
   await page.waitForLoadState('networkidle').catch(() => undefined);
+  // Views and dialogs that load on first use show a placeholder until their chunk has arrived and rendered
+  // (src/components/LazyFallback.tsx): wait for the real content, not for a fixed time.
+  await page.waitForFunction(() => !document.querySelector('[data-lazy-fallback]'), null, { timeout: 15000 });
   await page.waitForTimeout(ms);
 };
 
@@ -214,6 +217,9 @@ const STEPS = [
     await page.keyboard.press('Escape');
     await page.getByRole('dialog').waitFor({ state: 'detached' });
     await page.keyboard.press('1');
+    // The dashboard and its force graph load on first use: wait for the graph's nodes, then for the layout.
+    await page.locator('#viz-tab-network-btn').waitFor();
+    await page.locator('svg .nodes .node').first().waitFor();
     await settle(page, 6000); // the D3 force graph needs ~300 ticks to come to rest
   }],
   // The legacy dashboard's other chart tabs. Each capture is the visualization card only, so a difference in one
