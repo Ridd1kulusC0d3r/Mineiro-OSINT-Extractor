@@ -345,8 +345,9 @@ src/main.tsx              mounts <App/> inside the I18nProvider
 src/app/
   App.tsx                 composition: calls the hooks, lays out Header, TargetBar, StatsBar, MainViews, AppModals, footer
   MainViews.tsx           the main canvas: one view at a time (report, evidence, platforms, correlation, AI, console, batch,
-                          legacy dashboard)
-  AppModals.tsx           every overlay plus the hidden print layout
+                          legacy dashboard); correlation, AI and the legacy dashboard load on first use
+  AppModals.tsx           every overlay plus the hidden print layout; export, Gemini, cases and shortcuts load on first
+                          open and then stay mounted
   shortcuts.ts            the one list of keyboard shortcuts: the key handler matches it, the shortcuts sheet renders it
   useAppShortcuts.ts      runs a shortcut action, from the keyboard or from a row of the sheet
   views.ts                AppView
@@ -369,14 +370,36 @@ src/api/
   errors.ts               ApiError: status (0 = no response), serverMessage, network, aborted, body
   types.ts                request/response shapes of those routes
 src/components/           presentation only
+  LazyFallback.tsx        placeholders and error boundary for lazily loaded views and dialogs
+  WorldThreatMap/         one folder per large component; index.ts keeps the old import path:
+    WorldThreatMap.tsx      state, effects and layout
+    MapToolbar.tsx, ...     sections of the JSX
+    worldThreatMap.logic.ts pure computation (tested in tests/worldThreatMap.logic.test.ts)
+    worldThreatMap.render.ts  imperative D3 drawing, called from an effect
+  NetworkRelationshipGraph/, RiskMatrix2x2/, CategoryHeatMap/   same layout (the legacy dashboard's D3 charts)
+  DashboardView/          legacy dashboard (only the 1 shortcut opens it); dashboard.logic.ts
+  ModularScanModal/, BulkImportModal/                            modularScan.logic.ts / bulkImport.logic.ts
 src/core, data, registry, intelligence, graph, cases     pure domain (no React, no Express)
 ```
+
+No file in `src/components` is above 500 lines. Fixed tables a component used to embed live in `src/data`
+(`worldMapHosts.ts`, `categoryThreatWeights.ts`); purely presentational constants stay next to the component
+(`CategoryHeatMap/dimensions.ts`, `ModularScanModal/presetCards.ts`).
+
+Start-up bundle: views and dialogs that are not on screen at start-up are `React.lazy` chunks, and each D3 chart of
+the legacy dashboard is its own chunk (the world map carries the atlas). `npm run build` lists the chunks; the
+start-up JavaScript is the `index-*.js` entry plus the shared `jsx-runtime-*.js` it preloads. The production server
+serves them from `dist/assets` with `express.static` (ETag, `max-age=0`); the pip package copies all of `dist/`.
 
 Rules, enforced by `tests/boundaries.test.ts`:
 
 - `src/core`, `data`, `registry`, `intelligence`, `graph`, `cases` and `scan` import neither `react`, `react-dom` nor
   `express`, nor anything from `src/components`, `src/hooks` or `src/app`.
 - `src/components` imports nothing from `server/`.
+- Inside `src/components`, `*.logic.ts` (pure computation) and `*.render.ts` (D3 drawing) import no React, UI kit
+  (`lucide-react`, `motion`), component (`.tsx`), hook or app module; `*.logic.ts` also uses no DOM global. The
+  theme modules they may import (`src/theme/palette.ts`, `tokens.ts`, `theme.ts`) stay React-free; the React hook
+  `useThemeVersion` lives in `src/theme/useThemeVersion.ts`.
 - Only `src/api/client.ts` calls `fetch('/api/...')`.
 
 The scan engine takes its collaborators as parameters, so the same module can run where there is no browser:
