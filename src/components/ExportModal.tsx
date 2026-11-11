@@ -633,28 +633,28 @@ export function ExportModal({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm">
-      <div className="border border-neutral-800 bg-neutral-950 w-full max-w-4xl max-h-[92vh] flex flex-col p-6 space-y-4 font-mono shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-paper/85 p-4 backdrop-blur-sm">
+      <div className="border border-rule bg-paper-2 w-full max-w-4xl max-h-[92vh] flex flex-col p-6 space-y-4 font-mono shadow-2xl overflow-hidden">
         
         {/* Modal Top Header */}
-        <div className="flex items-center justify-between border-b border-neutral-800 pb-3 shrink-0">
+        <div className="flex items-center justify-between border-b border-rule pb-3 shrink-0">
           <div className="space-y-0.5">
             <div className="flex items-center gap-2">
-              <Shield className="w-4 h-4 text-white" />
-              <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+              <Shield className="w-4 h-4 text-ink" />
+              <h2 className="text-sm font-bold text-ink uppercase tracking-wider">
                 EXPORT FORENSIC INTELLIGENCE DOSSIER // @{target}
               </h2>
-              <span className="text-[10px] px-2 py-0.5 border border-neutral-800 bg-black text-neutral-400">
+              <span className="text-[10px] px-2 py-0.5 border border-rule bg-paper text-ink-3">
                 {activeSectionCount} / 10 SECTIONS ACTIVE
               </span>
             </div>
-            <p className="text-[11px] text-neutral-400 font-sans">
+            <p className="text-[11px] text-ink-3 font-sans">
               Export corroborated platform findings, threat metrics, and behavioral intelligence in standard investigation formats.
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-neutral-500 hover:text-white p-1 text-sm border border-transparent hover:border-neutral-800"
+            className="text-ink-3 hover:text-ink p-1 text-sm border border-transparent hover:border-rule"
           >
             <X className="w-4 h-4" />
           </button>
@@ -664,14 +664,14 @@ export function ExportModal({
         <div className="overflow-y-auto space-y-4 pr-1">
           
           {/* SECTION CUSTOMIZER ACCORDION */}
-          <div className="border border-neutral-800 bg-black p-3.5 space-y-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-900 pb-2">
+          <div className="border border-rule bg-paper p-3.5 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-rule pb-2">
               <div className="flex items-center gap-2">
-                <Sliders className="w-3.5 h-3.5 text-white" />
-                <span className="text-xs font-bold text-white uppercase tracking-wider">
+                <Sliders className="w-3.5 h-3.5 text-ink" />
+                <span className="text-xs font-bold text-ink uppercase tracking-wider">
                   GRANULAR DOSSIER SECTIONS & FORENSIC SCOPE
                 </span>
-                <span className="text-[10px] text-neutral-500">
+                <span className="text-[10px] text-ink-3">
                   Toggle sections before generation
                 </span>
               </div>
@@ -681,28 +681,28 @@ export function ExportModal({
                 <button
                   type="button"
                   onClick={() => applyPreset('all')}
-                  className="px-2 py-0.5 text-[10px] border border-neutral-800 bg-neutral-950 text-neutral-300 hover:text-white hover:border-neutral-600 transition-colors"
+                  className="px-2 py-0.5 text-[10px] border border-rule bg-paper-2 text-ink-2 hover:text-ink hover:border-ink-3 transition-colors"
                 >
                   All Sections
                 </button>
                 <button
                   type="button"
                   onClick={() => applyPreset('executive_findings')}
-                  className="px-2 py-0.5 text-[10px] border border-neutral-800 bg-neutral-950 text-neutral-300 hover:text-white hover:border-neutral-600 transition-colors"
+                  className="px-2 py-0.5 text-[10px] border border-rule bg-paper-2 text-ink-2 hover:text-ink hover:border-ink-3 transition-colors"
                 >
                   Executive & Findings
                 </button>
                 <button
                   type="button"
                   onClick={() => applyPreset('ai_threat')}
-                  className="px-2 py-0.5 text-[10px] border border-neutral-800 bg-neutral-950 text-neutral-300 hover:text-white hover:border-neutral-600 transition-colors"
+                  className="px-2 py-0.5 text-[10px] border border-rule bg-paper-2 text-ink-2 hover:text-ink hover:border-ink-3 transition-colors"
                 >
                   AI & Threat
                 </button>
                 <button
                   type="button"
                   onClick={() => applyPreset('tech_raw')}
-                  className="px-2 py-0.5 text-[10px] border border-neutral-800 bg-neutral-950 text-neutral-300 hover:text-white hover:border-neutral-600 transition-colors"
+                  className="px-2 py-0.5 text-[10px] border border-rule bg-paper-2 text-ink-2 hover:text-ink hover:border-ink-3 transition-colors"
                 >
                   Raw Probes Only
                 </button>
@@ -721,25 +721,25 @@ export function ExportModal({
                     onClick={() => toggleSection(sec.key)}
                     className={`p-2 border text-xs cursor-pointer transition-all flex items-start gap-2.5 select-none ${
                       isChecked
-                        ? 'border-neutral-700 bg-neutral-950/80 hover:border-neutral-500'
-                        : 'border-neutral-900 bg-black opacity-45 hover:opacity-75'
+                        ? 'border-rule bg-paper-2/80 hover:border-ink-3'
+                        : 'border-rule bg-paper opacity-45 hover:opacity-75'
                     }`}
                   >
-                    <div className="pt-0.5 shrink-0 text-white">
+                    <div className="pt-0.5 shrink-0 text-ink">
                       {isChecked ? (
-                        <CheckSquare className="w-3.5 h-3.5 text-white" />
+                        <CheckSquare className="w-3.5 h-3.5 text-ink" />
                       ) : (
-                        <Square className="w-3.5 h-3.5 text-neutral-600" />
+                        <Square className="w-3.5 h-3.5 text-ink-3" />
                       )}
                     </div>
                     <div className="space-y-0.5">
                       <div className="flex items-center gap-1.5">
-                        <IconComponent className="w-3 h-3 text-neutral-400" />
-                        <span className={`font-bold text-[11px] ${isChecked ? 'text-white' : 'text-neutral-500'}`}>
+                        <IconComponent className="w-3 h-3 text-ink-3" />
+                        <span className={`font-bold text-[11px] ${isChecked ? 'text-ink' : 'text-ink-3'}`}>
                           {sec.label}
                         </span>
                       </div>
-                      <p className="text-[10px] text-neutral-500 leading-tight">
+                      <p className="text-[10px] text-ink-3 leading-tight">
                         {sec.description}
                       </p>
                     </div>
@@ -750,20 +750,20 @@ export function ExportModal({
           </div>
 
           {/* Cryptographic Investigation Snapshot Card */}
-          <div className="border border-[#37332B] bg-[#1B1915] p-4 rounded space-y-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-[#37332B] pb-3">
+          <div className="border border-rule bg-paper-2 p-4 rounded space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-rule pb-3">
               <div className="flex items-center gap-2 flex-wrap">
-                <Shield className="w-4 h-4 text-[#ECE8DD]" />
-                <span className="text-xs font-bold text-[#ECE8DD] uppercase tracking-wider">
+                <Shield className="w-4 h-4 text-ink" />
+                <span className="text-xs font-bold text-ink uppercase tracking-wider">
                   {t.snapshotTitle}
                 </span>
                 {snapshot ? (
-                  <span className="text-[10px] px-2 py-0.5 rounded bg-[#ECE8DD]/15 text-[#ECE8DD] border border-[#ECE8DD]/40 font-mono font-bold flex items-center gap-1">
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-ink/15 text-ink border border-ink/40 font-mono font-bold flex items-center gap-1">
                     <Check className="w-3 h-3" />
                     {t.snapshotSigned}
                   </span>
                 ) : (
-                  <span className="text-[10px] px-2 py-0.5 rounded bg-[#908B7D]/15 text-[#908B7D] border border-[#908B7D]/40 font-mono font-bold">
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-ink-3/15 text-ink-3 border border-ink-3/40 font-mono font-bold">
                     {t.snapshotPending}
                   </span>
                 )}
@@ -775,11 +775,11 @@ export function ExportModal({
                     type="button"
                     id="copy-snapshot-block-btn"
                     onClick={copySnapshotBlock}
-                    className="px-2.5 py-1 text-[11px] font-mono border border-[#37332B] bg-[#131210] text-[#B9B4A6] hover:text-[#ECE8DD] hover:border-[#ECE8DD]/50 rounded transition-colors flex items-center gap-1.5"
+                    className="px-2.5 py-1 text-[11px] font-mono border border-rule bg-paper text-ink-2 hover:text-ink hover:border-ink/50 rounded transition-colors flex items-center gap-1.5"
                   >
                     {copiedSnapshotBlock ? (
                       <>
-                        <Check className="w-3 h-3 text-[#ECE8DD]" />
+                        <Check className="w-3 h-3 text-ink" />
                         <span>{t.copied}</span>
                       </>
                     ) : (
@@ -795,7 +795,7 @@ export function ExportModal({
                   id="take-snapshot-btn"
                   onClick={handleCreateSnapshot}
                   disabled={isGeneratingSnapshot}
-                  className="px-3 py-1 text-[11px] font-mono font-bold uppercase rounded transition-all flex items-center gap-1.5 bg-[#F0885A] text-[#131210] hover:bg-[#ECE8DD]/90 disabled:opacity-50"
+                  className="px-3 py-1 text-[11px] font-mono font-bold uppercase rounded transition-all flex items-center gap-1.5 bg-signal text-signal-ink hover:bg-ink/90 disabled:opacity-50"
                 >
                   {isGeneratingSnapshot ? (
                     <>
@@ -819,44 +819,44 @@ export function ExportModal({
 
             {snapshot ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
-                <div className="space-y-1 bg-[#131210] p-2.5 rounded border border-[#37332B]">
-                  <div className="text-[10px] text-[#B9B4A6] uppercase">Snapshot ID & Timestamp</div>
-                  <div className="text-[#ECE8DD] font-bold truncate">{snapshot.snapshotId}</div>
-                  <div className="text-[10px] text-[#908B7D]">{new Date(snapshot.timestamp).toUTCString()}</div>
+                <div className="space-y-1 bg-paper p-2.5 rounded border border-rule">
+                  <div className="text-[10px] text-ink-2 uppercase">Snapshot ID & Timestamp</div>
+                  <div className="text-ink font-bold truncate">{snapshot.snapshotId}</div>
+                  <div className="text-[10px] text-ink-3">{new Date(snapshot.timestamp).toUTCString()}</div>
                 </div>
-                <div className="space-y-1 bg-[#131210] p-2.5 rounded border border-[#37332B]">
-                  <div className="text-[10px] text-[#B9B4A6] uppercase flex items-center gap-1">
-                    <Hash className="w-3 h-3 text-[#ECE8DD]" />
+                <div className="space-y-1 bg-paper p-2.5 rounded border border-rule">
+                  <div className="text-[10px] text-ink-2 uppercase flex items-center gap-1">
+                    <Hash className="w-3 h-3 text-ink" />
                     <span>SHA-256 Digest Seal</span>
                   </div>
-                  <div className="text-[#ECE8DD] font-mono text-[11px] truncate select-all" title={snapshot.summaryHash}>
+                  <div className="text-ink font-mono text-[11px] truncate select-all" title={snapshot.summaryHash}>
                     {snapshot.summaryHash}
                   </div>
-                  <div className="text-[10px] text-[#B9B4A6] truncate" title={snapshot.signature}>
+                  <div className="text-[10px] text-ink-2 truncate" title={snapshot.signature}>
                     Sig: {snapshot.signature.slice(0, 24)}...
                   </div>
                 </div>
               </div>
             ) : (
-              <p className="text-[11px] text-[#B9B4A6] font-sans">
+              <p className="text-[11px] text-ink-2 font-sans">
                 {t.snapshotExplainer}
               </p>
             )}
           </div>
 
           {/* Primary Quick Copy Card */}
-          <div className="border border-neutral-800 bg-neutral-950 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="border border-rule bg-paper-2 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="space-y-0.5">
               <div className="flex items-center gap-2">
-                <FileCode className="w-4 h-4 text-white" />
-                <span className="text-white font-bold text-xs uppercase tracking-wider">
+                <FileCode className="w-4 h-4 text-ink" />
+                <span className="text-ink font-bold text-xs uppercase tracking-wider">
                   Copy Customized Report to Clipboard
                 </span>
-                <span className="text-[9px] px-1.5 py-0.2 bg-[#F0885A] text-black font-extrabold uppercase">
+                <span className="text-[9px] px-1.5 py-0.2 bg-signal text-signal-ink font-extrabold uppercase">
                   Markdown
                 </span>
               </div>
-              <p className="text-[11px] text-neutral-400 font-sans">
+              <p className="text-[11px] text-ink-3 font-sans">
                 Generates a clean Markdown dossier containing only your selected {activeSectionCount} sections, ready for Notion, Obsidian, GitHub, or case notes.
               </p>
             </div>
@@ -866,8 +866,8 @@ export function ExportModal({
               onClick={copyMarkdownToClipboard}
               className={`w-full sm:w-auto px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 shrink-0 border ${
                 copiedMarkdown
-                  ? 'bg-[#F0885A] text-black border-[#F0885A] shadow-lg'
-                  : 'bg-[#F0885A] text-black border-[#F0885A] hover:bg-neutral-200'
+                  ? 'bg-signal text-signal-ink border-signal shadow-lg'
+                  : 'bg-signal text-signal-ink border-signal hover:bg-ink'
               }`}
             >
               {copiedMarkdown ? (
@@ -891,15 +891,15 @@ export function ExportModal({
               id="export-md-btn"
               type="button"
               onClick={downloadMarkdown}
-              className="p-2.5 border border-neutral-800 bg-black hover:border-[#F0885A] hover:bg-neutral-900 transition-all text-left space-y-1.5 group"
+              className="p-2.5 border border-rule bg-paper hover:border-signal hover:bg-rule-2 transition-all text-left space-y-1.5 group"
             >
               <div className="flex items-center justify-between">
-                <FileCode className="w-4 h-4 text-neutral-400 group-hover:text-white" />
-                <span className="text-[10px] text-neutral-400 font-bold">.MD</span>
+                <FileCode className="w-4 h-4 text-ink-3 group-hover:text-ink" />
+                <span className="text-[10px] text-ink-3 font-bold">.MD</span>
               </div>
               <div>
-                <div className="text-white font-bold text-xs">Markdown</div>
-                <div className="text-[10px] text-neutral-500">Customized report</div>
+                <div className="text-ink font-bold text-xs">Markdown</div>
+                <div className="text-[10px] text-ink-3">Customized report</div>
               </div>
             </button>
 
@@ -908,15 +908,15 @@ export function ExportModal({
               id="export-json-btn"
               type="button"
               onClick={downloadJson}
-              className="p-2.5 border border-neutral-800 bg-black hover:border-[#F0885A] hover:bg-neutral-900 transition-all text-left space-y-1.5 group"
+              className="p-2.5 border border-rule bg-paper hover:border-signal hover:bg-rule-2 transition-all text-left space-y-1.5 group"
             >
               <div className="flex items-center justify-between">
-                <FileText className="w-4 h-4 text-neutral-400 group-hover:text-white" />
-                <span className="text-[10px] text-neutral-400 font-bold">.JSON</span>
+                <FileText className="w-4 h-4 text-ink-3 group-hover:text-ink" />
+                <span className="text-[10px] text-ink-3 font-bold">.JSON</span>
               </div>
               <div>
-                <div className="text-white font-bold text-xs">JSON Bundle</div>
-                <div className="text-[10px] text-neutral-500">Filtered schema</div>
+                <div className="text-ink font-bold text-xs">JSON Bundle</div>
+                <div className="text-[10px] text-ink-3">Filtered schema</div>
               </div>
             </button>
 
@@ -925,15 +925,15 @@ export function ExportModal({
               id="export-csv-btn"
               type="button"
               onClick={downloadCsv}
-              className="p-2.5 border border-neutral-800 bg-black hover:border-[#F0885A] hover:bg-neutral-900 transition-all text-left space-y-1.5 group"
+              className="p-2.5 border border-rule bg-paper hover:border-signal hover:bg-rule-2 transition-all text-left space-y-1.5 group"
             >
               <div className="flex items-center justify-between">
-                <Download className="w-4 h-4 text-neutral-400 group-hover:text-white" />
-                <span className="text-[10px] text-neutral-400 font-bold">.CSV</span>
+                <Download className="w-4 h-4 text-ink-3 group-hover:text-ink" />
+                <span className="text-[10px] text-ink-3 font-bold">.CSV</span>
               </div>
               <div>
-                <div className="text-white font-bold text-xs">CSV Table</div>
-                <div className="text-[10px] text-neutral-500">Spreadsheets</div>
+                <div className="text-ink font-bold text-xs">CSV Table</div>
+                <div className="text-[10px] text-ink-3">Spreadsheets</div>
               </div>
             </button>
 
@@ -942,15 +942,15 @@ export function ExportModal({
               id="export-txt-btn"
               type="button"
               onClick={downloadTxt}
-              className="p-2.5 border border-neutral-800 bg-black hover:border-[#F0885A] hover:bg-neutral-900 transition-all text-left space-y-1.5 group"
+              className="p-2.5 border border-rule bg-paper hover:border-signal hover:bg-rule-2 transition-all text-left space-y-1.5 group"
             >
               <div className="flex items-center justify-between">
-                <Terminal className="w-4 h-4 text-neutral-400 group-hover:text-white" />
-                <span className="text-[10px] text-neutral-400 font-bold">.TXT</span>
+                <Terminal className="w-4 h-4 text-ink-3 group-hover:text-ink" />
+                <span className="text-[10px] text-ink-3 font-bold">.TXT</span>
               </div>
               <div>
-                <div className="text-white font-bold text-xs">TXT Report</div>
-                <div className="text-[10px] text-neutral-500">CLI ASCII</div>
+                <div className="text-ink font-bold text-xs">TXT Report</div>
+                <div className="text-[10px] text-ink-3">CLI ASCII</div>
               </div>
             </button>
 
@@ -959,25 +959,25 @@ export function ExportModal({
               id="export-pdf-btn"
               type="button"
               onClick={handlePrintPdf}
-              className="p-2.5 border border-neutral-800 bg-black hover:border-[#F0885A] hover:bg-neutral-900 transition-all text-left space-y-1.5 group"
+              className="p-2.5 border border-rule bg-paper hover:border-signal hover:bg-rule-2 transition-all text-left space-y-1.5 group"
             >
               <div className="flex items-center justify-between">
-                <Printer className="w-4 h-4 text-neutral-400 group-hover:text-white" />
-                <span className="text-[10px] text-neutral-400 font-bold">PDF</span>
+                <Printer className="w-4 h-4 text-ink-3 group-hover:text-ink" />
+                <span className="text-[10px] text-ink-3 font-bold">PDF</span>
               </div>
               <div>
-                <div className="text-white font-bold text-xs">PDF Dossier</div>
-                <div className="text-[10px] text-neutral-500">Print / Save</div>
+                <div className="text-ink font-bold text-xs">PDF Dossier</div>
+                <div className="text-[10px] text-ink-3">Print / Save</div>
               </div>
             </button>
           </div>
 
           {/* Visual Forensic Preview Panel */}
-          <div className="border border-neutral-800 bg-black p-3 space-y-2.5 mt-2">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-800 pb-2">
+          <div className="border border-rule bg-paper p-3 space-y-2.5 mt-2">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-rule pb-2">
               <div className="flex items-center gap-2">
-                <Eye className="w-3.5 h-3.5 text-white" />
-                <span className="text-[11px] font-bold text-white uppercase tracking-wider">
+                <Eye className="w-3.5 h-3.5 text-ink" />
+                <span className="text-[11px] font-bold text-ink uppercase tracking-wider">
                   Live Forensic Preview ({activeSectionCount} Sections Enabled)
                 </span>
               </div>
@@ -989,8 +989,8 @@ export function ExportModal({
                   onClick={() => setPreviewFormat('markdown')}
                   className={`px-2 py-0.5 text-[10px] border transition-colors uppercase ${
                     previewFormat === 'markdown'
-                      ? 'border-[#F0885A] bg-[#F0885A] text-black font-bold'
-                      : 'border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-white'
+                      ? 'border-signal bg-signal text-signal-ink font-bold'
+                      : 'border-rule bg-paper-2 text-ink-3 hover:text-ink'
                   }`}
                 >
                   Markdown (.MD)
@@ -1000,8 +1000,8 @@ export function ExportModal({
                   onClick={() => setPreviewFormat('json')}
                   className={`px-2 py-0.5 text-[10px] border transition-colors uppercase ${
                     previewFormat === 'json'
-                      ? 'border-[#F0885A] bg-[#F0885A] text-black font-bold'
-                      : 'border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-white'
+                      ? 'border-signal bg-signal text-signal-ink font-bold'
+                      : 'border-rule bg-paper-2 text-ink-3 hover:text-ink'
                   }`}
                 >
                   JSON Bundle
@@ -1011,8 +1011,8 @@ export function ExportModal({
                   onClick={() => setPreviewFormat('pdf')}
                   className={`px-2 py-0.5 text-[10px] border transition-colors uppercase ${
                     previewFormat === 'pdf'
-                      ? 'border-[#F0885A] bg-[#F0885A] text-black font-bold'
-                      : 'border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-white'
+                      ? 'border-signal bg-signal text-signal-ink font-bold'
+                      : 'border-rule bg-paper-2 text-ink-3 hover:text-ink'
                   }`}
                 >
                   PDF Preview
@@ -1022,8 +1022,8 @@ export function ExportModal({
                   onClick={() => setPreviewFormat('txt')}
                   className={`px-2 py-0.5 text-[10px] border transition-colors uppercase ${
                     previewFormat === 'txt'
-                      ? 'border-[#F0885A] bg-[#F0885A] text-black font-bold'
-                      : 'border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-white'
+                      ? 'border-signal bg-signal text-signal-ink font-bold'
+                      : 'border-rule bg-paper-2 text-ink-3 hover:text-ink'
                   }`}
                 >
                   ASCII TXT
@@ -1033,10 +1033,10 @@ export function ExportModal({
                 <button
                   type="button"
                   onClick={copyPreviewToClipboard}
-                  className="ml-1 p-1 text-neutral-400 hover:text-white border border-neutral-800 bg-neutral-900 hover:bg-neutral-800"
+                  className="ml-1 p-1 text-ink-3 hover:text-ink border border-rule bg-rule-2 hover:bg-rule-2"
                   title="Copy Preview to Clipboard"
                 >
-                  {copiedPreview ? <Check className="w-3 h-3 text-white" /> : <Copy className="w-3 h-3" />}
+                  {copiedPreview ? <Check className="w-3 h-3 text-ink" /> : <Copy className="w-3 h-3" />}
                 </button>
               </div>
             </div>
@@ -1044,10 +1044,10 @@ export function ExportModal({
             {/* Markdown Preview */}
             {previewFormat === 'markdown' && (
               <div className="relative">
-                <pre className="text-[11px] leading-relaxed text-neutral-300 bg-neutral-950 p-3 border border-neutral-800/80 overflow-x-auto max-h-56 font-mono select-text whitespace-pre-wrap">
+                <pre className="text-[11px] leading-relaxed text-ink-2 bg-paper-2 p-3 border border-rule/80 overflow-x-auto max-h-56 font-mono select-text whitespace-pre-wrap">
                   {getCustomizedMarkdownReport()}
                 </pre>
-                <div className="text-[10px] text-neutral-400 pt-1.5 flex items-center justify-between">
+                <div className="text-[10px] text-ink-3 pt-1.5 flex items-center justify-between">
                   <span>⚡ Dynamically tailored to your {activeSectionCount} selected sections</span>
                   <span>{results.length} platforms • {foundResults.length} confirmed profiles</span>
                 </div>
@@ -1057,10 +1057,10 @@ export function ExportModal({
             {/* Truncated JSON Preview */}
             {previewFormat === 'json' && (
               <div className="relative">
-                <pre className="text-[11px] leading-relaxed text-neutral-300 bg-neutral-950 p-3 border border-neutral-800/80 overflow-x-auto max-h-52 font-mono select-text">
+                <pre className="text-[11px] leading-relaxed text-ink-2 bg-paper-2 p-3 border border-rule/80 overflow-x-auto max-h-52 font-mono select-text">
                   {generateExportJson(true)}
                 </pre>
-                <div className="text-[10px] text-neutral-400 pt-1.5 flex items-center justify-between">
+                <div className="text-[10px] text-ink-3 pt-1.5 flex items-center justify-between">
                   <span>⚡ Tailored JSON schema based on selected sections</span>
                   <span>Full download contains complete filtered forensic bundle</span>
                 </div>
@@ -1069,56 +1069,56 @@ export function ExportModal({
 
             {/* Truncated PDF Dossier Sheet Preview */}
             {previewFormat === 'pdf' && (
-              <div className="bg-neutral-950 border border-neutral-700/80 p-3 space-y-2.5 max-h-52 overflow-y-auto">
-                <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
+              <div className="bg-paper-2 border border-rule/80 p-3 space-y-2.5 max-h-52 overflow-y-auto">
+                <div className="flex items-center justify-between border-b border-rule pb-2">
                   <div>
-                    <div className="text-[10px] tracking-widest text-neutral-400 font-bold uppercase">
+                    <div className="text-[10px] tracking-widest text-ink-3 font-bold uppercase">
                       CONFIDENTIAL // FORENSIC INTELLIGENCE REPORT
                     </div>
-                    <div className="text-white font-bold text-xs">
+                    <div className="text-ink font-bold text-xs">
                       TARGET DOSSIER: @{target}
                     </div>
                   </div>
-                  <div className="text-right text-[10px] text-neutral-400">
+                  <div className="text-right text-[10px] text-ink-3">
                     <div>CASE ID: #MUE-{target.toUpperCase().slice(0, 8)}</div>
-                    <div className="text-white font-bold">SECTIONS: {activeSectionCount}/10</div>
+                    <div className="text-ink font-bold">SECTIONS: {activeSectionCount}/10</div>
                   </div>
                 </div>
 
                 {sections.executiveSummary && (
                   <div className="grid grid-cols-3 gap-2 text-center text-[10px]">
-                    <div className="p-1.5 bg-neutral-900 border border-neutral-800">
-                      <div className="text-neutral-500">VERIFIED HITS</div>
-                      <div className="text-white font-bold text-xs">{foundResults.length}</div>
+                    <div className="p-1.5 bg-rule-2 border border-rule">
+                      <div className="text-ink-3">VERIFIED HITS</div>
+                      <div className="text-ink font-bold text-xs">{foundResults.length}</div>
                     </div>
-                    <div className="p-1.5 bg-neutral-900 border border-neutral-800">
-                      <div className="text-neutral-500">UNCERTAIN WAF</div>
-                      <div className="text-white font-bold text-xs">{uncertainResults.length}</div>
+                    <div className="p-1.5 bg-rule-2 border border-rule">
+                      <div className="text-ink-3">UNCERTAIN WAF</div>
+                      <div className="text-ink font-bold text-xs">{uncertainResults.length}</div>
                     </div>
-                    <div className="p-1.5 bg-neutral-900 border border-neutral-800">
-                      <div className="text-neutral-500">SURFACE RISK</div>
-                      <div className="text-white font-bold text-xs">{aiProfile?.threatLevel || 'MODERATE'}</div>
+                    <div className="p-1.5 bg-rule-2 border border-rule">
+                      <div className="text-ink-3">SURFACE RISK</div>
+                      <div className="text-ink font-bold text-xs">{aiProfile?.threatLevel || 'MODERATE'}</div>
                     </div>
                   </div>
                 )}
 
                 {sections.platformFindings && (
                   <div className="space-y-1 text-[10px]">
-                    <div className="text-neutral-400 font-bold border-b border-neutral-800 pb-1 flex justify-between">
+                    <div className="text-ink-3 font-bold border-b border-rule pb-1 flex justify-between">
                       <span>VERIFIED PROFILES</span>
-                      <span className="text-neutral-500">{Math.min(4, foundResults.length)} of {foundResults.length}</span>
+                      <span className="text-ink-3">{Math.min(4, foundResults.length)} of {foundResults.length}</span>
                     </div>
                     {foundResults.slice(0, 4).map((r, i) => (
-                      <div key={i} className="flex items-center justify-between text-neutral-300 py-0.5 border-b border-neutral-900">
-                        <span className="text-white font-medium">{r.platformName}</span>
-                        <span className="text-neutral-500 text-[9px] uppercase">{r.category}</span>
-                        <span className="text-white text-[9px] font-bold">VERIFIED</span>
+                      <div key={i} className="flex items-center justify-between text-ink-2 py-0.5 border-b border-rule">
+                        <span className="text-ink font-medium">{r.platformName}</span>
+                        <span className="text-ink-3 text-[9px] uppercase">{r.category}</span>
+                        <span className="text-ink text-[9px] font-bold">VERIFIED</span>
                       </div>
                     ))}
                   </div>
                 )}
 
-                <div className="text-[9px] text-neutral-500 text-center italic border-t border-neutral-800 pt-1">
+                <div className="text-[9px] text-ink-3 text-center italic border-t border-rule pt-1">
                   --- Live PDF export preview reflecting active section toggles ---
                 </div>
               </div>
@@ -1127,10 +1127,10 @@ export function ExportModal({
             {/* Truncated TXT Preview */}
             {previewFormat === 'txt' && (
               <div className="relative">
-                <pre className="text-[11px] leading-relaxed text-neutral-300 bg-neutral-950 p-3 border border-neutral-800/80 overflow-x-auto max-h-52 font-mono select-text whitespace-pre">
+                <pre className="text-[11px] leading-relaxed text-ink-2 bg-paper-2 p-3 border border-rule/80 overflow-x-auto max-h-52 font-mono select-text whitespace-pre">
                   {generateTxtReport(true)}
                 </pre>
-                <div className="text-[10px] text-neutral-400 pt-1.5 flex items-center justify-between">
+                <div className="text-[10px] text-ink-3 pt-1.5 flex items-center justify-between">
                   <span>⚡ Plaintext CLI Report Preview</span>
                   <span>Filtered to your active sections</span>
                 </div>
@@ -1144,16 +1144,16 @@ export function ExportModal({
               id="copy-markdown-bottom-btn"
               type="button"
               onClick={copyMarkdownToClipboard}
-              className="w-full py-2 px-3 border border-[#F0885A] bg-[#F0885A] text-black hover:bg-neutral-200 font-bold flex items-center justify-center gap-2 text-xs transition-colors"
+              className="w-full py-2 px-3 border border-signal bg-signal text-signal-ink hover:bg-ink font-bold flex items-center justify-center gap-2 text-xs transition-colors"
             >
               {copiedMarkdown ? (
                 <>
-                  <Check className="w-3.5 h-3.5 text-black" />
+                  <Check className="w-3.5 h-3.5 text-paper" />
                   <span>Report Copied to Clipboard</span>
                 </>
               ) : (
                 <>
-                  <Copy className="w-3.5 h-3.5 text-black" />
+                  <Copy className="w-3.5 h-3.5 text-paper" />
                   <span>Copy Tailored Markdown Report</span>
                 </>
               )}
@@ -1163,16 +1163,16 @@ export function ExportModal({
               id="copy-txt-bottom-btn"
               type="button"
               onClick={copyTxtToClipboard}
-              className="w-full py-2 px-3 border border-neutral-800 bg-black hover:bg-neutral-900 text-neutral-300 hover:text-white flex items-center justify-center gap-2 text-xs transition-colors"
+              className="w-full py-2 px-3 border border-rule bg-paper hover:bg-rule-2 text-ink-2 hover:text-ink flex items-center justify-center gap-2 text-xs transition-colors"
             >
               {copiedTxt ? (
                 <>
-                  <Check className="w-3.5 h-3.5 text-white" />
+                  <Check className="w-3.5 h-3.5 text-ink" />
                   <span>TXT Copied to Clipboard</span>
                 </>
               ) : (
                 <>
-                  <Terminal className="w-3.5 h-3.5 text-neutral-400" />
+                  <Terminal className="w-3.5 h-3.5 text-ink-3" />
                   <span>Copy Tailored Plaintext (.TXT)</span>
                 </>
               )}
@@ -1181,11 +1181,11 @@ export function ExportModal({
         </div>
 
         {/* Modal Footer */}
-        <div className="border-t border-neutral-800 pt-3 flex justify-between items-center text-[11px] text-neutral-500 shrink-0">
+        <div className="border-t border-rule pt-3 flex justify-between items-center text-[11px] text-ink-3 shrink-0">
           <span>Target Scope: {results.length} Platforms • {activeSectionCount} Sections Active</span>
           <button
             onClick={onClose}
-            className="px-4 py-1.5 bg-[#F0885A] text-black font-bold uppercase hover:bg-neutral-200 text-xs"
+            className="px-4 py-1.5 bg-signal text-signal-ink font-bold uppercase hover:bg-ink text-xs"
           >
             Close
           </button>

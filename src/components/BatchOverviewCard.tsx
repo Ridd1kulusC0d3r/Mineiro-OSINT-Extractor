@@ -102,17 +102,17 @@ export function BatchOverviewCard({
 
     const avgThreatScore = threatCount > 0 ? Math.round(totalThreatScore / threatCount) : 0;
     let avgThreatVerdict: 'Low' | 'Moderate' | 'Elevated' | 'Critical' = 'Low';
-    let avgThreatColor = 'text-neutral-400 border-neutral-800 bg-neutral-950/40';
+    let avgThreatColor = 'text-ink-3 border-rule bg-paper-2/40';
 
     if (avgThreatScore >= 80) {
       avgThreatVerdict = 'Critical';
-      avgThreatColor = 'text-neutral-400 border-neutral-800 bg-neutral-950/40';
+      avgThreatColor = 'text-ink-3 border-rule bg-paper-2/40';
     } else if (avgThreatScore >= 60) {
       avgThreatVerdict = 'Elevated';
-      avgThreatColor = 'text-neutral-400 border-neutral-800 bg-neutral-950/40';
+      avgThreatColor = 'text-ink-3 border-rule bg-paper-2/40';
     } else if (avgThreatScore >= 40) {
       avgThreatVerdict = 'Moderate';
-      avgThreatColor = 'text-neutral-400 border-neutral-800 bg-neutral-950/40';
+      avgThreatColor = 'text-ink-3 border-rule bg-paper-2/40';
     }
 
     const percentComplete = Math.round((completedItems.length / totalTargets) * 100);
@@ -139,14 +139,14 @@ export function BatchOverviewCard({
   // If no active or completed batch exists, display a sleek standby card
   if (!batch || !stats || batch.items.length === 0) {
     return (
-      <div className="border border-neutral-800 bg-neutral-950 p-5 font-mono text-xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-900 pb-3">
+      <div className="border border-rule bg-paper-2 p-5 font-mono text-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-rule pb-3">
           <div className="flex items-center gap-2">
-            <Users className="w-4 h-4 text-neutral-400" />
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+            <Users className="w-4 h-4 text-ink-3" />
+            <h3 className="text-sm font-bold text-ink uppercase tracking-wider">
               BATCH RECONNAISSANCE // MULTI-TARGET OPERATIONS
             </h3>
-            <span className="text-[10px] px-2 py-0.5 border border-neutral-800 bg-black text-neutral-500">
+            <span className="text-[10px] px-2 py-0.5 border border-rule bg-paper text-ink-3">
               STANDBY
             </span>
           </div>
@@ -157,7 +157,7 @@ export function BatchOverviewCard({
                 type="button"
                 id="load-demo-batch-btn"
                 onClick={onLoadDemoBatch}
-                className="px-2.5 py-1 text-[11px] border border-neutral-800 bg-black text-neutral-300 hover:text-white hover:border-neutral-600 transition-colors"
+                className="px-2.5 py-1 text-[11px] border border-rule bg-paper text-ink-2 hover:text-ink hover:border-ink-3 transition-colors"
               >
                 Load Sample Batch
               </button>
@@ -166,7 +166,7 @@ export function BatchOverviewCard({
               type="button"
               id="import-batch-hero-btn"
               onClick={onOpenImport}
-              className="px-3 py-1 bg-[#F0885A] text-black font-bold hover:bg-neutral-200 transition-colors flex items-center gap-1.5 uppercase text-[11px]"
+              className="px-3 py-1 bg-signal text-signal-ink font-bold hover:bg-ink transition-colors flex items-center gap-1.5 uppercase text-[11px]"
             >
               <Upload className="w-3 h-3" />
               Import Targets CSV
@@ -174,22 +174,22 @@ export function BatchOverviewCard({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-neutral-400">
-          <div className="p-3 border border-neutral-900 bg-black space-y-1">
-            <span className="text-[10px] uppercase text-neutral-500 block">Aggregate Hit Analysis</span>
-            <p className="text-[11px] text-neutral-300">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-ink-3">
+          <div className="p-3 border border-rule bg-paper space-y-1">
+            <span className="text-[10px] uppercase text-ink-3 block">Aggregate Hit Analysis</span>
+            <p className="text-[11px] text-ink-2">
               Correlate multiple monikers and email handles in automated sequence with shared exposure metrics.
             </p>
           </div>
-          <div className="p-3 border border-neutral-900 bg-black space-y-1">
-            <span className="text-[10px] uppercase text-neutral-500 block">Cross-Target Threat Scoring</span>
-            <p className="text-[11px] text-neutral-300">
+          <div className="p-3 border border-rule bg-paper space-y-1">
+            <span className="text-[10px] uppercase text-ink-3 block">Cross-Target Threat Scoring</span>
+            <p className="text-[11px] text-ink-2">
               Calculate collective threat levels and surface concentrations across organizations or teams.
             </p>
           </div>
-          <div className="p-3 border border-neutral-900 bg-black space-y-1">
-            <span className="text-[10px] uppercase text-neutral-500 block">Unified Case Export</span>
-            <p className="text-[11px] text-neutral-300">
+          <div className="p-3 border border-rule bg-paper space-y-1">
+            <span className="text-[10px] uppercase text-ink-3 block">Unified Case Export</span>
+            <p className="text-[11px] text-ink-2">
               Generate unified multi-subject forensic spreadsheets and JSON investigation dossiers.
             </p>
           </div>
@@ -199,26 +199,26 @@ export function BatchOverviewCard({
   }
 
   return (
-    <div className="border border-neutral-800 bg-neutral-950 p-5 font-mono text-xs space-y-5">
+    <div className="border border-rule bg-paper-2 p-5 font-mono text-xs space-y-5">
       {/* Batch Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-800 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-rule pb-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 bg-neutral-400 inline-block shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+            <span className="w-2.5 h-2.5 bg-ink-3 inline-block shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+            <h3 className="text-sm font-bold text-ink uppercase tracking-wider">
               BATCH OVERVIEW // {batch.name.toUpperCase()}
             </h3>
             <span className={`text-[10px] px-2 py-0.5 border font-bold uppercase ${
               batch.isActive && !batch.isPaused
-                ? 'border-neutral-700 bg-neutral-950/60 text-neutral-300 animate-pulse'
+                ? 'border-rule bg-paper-2/60 text-ink-2 animate-pulse'
                 : batch.isActive && batch.isPaused
-                ? 'border-neutral-700 bg-neutral-950/60 text-neutral-300'
-                : 'border-neutral-700 bg-neutral-900 text-neutral-300'
+                ? 'border-rule bg-paper-2/60 text-ink-2'
+                : 'border-rule bg-rule-2 text-ink-2'
             }`}>
               {batch.isActive ? (batch.isPaused ? 'PAUSED' : 'SCANNING') : 'BATCH COMPLETED'}
             </span>
           </div>
-          <p className="text-neutral-400 text-xs">
+          <p className="text-ink-3 text-xs">
             Multi-target operational telemetry, cross-subject corroboration rates, and collective threat indexing.
           </p>
         </div>
@@ -231,16 +231,16 @@ export function BatchOverviewCard({
                 <button
                   type="button"
                   onClick={onResumeBatch}
-                  className="px-2.5 py-1.5 border border-[#F0885A] bg-[#F0885A] text-black font-bold flex items-center gap-1 uppercase hover:bg-neutral-200 transition-colors text-[11px]"
+                  className="px-2.5 py-1.5 border border-signal bg-signal text-signal-ink font-bold flex items-center gap-1 uppercase hover:bg-ink transition-colors text-[11px]"
                 >
-                  <Play className="w-3 h-3 fill-black" />
+                  <Play className="w-3 h-3 fill-paper" />
                   Resume
                 </button>
               ) : (
                 <button
                   type="button"
                   onClick={onPauseBatch}
-                  className="px-2.5 py-1.5 border border-neutral-700 bg-neutral-900 text-neutral-300 flex items-center gap-1 uppercase hover:text-white transition-colors text-[11px]"
+                  className="px-2.5 py-1.5 border border-rule bg-rule-2 text-ink-2 flex items-center gap-1 uppercase hover:text-ink transition-colors text-[11px]"
                 >
                   <Pause className="w-3 h-3" />
                   Pause
@@ -253,7 +253,7 @@ export function BatchOverviewCard({
             type="button"
             id="view-batch-queue-btn"
             onClick={onViewBatch}
-            className="px-3 py-1.5 bg-[#F0885A] text-black font-bold hover:bg-neutral-200 transition-colors flex items-center gap-1.5 uppercase text-[11px]"
+            className="px-3 py-1.5 bg-signal text-signal-ink font-bold hover:bg-ink transition-colors flex items-center gap-1.5 uppercase text-[11px]"
           >
             <span>Full Batch Queue</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -264,103 +264,103 @@ export function BatchOverviewCard({
       {/* Aggregate KPI Grid: 4 Core Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* 1. Target Resolution Success Rate */}
-        <div className="p-3.5 border border-neutral-800 bg-black flex flex-col justify-between space-y-2">
-          <div className="flex items-center justify-between text-neutral-400 text-[11px] uppercase">
+        <div className="p-3.5 border border-rule bg-paper flex flex-col justify-between space-y-2">
+          <div className="flex items-center justify-between text-ink-3 text-[11px] uppercase">
             <span>Target Success Rate</span>
-            <CheckCircle2 className="w-4 h-4 text-neutral-400" />
+            <CheckCircle2 className="w-4 h-4 text-ink-3" />
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-white">
+            <div className="text-2xl sm:text-3xl font-black text-ink">
               {stats.targetSuccessRate}%
             </div>
-            <div className="text-[11px] text-neutral-500 mt-0.5">
+            <div className="text-[11px] text-ink-3 mt-0.5">
               {stats.targetsWithHits} of {stats.completedItems.length} targets resolved with verified hits
             </div>
           </div>
-          <div className="pt-2 border-t border-neutral-900 text-[10px] text-neutral-400 flex justify-between">
+          <div className="pt-2 border-t border-rule text-[10px] text-ink-3 flex justify-between">
             <span>TOTAL TARGETS: {stats.totalTargets}</span>
-            <span className="text-white font-bold">{stats.percentComplete}% COMPLETE</span>
+            <span className="text-ink font-bold">{stats.percentComplete}% COMPLETE</span>
           </div>
         </div>
 
         {/* 2. Average Threat Level */}
-        <div className="p-3.5 border border-neutral-800 bg-black flex flex-col justify-between space-y-2">
-          <div className="flex items-center justify-between text-neutral-400 text-[11px] uppercase">
+        <div className="p-3.5 border border-rule bg-paper flex flex-col justify-between space-y-2">
+          <div className="flex items-center justify-between text-ink-3 text-[11px] uppercase">
             <span>Average Threat Level</span>
-            <ShieldAlert className="w-4 h-4 text-neutral-400" />
+            <ShieldAlert className="w-4 h-4 text-ink-3" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-2xl sm:text-3xl font-black text-white">
+              <span className="text-2xl sm:text-3xl font-black text-ink">
                 {stats.avgThreatScore}
               </span>
-              <span className="text-xs text-neutral-500">/ 100</span>
+              <span className="text-xs text-ink-3">/ 100</span>
               <span className={`text-[10px] px-2 py-0.5 border font-bold uppercase ${stats.avgThreatColor}`}>
                 {stats.avgThreatVerdict}
               </span>
             </div>
-            <div className="text-[11px] text-neutral-500 mt-0.5">
+            <div className="text-[11px] text-ink-3 mt-0.5">
               Derived from AI behavioral heuristics & sensitive hits
             </div>
           </div>
-          <div className="pt-2 border-t border-neutral-900 text-[10px] text-neutral-400 flex justify-between">
+          <div className="pt-2 border-t border-rule text-[10px] text-ink-3 flex justify-between">
             <span>HIGH/CRIT TARGETS</span>
-            <span className="text-neutral-400 font-bold">{stats.threatDist.Critical + stats.threatDist.Elevated}</span>
+            <span className="text-ink-3 font-bold">{stats.threatDist.Critical + stats.threatDist.Elevated}</span>
           </div>
         </div>
 
         {/* 3. Corroborated Footprints (Hits) */}
-        <div className="p-3.5 border border-neutral-800 bg-black flex flex-col justify-between space-y-2">
-          <div className="flex items-center justify-between text-neutral-400 text-[11px] uppercase">
+        <div className="p-3.5 border border-rule bg-paper flex flex-col justify-between space-y-2">
+          <div className="flex items-center justify-between text-ink-3 text-[11px] uppercase">
             <span>Aggregated Footprints</span>
-            <Activity className="w-4 h-4 text-white" />
+            <Activity className="w-4 h-4 text-ink" />
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-white">
+            <div className="text-2xl sm:text-3xl font-black text-ink">
               {stats.totalHits}
             </div>
-            <div className="text-[11px] text-neutral-500 mt-0.5">
+            <div className="text-[11px] text-ink-3 mt-0.5">
               Verified active accounts across {stats.totalScannedPlatforms} platform checks
             </div>
           </div>
-          <div className="pt-2 border-t border-neutral-900 text-[10px] text-neutral-400 flex justify-between">
+          <div className="pt-2 border-t border-rule text-[10px] text-ink-3 flex justify-between">
             <span>HIT DENSITY</span>
-            <span className="text-white font-bold">
+            <span className="text-ink font-bold">
               {stats.completedItems.length > 0 ? (stats.totalHits / stats.completedItems.length).toFixed(1) : '0'} hits/target
             </span>
           </div>
         </div>
 
         {/* 4. Queue Progress & Status */}
-        <div className="p-3.5 border border-neutral-800 bg-black flex flex-col justify-between space-y-2">
-          <div className="flex items-center justify-between text-neutral-400 text-[11px] uppercase">
+        <div className="p-3.5 border border-rule bg-paper flex flex-col justify-between space-y-2">
+          <div className="flex items-center justify-between text-ink-3 text-[11px] uppercase">
             <span>Queue Status</span>
-            <Layers className="w-4 h-4 text-neutral-400" />
+            <Layers className="w-4 h-4 text-ink-3" />
           </div>
           <div>
-            <div className="text-2xl sm:text-3xl font-black text-white">
-              {stats.completedItems.length} <span className="text-neutral-600 text-lg">/ {stats.totalTargets}</span>
+            <div className="text-2xl sm:text-3xl font-black text-ink">
+              {stats.completedItems.length} <span className="text-ink-3 text-lg">/ {stats.totalTargets}</span>
             </div>
-            <div className="text-[11px] text-neutral-500 mt-0.5">
+            <div className="text-[11px] text-ink-3 mt-0.5">
               {stats.scanningItem ? `Active: @${stats.scanningItem.target}` : 'Queue processing idle'}
             </div>
           </div>
-          <div className="pt-2 border-t border-neutral-900 text-[10px] text-neutral-400 flex justify-between">
+          <div className="pt-2 border-t border-rule text-[10px] text-ink-3 flex justify-between">
             <span>PENDING QUEUE</span>
-            <span className="text-neutral-400 font-bold">{stats.queuedItems.length} waiting</span>
+            <span className="text-ink-3 font-bold">{stats.queuedItems.length} waiting</span>
           </div>
         </div>
       </div>
 
       {/* Progress Bar */}
       <div className="space-y-1.5">
-        <div className="flex items-center justify-between text-[11px] text-neutral-400">
+        <div className="flex items-center justify-between text-[11px] text-ink-3">
           <span>Batch Execution Progress</span>
           <span>{stats.percentComplete}% ({stats.completedItems.length}/{stats.totalTargets} Targets Completed)</span>
         </div>
-        <div className="w-full bg-neutral-900 h-2 border border-neutral-800 overflow-hidden">
+        <div className="w-full bg-rule-2 h-2 border border-rule overflow-hidden">
           <div 
-            className="h-full bg-[#F0885A] transition-all duration-300"
+            className="h-full bg-signal transition-all duration-300"
             style={{ width: `${stats.percentComplete}%` }}
           />
         </div>
@@ -368,9 +368,9 @@ export function BatchOverviewCard({
 
       {/* Target Roster Carousel / High Exposure Preview */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between text-[11px] text-neutral-400">
+        <div className="flex items-center justify-between text-[11px] text-ink-3">
           <span className="uppercase font-bold tracking-wider">Targets in Current Batch:</span>
-          <span className="text-[10px] text-neutral-500">Click any target to inspect findings</span>
+          <span className="text-[10px] text-ink-3">Click any target to inspect findings</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
@@ -385,24 +385,24 @@ export function BatchOverviewCard({
                 onClick={() => onInspectTarget && isCompleted && onInspectTarget(item)}
                 className={`p-2.5 border text-xs transition-all flex items-center justify-between ${
                   isCompleted
-                    ? 'border-neutral-800 bg-black hover:border-neutral-600 cursor-pointer'
+                    ? 'border-rule bg-paper hover:border-ink-3 cursor-pointer'
                     : isScanning
-                    ? 'border-neutral-600 bg-neutral-950/20 animate-pulse'
-                    : 'border-neutral-900 bg-neutral-950 opacity-60'
+                    ? 'border-ink-3 bg-paper-2/20 animate-pulse'
+                    : 'border-rule bg-paper-2 opacity-60'
                 }`}
               >
                 <div className="space-y-0.5 truncate mr-2">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-neutral-500 font-mono text-[10px]">
+                    <span className="text-ink-3 font-mono text-[10px]">
                       {item.type === 'username' ? '@' : '✉'}
                     </span>
-                    <strong className="text-white font-bold truncate text-[11px]">{item.target}</strong>
+                    <strong className="text-ink font-bold truncate text-[11px]">{item.target}</strong>
                   </div>
-                  <div className="text-[10px] text-neutral-500">
+                  <div className="text-[10px] text-ink-3">
                     {isCompleted ? (
-                      <span className="text-neutral-400 font-bold">{item.foundCount} hits found</span>
+                      <span className="text-ink-3 font-bold">{item.foundCount} hits found</span>
                     ) : isScanning ? (
-                      <span className="text-neutral-400 font-bold">Scanning...</span>
+                      <span className="text-ink-3 font-bold">Scanning...</span>
                     ) : (
                       <span>Queued</span>
                     )}
@@ -413,16 +413,16 @@ export function BatchOverviewCard({
                   {isCompleted && (
                     <span className={`text-[9px] uppercase px-1.5 py-0.5 border font-bold ${
                       threatBadge === 'Critical'
-                        ? 'border-neutral-800 text-neutral-400 bg-neutral-950/40'
+                        ? 'border-rule text-ink-3 bg-paper-2/40'
                         : threatBadge === 'Elevated'
-                        ? 'border-neutral-800 text-neutral-400 bg-neutral-950/40'
-                        : 'border-neutral-800 text-neutral-400 bg-neutral-900'
+                        ? 'border-rule text-ink-3 bg-paper-2/40'
+                        : 'border-rule text-ink-3 bg-rule-2'
                     }`}>
                       {threatBadge}
                     </span>
                   )}
                   {isScanning && (
-                    <span className="w-2 h-2 rounded-full bg-neutral-400 animate-ping" />
+                    <span className="w-2 h-2 rounded-full bg-ink-3 animate-ping" />
                   )}
                 </div>
               </div>
@@ -435,7 +435,7 @@ export function BatchOverviewCard({
             <button
               type="button"
               onClick={onViewBatch}
-              className="text-[11px] text-neutral-400 hover:text-white underline underline-offset-2"
+              className="text-[11px] text-ink-3 hover:text-ink underline underline-offset-2"
             >
               + {batch.items.length - 6} more targets in batch queue →
             </button>

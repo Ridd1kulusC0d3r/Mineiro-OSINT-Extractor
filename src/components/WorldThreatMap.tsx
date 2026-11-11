@@ -34,6 +34,7 @@ import {
   MappedOrigin,
   ThreatDensityCluster
 } from '../data/geoPlatforms';
+import { PALETTE } from '../theme/palette';
 
 interface WorldThreatMapProps {
   results: ScanResult[];
@@ -323,46 +324,46 @@ export function WorldThreatMap({
       .attr('cx', '50%')
       .attr('cy', '50%')
       .attr('r', '50%');
-    gradCritical.append('stop').attr('offset', '0%').attr('stop-color', '#ECE8DD').attr('stop-opacity', 0.85);
-    gradCritical.append('stop').attr('offset', '40%').attr('stop-color', '#908B7D').attr('stop-opacity', 0.45);
-    gradCritical.append('stop').attr('offset', '75%').attr('stop-color', '#908B7D').attr('stop-opacity', 0.18);
-    gradCritical.append('stop').attr('offset', '100%').attr('stop-color', '#131210').attr('stop-opacity', 0);
+    gradCritical.append('stop').attr('offset', '0%').attr('stop-color', PALETTE.ink).attr('stop-opacity', 0.85);
+    gradCritical.append('stop').attr('offset', '40%').attr('stop-color', PALETTE.ink3).attr('stop-opacity', 0.45);
+    gradCritical.append('stop').attr('offset', '75%').attr('stop-color', PALETTE.ink3).attr('stop-opacity', 0.18);
+    gradCritical.append('stop').attr('offset', '100%').attr('stop-color', PALETTE.paper).attr('stop-opacity', 0);
 
     const gradHigh = defs.append('radialGradient')
       .attr('id', 'grad-density-high')
       .attr('cx', '50%')
       .attr('cy', '50%')
       .attr('r', '50%');
-    gradHigh.append('stop').attr('offset', '0%').attr('stop-color', '#908B7D').attr('stop-opacity', 0.8);
-    gradHigh.append('stop').attr('offset', '45%').attr('stop-color', '#ECE8DD').attr('stop-opacity', 0.35);
-    gradHigh.append('stop').attr('offset', '80%').attr('stop-color', '#B9B4A6').attr('stop-opacity', 0.12);
-    gradHigh.append('stop').attr('offset', '100%').attr('stop-color', '#131210').attr('stop-opacity', 0);
+    gradHigh.append('stop').attr('offset', '0%').attr('stop-color', PALETTE.ink3).attr('stop-opacity', 0.8);
+    gradHigh.append('stop').attr('offset', '45%').attr('stop-color', PALETTE.ink).attr('stop-opacity', 0.35);
+    gradHigh.append('stop').attr('offset', '80%').attr('stop-color', PALETTE.ink2).attr('stop-opacity', 0.12);
+    gradHigh.append('stop').attr('offset', '100%').attr('stop-color', PALETTE.paper).attr('stop-opacity', 0);
 
     const gradElevated = defs.append('radialGradient')
       .attr('id', 'grad-density-elevated')
       .attr('cx', '50%')
       .attr('cy', '50%')
       .attr('r', '50%');
-    gradElevated.append('stop').attr('offset', '0%').attr('stop-color', '#ECE8DD').attr('stop-opacity', 0.75);
-    gradElevated.append('stop').attr('offset', '50%').attr('stop-color', '#B9B4A6').attr('stop-opacity', 0.28);
-    gradElevated.append('stop').attr('offset', '100%').attr('stop-color', '#131210').attr('stop-opacity', 0);
+    gradElevated.append('stop').attr('offset', '0%').attr('stop-color', PALETTE.ink).attr('stop-opacity', 0.75);
+    gradElevated.append('stop').attr('offset', '50%').attr('stop-color', PALETTE.ink2).attr('stop-opacity', 0.28);
+    gradElevated.append('stop').attr('offset', '100%').attr('stop-color', PALETTE.paper).attr('stop-opacity', 0);
 
     const gradModerate = defs.append('radialGradient')
       .attr('id', 'grad-density-moderate')
       .attr('cx', '50%')
       .attr('cy', '50%')
       .attr('r', '50%');
-    gradModerate.append('stop').attr('offset', '0%').attr('stop-color', '#B9B4A6').attr('stop-opacity', 0.65);
-    gradModerate.append('stop').attr('offset', '60%').attr('stop-color', '#908B7D').attr('stop-opacity', 0.2);
-    gradModerate.append('stop').attr('offset', '100%').attr('stop-color', '#131210').attr('stop-opacity', 0);
+    gradModerate.append('stop').attr('offset', '0%').attr('stop-color', PALETTE.ink2).attr('stop-opacity', 0.65);
+    gradModerate.append('stop').attr('offset', '60%').attr('stop-color', PALETTE.ink3).attr('stop-opacity', 0.2);
+    gradModerate.append('stop').attr('offset', '100%').attr('stop-color', PALETTE.paper).attr('stop-opacity', 0);
 
     // Ocean background
     g.append('path')
       .datum({ type: 'Sphere' } as any)
       .attr('class', 'sphere-bg')
       .attr('d', pathGenerator as any)
-      .attr('fill', '#131210')
-      .attr('stroke', '#37332B')
+      .attr('fill', PALETTE.paper)
+      .attr('stroke', PALETTE.rule)
       .attr('stroke-width', 1);
 
     // Graticule grid lines
@@ -373,7 +374,7 @@ export function WorldThreatMap({
         .attr('class', 'graticule-lines')
         .attr('d', pathGenerator as any)
         .attr('fill', 'none')
-        .attr('stroke', 'rgba(236,232,221, 0.05)')
+        .attr('stroke', 'color-mix(in srgb, var(--ink) 5%, transparent)')
         .attr('stroke-width', 0.6)
         .attr('stroke-dasharray', '2 2');
     }
@@ -395,22 +396,22 @@ export function WorldThreatMap({
           if (matchKey && countryDensityMap[matchKey]) {
             const density = countryDensityMap[matchKey].totalDensity;
             // Visual heat highlight for countries hosting verified server endpoints
-            if (density > 200) return '#37332B'; // High density sovereign hotspot
-            if (density > 100) return '#221F1A';
-            return '#1B1915';
+            if (density > 200) return PALETTE.rule; // High density sovereign hotspot
+            if (density > 100) return PALETTE.card;
+            return PALETTE.paper2;
           }
-          return '#131210';
+          return PALETTE.paper;
         })
         .attr('stroke', (d: any) => {
           const countryName = d.properties?.name || '';
           const matchKey = Object.keys(countryDensityMap).find((k) => matchesCountry(countryName, k));
           if (matchKey && countryDensityMap[matchKey]) {
             const density = countryDensityMap[matchKey].totalDensity;
-            if (density > 200) return '#ECE8DD';
-            if (density > 100) return '#908B7D';
-            return '#ECE8DD';
+            if (density > 200) return PALETTE.ink;
+            if (density > 100) return PALETTE.ink3;
+            return PALETTE.ink;
           }
-          return '#37332B';
+          return PALETTE.rule;
         })
         .attr('stroke-width', (d: any) => {
           const countryName = d.properties?.name || '';
@@ -420,8 +421,8 @@ export function WorldThreatMap({
         .attr('cursor', 'pointer')
         .on('mouseover', function (event, d: any) {
           d3.select(this)
-            .attr('fill', '#37332B')
-            .attr('stroke', '#ECE8DD');
+            .attr('fill', PALETTE.rule)
+            .attr('stroke', PALETTE.ink);
         })
         .on('mouseout', function (event, d: any) {
           const countryName = d.properties?.name || '';
@@ -429,12 +430,12 @@ export function WorldThreatMap({
           if (matchKey && countryDensityMap[matchKey]) {
             const density = countryDensityMap[matchKey].totalDensity;
             d3.select(this)
-              .attr('fill', density > 200 ? '#37332B' : density > 100 ? '#221F1A' : '#1B1915')
-              .attr('stroke', density > 200 ? '#ECE8DD' : density > 100 ? '#908B7D' : '#ECE8DD');
+              .attr('fill', density > 200 ? PALETTE.rule : density > 100 ? PALETTE.card : PALETTE.paper2)
+              .attr('stroke', density > 200 ? PALETTE.ink : density > 100 ? PALETTE.ink3 : PALETTE.ink);
           } else {
             d3.select(this)
-              .attr('fill', '#131210')
-              .attr('stroke', '#37332B');
+              .attr('fill', PALETTE.paper)
+              .attr('stroke', PALETTE.rule);
           }
         });
     } catch (err) {
@@ -486,7 +487,7 @@ export function WorldThreatMap({
           clusterG.append('circle')
             .attr('r', haloRadius * 0.7)
             .attr('fill', 'none')
-            .attr('stroke', cluster.densityTier === 'CRITICAL' ? '#ECE8DD' : '#908B7D')
+            .attr('stroke', cluster.densityTier === 'CRITICAL' ? PALETTE.ink : PALETTE.ink3)
             .attr('stroke-width', 0.9)
             .attr('stroke-dasharray', '3 3')
             .attr('opacity', 0.6)
@@ -502,14 +503,14 @@ export function WorldThreatMap({
           .attr('y', -10)
           .attr('width', 70)
           .attr('height', 14)
-          .attr('fill', '#1B1915')
-          .attr('stroke', cluster.densityTier === 'CRITICAL' ? '#ECE8DD' : '#37332B')
+          .attr('fill', PALETTE.paper2)
+          .attr('stroke', cluster.densityTier === 'CRITICAL' ? PALETTE.ink : PALETTE.rule)
           .attr('stroke-width', 0.8);
 
         badgeG.append('text')
           .attr('x', 0)
           .attr('y', 0)
-          .attr('fill', '#ECE8DD')
+          .attr('fill', PALETTE.ink)
           .attr('font-size', '8px')
           .attr('font-family', 'monospace')
           .attr('font-weight', 'bold')
@@ -546,7 +547,7 @@ export function WorldThreatMap({
           .datum(lineData)
           .attr('d', lineGenerator)
           .attr('fill', 'none')
-          .attr('stroke', 'rgba(236,232,221, 0.15)')
+          .attr('stroke', 'color-mix(in srgb, var(--ink) 15%, transparent)')
           .attr('stroke-width', 1)
           .attr('stroke-dasharray', '3 3');
 
@@ -555,7 +556,7 @@ export function WorldThreatMap({
           .datum(lineData)
           .attr('d', lineGenerator)
           .attr('fill', 'none')
-          .attr('stroke', origin.threatDensityWeight > 80 ? '#ECE8DD' : '#ECE8DD')
+          .attr('stroke', origin.threatDensityWeight > 80 ? PALETTE.ink : PALETTE.ink)
           .attr('stroke-width', origin.threatDensityWeight > 80 ? 1.5 : 1)
           .attr('stroke-dasharray', '8 14')
           .style('animation', 'reconPulseDash 3s linear infinite');
@@ -571,25 +572,25 @@ export function WorldThreatMap({
       vantageGroup.append('circle')
         .attr('r', 16)
         .attr('fill', 'none')
-        .attr('stroke', '#ECE8DD')
+        .attr('stroke', PALETTE.ink)
         .attr('stroke-width', 0.8)
         .attr('opacity', 0.4)
         .style('animation', 'radarPing 2.5s cubic-bezier(0, 0.2, 0.8, 1) infinite');
 
       vantageGroup.append('circle')
         .attr('r', 4.5)
-        .attr('fill', '#131210')
-        .attr('stroke', '#ECE8DD')
+        .attr('fill', PALETTE.paper)
+        .attr('stroke', PALETTE.ink)
         .attr('stroke-width', 1.8);
 
       vantageGroup.append('circle')
         .attr('r', 1.8)
-        .attr('fill', '#ECE8DD');
+        .attr('fill', PALETTE.ink);
 
       vantageGroup.append('text')
         .attr('x', 8)
         .attr('y', -6)
-        .attr('fill', '#ECE8DD')
+        .attr('fill', PALETTE.ink)
         .attr('font-size', '9px')
         .attr('font-family', 'monospace')
         .attr('font-weight', 'bold')
@@ -629,7 +630,7 @@ export function WorldThreatMap({
         nodeG.append('circle')
           .attr('r', isSelected ? 22 : 16)
           .attr('fill', 'none')
-          .attr('stroke', isCritical ? '#ECE8DD' : isPhysical ? '#908B7D' : '#ECE8DD')
+          .attr('stroke', isCritical ? PALETTE.ink : isPhysical ? PALETTE.ink3 : PALETTE.ink)
           .attr('stroke-width', 1)
           .attr('stroke-dasharray', isPhysical ? '2 2' : 'none')
           .attr('opacity', 0.6)
@@ -639,21 +640,21 @@ export function WorldThreatMap({
       // Base server node circle
       nodeG.append('circle')
         .attr('r', isSelected || isHovered ? 7.5 : 5)
-        .attr('fill', isSelected ? '#ECE8DD' : '#131210')
-        .attr('stroke', isCritical ? '#ECE8DD' : isPhysical ? '#908B7D' : '#B9B4A6')
+        .attr('fill', isSelected ? PALETTE.ink : PALETTE.paper)
+        .attr('stroke', isCritical ? PALETTE.ink : isPhysical ? PALETTE.ink3 : PALETTE.ink2)
         .attr('stroke-width', isSelected ? 2.2 : 1.4)
         .attr('filter', isSelected ? 'url(#map-glow)' : 'none');
 
       // Inner pin core
       nodeG.append('circle')
         .attr('r', isSelected ? 3 : 2)
-        .attr('fill', isSelected ? '#131210' : isCritical ? '#ECE8DD' : isPhysical ? '#908B7D' : '#ECE8DD');
+        .attr('fill', isSelected ? PALETTE.paper : isCritical ? PALETTE.ink : isPhysical ? PALETTE.ink3 : PALETTE.ink);
 
       // Platform & IP Tag
       nodeG.append('text')
         .attr('x', 8)
         .attr('y', 3)
-        .attr('fill', isSelected ? '#ECE8DD' : '#B9B4A6')
+        .attr('fill', isSelected ? PALETTE.ink : PALETTE.ink2)
         .attr('font-size', isSelected ? '10px' : '8.5px')
         .attr('font-family', 'monospace')
         .attr('font-weight', isSelected ? 'bold' : 'normal')
@@ -726,19 +727,19 @@ export function WorldThreatMap({
   const activeFocus = activeOrigin || hoveredOrigin;
 
   return (
-    <div id="world-threat-perspective-container" className="border border-neutral-800 bg-neutral-950 p-5 space-y-4 font-mono">
+    <div id="world-threat-perspective-container" className="border border-rule bg-paper-2 p-5 space-y-4 font-mono">
       {/* Header bar with primary telemetry metadata */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-800 pb-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-rule pb-3">
         <div className="flex items-center gap-2.5">
-          <Globe className="w-4 h-4 text-white shrink-0" />
+          <Globe className="w-4 h-4 text-ink shrink-0" />
           <div>
-            <div className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+            <div className="text-xs font-bold text-ink uppercase tracking-wider flex items-center gap-2">
               <span>Geographical Threat Footprint Density</span>
-              <span className="text-[10px] px-1.5 py-0.2 border border-neutral-700 bg-black text-neutral-300">
+              <span className="text-[10px] px-1.5 py-0.2 border border-rule bg-paper text-ink-2">
                 D3 Cartographic Engine
               </span>
             </div>
-            <div className="text-[11px] text-neutral-400 font-sans mt-0.5">
+            <div className="text-[11px] text-ink-3 font-sans mt-0.5">
               Correlating discovered profile URLs with physical server IPs, host datacenters, and jurisdictional legal exposure.
             </div>
           </div>
@@ -746,15 +747,15 @@ export function WorldThreatMap({
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Visualization Mode Toggle: Density Heatmap vs Network Vectors */}
-          <div className="inline-flex border border-neutral-800 bg-black p-0.5">
+          <div className="inline-flex border border-rule bg-paper p-0.5">
             <button
               id="mode-density-btn"
               type="button"
               onClick={() => setVisualizationMode('density')}
               className={`px-2.5 py-1 text-[11px] uppercase flex items-center gap-1.5 transition-colors ${
                 visualizationMode === 'density'
-                  ? 'bg-[#F0885A] text-black font-bold'
-                  : 'text-neutral-400 hover:text-white'
+                  ? 'bg-signal text-signal-ink font-bold'
+                  : 'text-ink-3 hover:text-ink'
               }`}
             >
               <Flame className="w-3.5 h-3.5" />
@@ -766,8 +767,8 @@ export function WorldThreatMap({
               onClick={() => setVisualizationMode('vectors')}
               className={`px-2.5 py-1 text-[11px] uppercase flex items-center gap-1.5 transition-colors ${
                 visualizationMode === 'vectors'
-                  ? 'bg-[#F0885A] text-black font-bold'
-                  : 'text-neutral-400 hover:text-white'
+                  ? 'bg-signal text-signal-ink font-bold'
+                  : 'text-ink-3 hover:text-ink'
               }`}
             >
               <Activity className="w-3.5 h-3.5" />
@@ -776,12 +777,12 @@ export function WorldThreatMap({
           </div>
 
           {/* Zoom Buttons */}
-          <div className="inline-flex border border-neutral-800 bg-black">
+          <div className="inline-flex border border-rule bg-paper">
             <button
               id="map-zoom-in-btn"
               type="button"
               onClick={handleZoomIn}
-              className="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-900 border-r border-neutral-800"
+              className="p-1.5 text-ink-3 hover:text-ink hover:bg-rule-2 border-r border-rule"
               title="Zoom In"
             >
               <ZoomIn className="w-3.5 h-3.5" />
@@ -790,7 +791,7 @@ export function WorldThreatMap({
               id="map-zoom-out-btn"
               type="button"
               onClick={handleZoomOut}
-              className="p-1.5 text-neutral-400 hover:text-white hover:bg-neutral-900 border-r border-neutral-800"
+              className="p-1.5 text-ink-3 hover:text-ink hover:bg-rule-2 border-r border-rule"
               title="Zoom Out"
             >
               <ZoomOut className="w-3.5 h-3.5" />
@@ -799,7 +800,7 @@ export function WorldThreatMap({
               id="map-zoom-reset-btn"
               type="button"
               onClick={handleResetZoom}
-              className="px-2 py-1 text-[10px] uppercase text-neutral-400 hover:text-white hover:bg-neutral-900 flex items-center gap-1"
+              className="px-2 py-1 text-[10px] uppercase text-ink-3 hover:text-ink hover:bg-rule-2 flex items-center gap-1"
               title="Reset View"
             >
               <RotateCcw className="w-3 h-3" />
@@ -810,10 +811,10 @@ export function WorldThreatMap({
       </div>
 
       {/* Layer Toggles & Jurisdiction Filter Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-black p-2.5 border border-neutral-800 text-xs">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-paper p-2.5 border border-rule text-xs">
         {/* Jurisdiction Filters */}
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-[10px] text-neutral-500 uppercase tracking-widest mr-1">
+          <span className="text-[10px] text-ink-3 uppercase tracking-widest mr-1">
             JURISDICTION:
           </span>
           {[
@@ -828,8 +829,8 @@ export function WorldThreatMap({
               onClick={() => setFilterJurisdiction(tab.id)}
               className={`px-2 py-1 text-[11px] uppercase transition-colors ${
                 filterJurisdiction === tab.id
-                  ? 'bg-[#F0885A] text-black font-bold'
-                  : 'text-neutral-400 hover:text-white hover:bg-neutral-900 border border-neutral-800'
+                  ? 'bg-signal text-signal-ink font-bold'
+                  : 'text-ink-3 hover:text-ink hover:bg-rule-2 border border-rule'
               }`}
             >
               {tab.label}
@@ -843,33 +844,33 @@ export function WorldThreatMap({
               onClick={() => setOnlyPhysicalRisk(!onlyPhysicalRisk)}
               className={`px-2 py-1 text-[11px] uppercase border transition-colors flex items-center gap-1 ${
                 onlyPhysicalRisk
-                  ? 'border-[#F0885A] bg-[#F0885A] text-black font-bold'
-                  : 'border-neutral-700 bg-black text-neutral-300 hover:border-neutral-500'
+                  ? 'border-signal bg-signal text-signal-ink font-bold'
+                  : 'border-rule bg-paper text-ink-2 hover:border-ink-3'
               }`}
             >
-              <AlertTriangle className="w-3 h-3 text-white shrink-0" />
+              <AlertTriangle className="w-3 h-3 text-ink shrink-0" />
               GPS Risk ({threatReport.highPhysicalRiskCount})
             </button>
           )}
         </div>
 
         {/* Display Layer Toggles */}
-        <div className="flex items-center gap-3 text-[11px] text-neutral-400">
-          <label className="inline-flex items-center gap-1.5 cursor-pointer hover:text-white">
+        <div className="flex items-center gap-3 text-[11px] text-ink-3">
+          <label className="inline-flex items-center gap-1.5 cursor-pointer hover:text-ink">
             <input
               type="checkbox"
               checked={showArcs}
               onChange={(e) => setShowArcs(e.target.checked)}
-              className="accent-white rounded-none cursor-pointer"
+              className="accent-ink rounded-none cursor-pointer"
             />
             <span>Recon Arcs</span>
           </label>
-          <label className="inline-flex items-center gap-1.5 cursor-pointer hover:text-white">
+          <label className="inline-flex items-center gap-1.5 cursor-pointer hover:text-ink">
             <input
               type="checkbox"
               checked={showGraticule}
               onChange={(e) => setShowGraticule(e.target.checked)}
-              className="accent-white rounded-none cursor-pointer"
+              className="accent-ink rounded-none cursor-pointer"
             />
             <span>Graticule Grid</span>
           </label>
@@ -879,7 +880,7 @@ export function WorldThreatMap({
       {/* SVG Canvas Map Container */}
       <div 
         ref={containerRef}
-        className="relative w-full border border-[#37332B] bg-[#131210] overflow-hidden select-none"
+        className="relative w-full border border-rule bg-paper overflow-hidden select-none"
         style={{ minHeight: '380px' }}
       >
         <svg
@@ -892,15 +893,15 @@ export function WorldThreatMap({
 
         {/* Threat Footprint Density Color Scale Legend (Overlay Top-Right) */}
         {visualizationMode === 'density' && (
-          <div className="absolute top-3 right-3 p-2.5 border border-neutral-800/90 bg-black/90 backdrop-blur-md text-[10px] space-y-1.5 z-10">
-            <div className="text-neutral-300 font-bold uppercase tracking-wider flex items-center gap-1.5">
-              <Flame className="w-3 h-3 text-neutral-500" />
+          <div className="absolute top-3 right-3 p-2.5 border border-rule/90 bg-paper/90 backdrop-blur-md text-[10px] space-y-1.5 z-10">
+            <div className="text-ink-2 font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <Flame className="w-3 h-3 text-ink-3" />
               Threat Footprint Density
             </div>
             <div className="flex items-center gap-1">
-              <div className="w-16 h-2 rounded-none bg-gradient-to-r from-neutral-600 via-neutral-500 via-neutral-500 to-neutral-600" />
+              <div className="w-16 h-2 rounded-none bg-gradient-to-r from-ink-3 via-ink-3 via-ink-3 to-ink-3" />
             </div>
-            <div className="flex justify-between text-[9px] text-neutral-400 font-mono">
+            <div className="flex justify-between text-[9px] text-ink-3 font-mono">
               <span>Moderate</span>
               <span>Elevated</span>
               <span>Critical</span>
@@ -909,24 +910,24 @@ export function WorldThreatMap({
         )}
 
         {/* Overlay Compass / Legend Badge (Overlay Top-Left) */}
-        <div className="absolute top-3 left-3 pointer-events-none p-2 border border-neutral-800/80 bg-black/85 backdrop-blur-sm text-[10px] space-y-1">
-          <div className="flex items-center gap-1.5 text-neutral-300 font-bold uppercase tracking-wider">
-            <Crosshair className="w-3 h-3 text-white" />
+        <div className="absolute top-3 left-3 pointer-events-none p-2 border border-rule/80 bg-paper/85 backdrop-blur-sm text-[10px] space-y-1">
+          <div className="flex items-center gap-1.5 text-ink-2 font-bold uppercase tracking-wider">
+            <Crosshair className="w-3 h-3 text-ink" />
             Vantage: Frankfurt Node [50.11°N, 8.68°E]
           </div>
-          <div className="text-neutral-500">
+          <div className="text-ink-3">
             {densityClusters.length} Datacenter Hubs Identified • {allOrigins.length} Correlated Endpoints
           </div>
         </div>
 
         {/* Empty state overlay if zero hits */}
         {allOrigins.length === 0 && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/75 p-6 text-center">
-            <Radio className="w-8 h-8 text-neutral-600 mb-2 animate-pulse" />
-            <div className="text-sm font-bold text-white uppercase tracking-wider">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-paper/75 p-6 text-center">
+            <Radio className="w-8 h-8 text-ink-3 mb-2 animate-pulse" />
+            <div className="text-sm font-bold text-ink uppercase tracking-wider">
               Awaiting Reconnaissance Hits
             </div>
-            <div className="text-xs text-neutral-400 max-w-sm mt-1 font-sans">
+            <div className="text-xs text-ink-3 max-w-sm mt-1 font-sans">
               Run a profile or email probe to correlate discovered URLs with server IP infrastructure and display threat footprint density.
             </div>
           </div>
@@ -934,18 +935,18 @@ export function WorldThreatMap({
 
         {/* Floating Forensic HUD Inspector (if node clicked or hovered) */}
         {activeFocus && (
-          <div className="absolute bottom-3 right-3 left-3 sm:left-auto sm:w-96 border border-[#F0885A] bg-black/95 backdrop-blur-md p-4 text-xs space-y-3 z-20 shadow-2xl">
-            <div className="flex items-start justify-between gap-2 border-b border-neutral-800 pb-2">
+          <div className="absolute bottom-3 right-3 left-3 sm:left-auto sm:w-96 border border-signal bg-paper/95 backdrop-blur-md p-4 text-xs space-y-3 z-20 shadow-2xl">
+            <div className="flex items-start justify-between gap-2 border-b border-rule pb-2">
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-white font-bold text-sm tracking-wide">
+                  <span className="text-ink font-bold text-sm tracking-wide">
                     {activeFocus.platformName}
                   </span>
-                  <span className="text-[9px] uppercase px-1.5 py-0.2 border border-neutral-700 bg-neutral-900 text-neutral-300">
+                  <span className="text-[9px] uppercase px-1.5 py-0.2 border border-rule bg-rule-2 text-ink-2">
                     {activeFocus.category}
                   </span>
                 </div>
-                <div className="text-[11px] text-neutral-400 mt-0.5">
+                <div className="text-[11px] text-ink-3 mt-0.5">
                   {activeFocus.city}, {activeFocus.country}
                 </div>
               </div>
@@ -954,11 +955,11 @@ export function WorldThreatMap({
                 <button
                   type="button"
                   onClick={() => copyToClipboard(activeFocus.url, `url-${activeFocus.id}`)}
-                  className="p-1.5 border border-neutral-800 bg-neutral-900 text-neutral-300 hover:text-white"
+                  className="p-1.5 border border-rule bg-rule-2 text-ink-2 hover:text-ink"
                   title="Copy URL"
                 >
                   {copiedKey === `url-${activeFocus.id}` ? (
-                    <Check className="w-3.5 h-3.5 text-white" />
+                    <Check className="w-3.5 h-3.5 text-ink" />
                   ) : (
                     <Copy className="w-3.5 h-3.5" />
                   )}
@@ -967,7 +968,7 @@ export function WorldThreatMap({
                   href={activeFocus.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="p-1.5 border border-neutral-800 bg-neutral-900 text-neutral-300 hover:text-white"
+                  className="p-1.5 border border-rule bg-rule-2 text-ink-2 hover:text-ink"
                   title="Open in new tab"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
@@ -977,26 +978,26 @@ export function WorldThreatMap({
 
             {/* Resolved Server IP & Network Infrastructure */}
             <div className="grid grid-cols-2 gap-2 text-[11px]">
-              <div className="p-2 border border-neutral-800 bg-neutral-950">
-                <div className="text-[9px] text-neutral-500 uppercase flex items-center justify-between">
+              <div className="p-2 border border-rule bg-paper-2">
+                <div className="text-[9px] text-ink-3 uppercase flex items-center justify-between">
                   <span>RESOLVED SERVER IP</span>
                   <button
                     type="button"
                     onClick={() => copyToClipboard(activeFocus.serverIp, `ip-${activeFocus.id}`)}
-                    className="text-neutral-400 hover:text-white"
+                    className="text-ink-3 hover:text-ink"
                     title="Copy IP"
                   >
                     {copiedKey === `ip-${activeFocus.id}` ? <Check className="w-2.5 h-2.5" /> : <Copy className="w-2.5 h-2.5" />}
                   </button>
                 </div>
-                <div className="text-white font-mono font-bold mt-0.5 truncate">
+                <div className="text-ink font-mono font-bold mt-0.5 truncate">
                   {activeFocus.serverIp}
                 </div>
               </div>
 
-              <div className="p-2 border border-neutral-800 bg-neutral-950">
-                <div className="text-[9px] text-neutral-500 uppercase">AUTONOMOUS SYSTEM</div>
-                <div className="text-white font-mono mt-0.5 truncate" title={activeFocus.asn}>
+              <div className="p-2 border border-rule bg-paper-2">
+                <div className="text-[9px] text-ink-3 uppercase">AUTONOMOUS SYSTEM</div>
+                <div className="text-ink font-mono mt-0.5 truncate" title={activeFocus.asn}>
                   {activeFocus.asn}
                 </div>
               </div>
@@ -1004,22 +1005,22 @@ export function WorldThreatMap({
 
             {/* Coordinates & Hosting Telemetry */}
             <div className="grid grid-cols-2 gap-2 text-[11px]">
-              <div className="p-2 border border-neutral-800 bg-neutral-950">
-                <div className="text-[9px] text-neutral-500 uppercase">SERVER COORDS</div>
-                <div className="text-white font-mono mt-0.5">
+              <div className="p-2 border border-rule bg-paper-2">
+                <div className="text-[9px] text-ink-3 uppercase">SERVER COORDS</div>
+                <div className="text-ink font-mono mt-0.5">
                   {activeFocus.coordinates[1].toFixed(3)}°, {activeFocus.coordinates[0].toFixed(3)}°
                 </div>
               </div>
 
-              <div className="p-2 border border-neutral-800 bg-neutral-950">
-                <div className="text-[9px] text-neutral-500 uppercase">THREAT DENSITY</div>
+              <div className="p-2 border border-rule bg-paper-2">
+                <div className="text-[9px] text-ink-3 uppercase">THREAT DENSITY</div>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className={`font-bold ${activeFocus.threatDensityWeight > 80 ? 'text-neutral-400' : 'text-white'}`}>
+                  <span className={`font-bold ${activeFocus.threatDensityWeight > 80 ? 'text-ink-3' : 'text-ink'}`}>
                     {activeFocus.threatDensityWeight}/100
                   </span>
-                  <div className="flex-1 bg-neutral-800 h-1.5">
+                  <div className="flex-1 bg-rule h-1.5">
                     <div
-                      className={`h-1.5 ${activeFocus.threatDensityWeight > 80 ? 'bg-neutral-500' : 'bg-[#F0885A]'}`}
+                      className={`h-1.5 ${activeFocus.threatDensityWeight > 80 ? 'bg-ink-3' : 'bg-signal'}`}
                       style={{ width: `${activeFocus.threatDensityWeight}%` }}
                     />
                   </div>
@@ -1030,33 +1031,33 @@ export function WorldThreatMap({
             {/* Attack Surface & Subpoena Notes */}
             <div className="space-y-1 text-[11px] font-sans">
               <div className="flex items-center justify-between">
-                <span className="text-neutral-400 font-mono text-[10px] uppercase">SUBPOENA RISK:</span>
-                <span className="text-white font-bold font-mono">{activeFocus.subpoenaExposure}</span>
+                <span className="text-ink-3 font-mono text-[10px] uppercase">SUBPOENA RISK:</span>
+                <span className="text-ink font-bold font-mono">{activeFocus.subpoenaExposure}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-neutral-400 font-mono text-[10px] uppercase">BACKBONE CARRIER:</span>
-                <span className="text-white font-mono truncate max-w-[200px]">{activeFocus.isp}</span>
+                <span className="text-ink-3 font-mono text-[10px] uppercase">BACKBONE CARRIER:</span>
+                <span className="text-ink font-mono truncate max-w-[200px]">{activeFocus.isp}</span>
               </div>
               {activeFocus.physicalRisk === 'high' && (
-                <div className="p-2 border border-neutral-700 bg-neutral-900 text-neutral-200 text-[11px] flex items-start gap-2 mt-2">
-                  <AlertTriangle className="w-4 h-4 text-white shrink-0 mt-0.5" />
+                <div className="p-2 border border-rule bg-rule-2 text-ink text-[11px] flex items-start gap-2 mt-2">
+                  <AlertTriangle className="w-4 h-4 text-ink shrink-0 mt-0.5" />
                   <div>
-                    <strong className="text-white block">Physical Geolocation Risk Vector</strong>
+                    <strong className="text-ink block">Physical Geolocation Risk Vector</strong>
                     {activeFocus.threatNotes}
                   </div>
                 </div>
               )}
             </div>
 
-            <div className="flex items-center justify-between pt-1 border-t border-neutral-800 text-[10px] text-neutral-400 font-mono">
-              <span className="truncate max-w-[200px] text-neutral-500">HOST: {activeFocus.resolvedHost}</span>
+            <div className="flex items-center justify-between pt-1 border-t border-rule text-[10px] text-ink-3 font-mono">
+              <span className="truncate max-w-[200px] text-ink-3">HOST: {activeFocus.resolvedHost}</span>
               <button
                 type="button"
                 onClick={() => {
                   setActiveOrigin(null);
                   setActiveCluster(null);
                 }}
-                className="text-neutral-400 hover:text-white uppercase underline ml-2"
+                className="text-ink-3 hover:text-ink uppercase underline ml-2"
               >
                 Close HUD
               </button>
@@ -1066,22 +1067,22 @@ export function WorldThreatMap({
       </div>
 
       {/* URL to Geographical Server IP Correlation Matrix (Collapsible Table) */}
-      <div className="border border-neutral-800 bg-black">
+      <div className="border border-rule bg-paper">
         <div 
-          className="p-3 border-b border-neutral-800 flex items-center justify-between cursor-pointer hover:bg-neutral-900/50 transition-colors"
+          className="p-3 border-b border-rule flex items-center justify-between cursor-pointer hover:bg-rule-2/50 transition-colors"
           onClick={() => setShowCorrelationMatrix(!showCorrelationMatrix)}
         >
           <div className="flex items-center gap-2">
-            <Server className="w-4 h-4 text-white shrink-0" />
-            <span className="text-xs font-bold text-white uppercase tracking-wider">
+            <Server className="w-4 h-4 text-ink shrink-0" />
+            <span className="text-xs font-bold text-ink uppercase tracking-wider">
               URL ↔ Server IP Infrastructure Correlation Matrix
             </span>
-            <span className="text-[10px] px-2 py-0.5 border border-neutral-700 bg-neutral-900 text-neutral-300">
+            <span className="text-[10px] px-2 py-0.5 border border-rule bg-rule-2 text-ink-2">
               {allOrigins.length} Correlated Endpoints
             </span>
           </div>
 
-          <div className="flex items-center gap-2 text-neutral-400 text-xs">
+          <div className="flex items-center gap-2 text-ink-3 text-xs">
             <span>{showCorrelationMatrix ? 'Collapse Matrix' : 'Expand Matrix'}</span>
             {showCorrelationMatrix ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </div>
@@ -1092,23 +1093,23 @@ export function WorldThreatMap({
             {/* Search Filter for Matrix */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
               <div className="relative w-full sm:w-80">
-                <Search className="w-3.5 h-3.5 text-neutral-500 absolute left-2.5 top-1/2 -translate-y-1/2" />
+                <Search className="w-3.5 h-3.5 text-ink-3 absolute left-2.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   placeholder="Filter by IP, platform, ASN, city, URL..."
                   value={matrixSearch}
                   onChange={(e) => setMatrixSearch(e.target.value)}
-                  className="w-full pl-8 pr-3 py-1.5 bg-neutral-950 border border-neutral-800 text-white text-[11px] placeholder:text-neutral-600 focus:outline-none focus:border-neutral-500 font-mono"
+                  className="w-full pl-8 pr-3 py-1.5 bg-paper-2 border border-rule text-ink text-[11px] placeholder:text-ink-3 focus:outline-none focus:border-ink-3 font-mono"
                 />
               </div>
 
-              <div className="text-[11px] text-neutral-400 flex items-center gap-2">
+              <div className="text-[11px] text-ink-3 flex items-center gap-2">
                 <span>Showing {matrixRows.length} of {allOrigins.length} endpoints</span>
                 {matrixSearch && (
                   <button
                     type="button"
                     onClick={() => setMatrixSearch('')}
-                    className="text-neutral-500 hover:text-white underline text-[10px]"
+                    className="text-ink-3 hover:text-ink underline text-[10px]"
                   >
                     Clear Filter
                   </button>
@@ -1117,9 +1118,9 @@ export function WorldThreatMap({
             </div>
 
             {/* Matrix Table */}
-            <div className="overflow-x-auto border border-neutral-800">
-              <table className="w-full text-left text-[11px] font-mono divide-y divide-neutral-800">
-                <thead className="bg-neutral-950 text-neutral-400 text-[10px] uppercase">
+            <div className="overflow-x-auto border border-rule">
+              <table className="w-full text-left text-[11px] font-mono divide-y divide-rule">
+                <thead className="bg-paper-2 text-ink-3 text-[10px] uppercase">
                   <tr>
                     <th className="p-2.5">Discovered Platform & Target URL</th>
                     <th className="p-2.5">Correlated Server IP</th>
@@ -1130,10 +1131,10 @@ export function WorldThreatMap({
                     <th className="p-2.5 text-center">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-neutral-900 bg-black">
+                <tbody className="divide-y divide-rule bg-paper">
                   {matrixRows.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="p-6 text-center text-neutral-500">
+                      <td colSpan={7} className="p-6 text-center text-ink-3">
                         No correlated endpoints matched search criteria.
                       </td>
                     </tr>
@@ -1143,14 +1144,14 @@ export function WorldThreatMap({
                       return (
                         <tr 
                           key={origin.id}
-                          className={`hover:bg-neutral-900/60 transition-colors ${
-                            isSelected ? 'bg-neutral-900/80 border-l-2 border-l-white' : ''
+                          className={`hover:bg-rule-2/60 transition-colors ${
+                            isSelected ? 'bg-rule-2/80 border-l-2 border-l-ink' : ''
                           }`}
                         >
                           <td className="p-2.5">
-                            <div className="font-bold text-white flex items-center gap-1.5">
+                            <div className="font-bold text-ink flex items-center gap-1.5">
                               <span>{origin.platformName}</span>
-                              <span className="text-[9px] uppercase px-1 py-0.2 bg-neutral-900 border border-neutral-800 text-neutral-400 font-normal">
+                              <span className="text-[9px] uppercase px-1 py-0.2 bg-rule-2 border border-rule text-ink-3 font-normal">
                                 {origin.category}
                               </span>
                             </div>
@@ -1158,7 +1159,7 @@ export function WorldThreatMap({
                               href={origin.url}
                               target="_blank"
                               rel="noreferrer"
-                              className="text-[10px] text-neutral-400 hover:text-white truncate block max-w-xs transition-colors mt-0.5"
+                              className="text-[10px] text-ink-3 hover:text-ink truncate block max-w-xs transition-colors mt-0.5"
                               title={origin.url}
                             >
                               {origin.url}
@@ -1166,51 +1167,51 @@ export function WorldThreatMap({
                           </td>
 
                           <td className="p-2.5">
-                            <div className="text-white font-bold flex items-center gap-1">
+                            <div className="text-ink font-bold flex items-center gap-1">
                               <span>{origin.serverIp}</span>
                               <button
                                 type="button"
                                 onClick={() => copyToClipboard(origin.serverIp, `tbl-ip-${origin.id}`)}
-                                className="text-neutral-500 hover:text-white"
+                                className="text-ink-3 hover:text-ink"
                                 title="Copy IP"
                               >
                                 {copiedKey === `tbl-ip-${origin.id}` ? (
-                                  <Check className="w-2.5 h-2.5 text-white" />
+                                  <Check className="w-2.5 h-2.5 text-ink" />
                                 ) : (
                                   <Copy className="w-2.5 h-2.5" />
                                 )}
                               </button>
                             </div>
-                            <div className="text-[10px] text-neutral-500 truncate max-w-[180px]">
+                            <div className="text-[10px] text-ink-3 truncate max-w-[180px]">
                               {origin.resolvedHost}
                             </div>
                           </td>
 
                           <td className="p-2.5">
-                            <div className="text-neutral-200 font-medium truncate max-w-[160px]" title={origin.asn}>
+                            <div className="text-ink font-medium truncate max-w-[160px]" title={origin.asn}>
                               {origin.asn}
                             </div>
-                            <div className="text-[10px] text-neutral-500 truncate max-w-[160px]">
+                            <div className="text-[10px] text-ink-3 truncate max-w-[160px]">
                               {origin.isp}
                             </div>
                           </td>
 
                           <td className="p-2.5">
-                            <div className="text-neutral-200">{origin.city}</div>
-                            <div className="text-[10px] text-neutral-500">{origin.country}</div>
+                            <div className="text-ink">{origin.city}</div>
+                            <div className="text-[10px] text-ink-3">{origin.country}</div>
                           </td>
 
                           <td className="p-2.5">
-                            <span className="text-[10px] uppercase px-1.5 py-0.5 bg-neutral-950 border border-neutral-800 text-neutral-300">
+                            <span className="text-[10px] uppercase px-1.5 py-0.5 bg-paper-2 border border-rule text-ink-2">
                               {origin.jurisdiction}
                             </span>
                           </td>
 
                           <td className="p-2.5 text-right">
-                            <span className={`font-bold ${origin.threatDensityWeight > 80 ? 'text-neutral-400' : 'text-neutral-300'}`}>
+                            <span className={`font-bold ${origin.threatDensityWeight > 80 ? 'text-ink-3' : 'text-ink-2'}`}>
                               {origin.threatDensityWeight}
                             </span>
-                            <span className="text-[10px] text-neutral-500 block">
+                            <span className="text-[10px] text-ink-3 block">
                               Score: {origin.threatScore}
                             </span>
                           </td>
@@ -1220,7 +1221,7 @@ export function WorldThreatMap({
                               <button
                                 type="button"
                                 onClick={() => focusOnServer(origin)}
-                                className="p-1 border border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-white hover:border-neutral-600"
+                                className="p-1 border border-rule bg-paper-2 text-ink-3 hover:text-ink hover:border-ink-3"
                                 title="Locate on World Map"
                               >
                                 <Crosshair className="w-3.5 h-3.5" />
@@ -1229,7 +1230,7 @@ export function WorldThreatMap({
                                 href={origin.url}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="p-1 border border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-white hover:border-neutral-600"
+                                className="p-1 border border-rule bg-paper-2 text-ink-3 hover:text-ink hover:border-ink-3"
                                 title="Open URL"
                               >
                                 <ExternalLink className="w-3.5 h-3.5" />
@@ -1250,64 +1251,64 @@ export function WorldThreatMap({
       {/* Forensic Threat Metrics & Geopolitical Exposure Strip */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1">
         {/* Footprint Dispersion Profile */}
-        <div className="p-3.5 border border-neutral-800 bg-black flex flex-col justify-between space-y-1">
-          <div className="text-[10px] text-neutral-500 uppercase tracking-widest flex items-center justify-between">
+        <div className="p-3.5 border border-rule bg-paper flex flex-col justify-between space-y-1">
+          <div className="text-[10px] text-ink-3 uppercase tracking-widest flex items-center justify-between">
             <span>DISPERSION SPREAD</span>
-            <Compass className="w-3.5 h-3.5 text-neutral-400" />
+            <Compass className="w-3.5 h-3.5 text-ink-3" />
           </div>
           <div>
-            <div className="text-sm font-bold text-white leading-tight">
+            <div className="text-sm font-bold text-ink leading-tight">
               {threatReport.dispersionProfile}
             </div>
-            <div className="text-[11px] text-neutral-400 mt-1">
+            <div className="text-[11px] text-ink-3 mt-1">
               {threatReport.uniqueCountries} nations • {threatReport.uniqueCities} city clusters
             </div>
           </div>
         </div>
 
         {/* Five Eyes MLAT Intercept Exposure */}
-        <div className="p-3.5 border border-neutral-800 bg-black flex flex-col justify-between space-y-1">
-          <div className="text-[10px] text-neutral-500 uppercase tracking-widest flex items-center justify-between">
+        <div className="p-3.5 border border-rule bg-paper flex flex-col justify-between space-y-1">
+          <div className="text-[10px] text-ink-3 uppercase tracking-widest flex items-center justify-between">
             <span>FIVE EYES EXPOSURE</span>
-            <ShieldAlert className="w-3.5 h-3.5 text-white" />
+            <ShieldAlert className="w-3.5 h-3.5 text-ink" />
           </div>
           <div>
-            <div className="text-xl font-black text-white">
+            <div className="text-xl font-black text-ink">
               {threatReport.fiveEyesPercent}%
             </div>
-            <div className="text-[11px] text-neutral-400 mt-0.5">
+            <div className="text-[11px] text-ink-3 mt-0.5">
               {threatReport.fiveEyesCount} of {allOrigins.length} nodes under MLAT sharing
             </div>
           </div>
         </div>
 
         {/* Legal Exposure Index */}
-        <div className="p-3.5 border border-neutral-800 bg-black flex flex-col justify-between space-y-1">
-          <div className="text-[10px] text-neutral-500 uppercase tracking-widest flex items-center justify-between">
+        <div className="p-3.5 border border-rule bg-paper flex flex-col justify-between space-y-1">
+          <div className="text-[10px] text-ink-3 uppercase tracking-widest flex items-center justify-between">
             <span>DOMINANT JURISDICTION</span>
-            <Server className="w-3.5 h-3.5 text-neutral-400" />
+            <Server className="w-3.5 h-3.5 text-ink-3" />
           </div>
           <div>
-            <div className="text-sm font-bold text-white truncate">
+            <div className="text-sm font-bold text-ink truncate">
               {threatReport.dominantJurisdiction}
             </div>
-            <div className="text-[11px] text-neutral-400 mt-1">
+            <div className="text-[11px] text-ink-3 mt-1">
               Primary regulatory legal vector
             </div>
           </div>
         </div>
 
         {/* Physical Geolocation Alert Status */}
-        <div className="p-3.5 border border-neutral-800 bg-black flex flex-col justify-between space-y-1">
-          <div className="text-[10px] text-neutral-500 uppercase tracking-widest flex items-center justify-between">
+        <div className="p-3.5 border border-rule bg-paper flex flex-col justify-between space-y-1">
+          <div className="text-[10px] text-ink-3 uppercase tracking-widest flex items-center justify-between">
             <span>PHYSICAL TRACKING RISK</span>
-            <AlertTriangle className={`w-3.5 h-3.5 ${threatReport.highPhysicalRiskCount > 0 ? 'text-white' : 'text-neutral-500'}`} />
+            <AlertTriangle className={`w-3.5 h-3.5 ${threatReport.highPhysicalRiskCount > 0 ? 'text-ink' : 'text-ink-3'}`} />
           </div>
           <div>
-            <div className={`text-sm font-bold ${threatReport.highPhysicalRiskCount > 0 ? 'text-white' : 'text-neutral-400'}`}>
+            <div className={`text-sm font-bold ${threatReport.highPhysicalRiskCount > 0 ? 'text-ink' : 'text-ink-3'}`}>
               {threatReport.highPhysicalRiskCount > 0 ? `${threatReport.highPhysicalRiskCount} Vectors Detected` : 'Minimal Leak Risk'}
             </div>
-            <div className="text-[11px] text-neutral-400 mt-1">
+            <div className="text-[11px] text-ink-3 mt-1">
               {threatReport.highPhysicalRiskCount > 0
                 ? 'Strava / media GPS traces detected'
                 : 'No GPS fitness routes exposed'}
@@ -1318,18 +1319,18 @@ export function WorldThreatMap({
 
       {/* Top Host Nations Breakdown */}
       {threatReport.topCountries.length > 0 && (
-        <div className="p-3 border border-neutral-800 bg-black flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-          <span className="text-[10px] text-neutral-500 uppercase tracking-widest">
+        <div className="p-3 border border-rule bg-paper flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <span className="text-[10px] text-ink-3 uppercase tracking-widest">
             HOSTING NATIONS CONCENTRATION:
           </span>
           <div className="flex flex-wrap items-center gap-2">
             {threatReport.topCountries.map((c) => (
               <span
                 key={c.country}
-                className="px-2 py-0.5 border border-neutral-800 bg-neutral-950 text-neutral-300 text-[11px] flex items-center gap-1.5"
+                className="px-2 py-0.5 border border-rule bg-paper-2 text-ink-2 text-[11px] flex items-center gap-1.5"
               >
-                <span className="font-semibold text-white">{c.country}:</span>
-                <span className="text-neutral-400">{c.count} {c.count === 1 ? 'profile' : 'profiles'}</span>
+                <span className="font-semibold text-ink">{c.country}:</span>
+                <span className="text-ink-3">{c.count} {c.count === 1 ? 'profile' : 'profiles'}</span>
               </span>
             ))}
           </div>

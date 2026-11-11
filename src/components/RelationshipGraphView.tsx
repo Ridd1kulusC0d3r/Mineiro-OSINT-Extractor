@@ -6,6 +6,7 @@ import { generateAccountLinkageDossier } from '../data/accountLinkage';
 import { useI18n } from '../utils/i18n';
 import { GraphQueryPanel } from './GraphQueryPanel';
 import type { GraphPivotInvestigation, GraphQueryResult, HuntGraphEdge, HuntGraphNode } from '../graph/types';
+import { PALETTE } from '../theme/palette';
 
 interface RelationshipGraphViewProps {
   target: string;
@@ -253,35 +254,35 @@ export function RelationshipGraphView({ target, results, emailData, onPivotScan,
         }}
       />
 
-      <div className="rounded-[22px] border border-[#37332B] bg-[#1B1915] overflow-hidden">
-        <div className="flex flex-col gap-4 border-b border-[#37332B] p-6 lg:flex-row lg:items-start lg:justify-between">
+      <div className="rounded-[22px] border border-rule bg-paper-2 overflow-hidden">
+        <div className="flex flex-col gap-4 border-b border-rule p-6 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <div className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-[#908B7D]">
+            <div className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-ink-3">
               <GitBranch className="h-4 w-4" />
               {tr('graph.title')}
             </div>
-            <h2 className="mt-3 text-2xl font-semibold tracking-[-0.035em] text-[#F3F0E8]">
+            <h2 className="mt-3 text-2xl font-semibold tracking-[-0.035em] text-ink">
               {tr('graph.heading')}
             </h2>
-            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[#A19C8E]">
+            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-ink-3">
               {tr('graph.desc')}
             </p>
             {queryResult?.query ? (
-              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-[#908B7D]">
-                <span className="rounded-lg border border-[#4A453A] px-2.5 py-1 font-mono">{copy.queryActive}: {queryResult.query}</span>
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-ink-3">
+                <span className="rounded-lg border border-rule px-2.5 py-1 font-mono">{copy.queryActive}: {queryResult.query}</span>
                 <span>{copy.queryHint}</span>
               </div>
             ) : null}
           </div>
           <div className="flex flex-wrap gap-2 text-xs">
-            <span className="rounded-lg border border-[#4A453A] px-3 py-2 text-[#B9B4A6]">{observedEdges} {tr('graph.observed')}</span>
-            <span className="rounded-lg border border-dashed border-[#6F6A5E] px-3 py-2 text-[#B9B4A6]">{candidateEdges} {tr('graph.candidate')}</span>
+            <span className="rounded-lg border border-rule px-3 py-2 text-ink-2">{observedEdges} {tr('graph.observed')}</span>
+            <span className="rounded-lg border border-dashed border-ink-3 px-3 py-2 text-ink-2">{candidateEdges} {tr('graph.candidate')}</span>
           </div>
         </div>
 
-        <div className="relative overflow-x-auto bg-[#131210]">
+        <div className="relative overflow-x-auto bg-paper">
           <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="min-w-[900px] w-full">
-            <rect width={WIDTH} height={HEIGHT} fill="#131210" />
+            <rect width={WIDTH} height={HEIGHT} fill={PALETTE.paper} />
             {data.edges.map((edge) => {
               const source = byId.get(edge.source);
               const targetNode = byId.get(edge.target);
@@ -294,7 +295,7 @@ export function RelationshipGraphView({ target, results, emailData, onPivotScan,
                     y1={source.y}
                     x2={targetNode.x}
                     y2={targetNode.y}
-                    stroke={edge.candidate ? '#6F6A5E' : '#4A453A'}
+                    stroke={edge.candidate ? PALETTE.ink3 : PALETTE.rule}
                     strokeWidth={edge.candidate ? 1.1 : Math.max(1, edge.confidence / 45)}
                     strokeDasharray={edge.candidate ? '6 6' : undefined}
                     opacity={edge.candidate ? 0.78 : 0.92}
@@ -320,17 +321,17 @@ export function RelationshipGraphView({ target, results, emailData, onPivotScan,
                 >
                   <circle
                     r={radius}
-                    fill={node.candidate ? '#221F1A' : node.type === 'TARGET' ? '#ECE8DD' : '#27241E'}
-                    stroke={node.candidate ? '#6F6A5E' : isSelected ? '#ECE8DD' : '#6F6A5E'}
+                    fill={node.candidate ? PALETTE.card : node.type === 'TARGET' ? PALETTE.ink : PALETTE.rule2}
+                    stroke={node.candidate ? PALETTE.ink3 : isSelected ? PALETTE.ink : PALETTE.ink3}
                     strokeWidth={isSelected ? 2.5 : matches && matchedNodes ? 2 : 1.2}
                     strokeDasharray={node.candidate ? '4 3' : undefined}
                   />
-                  {node.type === 'TARGET' && <text textAnchor="middle" dy="4" fontSize="10" fill="#131210" fontWeight="700">TARGET</text>}
-                  <text textAnchor="middle" y={radius + 15} fontSize="10" fill="#B9B4A6">
+                  {node.type === 'TARGET' && <text textAnchor="middle" dy="4" fontSize="10" fill={PALETTE.paper} fontWeight="700">TARGET</text>}
+                  <text textAnchor="middle" y={radius + 15} fontSize="10" fill={PALETTE.ink2}>
                     {node.label.length > 24 ? `${node.label.slice(0, 21)}…` : node.label}
                   </text>
                   {node.candidate && typeof node.similarityScore === 'number' ? (
-                    <text textAnchor="middle" y={radius + 29} fontSize="9" fill="#908B7D">
+                    <text textAnchor="middle" y={radius + 29} fontSize="9" fill={PALETTE.ink3}>
                       {node.similarityScore}%
                     </text>
                   ) : null}
@@ -340,22 +341,22 @@ export function RelationshipGraphView({ target, results, emailData, onPivotScan,
           </svg>
         </div>
 
-        <div className="grid gap-4 border-t border-[#37332B] p-5 lg:grid-cols-[1fr_auto]">
+        <div className="grid gap-4 border-t border-rule p-5 lg:grid-cols-[1fr_auto]">
           <div className="min-h-[72px]">
             {selected ? (
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#908B7D]">
+                  <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-3">
                     {selected.type} · {selected.candidate ? copy.candidate : copy.observed}
                   </div>
-                  <div className="mt-1 break-all text-sm text-[#ECE8DD]">{selected.label}</div>
+                  <div className="mt-1 break-all text-sm text-ink">{selected.label}</div>
                   {typeof selected.similarityScore === 'number' ? (
-                    <div className="mt-1 text-xs text-[#908B7D]">{copy.similarity}: {selected.similarityScore}%</div>
+                    <div className="mt-1 text-xs text-ink-3">{copy.similarity}: {selected.similarityScore}%</div>
                   ) : null}
-                  {selected.evidenceId && <div className="mt-1 text-xs text-[#908B7D]">evidence: {selected.evidenceId}</div>}
-                  {selected.candidate ? <div className="mt-2 max-w-2xl text-xs leading-relaxed text-[#908B7D]">{copy.candidateHelp}</div> : null}
+                  {selected.evidenceId && <div className="mt-1 text-xs text-ink-3">evidence: {selected.evidenceId}</div>}
+                  {selected.candidate ? <div className="mt-2 max-w-2xl text-xs leading-relaxed text-ink-3">{copy.candidateHelp}</div> : null}
                   {selected.candidate && typeof selected.metadata?.totalScanned === 'number' ? (
-                    <div className="mt-2 rounded-lg border border-[#37332B] bg-[#131210] px-3 py-2 font-mono text-[10px] text-[#A19C8E]">
+                    <div className="mt-2 rounded-lg border border-rule bg-paper px-3 py-2 font-mono text-[10px] text-ink-3">
                       {copy.scanComplete} · {String(selected.metadata.foundCount || 0)} {copy.profilesFound} · {String(selected.metadata.totalScanned)} checked
                     </div>
                   ) : null}
@@ -374,23 +375,23 @@ export function RelationshipGraphView({ target, results, emailData, onPivotScan,
                         setScanningCandidate(null);
                       }
                     }}
-                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-[#6F6A5E] bg-[#27241E] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#27241E] disabled:opacity-50"
+                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-ink-3 bg-rule-2 px-4 py-2.5 text-sm font-medium text-ink hover:bg-rule-2 disabled:opacity-50"
                   >
                     <Search className="h-4 w-4" />
                     {scanningCandidate === selected.label ? copy.scanning : copy.scan}
                   </button>
                 ) : selected.type === 'TARGET' ? (
-                  <div className="inline-flex items-center gap-2 rounded-xl border border-[#4A453A] px-3 py-2 text-xs text-[#B9B4A6]">
+                  <div className="inline-flex items-center gap-2 rounded-xl border border-rule px-3 py-2 text-xs text-ink-2">
                     <Target className="h-4 w-4" />
                     {copy.target}
                   </div>
                 ) : null}
               </div>
             ) : (
-              <div className="flex items-center gap-2 text-sm text-[#908B7D]"><Info className="h-4 w-4" /> {copy.inspect}</div>
+              <div className="flex items-center gap-2 text-sm text-ink-3"><Info className="h-4 w-4" /> {copy.inspect}</div>
             )}
           </div>
-          <div className="flex items-center gap-4 text-[10px] uppercase tracking-[0.12em] text-[#908B7D]">
+          <div className="flex items-center gap-4 text-[10px] uppercase tracking-[0.12em] text-ink-3">
             <span>{tr('graph.solid')}</span>
             <span>{tr('graph.dashed')}</span>
           </div>

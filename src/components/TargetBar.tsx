@@ -73,17 +73,17 @@ export function TargetBar({
   const isProgressiveFull = scanConfig.platformScope === 'all' && scanConfig.wafInspectionMode === 'deep';
 
   return (
-    <section className="border-b border-[#37332B] bg-[#221F1A]">
+    <section className="border-b border-rule bg-card">
       <div className="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 lg:px-8">
         <form onSubmit={handleSubmit} className="grid gap-3 lg:grid-cols-[auto_1fr_auto_auto] lg:items-center">
-          <div className="flex h-12 rounded-xl border border-[#37332B] bg-[#221F1A] p-1">
+          <div className="flex h-12 rounded-xl border border-rule bg-card p-1">
             <button
               type="button"
               onClick={() => setTargetType('username')}
               className={`inline-flex items-center gap-2 rounded-lg px-3 text-xs font-medium transition ${
                 targetType === 'username'
-                  ? 'bg-[#ECE8DD] text-[#131210]'
-                  : 'text-[#908B7D] hover:text-white'
+                  ? 'bg-ink text-paper'
+                  : 'text-ink-3 hover:text-ink'
               }`}
             >
               <AtSign className="h-3.5 w-3.5" />
@@ -94,8 +94,8 @@ export function TargetBar({
               onClick={() => setTargetType('email')}
               className={`inline-flex items-center gap-2 rounded-lg px-3 text-xs font-medium transition ${
                 targetType === 'email'
-                  ? 'bg-[#ECE8DD] text-[#131210]'
-                  : 'text-[#908B7D] hover:text-white'
+                  ? 'bg-ink text-paper'
+                  : 'text-ink-3 hover:text-ink'
               }`}
             >
               <Mail className="h-3.5 w-3.5" />
@@ -103,8 +103,8 @@ export function TargetBar({
             </button>
           </div>
 
-          <div className="relative flex h-12 items-center rounded-xl border border-[#37332B] bg-[#221F1A] px-4 focus-within:border-[#6F6A5E]">
-            <span className="mr-2 font-mono text-xs text-[#6F6A5E]">
+          <div className="relative flex h-12 items-center rounded-xl border border-rule bg-card px-4 focus-within:border-ink-3">
+            <span className="mr-2 font-mono text-xs text-ink-3">
               {targetType === 'username' ? '@' : 'mail:'}
             </span>
             <input
@@ -117,20 +117,20 @@ export function TargetBar({
               autoCorrect="off"
               autoCapitalize="off"
               spellCheck={false}
-              className="h-full w-full bg-transparent text-[15px] text-[#ECE8DD] outline-none placeholder:text-[#6F6A5E]"
+              className="h-full w-full bg-transparent text-[15px] text-ink outline-none placeholder:text-ink-3"
             />
             {target && (
               <button
                 type="button"
                 onClick={() => setTarget('')}
-                className="rounded-lg px-2 py-1 text-xs text-[#908B7D] hover:bg-[#27241E] hover:text-white"
+                className="rounded-lg px-2 py-1 text-xs text-ink-3 hover:bg-rule-2 hover:text-ink"
               >
                 limpar
               </button>
             )}
           </div>
 
-          <div className="flex h-12 items-center gap-1 rounded-xl border border-[#37332B] bg-[#221F1A] p-1">
+          <div className="flex h-12 items-center gap-1 rounded-xl border border-rule bg-card p-1">
             {presetMeta.map(([preset, label, count]) => (
               <button
                 key={preset}
@@ -138,13 +138,13 @@ export function TargetBar({
                 onClick={() => onSelectPreset(preset)}
                 className={`rounded-lg px-3 py-2 text-xs transition ${
                   scanConfig.preset === preset
-                    ? 'bg-[#27241E] text-[#ECE8DD] shadow-sm'
-                    : 'text-[#908B7D] hover:text-white'
+                    ? 'bg-rule-2 text-ink shadow-sm'
+                    : 'text-ink-3 hover:text-ink'
                 }`}
                 title={preset === 'deep' ? 'Full progressive scan' : `${label} scan`}
               >
                 <span className="font-medium">{tr(label)}</span>
-                <span className="ml-1 text-[#6F6A5E]">{count}</span>
+                <span className="ml-1 text-ink-3">{count}</span>
               </button>
             ))}
             <button
@@ -152,8 +152,8 @@ export function TargetBar({
               onClick={onOpenModularConfig}
               className={`rounded-lg p-2.5 transition ${
                 scanConfig.preset === 'custom'
-                  ? 'bg-[#ECE8DD] text-[#131210]'
-                  : 'text-[#908B7D] hover:bg-[#27241E] hover:text-white'
+                  ? 'bg-ink text-paper'
+                  : 'text-ink-3 hover:bg-rule-2 hover:text-ink'
               }`}
               title={tr('target.settings')}
             >
@@ -166,8 +166,8 @@ export function TargetBar({
             disabled={!target.trim()}
             className={`inline-flex h-12 min-w-[132px] items-center justify-center gap-2 rounded-xl border px-5 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-35 ${
               isScanning
-                ? 'border-[#4A453A] bg-[#27241E] text-[#D6D1C3]'
-                : 'border-[#ECE8DD] bg-[#ECE8DD] text-[#131210] hover:bg-[#F0885A]'
+                ? 'border-rule bg-rule-2 text-ink'
+                : 'border-ink bg-ink text-paper hover:bg-signal'
             }`}
           >
             {isScanning ? <Square className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
@@ -175,17 +175,17 @@ export function TargetBar({
           </button>
         </form>
 
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-[#908B7D]">
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3 text-xs text-ink-3">
           <div className="flex flex-wrap items-center gap-2">
             <span>{activePlatforms.length} {tr('target.detectorsScope')}</span>
-            <span className="text-[#4A453A]">·</span>
+            <span className="text-ink-3">·</span>
             <span>{scanConfig.concurrency}x {tr('target.baseConcurrency')}</span>
-            <span className="text-[#4A453A]">·</span>
+            <span className="text-ink-3">·</span>
             <span>{scanConfig.enableEvidenceChecks ? tr('target.evidenceOn') : tr('target.evidenceDemand')}</span>
             {isProgressiveFull && (
               <>
-                <span className="text-[#4A453A]">·</span>
-                <span className="text-[#B9B4A6]">{tr('target.fullProgressive')}</span>
+                <span className="text-ink-3">·</span>
+                <span className="text-ink-2">{tr('target.fullProgressive')}</span>
               </>
             )}
           </div>
@@ -194,11 +194,11 @@ export function TargetBar({
             <button
               type="button"
               onClick={onOpenBulkImport}
-              className="inline-flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-[#908B7D] hover:bg-[#27241E] hover:text-white"
+              className="inline-flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-ink-3 hover:bg-rule-2 hover:text-ink"
             >
               <FileSpreadsheet className="h-3.5 w-3.5" />
               Batch CSV
-              {bulkBatchCount > 0 && <span className="text-[#D6D1C3]">{bulkBatchCount}</span>}
+              {bulkBatchCount > 0 && <span className="text-ink">{bulkBatchCount}</span>}
             </button>
           )}
         </div>

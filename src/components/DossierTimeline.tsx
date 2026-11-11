@@ -67,12 +67,12 @@ export function DossierTimeline({
 
   if (foundResults.length === 0) {
     return (
-      <div id="dossier-timeline-empty" className="border border-neutral-800 bg-neutral-950 p-6 text-center space-y-3 font-mono">
-        <Clock className="w-8 h-8 text-neutral-600 mx-auto" />
-        <div className="text-white font-bold text-xs uppercase tracking-wider">
+      <div id="dossier-timeline-empty" className="border border-rule bg-paper-2 p-6 text-center space-y-3 font-mono">
+        <Clock className="w-8 h-8 text-ink-3 mx-auto" />
+        <div className="text-ink font-bold text-xs uppercase tracking-wider">
           Temporal Timeline Data Unavailable
         </div>
-        <p className="text-neutral-400 text-xs font-sans max-w-md mx-auto">
+        <p className="text-ink-3 text-xs font-sans max-w-md mx-auto">
           Execute an OSINT reconnaissance scan to discover verified platform accounts and map chronological activity patterns.
         </p>
       </div>
@@ -80,20 +80,20 @@ export function DossierTimeline({
   }
 
   return (
-    <div id="dossier-timeline" className="border border-neutral-800 bg-black p-5 space-y-5 font-mono">
+    <div id="dossier-timeline" className="border border-rule bg-paper p-5 space-y-5 font-mono">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-800 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-rule pb-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4 text-white" />
-            <span className="text-xs font-bold text-white uppercase tracking-wider">
+            <Clock className="w-4 h-4 text-ink" />
+            <span className="text-xs font-bold text-ink uppercase tracking-wider">
               Chronological Identity Timeline & Temporal Patterns
             </span>
-            <span className="text-[10px] px-1.5 py-0.2 bg-neutral-900 border border-neutral-700 text-neutral-300 font-mono">
+            <span className="text-[10px] px-1.5 py-0.2 bg-rule-2 border border-rule text-ink-2 font-mono">
               {timelineData.milestones.length} Events Plotted
             </span>
           </div>
-          <p className="text-[11px] text-neutral-400 font-sans">
+          <p className="text-[11px] text-ink-3 font-sans">
             Chronologically maps platform inception, estimated account registrations, and active probe timestamps to reconstruct target identity genesis and temporal evolution.
           </p>
         </div>
@@ -105,10 +105,10 @@ export function DossierTimeline({
             id="timeline-sort-toggle-btn"
             type="button"
             onClick={() => setSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
-            className="px-2.5 py-1 text-[11px] border border-neutral-800 bg-neutral-950 text-neutral-300 hover:text-white hover:border-neutral-600 transition-colors flex items-center gap-1.5"
+            className="px-2.5 py-1 text-[11px] border border-rule bg-paper-2 text-ink-2 hover:text-ink hover:border-ink-3 transition-colors flex items-center gap-1.5"
             title="Toggle chronological ordering"
           >
-            <ArrowUpDown className="w-3.5 h-3.5 text-neutral-400" />
+            <ArrowUpDown className="w-3.5 h-3.5 text-ink-3" />
             <span>{sortOrder === 'asc' ? 'Oldest → Newest' : 'Newest → Oldest'}</span>
           </button>
 
@@ -117,9 +117,9 @@ export function DossierTimeline({
             id="timeline-view-density-btn"
             type="button"
             onClick={() => setIsDetailedView((prev) => !prev)}
-            className="px-2.5 py-1 text-[11px] border border-neutral-800 bg-neutral-950 text-neutral-300 hover:text-white hover:border-neutral-600 transition-colors flex items-center gap-1.5"
+            className="px-2.5 py-1 text-[11px] border border-rule bg-paper-2 text-ink-2 hover:text-ink hover:border-ink-3 transition-colors flex items-center gap-1.5"
           >
-            <Layers className="w-3.5 h-3.5 text-neutral-400" />
+            <Layers className="w-3.5 h-3.5 text-ink-3" />
             <span>{isDetailedView ? 'Forensic View' : 'Compact View'}</span>
           </button>
         </div>
@@ -128,58 +128,58 @@ export function DossierTimeline({
       {/* KPI & Temporal Pattern Metric Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
         {/* 1. Earliest Digital Milestone */}
-        <div className="p-3 border border-neutral-800 bg-neutral-950 space-y-1">
-          <div className="text-[10px] text-neutral-500 uppercase tracking-wider flex items-center gap-1">
-            <Calendar className="w-3 h-3 text-neutral-400" />
+        <div className="p-3 border border-rule bg-paper-2 space-y-1">
+          <div className="text-[10px] text-ink-3 uppercase tracking-wider flex items-center gap-1">
+            <Calendar className="w-3 h-3 text-ink-3" />
             <span>Estimated Genesis</span>
           </div>
           <div className="flex items-baseline gap-1.5">
-            <span className="text-lg font-extrabold text-white">~{timelineData.earliestYear}</span>
-            <span className="text-[10px] text-neutral-400">({timelineData.footprintSpanYears}y span)</span>
+            <span className="text-lg font-extrabold text-ink">~{timelineData.earliestYear}</span>
+            <span className="text-[10px] text-ink-3">({timelineData.footprintSpanYears}y span)</span>
           </div>
-          <div className="text-[10px] text-neutral-400 truncate">
+          <div className="text-[10px] text-ink-3 truncate">
             {timelineData.milestones[0]?.platformName ? `First on ${timelineData.milestones[0].platformName}` : 'Inaugural service'}
           </div>
         </div>
 
         {/* 2. Seniority Classification */}
-        <div className="p-3 border border-neutral-800 bg-neutral-950 space-y-1">
-          <div className="text-[10px] text-neutral-500 uppercase tracking-wider flex items-center gap-1">
-            <TrendingUp className="w-3 h-3 text-neutral-400" />
+        <div className="p-3 border border-rule bg-paper-2 space-y-1">
+          <div className="text-[10px] text-ink-3 uppercase tracking-wider flex items-center gap-1">
+            <TrendingUp className="w-3 h-3 text-ink-3" />
             <span>Seniority Index</span>
           </div>
-          <div className="text-sm font-bold text-white tracking-wide truncate">
+          <div className="text-sm font-bold text-ink tracking-wide truncate">
             {timelineData.footprintSpanYears >= 10 ? 'Senior Veteran' : 'Established'}
           </div>
-          <div className="text-[10px] text-neutral-400 truncate">
+          <div className="text-[10px] text-ink-3 truncate">
             {timelineData.seniorityClassification}
           </div>
         </div>
 
         {/* 3. Primary Registration Epoch */}
-        <div className="p-3 border border-neutral-800 bg-neutral-950 space-y-1">
-          <div className="text-[10px] text-neutral-500 uppercase tracking-wider flex items-center gap-1">
-            <Layers className="w-3 h-3 text-neutral-400" />
+        <div className="p-3 border border-rule bg-paper-2 space-y-1">
+          <div className="text-[10px] text-ink-3 uppercase tracking-wider flex items-center gap-1">
+            <Layers className="w-3 h-3 text-ink-3" />
             <span>Peak Density Era</span>
           </div>
-          <div className="text-sm font-bold text-white tracking-wide truncate">
+          <div className="text-sm font-bold text-ink tracking-wide truncate">
             {timelineData.burstPeriods[0]?.era ? timelineData.burstPeriods[0].era.split('(')[0].trim() : 'Distributed'}
           </div>
-          <div className="text-[10px] text-neutral-400 truncate">
+          <div className="text-[10px] text-ink-3 truncate">
             {timelineData.burstPeriods[0]?.count || 1} accounts clustered
           </div>
         </div>
 
         {/* 4. Active Diurnal Window */}
-        <div className="p-3 border border-neutral-800 bg-neutral-950 space-y-1">
-          <div className="text-[10px] text-neutral-500 uppercase tracking-wider flex items-center gap-1">
-            <Globe className="w-3 h-3 text-neutral-400" />
+        <div className="p-3 border border-rule bg-paper-2 space-y-1">
+          <div className="text-[10px] text-ink-3 uppercase tracking-wider flex items-center gap-1">
+            <Globe className="w-3 h-3 text-ink-3" />
             <span>Operating Corridor</span>
           </div>
-          <div className="text-sm font-bold text-white tracking-wide truncate">
+          <div className="text-sm font-bold text-ink tracking-wide truncate">
             {timelineData.activeTimezoneCorridor.split('(')[0].trim() || 'UTC-3'}
           </div>
-          <div className="text-[10px] text-neutral-400 truncate">
+          <div className="text-[10px] text-ink-3 truncate">
             {timelineData.activeTimezoneCorridor.includes('(')
               ? timelineData.activeTimezoneCorridor.split('(')[1].replace(')', '')
               : 'Diurnal activity window'}
@@ -190,7 +190,7 @@ export function DossierTimeline({
       {/* Category Filter Chips */}
       {availableCategories.length > 1 && (
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-[10px]">
-          <span className="text-neutral-500 uppercase shrink-0 mr-1 flex items-center gap-1">
+          <span className="text-ink-3 uppercase shrink-0 mr-1 flex items-center gap-1">
             <Filter className="w-3 h-3" /> Filter Domain:
           </span>
           <button
@@ -198,8 +198,8 @@ export function DossierTimeline({
             onClick={() => setSelectedCategory('all')}
             className={`px-2 py-0.5 border uppercase transition-colors shrink-0 ${
               selectedCategory === 'all'
-                ? 'border-[#F0885A] bg-[#F0885A] text-black font-bold'
-                : 'border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-white'
+                ? 'border-signal bg-signal text-signal-ink font-bold'
+                : 'border-rule bg-paper-2 text-ink-3 hover:text-ink'
             }`}
           >
             All ({timelineData.milestones.length})
@@ -213,8 +213,8 @@ export function DossierTimeline({
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-2 py-0.5 border uppercase transition-colors shrink-0 ${
                   selectedCategory === cat
-                    ? 'border-[#F0885A] bg-[#F0885A] text-black font-bold'
-                    : 'border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-white'
+                    ? 'border-signal bg-signal text-signal-ink font-bold'
+                    : 'border-rule bg-paper-2 text-ink-3 hover:text-ink'
                 }`}
               >
                 {cat} ({count})
@@ -227,15 +227,15 @@ export function DossierTimeline({
       {/* Vertical Timeline Stream */}
       <div className="relative pl-6 sm:pl-8 space-y-6 pt-2">
         {/* The Central Vertical Spine Line */}
-        <div className="absolute left-2.5 sm:left-3 top-4 bottom-4 w-[2px] bg-neutral-800" />
+        <div className="absolute left-2.5 sm:left-3 top-4 bottom-4 w-[2px] bg-rule" />
 
         {displayedMilestones.map((item, index) => {
           const phaseBadgeClass =
             item.temporalPhase === 'Genesis Milestone'
-              ? 'border-[#F0885A] bg-neutral-900 text-white font-bold'
+              ? 'border-signal bg-rule-2 text-ink font-bold'
               : item.temporalPhase === 'Specialization'
-              ? 'border-neutral-500 bg-black text-neutral-200'
-              : 'border-neutral-800 bg-neutral-950 text-neutral-400';
+              ? 'border-ink-3 bg-paper text-ink'
+              : 'border-rule bg-paper-2 text-ink-3';
 
           return (
             <div
@@ -247,32 +247,32 @@ export function DossierTimeline({
               <div
                 className={`absolute -left-6 sm:-left-8 top-3 w-5 h-5 -ml-[9.5px] rounded-none border flex items-center justify-center transition-all ${
                   item.isEarliest
-                    ? 'border-[#F0885A] bg-[#F0885A] text-black shadow-[0_0_8px_rgba(236,232,221,0.4)]'
-                    : 'border-neutral-700 bg-black text-neutral-300 group-hover:border-[#F0885A] group-hover:bg-neutral-900'
+                    ? 'border-signal bg-signal text-signal-ink shadow-[0_0_8px_color-mix(in_srgb,var(--ink)_40%,transparent)]'
+                    : 'border-rule bg-paper text-ink-2 group-hover:border-signal group-hover:bg-rule-2'
                 }`}
               >
                 <div
-                  className={`w-1.5 h-1.5 ${item.isEarliest ? 'bg-black' : 'bg-[#F0885A]'}`}
+                  className={`w-1.5 h-1.5 ${item.isEarliest ? 'bg-paper' : 'bg-signal'}`}
                 />
               </div>
 
               {/* Event Card */}
-              <div className="p-3.5 border border-neutral-800/90 bg-neutral-950 hover:border-neutral-600 transition-all space-y-2">
+              <div className="p-3.5 border border-rule/90 bg-paper-2 hover:border-ink-3 transition-all space-y-2">
                 {/* Top Row: Year badge, Platform Name, Category, Phase */}
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     {/* Estimated Year Marker */}
-                    <span className="text-xs px-2 py-0.5 bg-black border border-neutral-700 text-white font-bold">
+                    <span className="text-xs px-2 py-0.5 bg-paper border border-rule text-ink font-bold">
                       EST. ~{item.estimatedRegistrationYear}
                     </span>
 
                     {/* Platform Title */}
-                    <span className="text-xs font-bold text-white tracking-wider">
+                    <span className="text-xs font-bold text-ink tracking-wider">
                       {item.platformName}
                     </span>
 
                     {/* Category */}
-                    <span className="text-[9px] uppercase px-1.5 py-0.2 border border-neutral-800 bg-neutral-900 text-neutral-400">
+                    <span className="text-[9px] uppercase px-1.5 py-0.2 border border-rule bg-rule-2 text-ink-3">
                       {item.category}
                     </span>
                   </div>
@@ -288,7 +288,7 @@ export function DossierTimeline({
                       href={item.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="p-1 text-neutral-500 hover:text-white hover:bg-neutral-900 transition-colors"
+                      className="p-1 text-ink-3 hover:text-ink hover:bg-rule-2 transition-colors"
                       title={`Visit @${target} on ${item.platformName}`}
                     >
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -297,12 +297,12 @@ export function DossierTimeline({
                 </div>
 
                 {/* Subheader: Account URL & Target Handle */}
-                <div className="text-[11px] text-neutral-300 font-mono flex flex-wrap items-center gap-2">
-                  <span className="text-neutral-500">Corroborated Handle:</span>
-                  <span className="text-white font-bold bg-black px-1.5 py-0.2 border border-neutral-800">
+                <div className="text-[11px] text-ink-2 font-mono flex flex-wrap items-center gap-2">
+                  <span className="text-ink-3">Corroborated Handle:</span>
+                  <span className="text-ink font-bold bg-paper px-1.5 py-0.2 border border-rule">
                     @{target}
                   </span>
-                  <span className="text-[10px] text-neutral-500 truncate max-w-xs sm:max-w-md">
+                  <span className="text-[10px] text-ink-3 truncate max-w-xs sm:max-w-md">
                     {item.url}
                   </span>
                 </div>
@@ -310,30 +310,30 @@ export function DossierTimeline({
                 {/* Detailed View Forensic Breakdown */}
                 {isDetailedView && (
                   <>
-                    <p className="text-[11px] text-neutral-300 font-sans leading-relaxed pt-0.5 border-t border-neutral-900">
+                    <p className="text-[11px] text-ink-2 font-sans leading-relaxed pt-0.5 border-t border-rule">
                       {item.temporalRationale}
                     </p>
 
                     {/* Telemetry and Era Footer */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-[10px] text-neutral-500 border-t border-neutral-900/60">
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-[10px] text-ink-3 border-t border-rule/60">
                       <div className="flex items-center gap-2">
-                        <span className="text-neutral-400">
-                          Platform Era: <strong className="text-neutral-300">{item.registrationEra}</strong>
+                        <span className="text-ink-3">
+                          Platform Era: <strong className="text-ink-2">{item.registrationEra}</strong>
                         </span>
                         <span>•</span>
                         <span>Inaugural Year: {item.launchYear}</span>
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <span className="text-neutral-300 font-mono">
+                        <span className="text-ink-2 font-mono">
                           HTTP {item.statusCode || 200} OK
                         </span>
                         <span>•</span>
-                        <span className="text-neutral-400 font-mono">
+                        <span className="text-ink-3 font-mono">
                           {item.responseTimeMs || 85}ms
                         </span>
                         <span>•</span>
-                        <span className="text-neutral-400 font-mono">
+                        <span className="text-ink-3 font-mono">
                           {item.confidenceScore}% conf
                         </span>
                       </div>
@@ -347,23 +347,23 @@ export function DossierTimeline({
       </div>
 
       {/* Behavioral Temporal Synthesis Summary */}
-      <div className="p-4 border border-neutral-800 bg-neutral-950 space-y-2 text-xs">
-        <div className="flex items-center gap-2 text-white font-bold uppercase tracking-wider text-[11px]">
-          <Sparkles className="w-3.5 h-3.5 fill-white text-white" />
+      <div className="p-4 border border-rule bg-paper-2 space-y-2 text-xs">
+        <div className="flex items-center gap-2 text-ink font-bold uppercase tracking-wider text-[11px]">
+          <Sparkles className="w-3.5 h-3.5 fill-ink text-ink" />
           <span>Temporal Behavioral Synthesis & Operating Rationale</span>
         </div>
-        <p className="text-neutral-300 font-sans text-xs leading-relaxed">
+        <p className="text-ink-2 font-sans text-xs leading-relaxed">
           {timelineData.temporalDensityAssessment}
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 font-sans text-[11px] text-neutral-400">
-          <div className="p-2 border border-neutral-900 bg-black flex items-start gap-2">
-            <span className="text-white font-mono font-bold shrink-0">[01]</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 font-sans text-[11px] text-ink-3">
+          <div className="p-2 border border-rule bg-paper flex items-start gap-2">
+            <span className="text-ink font-mono font-bold shrink-0">[01]</span>
             <span>
               <strong>Handle Persistence:</strong> Consistent handle '@{target}' usage across {timelineData.milestones.length} platforms demonstrates predictable moniker reuse rather than ephemeral burner identities.
             </span>
           </div>
-          <div className="p-2 border border-neutral-900 bg-black flex items-start gap-2">
-            <span className="text-white font-mono font-bold shrink-0">[02]</span>
+          <div className="p-2 border border-rule bg-paper flex items-start gap-2">
+            <span className="text-ink font-mono font-bold shrink-0">[02]</span>
             <span>
               <strong>Temporal Footprint:</strong> Oldest footprint detected circa ~{timelineData.earliestYear}. No abrupt multi-year dormancy observed across major ecosystem shifts.
             </span>

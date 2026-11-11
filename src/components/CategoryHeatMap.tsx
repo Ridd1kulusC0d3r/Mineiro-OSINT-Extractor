@@ -21,16 +21,14 @@ import {
   RotateCcw
 } from 'lucide-react';
 import { ScanResult, EmailReconData, AiProfileReport, Category } from '../types';
-import { 
-  CATEGORY_COLORS, 
+import { CATEGORY_COLORS, 
   CATEGORY_BADGES, 
   createHeatmapColorScale, 
   getHeatmapIntensityColor,
   getContrastTextColor,
   HEATMAP_STOPS,
   EXPOSURE_COLORS,
-  useThemeVersion
-} from '../theme/palette';
+  useThemeVersion, PALETTE } from '../theme/palette';
 
 interface CategoryHeatMapProps {
   results: ScanResult[];
@@ -371,7 +369,7 @@ export function CategoryHeatMap({
       .attr('y', (d: CategoryMetrics) => yScale(d.category) || 0)
       .attr('width', width + margin.left)
       .attr('height', yScale.bandwidth())
-      .attr('fill', (d: CategoryMetrics) => (d.category === selectedCategory ? '#ECE8DD' : 'transparent'))
+      .attr('fill', (d: CategoryMetrics) => (d.category === selectedCategory ? PALETTE.ink : 'transparent'))
       .attr('fill-opacity', (d: CategoryMetrics) => (d.category === selectedCategory ? 0.08 : 0))
       .attr('pointer-events', 'none');
 
@@ -387,7 +385,7 @@ export function CategoryHeatMap({
       .attr('x', (d) => (xScale(d.id) || 0) + xScale.bandwidth() / 2)
       .attr('y', -14)
       .attr('text-anchor', 'middle')
-      .attr('fill', '#B9B4A6')
+      .attr('fill', PALETTE.ink2)
       .attr('font-weight', 'bold')
       .text((d) => (isMobile ? d.short.substring(0, 4) : d.short));
 
@@ -413,7 +411,7 @@ export function CategoryHeatMap({
         .attr('cy', y)
         .attr('r', 4)
         .attr('fill', catColor)
-        .attr('stroke', cat.compositeIntensity > 60 ? '#ECE8DD' : 'transparent')
+        .attr('stroke', cat.compositeIntensity > 60 ? PALETTE.ink : 'transparent')
         .attr('stroke-width', 1);
 
       // Category Name Text
@@ -422,7 +420,7 @@ export function CategoryHeatMap({
         .attr('class', 'font-mono text-xs font-bold')
         .attr('x', -margin.left + (isMobile ? 22 : 30))
         .attr('y', y - 2)
-        .attr('fill', cat.category === selectedCategory ? '#ECE8DD' : '#ECE8DD')
+        .attr('fill', cat.category === selectedCategory ? PALETTE.ink : PALETTE.ink)
         .text(isMobile ? cat.label.substring(0, 10) : cat.label);
 
       // Sub-label (hit count / total)
@@ -431,7 +429,7 @@ export function CategoryHeatMap({
         .attr('class', 'font-mono text-[9px]')
         .attr('x', -margin.left + (isMobile ? 22 : 30))
         .attr('y', y + 10)
-        .attr('fill', '#908B7D')
+        .attr('fill', PALETTE.ink3)
         .text(`${cat.foundCount} hits • ${cat.totalPlatforms} srcs`);
     });
 
@@ -485,17 +483,17 @@ export function CategoryHeatMap({
       .attr('height', yScale.bandwidth())
       .attr('rx', 4)
       .attr('ry', 4)
-      .attr('fill', '#1B1915')
-      .attr('stroke', '#37332B')
+      .attr('fill', PALETTE.paper2)
+      .attr('stroke', PALETTE.rule)
       .attr('stroke-width', 1)
       .transition()
       .duration(450)
       .attr('fill', (d) => colorScale(d.value))
       .attr('stroke', (d) => {
-        if (d.value >= 75) return '#ECE8DD';
-        if (d.value >= 50) return '#908B7D';
-        if (d.value > 0) return '#ECE8DD';
-        return '#37332B';
+        if (d.value >= 75) return PALETTE.ink;
+        if (d.value >= 50) return PALETTE.ink3;
+        if (d.value > 0) return PALETTE.ink;
+        return PALETTE.rule;
       })
       .attr('stroke-opacity', (d) => (d.value > 0 ? 0.6 : 0.8));
 
@@ -519,7 +517,7 @@ export function CategoryHeatMap({
       .attr('rx', 4)
       .attr('ry', 4)
       .attr('fill', 'none')
-      .attr('stroke', '#ECE8DD')
+      .attr('stroke', PALETTE.ink)
       .attr('stroke-width', 1.5)
       .attr('stroke-dasharray', '3 2')
       .attr('class', 'animate-pulse');
@@ -534,25 +532,25 @@ export function CategoryHeatMap({
 
   return (
     <div 
-      className={`border border-neutral-800 bg-neutral-950 font-mono transition-all ${
-        isFullscreen ? 'fixed inset-4 z-50 overflow-y-auto bg-black/95 p-6 border-white/20' : 'p-4 sm:p-5'
+      className={`border border-rule bg-paper-2 font-mono transition-all ${
+        isFullscreen ? 'fixed inset-4 z-50 overflow-y-auto bg-paper/95 p-6 border-ink/20' : 'p-4 sm:p-5'
       }`}
     >
       {/* Top Header / Control Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-800 pb-4 mb-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-rule pb-4 mb-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="p-1.5 border border-neutral-700 bg-neutral-900 text-white">
+            <span className="p-1.5 border border-rule bg-rule-2 text-ink">
               <Flame className="w-4 h-4" />
             </span>
-            <h3 className="text-sm font-bold text-white tracking-wider uppercase flex items-center gap-2">
+            <h3 className="text-sm font-bold text-ink tracking-wider uppercase flex items-center gap-2">
               D3.js Category Activity & Threat Heat Map
-              <span className="px-2 py-0.5 text-[10px] bg-[#F0885A] text-black font-bold">
+              <span className="px-2 py-0.5 text-[10px] bg-signal text-signal-ink font-bold">
                 MULTI-DIMENSIONAL
               </span>
             </h3>
           </div>
-          <p className="text-xs text-neutral-400 font-sans">
+          <p className="text-xs text-ink-3 font-sans">
             Thermal intensity and digital footprint mapping by sector: correlating presence, probe latency, OpSec risk, and metadata completeness.
           </p>
         </div>
@@ -566,8 +564,8 @@ export function CategoryHeatMap({
             onClick={() => setFilterActiveOnly(!filterActiveOnly)}
             className={`px-2.5 py-1.5 text-xs uppercase font-mono flex items-center gap-1.5 border transition-colors ${
               filterActiveOnly
-                ? 'bg-neutral-900 border-[#F0885A] text-white font-bold'
-                : 'bg-black border-neutral-800 text-neutral-400 hover:text-white'
+                ? 'bg-rule-2 border-signal text-ink font-bold'
+                : 'bg-paper border-rule text-ink-3 hover:text-ink'
             }`}
             title="Toggle between displaying only categories with found profiles or full catalog"
           >
@@ -576,8 +574,8 @@ export function CategoryHeatMap({
           </button>
 
           {/* Sort selector */}
-          <div className="flex items-center border border-neutral-800 bg-black text-xs">
-            <span className="px-2 text-neutral-500 flex items-center">
+          <div className="flex items-center border border-rule bg-paper text-xs">
+            <span className="px-2 text-ink-3 flex items-center">
               <ArrowUpDown className="w-3 h-3 mr-1" />
               SORT:
             </span>
@@ -585,12 +583,12 @@ export function CategoryHeatMap({
               id="heatmap-sort-select"
               value={sortMode}
               onChange={(e) => setSortMode(e.target.value as HeatmapSortMode)}
-              className="bg-transparent text-neutral-200 py-1.5 pr-3 text-xs outline-none cursor-pointer"
+              className="bg-transparent text-ink py-1.5 pr-3 text-xs outline-none cursor-pointer"
             >
-              <option value="intensity" className="bg-neutral-900 text-white">Highest Intensity</option>
-              <option value="found" className="bg-neutral-900 text-white">Most Found</option>
-              <option value="latency" className="bg-neutral-900 text-white">Lowest Latency</option>
-              <option value="alphabetical" className="bg-neutral-900 text-white">Alphabetical</option>
+              <option value="intensity" className="bg-rule-2 text-ink">Highest Intensity</option>
+              <option value="found" className="bg-rule-2 text-ink">Most Found</option>
+              <option value="latency" className="bg-rule-2 text-ink">Lowest Latency</option>
+              <option value="alphabetical" className="bg-rule-2 text-ink">Alphabetical</option>
             </select>
           </div>
 
@@ -599,7 +597,7 @@ export function CategoryHeatMap({
             type="button"
             id="heatmap-fullscreen-toggle-btn"
             onClick={() => setIsFullscreen(!isFullscreen)}
-            className="p-1.5 border border-neutral-800 bg-black text-neutral-400 hover:text-white transition-colors"
+            className="p-1.5 border border-rule bg-paper text-ink-3 hover:text-ink transition-colors"
             title={isFullscreen ? 'Minimize' : 'Expand Fullscreen'}
           >
             {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
@@ -609,16 +607,16 @@ export function CategoryHeatMap({
 
       {/* Main Heat Map Display */}
       {filteredAndSortedCategories.length === 0 ? (
-        <div className="py-16 text-center space-y-3 font-mono border border-dashed border-neutral-800">
-          <Activity className="w-8 h-8 mx-auto text-neutral-600 animate-pulse" />
-          <p className="text-neutral-400 text-xs uppercase tracking-wider">
+        <div className="py-16 text-center space-y-3 font-mono border border-dashed border-rule">
+          <Activity className="w-8 h-8 mx-auto text-ink-3 animate-pulse" />
+          <p className="text-ink-3 text-xs uppercase tracking-wider">
             No active categories matching the current filter
           </p>
           <button
             type="button"
             id="heatmap-reset-filter-btn"
             onClick={() => setFilterActiveOnly(false)}
-            className="px-3 py-1 text-xs border border-neutral-700 text-neutral-300 hover:text-white"
+            className="px-3 py-1 text-xs border border-rule text-ink-2 hover:text-ink"
           >
             Display all catalog categories
           </button>
@@ -628,43 +626,43 @@ export function CategoryHeatMap({
           {/* Dynamic D3 SVG Container */}
           <div 
             ref={containerRef} 
-            className="w-full overflow-x-auto overflow-y-hidden border border-neutral-900 bg-black/80 p-2 sm:p-4 rounded-none"
+            className="w-full overflow-x-auto overflow-y-hidden border border-rule bg-paper/80 p-2 sm:p-4 rounded-none"
           >
             <svg ref={svgRef} className="block w-full overflow-visible" />
           </div>
 
           {/* Hovered Cell Live Status Banner */}
-          <div className="border border-neutral-800 bg-neutral-900/60 p-2.5 sm:p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+          <div className="border border-rule bg-rule-2/60 p-2.5 sm:p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
             {hoveredCell ? (
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-neutral-500 uppercase">Focused Cell:</span>
-                <span className="font-bold text-white uppercase">{hoveredCell.category}</span>
-                <span className="text-neutral-600">»</span>
-                <span className="text-white font-mono font-semibold">{hoveredCell.dimension}:</span>
-                <span className="px-2 py-0.5 bg-[#F0885A] text-black font-bold text-xs">
+                <span className="text-ink-3 uppercase">Focused Cell:</span>
+                <span className="font-bold text-ink uppercase">{hoveredCell.category}</span>
+                <span className="text-ink-3">»</span>
+                <span className="text-ink font-mono font-semibold">{hoveredCell.dimension}:</span>
+                <span className="px-2 py-0.5 bg-signal text-signal-ink font-bold text-xs">
                   {Math.round(hoveredCell.value)}%
                 </span>
-                <span className="text-neutral-400 font-sans text-[11px] sm:ml-2">
+                <span className="text-ink-3 font-sans text-[11px] sm:ml-2">
                   ({hoveredCell.description})
                 </span>
               </div>
             ) : (
-              <div className="flex items-center gap-2 text-neutral-500">
-                <Info className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
+              <div className="flex items-center gap-2 text-ink-3">
+                <Info className="w-3.5 h-3.5 text-ink-3 shrink-0" />
                 <span>Hover over any thermal cell to audit details and click to inspect sector profiles.</span>
               </div>
             )}
 
             {/* Standardized Heatmap Legend Bar */}
             <div className="flex items-center gap-1.5 shrink-0 select-none">
-              <span className="text-[10px] text-neutral-500 uppercase mr-1">Thermal Scale:</span>
+              <span className="text-[10px] text-ink-3 uppercase mr-1">Thermal Scale:</span>
               {HEATMAP_STOPS.map((stop) => (
                 <div key={stop.color} className="flex items-center gap-1">
                   <span
-                    className="w-3 h-3 rounded-none inline-block border border-black"
+                    className="w-3 h-3 rounded-none inline-block border border-paper"
                     style={{ backgroundColor: stop.color }}
                   />
-                  <span className="text-[9px] text-neutral-400">{stop.label}</span>
+                  <span className="text-[9px] text-ink-3">{stop.label}</span>
                 </div>
               ))}
             </div>
@@ -672,17 +670,17 @@ export function CategoryHeatMap({
 
           {/* Drill-down Detail Drawer for Selected Category */}
           {activeCategoryObj && (
-            <div className="border border-neutral-800 bg-black p-4 space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-800 pb-3">
+            <div className="border border-rule bg-paper p-4 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-rule pb-3">
                 <div className="flex items-center gap-2.5">
                   <span
                     className="w-3 h-3 rounded-none inline-block"
-                    style={{ backgroundColor: CATEGORY_COLORS[activeCategoryObj.category] || '#ECE8DD' }}
+                    style={{ backgroundColor: CATEGORY_COLORS[activeCategoryObj.category] || PALETTE.ink }}
                   />
                   <div>
-                    <h4 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <h4 className="text-sm font-bold text-ink uppercase tracking-wider flex items-center gap-2">
                       Forensic Sector: {activeCategoryObj.label}
-                      <span className="px-2 py-0.5 text-[10px] border border-neutral-700 bg-neutral-900 text-neutral-300">
+                      <span className="px-2 py-0.5 text-[10px] border border-rule bg-rule-2 text-ink-2">
                         {activeCategoryObj.foundCount} Confirmed Accounts
                       </span>
                     </h4>
@@ -690,14 +688,14 @@ export function CategoryHeatMap({
                 </div>
 
                 <div className="flex items-center gap-3 text-xs">
-                  <span className="text-neutral-500">
-                    Average Latency: <strong className="text-white">{activeCategoryObj.avgResponseMs} ms</strong>
+                  <span className="text-ink-3">
+                    Average Latency: <strong className="text-ink">{activeCategoryObj.avgResponseMs} ms</strong>
                   </span>
-                  <span className="text-neutral-500">
-                    Relative Intensity: <strong className="text-white">{activeCategoryObj.compositeIntensity}%</strong>
+                  <span className="text-ink-3">
+                    Relative Intensity: <strong className="text-ink">{activeCategoryObj.compositeIntensity}%</strong>
                   </span>
                   <div
-                    className="px-2 py-0.5 text-[10px] font-bold uppercase border border-neutral-700 bg-neutral-900 text-white"
+                    className="px-2 py-0.5 text-[10px] font-bold uppercase border border-rule bg-rule-2 text-ink"
                   >
                     {activeCategoryObj.compositeIntensity >= 75 ? 'HIGH IMPACT' : activeCategoryObj.compositeIntensity >= 40 ? 'MODERATE' : 'LOW'}
                   </div>
@@ -710,38 +708,38 @@ export function CategoryHeatMap({
                   {activeCategoryObj.foundPlatforms.map((p) => (
                     <div
                       key={p.id}
-                      className="p-3 border border-neutral-800 bg-neutral-950 hover:border-neutral-700 transition-colors flex flex-col justify-between gap-2"
+                      className="p-3 border border-rule bg-paper-2 hover:border-rule transition-colors flex flex-col justify-between gap-2"
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
-                          <span className="text-xs font-bold text-white block truncate">
+                          <span className="text-xs font-bold text-ink block truncate">
                             {p.platformName}
                           </span>
-                          <span className="text-[10px] text-neutral-500 block truncate font-mono">
+                          <span className="text-[10px] text-ink-3 block truncate font-mono">
                             {p.url}
                           </span>
                         </div>
-                        <span className="px-1.5 py-0.5 text-[9px] bg-neutral-900 text-white border border-neutral-700 shrink-0 font-bold">
+                        <span className="px-1.5 py-0.5 text-[9px] bg-rule-2 text-ink border border-rule shrink-0 font-bold">
                           HIT
                         </span>
                       </div>
 
-                      <div className="flex items-center justify-between gap-2 text-[10px] text-neutral-500 pt-2 border-t border-neutral-900">
+                      <div className="flex items-center justify-between gap-2 text-[10px] text-ink-3 pt-2 border-t border-rule">
                         <span>{p.responseTimeMs ? `${p.responseTimeMs}ms` : 'Status 200'}</span>
                         <div className="flex items-center gap-1.5">
                           <button
                             type="button"
                             onClick={() => copyPlatformUrl(p.url)}
-                            className="p-1 hover:text-white border border-neutral-800 bg-black"
+                            className="p-1 hover:text-ink border border-rule bg-paper"
                             title="Copy URL"
                           >
-                            {copiedUrl === p.url ? <Check className="w-3 h-3 text-white" /> : <Copy className="w-3 h-3" />}
+                            {copiedUrl === p.url ? <Check className="w-3 h-3 text-ink" /> : <Copy className="w-3 h-3" />}
                           </button>
                           <a
                             href={p.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="p-1 hover:text-white border border-neutral-800 bg-black flex items-center gap-1"
+                            className="p-1 hover:text-ink border border-rule bg-paper flex items-center gap-1"
                             title="Open external profile"
                           >
                             <ExternalLink className="w-3 h-3" />
@@ -752,10 +750,10 @@ export function CategoryHeatMap({
                   ))}
                 </div>
               ) : (
-                <div className="py-6 text-center text-xs text-neutral-500 font-mono">
+                <div className="py-6 text-center text-xs text-ink-3 font-mono">
                   No verified accounts with status 200 found in this category for target @{target}.
                   {activeCategoryObj.uncertainCount > 0 && (
-                    <p className="text-neutral-400 mt-1">
+                    <p className="text-ink-3 mt-1">
                       Identified {activeCategoryObj.uncertainCount} probes with WAF/Cloudflare mitigation (uncertain status).
                     </p>
                   )}

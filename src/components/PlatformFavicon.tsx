@@ -44,15 +44,15 @@ const SIZE_CONFIGS = {
 };
 
 const CATEGORY_BORDER_COLORS: Record<string, string> = {
-  developer: 'border-neutral-700/80 bg-neutral-950/40 text-neutral-300',
-  social: 'border-neutral-700/80 bg-neutral-950/40 text-neutral-300',
-  gaming: 'border-neutral-700/80 bg-neutral-950/40 text-neutral-300',
-  security: 'border-neutral-700/80 bg-neutral-950/40 text-neutral-300',
-  crypto: 'border-neutral-700/80 bg-neutral-950/40 text-neutral-300',
-  creative: 'border-neutral-700/80 bg-neutral-950/40 text-neutral-300',
-  community: 'border-neutral-700/80 bg-neutral-950/40 text-neutral-300',
-  media: 'border-neutral-700/80 bg-neutral-950/40 text-neutral-300',
-  default: 'border-neutral-700 bg-neutral-900 text-neutral-300'
+  developer: 'border-rule/80 bg-paper-2/40 text-ink-2',
+  social: 'border-rule/80 bg-paper-2/40 text-ink-2',
+  gaming: 'border-rule/80 bg-paper-2/40 text-ink-2',
+  security: 'border-rule/80 bg-paper-2/40 text-ink-2',
+  crypto: 'border-rule/80 bg-paper-2/40 text-ink-2',
+  creative: 'border-rule/80 bg-paper-2/40 text-ink-2',
+  community: 'border-rule/80 bg-paper-2/40 text-ink-2',
+  media: 'border-rule/80 bg-paper-2/40 text-ink-2',
+  default: 'border-rule bg-rule-2 text-ink-2'
 };
 
 export function PlatformFavicon({
@@ -112,11 +112,11 @@ export function PlatformFavicon({
   return (
     <div
       title={tooltipText}
-      className={`relative inline-flex items-center justify-center p-0.5 border border-neutral-800 bg-neutral-950 shrink-0 overflow-hidden ${sizeCfg.wrapper} ${className}`}
+      className={`relative inline-flex items-center justify-center p-0.5 border border-rule bg-paper-2 shrink-0 overflow-hidden ${sizeCfg.wrapper} ${className}`}
     >
       {/* Underlying fallback monogram while image loads */}
       {!isLoaded && (
-        <span className={`font-mono text-neutral-500 font-bold select-none ${sizeCfg.text}`}>
+        <span className={`font-mono text-ink-3 font-bold select-none ${sizeCfg.text}`}>
           {monogram}
         </span>
       )}

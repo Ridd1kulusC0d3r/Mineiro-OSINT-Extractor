@@ -66,15 +66,15 @@ export function ToastProvider({ children }: ToastProviderProps) {
   const getIcon = (type?: ToastType) => {
     switch (type) {
       case 'copy':
-        return <Copy className="w-4 h-4 text-white shrink-0" />;
+        return <Copy className="w-4 h-4 text-ink shrink-0" />;
       case 'download':
       case 'export':
-        return <Download className="w-4 h-4 text-white shrink-0" />;
+        return <Download className="w-4 h-4 text-ink shrink-0" />;
       case 'info':
-        return <Info className="w-4 h-4 text-neutral-300 shrink-0" />;
+        return <Info className="w-4 h-4 text-ink-2 shrink-0" />;
       case 'success':
       default:
-        return <Check className="w-4 h-4 text-white shrink-0" />;
+        return <Check className="w-4 h-4 text-ink shrink-0" />;
     }
   };
 
@@ -97,37 +97,37 @@ export function ToastProvider({ children }: ToastProviderProps) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 12, scale: 0.95, transition: { duration: 0.18 } }}
               transition={{ type: 'spring', damping: 25, stiffness: 350 }}
-              className="pointer-events-auto bg-neutral-950 border border-neutral-700 shadow-2xl p-3.5 font-mono relative overflow-hidden"
+              className="pointer-events-auto bg-paper-2 border border-rule shadow-2xl p-3.5 font-mono relative overflow-hidden"
               style={{
-                boxShadow: '0 12px 30px -4px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(236,232,221, 0.1)',
+                boxShadow: '0 12px 30px -4px rgba(0, 0, 0, 0.8), 0 0 0 1px color-mix(in srgb, var(--ink) 10%, transparent)',
               }}
             >
               {/* Subtle top indicator bar */}
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-neutral-700">
+              <div className="absolute top-0 left-0 right-0 h-[2px] bg-rule">
                 <motion.div
                   initial={{ width: '100%' }}
                   animate={{ width: '0%' }}
                   transition={{ duration: (toast.duration || 3800) / 1000, ease: 'linear' }}
-                  className="h-full bg-[#F0885A]"
+                  className="h-full bg-signal"
                 />
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="w-7 h-7 bg-neutral-900 border border-neutral-700 flex items-center justify-center shrink-0 mt-0.5">
+                <div className="w-7 h-7 bg-rule-2 border border-rule flex items-center justify-center shrink-0 mt-0.5">
                   {getIcon(toast.type)}
                 </div>
 
                 <div className="flex-1 min-w-0 pr-1">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-white font-bold text-xs uppercase tracking-wider truncate">
+                    <span className="text-ink font-bold text-xs uppercase tracking-wider truncate">
                       {toast.title}
                     </span>
-                    <span className="text-[9px] px-1 py-0.2 bg-neutral-800 text-neutral-300 font-mono">
+                    <span className="text-[9px] px-1 py-0.2 bg-rule-2 text-ink-2 font-mono">
                       CONFIRMED
                     </span>
                   </div>
                   {toast.message && (
-                    <p className="text-[11px] text-neutral-400 font-sans mt-0.5 leading-tight">
+                    <p className="text-[11px] text-ink-3 font-sans mt-0.5 leading-tight">
                       {toast.message}
                     </p>
                   )}
@@ -136,7 +136,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
                 <button
                   type="button"
                   onClick={() => removeToast(toast.id)}
-                  className="text-neutral-500 hover:text-white p-1 transition-colors shrink-0 -mr-1 -mt-1"
+                  className="text-ink-3 hover:text-ink p-1 transition-colors shrink-0 -mr-1 -mt-1"
                   title="Dismiss"
                 >
                   <X className="w-3.5 h-3.5" />

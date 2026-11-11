@@ -1067,7 +1067,7 @@ export default function App() {
 
   return (
     <ToastProvider>
-      <div className="min-h-screen bg-[#131210] text-[#ECE8DD] flex flex-col selection:bg-[#F0885A] selection:text-[#131210]">
+      <div className="min-h-screen bg-paper text-ink flex flex-col selection:bg-signal selection:text-signal-ink">
       {/* Top Header */}
       <Header
         onReset={handleReset}
@@ -1228,12 +1228,12 @@ export default function App() {
         {/* View: Platforms Grid */}
         {activeView === 'grid' && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between text-xs font-mono text-[#B9B4A6]">
+            <div className="flex items-center justify-between text-xs font-mono text-ink-2">
               <span>
-                DISPLAYING <strong className="text-[#ECE8DD]">{visibleResults.length}</strong> PLATFORMS
+                DISPLAYING <strong className="text-ink">{visibleResults.length}</strong> PLATFORMS
                 {searchFilter && ` MATCHING "${searchFilter}"`}
               </span>
-              <span className="text-[11px] text-[#908B7D]">
+              <span className="text-[11px] text-ink-3">
                 CLICK LINK ICON TO AUDIT PROFILE DIRECTLY
               </span>
             </div>
@@ -1244,9 +1244,9 @@ export default function App() {
         {/* View: Dense Audit Table */}
         {activeView === 'table' && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between text-xs font-mono text-[#B9B4A6]">
+            <div className="flex items-center justify-between text-xs font-mono text-ink-2">
               <span>TABULAR AUDIT LEDGER ({visibleResults.length} records)</span>
-              <span className="text-[11px] text-[#908B7D]">SORTED BY RECON ENGINE DISCOVERY</span>
+              <span className="text-[11px] text-ink-3">SORTED BY RECON ENGINE DISCOVERY</span>
             </div>
             <PlatformTable results={visibleResults} />
           </div>
@@ -1368,18 +1368,18 @@ export default function App() {
       />
 
       {/* Modern Minimalist Footer */}
-      <footer className="border-t border-[#37332B] bg-[#131210] py-5 font-mono text-xs text-[#B9B4A6]">
+      <footer className="border-t border-rule bg-paper py-5 font-mono text-xs text-ink-2">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-1">
-          <div className="flex flex-wrap items-center justify-center gap-x-2 text-[#ECE8DD]">
-            <strong className="text-[#ECE8DD]">Mineiro Username Intelligence UNIFIED OSINT ENGINE</strong>
-            <span className="text-[#908B7D]">//</span>
-            <span className="text-[#B9B4A6]">LARGE LOCAL PLATFORM CATALOG</span>
-            <span className="text-[#908B7D]">•</span>
-            <span className="text-[#B9B4A6]">WAF & ANTI-BOT GUARD</span>
-            <span className="text-[#908B7D]">•</span>
-            <span className="text-[#B9B4A6]">EVIDENCE-BOUNDED AI COPILOT</span>
+          <div className="flex flex-wrap items-center justify-center gap-x-2 text-ink">
+            <strong className="text-ink">Mineiro Username Intelligence UNIFIED OSINT ENGINE</strong>
+            <span className="text-ink-3">//</span>
+            <span className="text-ink-2">LARGE LOCAL PLATFORM CATALOG</span>
+            <span className="text-ink-3">•</span>
+            <span className="text-ink-2">WAF & ANTI-BOT GUARD</span>
+            <span className="text-ink-3">•</span>
+            <span className="text-ink-2">EVIDENCE-BOUNDED AI COPILOT</span>
           </div>
-          <div className="text-[10px] text-[#908B7D]">
+          <div className="text-[10px] text-ink-3">
             OSINT INVESTIGATION WORKBENCH · EVIDENCE · CORRELATION · REPORTING
           </div>
         </div>
