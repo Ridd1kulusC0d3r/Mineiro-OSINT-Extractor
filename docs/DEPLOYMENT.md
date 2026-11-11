@@ -42,6 +42,7 @@ The production image:
 - uses npm ci for reproducibility;
 - installs only production dependencies in the runtime image;
 - runs as the non-root node user;
+- listens on `0.0.0.0` inside the container (`HOST=0.0.0.0`); outside containers the default is `127.0.0.1`;
 - exposes an HTTP healthcheck.
 
 Docker Compose remains available through docker-compose.yml.
@@ -115,6 +116,13 @@ Set to `1` behind a reverse proxy so rate limiting uses the real client IP.
 ### MINEIRO_HOST_CONCURRENCY / MINEIRO_CACHE_TTL_MS
 
 Per-host concurrent probe cap (default 4) and verify-result cache TTL (default 300000 ms).
+
+### HOST
+
+Listen address. Defaults to `127.0.0.1`, so `npm run dev`, `npm start` and `node dist/server.cjs` are reachable only
+from the same machine. The Docker image and `docker-compose.yml` set `HOST=0.0.0.0` so the published port works; the
+`mineiro` pip command passes its own `--host` (default `127.0.0.1`). Set `HOST=0.0.0.0` yourself only on a trusted
+network or behind an authenticating reverse proxy, and combine it with `MINEIRO_PUBLIC=1` for a shared instance.
 
 ### PORT
 

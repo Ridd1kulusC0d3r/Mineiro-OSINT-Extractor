@@ -13,6 +13,8 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV PORT=3000
+# The server listens on 127.0.0.1 by default; inside a container it must accept the published port.
+ENV HOST=0.0.0.0
 
 COPY package*.json ./
 RUN npm ci --omit=dev --no-audit --no-fund && npm cache clean --force

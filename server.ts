@@ -2,12 +2,12 @@ import 'dotenv/config';
 import express from 'express';
 import path from 'path';
 import { createApp } from './server/app';
+import { listenHost, listenPort } from './server/config';
 
 const TERMINAL_BANNER = `\n+------------------------------------------------------------------+\n|                                                                  |\n|   M   M  I  N   N  EEEEE  I  RRRR    OOO                       |\n|   MM MM  I  NN  N  E      I  R   R  O   O                      |\n|   M M M  I  N N N  EEEE   I  RRRR   O   O                      |\n|   M   M  I  N  NN  E      I  R  R   O   O                      |\n|   M   M  I  N   N  EEEEE  I  R   R   OOO                       |\n|                                                                  |\n|                USERNAME INTELLIGENCE // OSINT                       |\n|                                                                  |\n|   [ probe ] -> [ classify ] -> [ correlate ] -> [ export ]      |\n|                                                                  |\n|   public signals only  |  evidence over assumptions              |\n+------------------------------------------------------------------+\n`;
 const app = createApp();
-const PORT = Number(process.env.PORT || 3000);
-// Containers need 0.0.0.0; the pip launcher sets HOST=127.0.0.1 so a local install is not exposed to the LAN.
-const HOST = process.env.HOST || '0.0.0.0';
+const PORT = listenPort();
+const HOST = listenHost(); // 127.0.0.1 unless HOST is set (containers set 0.0.0.0)
 
 async function startServer() {
   try {
