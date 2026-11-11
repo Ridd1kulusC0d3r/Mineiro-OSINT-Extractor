@@ -60,24 +60,29 @@
     ],
     "bySiteType": [
       {
-        "key": "social_network",
-        "count": 328,
-        "percent": 33.3
+        "key": "community_forum",
+        "count": 295,
+        "percent": 29.9
       },
       {
-        "key": "community_forum",
-        "count": 131,
-        "percent": 13.3
+        "key": "social_network",
+        "count": 163,
+        "percent": 16.5
       },
       {
         "key": "developer_platform",
-        "count": 100,
-        "percent": 10.2
+        "count": 108,
+        "percent": 11
       },
       {
         "key": "gaming",
-        "count": 82,
-        "percent": 8.3
+        "count": 96,
+        "percent": 9.7
+      },
+      {
+        "key": "publishing_media",
+        "count": 76,
+        "percent": 7.7
       },
       {
         "key": "creative_portfolio",
@@ -85,24 +90,9 @@
         "percent": 5
       },
       {
-        "key": "video_streaming",
-        "count": 49,
-        "percent": 5
-      },
-      {
         "key": "music_audio",
-        "count": 46,
-        "percent": 4.7
-      },
-      {
-        "key": "publishing_media",
-        "count": 44,
-        "percent": 4.5
-      },
-      {
-        "key": "community",
-        "count": 34,
-        "percent": 3.5
+        "count": 41,
+        "percent": 4.2
       },
       {
         "key": "photo_media",
@@ -110,54 +100,39 @@
         "percent": 3.1
       },
       {
-        "key": "developer",
-        "count": 17,
-        "percent": 1.7
+        "key": "video_streaming",
+        "count": 27,
+        "percent": 2.7
+      },
+      {
+        "key": "finance_payments",
+        "count": 23,
+        "percent": 2.3
       },
       {
         "key": "crypto_web3",
-        "count": 16,
-        "percent": 1.6
+        "count": 22,
+        "percent": 2.2
       },
       {
         "key": "security_research",
+        "count": 22,
+        "percent": 2.2
+      },
+      {
+        "key": "professional",
         "count": 16,
         "percent": 1.6
       },
       {
-        "key": "professional",
-        "count": 14,
-        "percent": 1.4
-      },
-      {
-        "key": "social",
-        "count": 13,
-        "percent": 1.3
+        "key": "entertainment_media",
+        "count": 11,
+        "percent": 1.1
       },
       {
         "key": "package_registry",
-        "count": 4,
-        "percent": 0.4
-      },
-      {
-        "key": "creative",
-        "count": 3,
-        "percent": 0.3
-      },
-      {
-        "key": "crypto",
-        "count": 3,
-        "percent": 0.3
-      },
-      {
-        "key": "media",
-        "count": 3,
-        "percent": 0.3
-      },
-      {
-        "key": "security",
-        "count": 2,
-        "percent": 0.2
+        "count": 5,
+        "percent": 0.5
       }
     ],
     "byReliabilityTier": [

@@ -16,6 +16,7 @@ import { SECURITY_01_PACK } from './catalog-packs/security-01';
 import { SOCIAL_01_PACK } from './catalog-packs/social-01';
 import { SOCIAL_02_PACK } from './catalog-packs/social-02';
 import { SOCIAL_03_PACK } from './catalog-packs/social-03';
+import { inferSiteType } from './siteType';
 
 const LEGACY_PLATFORM_CATALOG: Platform[] = [
   ...COMMUNITY_01_PACK,
@@ -48,24 +49,6 @@ export const EVIDENCE_CHECKS = [
   { id: 'edge_protection', label: 'Rate-limit / edge protection detection', networkCost: 0 },
 ] as const;
 
-
-function inferSiteType(platform: Platform): string {
-  const text = `${platform.name} ${platform.description || ''} ${platform.urlPattern}`.toLowerCase();
-  if (/package|registry|npm|pypi|rubygems|nuget|crate|composer/.test(text)) return 'package_registry';
-  if (/git|code|developer|programming|coding|repository|devops/.test(text)) return 'developer_platform';
-  if (/security|ctf|bug bounty|hacker|infosec|pgp|keybase/.test(text)) return 'security_research';
-  if (/game|gaming|esport|steam|xbox|playstation|minecraft/.test(text)) return 'gaming';
-  if (/music|audio|sound|band|artist|podcast/.test(text)) return 'music_audio';
-  if (/video|stream|movie|film|tv|youtube|twitch/.test(text)) return 'video_streaming';
-  if (/photo|image|photograph|flickr/.test(text)) return 'photo_media';
-  if (/design|art|portfolio|creative|3d|model/.test(text)) return 'creative_portfolio';
-  if (/forum|community|discussion|board|q&a|knowledge/.test(text)) return 'community_forum';
-  if (/crypto|blockchain|wallet|web3|bitcoin|ethereum/.test(text)) return 'crypto_web3';
-  if (/news|blog|publish|writer|journal|medium/.test(text)) return 'publishing_media';
-  if (/professional|career|job|linkedin|resume/.test(text)) return 'professional';
-  if (/social|profile|microblog|network|chat|messag/.test(text)) return 'social_network';
-  return platform.category;
-}
 
 function detectorReliability(platform: Platform): number {
   let score = 58;
