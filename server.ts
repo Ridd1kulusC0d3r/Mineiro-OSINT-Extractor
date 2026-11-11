@@ -3,6 +3,7 @@ import express from 'express';
 import path from 'path';
 import { createApp } from './server/app';
 import { listenHost, listenPort } from './server/config';
+import { VERSION } from './server/version';
 
 const TERMINAL_BANNER = `\n+------------------------------------------------------------------+\n|                                                                  |\n|   M   M  I  N   N  EEEEE  I  RRRR    OOO                       |\n|   MM MM  I  NN  N  E      I  R   R  O   O                      |\n|   M M M  I  N N N  EEEE   I  RRRR   O   O                      |\n|   M   M  I  N  NN  E      I  R  R   O   O                      |\n|   M   M  I  N   N  EEEEE  I  R   R   OOO                       |\n|                                                                  |\n|                USERNAME INTELLIGENCE // OSINT                       |\n|                                                                  |\n|   [ probe ] -> [ classify ] -> [ correlate ] -> [ export ]      |\n|                                                                  |\n|   public signals only  |  evidence over assumptions              |\n+------------------------------------------------------------------+\n`;
 const app = createApp();
@@ -30,7 +31,7 @@ async function startServer() {
     const server = app.listen(PORT, HOST, () => {
       console.log('\n' + TERMINAL_BANNER + '\n');
       console.log(`[ready] http://${HOST}:${PORT}`);
-      console.log('[mode] local-first OSINT probes | persistent cases | diff intelligence | v1.7.0');
+      console.log(`[mode] local-first OSINT probes | persistent cases | diff intelligence | v${VERSION}`);
     });
 
     server.on('error', (err: NodeJS.ErrnoException) => {

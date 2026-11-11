@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { benchmarkRegistry } from '../../src/registry/bench';
 import { getRegistryStats, MINEIRO_REGISTRY } from '../../src/registry/registry';
 import { PUBLIC_MODE } from '../security/middleware';
+import { VERSION } from '../version';
 
 export function registryRouter(): Router {
   const router = Router();
@@ -11,7 +12,7 @@ export function registryRouter(): Router {
     res.json({
       status: 'ok',
       service: 'Mineiro Username Intelligence · OSINT Investigation Workbench',
-      version: '1.7.0',
+      version: VERSION,
       timestamp: new Date().toISOString(),
       geminiConfigured: !PUBLIC_MODE && Boolean(process.env.GEMINI_API_KEY),
       publicMode: PUBLIC_MODE,

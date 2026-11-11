@@ -9,7 +9,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 const outbound = vi.hoisted(() => ({
   handler: null as null | ((url: string, init: any) => Promise<Response>),
-  calls: [] as Array<{ url: string; method: string; redirect: string }>,
+  calls: [] as Array<{ url: string; method: string; redirect: string; userAgent?: string }>,
 }));
 
 vi.mock('undici', async (importOriginal) => {
@@ -18,7 +18,7 @@ vi.mock('undici', async (importOriginal) => {
     ...actual,
     fetch: async (input: any, init: any = {}) => {
       const url = String(input);
-      outbound.calls.push({ url, method: init.method || 'GET', redirect: init.redirect });
+      outbound.calls.push({ url, method: init.method || 'GET', redirect: init.redirect, userAgent: init.headers?.['User-Agent'] });
       if (!outbound.handler) throw new Error(`unexpected outbound request to ${url}`);
       return outbound.handler(url, init);
     },
@@ -205,7 +205,9 @@ describe('POST /api/osint/verify with stubbed outbound fetch', () => {
     const res = await verify('routes-found');
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({ platformId: 'github', status: 'found', statusCode: 200, scanDepth: 'fast' });
-    expect(outbound.calls).toEqual([{ url: profileUrl('routes-found'), method: 'GET', redirect: 'manual' }]);
+    expect(outbound.calls).toMatchObject([{ url: profileUrl('routes-found'), method: 'GET', redirect: 'manual' }]);
+    // The probe User-Agent carries the package.json version (defect 17: no hard-coded copies).
+    expect(outbound.calls[0].userAgent).toContain(`MineiroUsernameIntelligence/${VERSION}`);
   });
 
   it('reports not_found on 404', async () => {

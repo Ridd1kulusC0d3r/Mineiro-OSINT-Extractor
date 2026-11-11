@@ -1,6 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 import { COPILOT_RESPONSE_SCHEMA } from '../../src/ai/analystCopilot';
 import { PUBLIC_MODE } from '../security/middleware';
+import { VERSION } from '../version';
 
 // Initialize GoogleGenAI client lazily or safely with User-Agent telemetry
 export function getGenAiClient(customApiKey?: string): { client: GoogleGenAI; isCustom: boolean } | null {
@@ -14,7 +15,7 @@ export function getGenAiClient(customApiKey?: string): { client: GoogleGenAI; is
       apiKey,
       httpOptions: {
         headers: {
-          'User-Agent': 'mineiro-username-intelligence/1.7.0',
+          'User-Agent': `mineiro-username-intelligence/${VERSION}`,
         },
       },
     }),

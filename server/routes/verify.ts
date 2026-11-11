@@ -8,8 +8,7 @@ import { evaluateMatchers } from '../../src/core/matchers';
 import { DECLARATIVE_DETECTORS } from '../detectors';
 import { withHostSlot } from '../hostLimiter';
 import { assertProbeableUrl, BlockedTargetError, safeFetch } from '../security/safeFetch';
-
-const VERSION = '1.7.0';
+import { VERSION } from '../version';
 
 const ACCEPT = {
   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
