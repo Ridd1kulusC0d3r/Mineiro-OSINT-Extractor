@@ -4,6 +4,7 @@ import argparse
 import os
 import re
 import shutil
+import signal
 import socket
 import subprocess
 import sys
@@ -67,6 +68,11 @@ def _wait_ready(url: str, timeout: float = 20.0) -> bool:
     return False
 
 
+def _stop_on_sigterm(signum, frame):
+    """SIGTERM (kill, systemd, a container stop) takes the same path as Ctrl+C, so the Node server stops too."""
+    raise KeyboardInterrupt
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(prog="mineiro", description="Mineiro OSINT workbench (public signals only).")
     parser.add_argument("--version", action="version", version=f"mineiro {__version__}")
@@ -114,6 +120,7 @@ def main(argv=None) -> int:
     print("Public signals only. Use within a legitimate and authorized purpose.")
 
     process = subprocess.Popen([node, str(server)], cwd=str(APP_DIR), env=env)
+    signal.signal(signal.SIGTERM, _stop_on_sigterm)
     try:
         if not args.no_browser:
             threading.Thread(

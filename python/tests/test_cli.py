@@ -1,4 +1,5 @@
 import socket
+import tempfile
 import unittest
 from unittest import mock
 
@@ -31,6 +32,20 @@ class CliTests(unittest.TestCase):
             cli, "find_node", return_value="/usr/bin/node"
         ):
             self.assertEqual(cli.main(["--check"]), 1)
+
+    def test_sigterm_stops_the_node_server(self):
+        with self.assertRaises(KeyboardInterrupt):
+            cli._stop_on_sigterm(15, None)
+        process = mock.Mock()
+        process.wait.side_effect = [KeyboardInterrupt, 0]
+        with mock.patch.object(cli, "find_node", return_value="/usr/bin/node"), mock.patch.object(
+            cli.Path, "exists", return_value=True
+        ), mock.patch("subprocess.Popen", return_value=process), mock.patch(
+            "signal.signal"
+        ) as handler, tempfile.TemporaryDirectory() as data_dir:
+            self.assertEqual(cli.main(["--no-browser", "--data-dir", data_dir]), 0)
+        handler.assert_called_once_with(cli.signal.SIGTERM, cli._stop_on_sigterm)
+        process.terminate.assert_called_once()
 
 
 if __name__ == "__main__":
