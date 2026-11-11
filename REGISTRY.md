@@ -1,4 +1,6 @@
-# Mineiro Registry — v1.3
+# Mineiro Registry
+
+> Estado atual (v1.7): **985 detectores** no catálogo (984 ativos para username, 59 para e-mail), **3 com regra declarativa** em `registry/detectors/*.json` (Codeberg, DEV, Keybase) e **0 com proveniência auditada**. A confiabilidade por detector é uma estimativa heurística.
 
 O **Mineiro Registry** é a camada de inventário de detectores do projeto.
 
@@ -147,3 +149,30 @@ O benchmark não precisa armazenar usernames reais. O objetivo é medir o detect
 O Mineiro pode agrupar resultados por `category` e `siteType`.
 
 Isso descreve apenas a **pegada digital observada**. Não deve ser apresentado como diagnóstico de personalidade, crenças, ideologia, saúde ou identidade.
+
+## Detectores declarativos (v1.7)
+
+Além do catálogo, `registry/detectors/*.json` permite descrever **regras verificáveis** de um serviço:
+
+```json
+{
+  "id": "codeberg",
+  "present": [{ "type": "status", "codes": [200] }],
+  "absent": [
+    { "type": "status", "codes": [404] },
+    { "type": "body_contains", "values": ["The page you are trying to reach either does not exist"] }
+  ],
+  "canary": { "present": "forgejo", "absent": "zqx9q8w7e6r5t4y3u2" },
+  "lastVerified": "2026-10-02",
+  "source": "own observation: ...",
+  "userAgent": "honest"
+}
+```
+
+Tipos de condição: `status` (`codes`), `body_contains` (`values`) e `body_regex` (`pattern`). O arquivo completo é `registry/detectors/core.json`; `npm run detectors:validate` valida o esquema.
+
+- **Presença:** todas as condições devem casar. **Ausência:** qualquer uma casa; **tem precedência**.
+- **`userAgent`:** `"honest"` envia um *User-Agent* que se identifica como o Mineiro (alguns serviços, como o Codeberg, recusam UAs imitando navegadores). O padrão é um UA de navegador.
+- **Canários:** um handle conhecido presente e um sabidamente ausente; `npm run detectors:health` os verifica (workflow semanal abre uma issue se houver deriva).
+- A resposta da API traz `detectorVersion: "declarative:<lastVerified>"` para esses detectores.
+- Como o resultado se traduz em números: [metodologia](docs/INTELLIGENCE-METHODOLOGY.md#como-os-números-são-calculados).

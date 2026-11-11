@@ -4,13 +4,13 @@
   <img src="assets/mineiro-logo.png" alt="Mineiro" width="240" height="131" decoding="async">
 </p>
 
-<p align="center"><strong>**OSINT Investigation Workbench** para presença pública de usernames, evidência, correlação cautelosa e relatórios auditáveis.</strong></p>
-
 <p align="center">
   <a href="https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/actions/workflows/ci.yml/badge.svg"></a>
   <img alt="Version" src="https://img.shields.io/badge/version-1.7.0-111111">
   <img alt="Node" src="https://img.shields.io/badge/node-22%2B-111111">
   <img alt="License" src="https://img.shields.io/badge/code-MIT-111111">
+  <img alt="Python" src="https://img.shields.io/badge/pip-instal%C3%A1vel-111111">
+  <img alt="Export" src="https://img.shields.io/badge/export-HTML%20%C2%B7%20JSON%20%C2%B7%20MD%20%C2%B7%20CSV-111111">
 </p>
 
 <p align="center">
@@ -26,8 +26,17 @@
 </p>
 
 <p align="center">
-  <img src="assets/demo.gif" alt="Mineiro varrendo um handle público em 49 plataformas, com progresso ao vivo, veredictos por evidência e grafo de correlação" width="860">
+  <img src="assets/gifs/scan.gif" alt="Digitando um handle, rodando um scan Standard em 49 plataformas e vendo os cartões virarem found, uncertain e absent, até o relatório de inteligência" width="860">
 </p>
+
+<p align="center"><sub>Um scan Standard, do handle ao relatório. Interface real gravada offline: o handle é inventado e os veredictos são sintéticos, então nada aqui é achado sobre uma conta real.</sub></p>
+
+<table>
+  <tr>
+    <td width="50%"><img src="assets/gifs/report.gif" alt="Matriz de evidência, consulta ao grafo de correlação e o relatório de inteligência rolando pelas seções" width="100%"><br><sub><b>Do veredicto à avaliação.</b> Evidência, correlação e relatório.</sub></td>
+    <td width="50%"><img src="assets/gifs/themes.gif" alt="A tela de plataformas alternando entre os temas escuro, claro e alto contraste" width="100%"><br><sub><b>Três temas.</b> Escuro, claro e alto contraste.</sub></td>
+  </tr>
+</table>
 
 ---
 
@@ -51,13 +60,47 @@ Um `FOUND` é um achado. Não é prova automática de identidade.
 - Source Quality e Detector Reliability separados;
 - Intelligence Priority Score para ordenar achados;
 - clusters de pegada pública;
-- grafo de correlação com provenance;
+- grafo de correlação (observado × candidato);
 - hipóteses principal e alternativa;
 - evidência contraditória e gaps;
 - Analytic Ledger rastreável por evidence ID;
 - relatório HTML, JSON, Markdown e CSV;
 - manifest de exportação com SHA-256;
 - AI Analyst Copilot opcional e marcado como `AI_SYNTHESIZED`.
+
+## Veja funcionando
+
+**Tela inicial.** Busque logo ao abrir, escolha o modo e teste um exemplo público. Cole a URL de um perfil e ele sugere o handle; aprenda a ler um veredito antes do primeiro scan:
+
+<p align="center">
+  <img src="assets/screenshots/home.png" alt="Tela inicial com handles de exemplo, modos de scan e como ler um veredito" width="860">
+</p>
+
+**Ledger de evidências.** Cada detector, o veredito, a confiança e quantos dos 8 checks passaram:
+
+<p align="center">
+  <img src="assets/screenshots/evidence.png" alt="Ledger de evidências com 49 detectores, status, confiança e checks aprovados" width="860">
+</p>
+
+**Relatório de inteligência.** Conclusão primeiro: o que é conhecido, avaliado e desconhecido (disponível em PT, EN e ES):
+
+<p align="center">
+  <img src="assets/screenshots/report.png" alt="Visão executiva e julgamentos-chave do relatório de inteligência" width="860">
+</p>
+
+**Grafo de correlação.** Linhas sólidas são observadas; tracejadas são candidatos por similaridade de username e exigem validação independente:
+
+<p align="center">
+  <img src="assets/screenshots/graph.png" alt="Grafo de relações entre contas observadas e usernames candidatos tracejados" width="860">
+</p>
+
+## Por que um `200 OK` não é um perfil
+
+Muitos sites respondem `200 OK` com uma página de "perfil não encontrado". O Mineiro também consulta um handle que não pode existir e só confia no resultado que parece *diferente* desse controle.
+
+<p align="center">
+  <img src="assets/diagrams/baseline.png" alt="Baseline diferencial: página-alvo e página de controle comparadas; idênticas significam ausente, distintas significam encontrado" width="860">
+</p>
 
 ## Começar
 
@@ -106,13 +149,17 @@ Para uma instalação guiada, use [docs/GETTING-STARTED.md](docs/GETTING-STARTED
 - **Sondagem mais segura:** o servidor só consulta URLs que um detector do registry pode gerar, bloqueia IPs privados/metadata (resistente a DNS rebinding) e revalida cada redirect; rate limit, headers de segurança e modo `MINEIRO_PUBLIC=1` para instâncias compartilhadas.
 - **Menos falso positivo:** baseline diferencial (alvo vs. handle aleatório inexistente) e detectores declarativos com canários.
 - **Evidência auditável:** `evidenceHash` (SHA-256), `collectedAt` e `detectorVersion` em cada resultado.
-- **Interoperável:** export STIX 2.1; store SQLite com Entity → Observation → Claim.
-- **Mais OSINT:** variantes de username, pivôs com orçamento, hash perceptual de avatar, linha do tempo Wayback, consulta de CNPJ (só dados da empresa).
+- **Interoperável (API):** export STIX 2.1 e store SQLite opcional (Entity → Observation → Claim) via API local (veja [docs/CLI-E-API.md](docs/CLI-E-API.md)); a interface ainda não grava neles.
+- **Mais OSINT (API):** variantes de username, pivôs com orçamento, hash perceptual de avatar, linha do tempo Wayback, consulta de CNPJ (só dados da empresa).
 - **`pip install`** e build reproduzível com lockfile.
 
 Detalhes no [CHANGELOG](CHANGELOG.md).
 
 ## Fluxo de investigação
+
+<p align="center">
+  <img src="assets/diagrams/pipeline.png" alt="Pipeline: coleta, evidência, correlação, avaliação" width="860">
+</p>
 
 ```text
 Intelligence Requirement
@@ -248,23 +295,9 @@ Cada export gera também um `.manifest.json` com o SHA-256 do payload e a lista 
 
 ## Arquitetura
 
-```text
-React UI
-   │
-   ├── Intelligence Report
-   ├── Evidence Audit
-   ├── Registry
-   └── AI Analyst Copilot
-   │
-Express API
-   │
-   ├── Scan Orchestrator
-   ├── Evidence Engine
-   ├── Registry / Detector Bench
-   └── Intelligence Copilot
-   │
-Public endpoints
-```
+<p align="center">
+  <img src="assets/diagrams/architecture.png" alt="Arquitetura: UI React, servidor local Express com guardas e núcleo puro, superfícies públicas" width="860">
+</p>
 
 Detalhes: [ARCHITECTURE.md](ARCHITECTURE.md) e [docs/ENGINEERING-V1.4.md](docs/ENGINEERING-V1.4.md).
 
@@ -306,6 +339,8 @@ npm run intelligence:test
 npm run manual:validate
 npm run build
 ```
+
+Os visuais deste README são reproduzíveis: `npm run assets:capture` (screenshots de uma instância em execução) e `npm run assets:render` (banner, diagramas e telas com moldura).
 
 ## Princípios
 

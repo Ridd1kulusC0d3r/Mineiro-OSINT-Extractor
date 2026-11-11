@@ -79,13 +79,13 @@ export function AiProfileCard({
   };
   if (isLoading) {
     return (
-      <div className="border border-neutral-800 bg-neutral-950 p-8 text-center space-y-4 font-mono">
-        <div className="w-12 h-12 border-2 border-white border-t-transparent animate-spin mx-auto" />
+      <div className="border border-rule bg-paper-2 p-8 text-center space-y-4 font-mono">
+        <div className="w-12 h-12 border-2 border-signal border-t-transparent animate-spin mx-auto" />
         <div className="space-y-1">
-          <p className="text-white font-bold text-sm tracking-wider">
+          <p className="text-ink font-bold text-sm tracking-wider">
             SYNTHESIZING DIGITAL ATTACK SURFACE & AI PROFILE...
           </p>
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs text-ink-3">
             Analyzing {foundResults.length} discovered platform indicators with Gemini AI...
           </p>
         </div>
@@ -95,15 +95,15 @@ export function AiProfileCard({
 
   if (!report) {
     return (
-      <div className="border border-neutral-800 bg-neutral-950 p-8 text-center space-y-4 font-mono">
-        <div className="w-14 h-14 mx-auto border border-neutral-700 bg-black flex items-center justify-center text-white">
-          <BrainCircuit className="w-7 h-7 text-white" />
+      <div className="border border-rule bg-paper-2 p-8 text-center space-y-4 font-mono">
+        <div className="w-14 h-14 mx-auto border border-rule bg-paper flex items-center justify-center text-ink">
+          <BrainCircuit className="w-7 h-7 text-ink" />
         </div>
         <div className="space-y-1 max-w-md mx-auto">
-          <h3 className="text-sm font-bold text-white tracking-wider uppercase">
+          <h3 className="text-sm font-bold text-ink tracking-wider uppercase">
             AI Profiling Engine Idle
           </h3>
-          <p className="text-xs text-neutral-400">
+          <p className="text-xs text-ink-3">
             {foundResults.length > 0
               ? `${foundResults.length} accounts found. Generate an automated behavioral, technical, and threat surface analysis.`
               : 'Execute a scan above to discover online presence and construct an intelligence profile.'}
@@ -115,9 +115,9 @@ export function AiProfileCard({
             type="button"
             onClick={onRequestProfile}
             disabled={!target}
-            className="px-5 py-2.5 bg-white text-black font-mono font-bold text-xs uppercase hover:bg-neutral-200 border border-white tracking-wider disabled:opacity-40 disabled:cursor-not-allowed transition-all inline-flex items-center gap-2"
+            className="px-5 py-2.5 bg-signal text-signal-ink font-mono font-bold text-xs uppercase hover:bg-ink border border-signal tracking-wider disabled:opacity-40 disabled:cursor-not-allowed transition-all inline-flex items-center gap-2"
           >
-            <Sparkles className="w-4 h-4 fill-black" />
+            <Sparkles className="w-4 h-4 fill-paper" />
             Generate Intelligence Dossier
           </button>
           {onOpenGeminiConfig && (
@@ -126,8 +126,8 @@ export function AiProfileCard({
               onClick={onOpenGeminiConfig}
               className={`px-4 py-2.5 font-mono text-xs uppercase border transition-all inline-flex items-center gap-2 ${
                 hasPersonalKey
-                  ? 'border-white bg-white text-black font-bold'
-                  : 'border-neutral-700 bg-black text-neutral-300 hover:text-white hover:border-neutral-500'
+                  ? 'border-signal bg-signal text-signal-ink font-bold'
+                  : 'border-rule bg-paper text-ink-2 hover:text-ink hover:border-ink-3'
               }`}
             >
               <Key className="w-4 h-4" />
@@ -141,28 +141,28 @@ export function AiProfileCard({
 
   const threatColor =
     report.threatLevel === 'Critical'
-      ? 'border-white bg-white text-black font-bold'
+      ? 'border-signal bg-signal text-signal-ink font-bold'
       : report.threatLevel === 'Elevated'
-      ? 'border-neutral-400 text-white bg-neutral-900 font-bold'
-      : 'border-neutral-700 text-neutral-300';
+      ? 'border-ink-3 text-ink bg-rule-2 font-bold'
+      : 'border-rule text-ink-2';
 
   return (
-    <div className="border border-neutral-700 bg-neutral-950 p-6 space-y-6 font-mono">
+    <div className="border border-rule bg-paper-2 p-6 space-y-6 font-mono">
       {/* Header bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-800 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-rule pb-5">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-neutral-500 uppercase">TARGET PROFILE:</span>
-            <span className="text-base font-bold text-white tracking-wider">@{report.target}</span>
-            <span className="text-[10px] px-2 py-0.5 border border-neutral-800 bg-black text-neutral-400">
+            <span className="text-xs text-ink-3 uppercase">TARGET PROFILE:</span>
+            <span className="text-base font-bold text-ink tracking-wider">@{report.target}</span>
+            <span className="text-[10px] px-2 py-0.5 border border-rule bg-paper text-ink-3">
               {report.modelUsed || 'Gemini 3.8 Flash'}
             </span>
           </div>
-          <div className="text-xs text-neutral-400 mt-1.5 flex flex-wrap items-center gap-2">
+          <div className="text-xs text-ink-3 mt-1.5 flex flex-wrap items-center gap-2">
             <div className="flex items-center gap-1.5">
-              <Fingerprint className="w-3.5 h-3.5 text-neutral-400" />
-              <span className="text-[11px] text-neutral-500 uppercase">Archetype:</span>
-              <strong className="text-white bg-black border border-neutral-800 px-2 py-0.5 text-xs">
+              <Fingerprint className="w-3.5 h-3.5 text-ink-3" />
+              <span className="text-[11px] text-ink-3 uppercase">Archetype:</span>
+              <strong className="text-ink bg-paper border border-rule px-2 py-0.5 text-xs">
                 {report.archetype}
               </strong>
             </div>
@@ -170,21 +170,21 @@ export function AiProfileCard({
               <span
                 className={`text-[10px] px-2 py-0.5 uppercase tracking-wider font-mono ${
                   report.technicalFootprint.isTechProfessional
-                    ? 'border border-white bg-neutral-900 text-white font-bold'
-                    : 'border border-neutral-700 bg-neutral-950 text-neutral-400'
+                    ? 'border border-signal bg-rule-2 text-ink font-bold'
+                    : 'border border-rule bg-paper-2 text-ink-3'
                 }`}
               >
                 {report.technicalFootprint.isTechProfessional ? 'Tech Professional' : 'Verified Non-Tech User'}
               </span>
             )}
             {report.industry && (
-              <span className="text-[10px] px-2 py-0.5 border border-neutral-800 bg-black text-neutral-300">
+              <span className="text-[10px] px-2 py-0.5 border border-rule bg-paper text-ink-2">
                 Industry: {report.industry}
               </span>
             )}
           </div>
           {report.archetypeDescription && (
-            <p className="text-[11px] text-neutral-400 font-sans mt-1.5 leading-relaxed pl-5 border-l-2 border-neutral-700">
+            <p className="text-[11px] text-ink-3 font-sans mt-1.5 leading-relaxed pl-5 border-l-2 border-rule">
               {report.archetypeDescription}
             </p>
           )}
@@ -196,17 +196,17 @@ export function AiProfileCard({
             id="copy-dossier-header-btn"
             type="button"
             onClick={handleCopyDossier}
-            className="px-2.5 py-1.5 border border-neutral-700 bg-neutral-900 text-white hover:bg-neutral-800 hover:border-neutral-500 transition-colors flex items-center gap-1.5 text-xs uppercase tracking-wider font-bold"
+            className="px-2.5 py-1.5 border border-rule bg-rule-2 text-ink hover:bg-rule-2 hover:border-ink-3 transition-colors flex items-center gap-1.5 text-xs uppercase tracking-wider font-bold"
             title="Copy Full Intelligence Dossier Markdown to Clipboard"
           >
             {copiedDossier ? (
               <>
-                <Check className="w-3.5 h-3.5 text-white" />
+                <Check className="w-3.5 h-3.5 text-ink" />
                 <span>COPIED</span>
               </>
             ) : (
               <>
-                <Copy className="w-3.5 h-3.5 text-neutral-300" />
+                <Copy className="w-3.5 h-3.5 text-ink-2" />
                 <span>COPY DOSSIER</span>
               </>
             )}
@@ -218,10 +218,10 @@ export function AiProfileCard({
               id="export-dossier-header-btn"
               type="button"
               onClick={onOpenExport}
-              className="px-2.5 py-1.5 border border-neutral-700 bg-neutral-900 text-neutral-300 hover:text-white hover:bg-neutral-800 hover:border-neutral-500 transition-colors flex items-center gap-1.5 text-xs uppercase tracking-wider"
+              className="px-2.5 py-1.5 border border-rule bg-rule-2 text-ink-2 hover:text-ink hover:bg-rule-2 hover:border-ink-3 transition-colors flex items-center gap-1.5 text-xs uppercase tracking-wider"
               title="Open Full OSINT Export Modal"
             >
-              <Download className="w-3.5 h-3.5 text-neutral-300" />
+              <Download className="w-3.5 h-3.5 text-ink-2" />
               <span>EXPORT</span>
             </button>
           )}
@@ -232,7 +232,7 @@ export function AiProfileCard({
           <button
             id="regenerate-profile-btn"
             onClick={onRequestProfile}
-            className="p-2 border border-neutral-800 bg-black text-neutral-400 hover:text-white hover:border-neutral-600 transition-colors"
+            className="p-2 border border-rule bg-paper text-ink-3 hover:text-ink hover:border-ink-3 transition-colors"
             title="Re-run AI Analysis"
           >
             <RefreshCw className="w-4 h-4" />
@@ -242,9 +242,9 @@ export function AiProfileCard({
 
       {/* Fallback Notice if Temporary AI Spike Occurred */}
       {report.fallbackNotice && (
-        <div className="p-3.5 border border-neutral-800 bg-black flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2.5 text-neutral-300">
-            <AlertTriangle className="w-4 h-4 text-white shrink-0" />
+        <div className="p-3.5 border border-rule bg-paper flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2.5 text-ink-2">
+            <AlertTriangle className="w-4 h-4 text-ink shrink-0" />
             <span>{report.fallbackNotice}</span>
           </div>
           <div className="flex items-center gap-2 shrink-0">
@@ -252,7 +252,7 @@ export function AiProfileCard({
               <button
                 type="button"
                 onClick={onOpenGeminiConfig}
-                className="px-3 py-1.5 border border-neutral-700 bg-neutral-900 text-white font-bold uppercase text-[11px] hover:border-white transition-colors tracking-wider inline-flex items-center gap-1.5"
+                className="px-3 py-1.5 border border-rule bg-rule-2 text-ink font-bold uppercase text-[11px] hover:border-signal transition-colors tracking-wider inline-flex items-center gap-1.5"
               >
                 <Key className="w-3.5 h-3.5" />
                 Connect Personal Key
@@ -261,9 +261,9 @@ export function AiProfileCard({
             <button
               type="button"
               onClick={onRequestProfile}
-              className="px-3 py-1.5 bg-white text-black font-bold uppercase text-[11px] hover:bg-neutral-200 transition-colors tracking-wider inline-flex items-center gap-1.5"
+              className="px-3 py-1.5 bg-signal text-signal-ink font-bold uppercase text-[11px] hover:bg-ink transition-colors tracking-wider inline-flex items-center gap-1.5"
             >
-              <Sparkles className="w-3.5 h-3.5 fill-black" />
+              <Sparkles className="w-3.5 h-3.5 fill-paper" />
               Retry Analysis
             </button>
           </div>
@@ -272,28 +272,28 @@ export function AiProfileCard({
 
       {/* Surface Score & Summary */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="p-4 border border-neutral-800 bg-black flex flex-col justify-between">
-          <span className="text-[11px] text-neutral-500 uppercase tracking-wider">
+        <div className="p-4 border border-rule bg-paper flex flex-col justify-between">
+          <span className="text-[11px] text-ink-3 uppercase tracking-wider">
             Footprint Score
           </span>
           <div className="my-2">
-            <span className="text-3xl font-extrabold text-white">{report.footprintScore}</span>
-            <span className="text-xs text-neutral-500"> / 100</span>
+            <span className="text-3xl font-extrabold text-ink">{report.footprintScore}</span>
+            <span className="text-xs text-ink-3"> / 100</span>
           </div>
-          <div className="w-full bg-neutral-900 h-1.5 overflow-hidden">
+          <div className="w-full bg-rule-2 h-1.5 overflow-hidden">
             <div
-              className="bg-white h-full"
+              className="bg-signal h-full"
               style={{ width: `${report.footprintScore}%` }}
             />
           </div>
         </div>
 
-        <div className="p-4 border border-neutral-800 bg-black md:col-span-3 space-y-2">
-          <div className="text-[11px] text-neutral-500 uppercase tracking-wider flex items-center gap-1.5">
+        <div className="p-4 border border-rule bg-paper md:col-span-3 space-y-2">
+          <div className="text-[11px] text-ink-3 uppercase tracking-wider flex items-center gap-1.5">
             <Cpu className="w-3.5 h-3.5" />
             Executive Intelligence Summary
           </div>
-          <p className="text-xs text-neutral-200 leading-relaxed font-sans">
+          <p className="text-xs text-ink leading-relaxed font-sans">
             {report.summary}
           </p>
         </div>
@@ -301,16 +301,16 @@ export function AiProfileCard({
 
       {/* Multi-Pass Behavioral Calibration: Industry, Interests, and Technical Footprint */}
       {(report.industry || report.interests?.length || report.technicalFootprint) && (
-        <div className="border border-neutral-800 bg-black p-5 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-800 pb-3">
+        <div className="border border-rule bg-paper p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-rule pb-3">
             <div className="flex items-center gap-2">
-              <Layers className="w-4 h-4 text-white" />
-              <span className="text-xs font-bold text-white uppercase tracking-wider">
+              <Layers className="w-4 h-4 text-ink" />
+              <span className="text-xs font-bold text-ink uppercase tracking-wider">
                 Multi-Pass Behavioral Calibration (Weighted Archetype Synthesis)
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-neutral-500 font-mono uppercase">
+              <span className="text-[10px] text-ink-3 font-mono uppercase">
                 Entities Evaluated Prior to Archetype Mapping
               </span>
             </div>
@@ -318,32 +318,32 @@ export function AiProfileCard({
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
             {/* 1. Industry Entity */}
-            <div className="p-3.5 border border-neutral-800 bg-neutral-950 space-y-2 flex flex-col justify-between">
+            <div className="p-3.5 border border-rule bg-paper-2 space-y-2 flex flex-col justify-between">
               <div className="space-y-1.5">
-                <div className="flex items-center gap-1.5 text-[10px] text-neutral-500 uppercase tracking-wider">
-                  <Briefcase className="w-3 h-3 text-neutral-400" />
+                <div className="flex items-center gap-1.5 text-[10px] text-ink-3 uppercase tracking-wider">
+                  <Briefcase className="w-3 h-3 text-ink-3" />
                   <span>Entity 1: Industry Sector</span>
                 </div>
-                <div className="text-xs font-bold text-white tracking-wide">
+                <div className="text-xs font-bold text-ink tracking-wide">
                   {report.industry || 'Domain Specific'}
                 </div>
               </div>
-              <div className="text-[11px] text-neutral-400 font-sans leading-relaxed pt-2 border-t border-neutral-900">
+              <div className="text-[11px] text-ink-3 font-sans leading-relaxed pt-2 border-t border-rule">
                 Identified through cross-platform activity clustering and domain frequency analysis.
               </div>
             </div>
 
             {/* 2. Interests Entity */}
-            <div className="p-3.5 border border-neutral-800 bg-neutral-950 space-y-2">
-              <div className="flex items-center gap-1.5 text-[10px] text-neutral-500 uppercase tracking-wider">
-                <Tag className="w-3 h-3 text-neutral-400" />
+            <div className="p-3.5 border border-rule bg-paper-2 space-y-2">
+              <div className="flex items-center gap-1.5 text-[10px] text-ink-3 uppercase tracking-wider">
+                <Tag className="w-3 h-3 text-ink-3" />
                 <span>Entity 2: Interests & Affinities</span>
               </div>
               <div className="flex flex-wrap gap-1.5 pt-1">
                 {(report.interests && report.interests.length > 0 ? report.interests : ['General Media', 'Social Discourse']).map((interest, i) => (
                   <span
                     key={i}
-                    className="text-[10px] px-2 py-0.5 bg-neutral-900 border border-neutral-800 text-neutral-300 font-sans"
+                    className="text-[10px] px-2 py-0.5 bg-rule-2 border border-rule text-ink-2 font-sans"
                   >
                     {interest}
                   </span>
@@ -352,32 +352,32 @@ export function AiProfileCard({
             </div>
 
             {/* 3. Technical Footprint Entity */}
-            <div className="p-3.5 border border-neutral-800 bg-neutral-950 space-y-2 flex flex-col justify-between">
+            <div className="p-3.5 border border-rule bg-paper-2 space-y-2 flex flex-col justify-between">
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 text-[10px] text-neutral-500 uppercase tracking-wider">
-                    <Wrench className="w-3 h-3 text-neutral-400" />
+                  <div className="flex items-center gap-1.5 text-[10px] text-ink-3 uppercase tracking-wider">
+                    <Wrench className="w-3 h-3 text-ink-3" />
                     <span>Entity 3: Technical Footprint</span>
                   </div>
                   <span
                     className={`text-[9px] px-1.5 py-0.5 uppercase tracking-wider font-bold ${
                       report.technicalFootprint?.isTechProfessional
-                        ? 'bg-white text-black'
-                        : 'border border-neutral-700 text-neutral-400 bg-black'
+                        ? 'bg-signal text-signal-ink'
+                        : 'border border-rule text-ink-3 bg-paper'
                     }`}
                   >
                     Level: {report.technicalFootprint?.level || 'None'}
                   </span>
                 </div>
-                <div className="text-[11px] font-medium text-neutral-200">
+                <div className="text-[11px] font-medium text-ink">
                   {report.technicalFootprint?.isTechProfessional ? (
-                    <span className="text-white font-bold flex items-center gap-1">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-white inline" />
+                    <span className="text-ink font-bold flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-ink inline" />
                       Corroborated Tech Professional
                     </span>
                   ) : (
-                    <span className="text-neutral-400 flex items-center gap-1">
-                      <ShieldCheck className="w-3.5 h-3.5 text-neutral-400 inline" />
+                    <span className="text-ink-3 flex items-center gap-1">
+                      <ShieldCheck className="w-3.5 h-3.5 text-ink-3 inline" />
                       Guarded Non-Tech User (Strict Non-Dev)
                     </span>
                   )}
@@ -385,7 +385,7 @@ export function AiProfileCard({
               </div>
 
               {report.technicalFootprint?.evidence && (
-                <p className="text-[10px] text-neutral-400 font-sans leading-relaxed pt-1.5 border-t border-neutral-900">
+                <p className="text-[10px] text-ink-3 font-sans leading-relaxed pt-1.5 border-t border-rule">
                   {report.technicalFootprint.evidence}
                 </p>
               )}
@@ -393,7 +393,7 @@ export function AiProfileCard({
               {report.technicalFootprint?.primaryTools && report.technicalFootprint.primaryTools.length > 0 && (
                 <div className="pt-1.5 flex flex-wrap gap-1">
                   {report.technicalFootprint.primaryTools.map((tool, idx) => (
-                    <span key={idx} className="text-[9px] px-1.5 py-0.5 border border-neutral-800 text-neutral-400">
+                    <span key={idx} className="text-[9px] px-1.5 py-0.5 border border-rule text-ink-3">
                       {tool}
                     </span>
                   ))}
@@ -406,11 +406,11 @@ export function AiProfileCard({
 
       {/* Threat Actor & Occupation Cross-Referencing Security Heuristics Panel */}
       {report.threatActorAnalysis && (
-        <div className="border border-neutral-800 bg-black p-5 space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-800 pb-3">
+        <div className="border border-rule bg-paper p-5 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-rule pb-3">
             <div className="flex items-center gap-2">
-              <Crosshair className="w-4 h-4 text-white" />
-              <span className="text-xs font-bold text-white uppercase tracking-wider">
+              <Crosshair className="w-4 h-4 text-ink" />
+              <span className="text-xs font-bold text-ink uppercase tracking-wider">
                 Security-Focused Heuristics & Threat Actor Profiling
               </span>
             </div>
@@ -418,10 +418,10 @@ export function AiProfileCard({
               <span
                 className={`text-[10px] px-2.5 py-0.5 uppercase tracking-wider font-mono ${
                   report.threatActorAnalysis.isThreatActorSuspect
-                    ? 'bg-white text-black font-extrabold'
+                    ? 'bg-signal text-signal-ink font-extrabold'
                     : report.threatActorAnalysis.threatActorCategory.includes('AUTHORIZED')
-                    ? 'border border-white bg-neutral-900 text-white font-bold'
-                    : 'border border-neutral-700 bg-neutral-950 text-neutral-300'
+                    ? 'border border-signal bg-rule-2 text-ink font-bold'
+                    : 'border border-rule bg-paper-2 text-ink-2'
                 }`}
               >
                 {report.threatActorAnalysis.threatActorCategory.replace(/_/g, ' ')}
@@ -432,36 +432,36 @@ export function AiProfileCard({
           {/* Primary Assessment & Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
             {/* Verdict */}
-            <div className="p-3.5 border border-neutral-800 bg-neutral-950 space-y-2">
-              <div className="text-[10px] text-neutral-500 uppercase tracking-wider">
+            <div className="p-3.5 border border-rule bg-paper-2 space-y-2">
+              <div className="text-[10px] text-ink-3 uppercase tracking-wider">
                 Threat Actor Classification Verdict
               </div>
-              <div className="text-xs font-bold text-white uppercase tracking-wide">
+              <div className="text-xs font-bold text-ink uppercase tracking-wide">
                 {report.threatActorAnalysis.verdictTitle}
               </div>
-              <p className="text-[11px] text-neutral-300 leading-relaxed font-sans">
+              <p className="text-[11px] text-ink-2 leading-relaxed font-sans">
                 {report.threatActorAnalysis.verdictSummary}
               </p>
             </div>
 
             {/* Threat Actor Score */}
-            <div className="p-3.5 border border-neutral-800 bg-neutral-950 space-y-2">
-              <div className="flex items-center justify-between text-[10px] text-neutral-500 uppercase tracking-wider">
+            <div className="p-3.5 border border-rule bg-paper-2 space-y-2">
+              <div className="flex items-center justify-between text-[10px] text-ink-3 uppercase tracking-wider">
                 <span>Threat Actor Suspicion Score</span>
-                <span className="text-white font-bold font-mono">
+                <span className="text-ink font-bold font-mono">
                   {report.threatActorAnalysis.threatActorScore} / 100
                 </span>
               </div>
-              <div className="text-2xl font-extrabold text-white font-mono">
+              <div className="text-2xl font-extrabold text-ink font-mono">
                 {report.threatActorAnalysis.threatActorScore}%
               </div>
-              <div className="w-full bg-neutral-900 h-1.5 overflow-hidden">
+              <div className="w-full bg-rule-2 h-1.5 overflow-hidden">
                 <div
-                  className="bg-white h-full"
+                  className="bg-signal h-full"
                   style={{ width: `${report.threatActorAnalysis.threatActorScore}%` }}
                 />
               </div>
-              <p className="text-[10px] text-neutral-500 font-sans">
+              <p className="text-[10px] text-ink-3 font-sans">
                 {report.threatActorAnalysis.threatActorScore >= 60
                   ? 'High probability of illicit underground, offensive weaponization, or credential trade activity.'
                   : report.threatActorAnalysis.threatActorScore >= 25
@@ -471,44 +471,44 @@ export function AiProfileCard({
             </div>
 
             {/* Confidence Score */}
-            <div className="p-3.5 border border-neutral-800 bg-neutral-950 space-y-2">
-              <div className="flex items-center justify-between text-[10px] text-neutral-500 uppercase tracking-wider">
+            <div className="p-3.5 border border-rule bg-paper-2 space-y-2">
+              <div className="flex items-center justify-between text-[10px] text-ink-3 uppercase tracking-wider">
                 <span>Classification Confidence</span>
-                <span className="text-white font-bold font-mono">
+                <span className="text-ink font-bold font-mono">
                   {report.threatActorAnalysis.confidenceScore} / 100
                 </span>
               </div>
-              <div className="text-2xl font-extrabold text-white font-mono">
+              <div className="text-2xl font-extrabold text-ink font-mono">
                 {report.threatActorAnalysis.confidenceScore}%
               </div>
-              <div className="w-full bg-neutral-900 h-1.5 overflow-hidden">
+              <div className="w-full bg-rule-2 h-1.5 overflow-hidden">
                 <div
-                  className="bg-neutral-400 h-full"
+                  className="bg-ink-3 h-full"
                   style={{ width: `${report.threatActorAnalysis.confidenceScore}%` }}
                 />
               </div>
-              <p className="text-[10px] text-neutral-500 font-sans">
+              <p className="text-[10px] text-ink-3 font-sans">
                 Calculated from verified platform corroboration, handle stability, and cross-site signal density.
               </p>
             </div>
           </div>
 
           {/* Occupation Cross-Referencing Matrix */}
-          <div className="p-4 border border-neutral-800 bg-neutral-950 space-y-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-neutral-900 pb-2">
+          <div className="p-4 border border-rule bg-paper-2 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-rule pb-2">
               <div className="flex items-center gap-2">
-                <Briefcase className="w-3.5 h-3.5 text-neutral-400" />
-                <span className="text-[11px] font-bold text-white uppercase tracking-wider">
+                <Briefcase className="w-3.5 h-3.5 text-ink-3" />
+                <span className="text-[11px] font-bold text-ink uppercase tracking-wider">
                   Occupation vs. Platform Behavior Cross-Referencing
                 </span>
               </div>
               <span
                 className={`text-[10px] px-2 py-0.5 uppercase tracking-wider font-mono ${
                   report.threatActorAnalysis.occupationCrossReference.consistencyVerdict === 'HIGH_RISK_DISCREPANCY'
-                    ? 'bg-white text-black font-extrabold'
+                    ? 'bg-signal text-signal-ink font-extrabold'
                     : report.threatActorAnalysis.occupationCrossReference.consistencyVerdict === 'SUSPICIOUS_ANOMALY'
-                    ? 'border border-neutral-400 bg-black text-white font-bold'
-                    : 'border border-neutral-800 bg-neutral-900 text-neutral-300'
+                    ? 'border border-ink-3 bg-paper text-ink font-bold'
+                    : 'border border-rule bg-rule-2 text-ink-2'
                 }`}
               >
                 Verdict: {report.threatActorAnalysis.occupationCrossReference.consistencyVerdict.replace(/_/g, ' ')}
@@ -517,29 +517,29 @@ export function AiProfileCard({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               <div className="space-y-1">
-                <span className="text-[10px] text-neutral-500 uppercase block font-mono">
+                <span className="text-[10px] text-ink-3 uppercase block font-mono">
                   Inferred Real-World Occupation:
                 </span>
-                <div className="text-white font-bold text-xs bg-black border border-neutral-800 p-2">
+                <div className="text-ink font-bold text-xs bg-paper border border-rule p-2">
                   {report.threatActorAnalysis.occupationCrossReference.inferredOccupation}
                 </div>
               </div>
 
               <div className="space-y-1">
-                <span className="text-[10px] text-neutral-500 uppercase block font-mono">
+                <span className="text-[10px] text-ink-3 uppercase block font-mono">
                   Observed Platform Activity Pattern:
                 </span>
-                <div className="text-neutral-300 text-xs bg-black border border-neutral-800 p-2">
+                <div className="text-ink-2 text-xs bg-paper border border-rule p-2">
                   {report.threatActorAnalysis.occupationCrossReference.platformBehaviorPattern}
                 </div>
               </div>
             </div>
 
             <div className="pt-1">
-              <span className="text-[10px] text-neutral-500 uppercase block font-mono mb-1">
+              <span className="text-[10px] text-ink-3 uppercase block font-mono mb-1">
                 Forensic Cross-Referencing Analysis:
               </span>
-              <p className="text-xs text-neutral-300 font-sans leading-relaxed pl-3 border-l-2 border-neutral-700">
+              <p className="text-xs text-ink-2 font-sans leading-relaxed pl-3 border-l-2 border-rule">
                 {report.threatActorAnalysis.occupationCrossReference.analysis}
               </p>
             </div>
@@ -548,16 +548,16 @@ export function AiProfileCard({
           {/* Observed TTPs & MITRE ATT&CK Mapping */}
           {((report.threatActorAnalysis.observedTTPs && report.threatActorAnalysis.observedTTPs.length > 0) ||
             (report.threatActorAnalysis.mitreTactics && report.threatActorAnalysis.mitreTactics.length > 0)) && (
-            <div className="p-3.5 border border-neutral-800 bg-neutral-950 space-y-2">
-              <div className="text-[11px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                <Radio className="w-3.5 h-3.5 text-neutral-400" />
+            <div className="p-3.5 border border-rule bg-paper-2 space-y-2">
+              <div className="text-[11px] font-bold text-ink uppercase tracking-wider flex items-center gap-1.5">
+                <Radio className="w-3.5 h-3.5 text-ink-3" />
                 Observed TTPs & Behavioral Indicators
               </div>
               <div className="flex flex-wrap gap-1.5 pt-1">
                 {report.threatActorAnalysis.observedTTPs?.map((ttp, idx) => (
                   <span
                     key={idx}
-                    className="px-2 py-0.5 border border-neutral-800 bg-black text-neutral-200 text-[11px] font-mono"
+                    className="px-2 py-0.5 border border-rule bg-paper text-ink text-[11px] font-mono"
                   >
                     {ttp}
                   </span>
@@ -565,7 +565,7 @@ export function AiProfileCard({
                 {report.threatActorAnalysis.mitreTactics?.map((tactic, idx) => (
                   <span
                     key={`mitre-${idx}`}
-                    className="px-2 py-0.5 border border-neutral-700 bg-neutral-900 text-white text-[11px] font-mono font-bold"
+                    className="px-2 py-0.5 border border-rule bg-rule-2 text-ink text-[11px] font-mono font-bold"
                   >
                     MITRE: {tactic}
                   </span>
@@ -577,36 +577,36 @@ export function AiProfileCard({
           {/* Indicator Matches & Forensic Evidence */}
           {report.threatActorAnalysis.indicatorMatches && report.threatActorAnalysis.indicatorMatches.length > 0 ? (
             <div className="space-y-2 pt-1">
-              <div className="text-[11px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                <FileWarning className="w-3.5 h-3.5 text-neutral-400" />
+              <div className="text-[11px] font-bold text-ink uppercase tracking-wider flex items-center gap-1.5">
+                <FileWarning className="w-3.5 h-3.5 text-ink-3" />
                 Matched Indicators & Threat Surface Discrepancies
               </div>
               <div className="space-y-2">
                 {report.threatActorAnalysis.indicatorMatches.map((match, idx) => (
                   <div
                     key={idx}
-                    className="p-3 border border-neutral-800 bg-neutral-950 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                    className="p-3 border border-rule bg-paper-2 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2"
                   >
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
                         <span
                           className={`text-[9px] px-1.5 py-0.2 uppercase font-mono font-bold ${
                             match.severity === 'critical'
-                              ? 'bg-white text-black'
+                              ? 'bg-signal text-signal-ink'
                               : match.severity === 'high'
-                              ? 'border border-neutral-400 text-white bg-black'
-                              : 'border border-neutral-800 text-neutral-400'
+                              ? 'border border-ink-3 text-ink bg-paper'
+                              : 'border border-rule text-ink-3'
                           }`}
                         >
                           {match.severity}
                         </span>
-                        <span className="text-white font-bold font-mono text-[11px]">
+                        <span className="text-ink font-bold font-mono text-[11px]">
                           {match.indicator}
                         </span>
                       </div>
-                      <p className="text-[11px] text-neutral-400 font-sans">{match.evidence}</p>
+                      <p className="text-[11px] text-ink-3 font-sans">{match.evidence}</p>
                     </div>
-                    <span className="text-[10px] text-neutral-500 uppercase font-mono shrink-0">
+                    <span className="text-[10px] text-ink-3 uppercase font-mono shrink-0">
                       [{match.category}]
                     </span>
                   </div>
@@ -614,8 +614,8 @@ export function AiProfileCard({
               </div>
             </div>
           ) : (
-            <div className="p-3 border border-neutral-800 bg-neutral-950 text-[11px] text-neutral-400 flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-white shrink-0" />
+            <div className="p-3 border border-rule bg-paper-2 text-[11px] text-ink-3 flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4 text-ink shrink-0" />
               <span>
                 Zero illicit darknet/underground forum registrations, credential broker listings, or offensive weaponization indicators identified. Footprint aligns with standard public digital surface.
               </span>
@@ -626,56 +626,56 @@ export function AiProfileCard({
 
       {/* Deep Behavioral & OPSEC Analysis */}
       {report.behavioralSignals && (
-        <div className="border border-neutral-800 bg-black p-4 space-y-4">
-          <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
+        <div className="border border-rule bg-paper p-4 space-y-4">
+          <div className="flex items-center justify-between border-b border-rule pb-2">
             <div className="flex items-center gap-2">
-              <Activity className="w-4 h-4 text-white" />
-              <span className="text-xs font-bold text-white uppercase tracking-wider">
+              <Activity className="w-4 h-4 text-ink" />
+              <span className="text-xs font-bold text-ink uppercase tracking-wider">
                 Behavioral Matrix & OPSEC Evaluation
               </span>
             </div>
-            <span className="text-[10px] text-neutral-500 uppercase">
+            <span className="text-[10px] text-ink-3 uppercase">
               Psychographic, Timezone & Language Signals
             </span>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 text-xs">
             {/* OPSEC Hygiene */}
-            <div className="p-2.5 border border-neutral-800 bg-neutral-950 space-y-1">
-              <span className="text-[10px] text-neutral-500 uppercase block">OPSEC Hygiene</span>
-              <span className="text-xs font-bold text-white uppercase">
+            <div className="p-2.5 border border-rule bg-paper-2 space-y-1">
+              <span className="text-[10px] text-ink-3 uppercase block">OPSEC Hygiene</span>
+              <span className="text-xs font-bold text-ink uppercase">
                 {report.behavioralSignals.opsecHygiene}
               </span>
             </div>
 
             {/* Social Exposure Risk */}
-            <div className="p-2.5 border border-neutral-800 bg-neutral-950 space-y-1">
-              <span className="text-[10px] text-neutral-500 uppercase block">Social Exposure</span>
-              <span className="text-xs font-bold text-white uppercase">
+            <div className="p-2.5 border border-rule bg-paper-2 space-y-1">
+              <span className="text-[10px] text-ink-3 uppercase block">Social Exposure</span>
+              <span className="text-xs font-bold text-ink uppercase">
                 {report.behavioralSignals.socialExposureRisk}
               </span>
             </div>
 
             {/* Anonymity Effort */}
-            <div className="p-2.5 border border-neutral-800 bg-neutral-950 space-y-1">
-              <span className="text-[10px] text-neutral-500 uppercase block">Anonymity Effort</span>
-              <span className="text-xs font-bold text-white uppercase">
+            <div className="p-2.5 border border-rule bg-paper-2 space-y-1">
+              <span className="text-[10px] text-ink-3 uppercase block">Anonymity Effort</span>
+              <span className="text-xs font-bold text-ink uppercase">
                 {report.behavioralSignals.anonymityEffort}
               </span>
             </div>
 
             {/* Handle Persistence */}
-            <div className="p-2.5 border border-neutral-800 bg-neutral-950 space-y-1 col-span-2 sm:col-span-1 lg:col-span-2">
-              <span className="text-[10px] text-neutral-500 uppercase block">Handle Persistence</span>
-              <span className="text-xs font-bold text-white truncate block" title={report.behavioralSignals.handlePersistencePattern}>
+            <div className="p-2.5 border border-rule bg-paper-2 space-y-1 col-span-2 sm:col-span-1 lg:col-span-2">
+              <span className="text-[10px] text-ink-3 uppercase block">Handle Persistence</span>
+              <span className="text-xs font-bold text-ink truncate block" title={report.behavioralSignals.handlePersistencePattern}>
                 {report.behavioralSignals.handlePersistencePattern}
               </span>
             </div>
 
             {/* Account Era */}
-            <div className="p-2.5 border border-neutral-800 bg-neutral-950 space-y-1">
-              <span className="text-[10px] text-neutral-500 uppercase block">Account Era</span>
-              <span className="text-xs font-bold text-white truncate block">
+            <div className="p-2.5 border border-rule bg-paper-2 space-y-1">
+              <span className="text-[10px] text-ink-3 uppercase block">Account Era</span>
+              <span className="text-xs font-bold text-ink truncate block">
                 {report.behavioralSignals.accountCreationEra || 'Established'}
               </span>
             </div>
@@ -684,32 +684,32 @@ export function AiProfileCard({
           {/* Timezone and Language Specific Forensic Signal Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
             {/* Timezone Signals Card */}
-            <div className="p-3.5 border border-neutral-800 bg-neutral-950 space-y-2.5">
-              <div className="flex items-center justify-between border-b border-neutral-900 pb-1.5">
-                <span className="text-[11px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-neutral-400" />
+            <div className="p-3.5 border border-rule bg-paper-2 space-y-2.5">
+              <div className="flex items-center justify-between border-b border-rule pb-1.5">
+                <span className="text-[11px] font-bold text-ink uppercase tracking-wider flex items-center gap-1.5">
+                  <Clock className="w-3.5 h-3.5 text-ink-3" />
                   Timezone & Diurnal Activity Signals
                 </span>
                 {report.behavioralSignals.timezone && (
-                  <span className="text-[10px] px-2 py-0.5 bg-neutral-900 border border-neutral-800 text-white font-mono">
+                  <span className="text-[10px] px-2 py-0.5 bg-rule-2 border border-rule text-ink font-mono">
                     {report.behavioralSignals.timezone}
                   </span>
                 )}
               </div>
               <div className="space-y-1.5 font-sans">
-                <p className="text-xs text-neutral-200">
-                  <strong className="text-white font-mono text-[11px]">Peak Activity Window:</strong>{' '}
+                <p className="text-xs text-ink">
+                  <strong className="text-ink font-mono text-[11px]">Peak Activity Window:</strong>{' '}
                   {report.behavioralSignals.activeTimezoneWindow}
                 </p>
                 {report.behavioralSignals.timezoneSignals && report.behavioralSignals.timezoneSignals.length > 0 && (
                   <div className="space-y-1 pt-1">
-                    <span className="text-[10px] text-neutral-500 uppercase font-mono block">
+                    <span className="text-[10px] text-ink-3 uppercase font-mono block">
                       Platform Temporal Evidence:
                     </span>
                     <ul className="space-y-1">
                       {report.behavioralSignals.timezoneSignals.map((sig, idx) => (
-                        <li key={idx} className="text-xs text-neutral-300 flex items-start gap-1.5">
-                          <span className="text-neutral-500 select-none font-mono">▸</span>
+                        <li key={idx} className="text-xs text-ink-2 flex items-start gap-1.5">
+                          <span className="text-ink-3 select-none font-mono">▸</span>
                           <span>{sig}</span>
                         </li>
                       ))}
@@ -720,36 +720,36 @@ export function AiProfileCard({
             </div>
 
             {/* Language Signals Card */}
-            <div className="p-3.5 border border-neutral-800 bg-neutral-950 space-y-2.5">
-              <div className="flex items-center justify-between border-b border-neutral-900 pb-1.5">
-                <span className="text-[11px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                  <Languages className="w-3.5 h-3.5 text-neutral-400" />
+            <div className="p-3.5 border border-rule bg-paper-2 space-y-2.5">
+              <div className="flex items-center justify-between border-b border-rule pb-1.5">
+                <span className="text-[11px] font-bold text-ink uppercase tracking-wider flex items-center gap-1.5">
+                  <Languages className="w-3.5 h-3.5 text-ink-3" />
                   Linguistic & Dialect Profile
                 </span>
                 {report.behavioralSignals.primaryLanguage && (
-                  <span className="text-[10px] px-2 py-0.5 bg-neutral-900 border border-neutral-800 text-white font-mono">
+                  <span className="text-[10px] px-2 py-0.5 bg-rule-2 border border-rule text-ink font-mono">
                     {report.behavioralSignals.primaryLanguage}
                   </span>
                 )}
               </div>
               <div className="space-y-1.5 font-sans">
-                <p className="text-xs text-neutral-200">
-                  <strong className="text-white font-mono text-[11px]">Linguistic Footprint:</strong>{' '}
+                <p className="text-xs text-ink">
+                  <strong className="text-ink font-mono text-[11px]">Linguistic Footprint:</strong>{' '}
                   {report.behavioralSignals.language || report.behavioralSignals.primaryLanguage}
                 </p>
-                <p className="text-xs text-neutral-300">
-                  <strong className="text-white font-mono text-[11px]">Discourse Style:</strong>{' '}
+                <p className="text-xs text-ink-2">
+                  <strong className="text-ink font-mono text-[11px]">Discourse Style:</strong>{' '}
                   {report.behavioralSignals.linguisticStyle}
                 </p>
                 {report.behavioralSignals.languageSignals && report.behavioralSignals.languageSignals.length > 0 && (
                   <div className="space-y-1 pt-1">
-                    <span className="text-[10px] text-neutral-500 uppercase font-mono block">
+                    <span className="text-[10px] text-ink-3 uppercase font-mono block">
                       Platform Linguistic Clues:
                     </span>
                     <ul className="space-y-1">
                       {report.behavioralSignals.languageSignals.map((sig, idx) => (
-                        <li key={idx} className="text-xs text-neutral-300 flex items-start gap-1.5">
-                          <span className="text-neutral-500 select-none font-mono">▸</span>
+                        <li key={idx} className="text-xs text-ink-2 flex items-start gap-1.5">
+                          <span className="text-ink-3 select-none font-mono">▸</span>
                           <span>{sig}</span>
                         </li>
                       ))}
@@ -774,15 +774,15 @@ export function AiProfileCard({
       {(report.threatVulnerabilities || report.recommendedDefensiveActions) && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
           {report.threatVulnerabilities && (
-            <div className="p-4 border border-neutral-800 bg-black space-y-2.5">
-              <div className="flex items-center gap-2 text-white font-bold uppercase tracking-wider text-[11px] border-b border-neutral-800 pb-2">
-                <ShieldAlert className="w-3.5 h-3.5 text-neutral-300" />
+            <div className="p-4 border border-rule bg-paper space-y-2.5">
+              <div className="flex items-center gap-2 text-ink font-bold uppercase tracking-wider text-[11px] border-b border-rule pb-2">
+                <ShieldAlert className="w-3.5 h-3.5 text-ink-2" />
                 Identified Threat Vulnerabilities
               </div>
               <ul className="space-y-1.5 pt-1">
                 {report.threatVulnerabilities.map((v, i) => (
-                  <li key={i} className="text-neutral-300 font-sans text-xs flex items-start gap-2">
-                    <span className="text-neutral-500 select-none">•</span>
+                  <li key={i} className="text-ink-2 font-sans text-xs flex items-start gap-2">
+                    <span className="text-ink-3 select-none">•</span>
                     <span>{v}</span>
                   </li>
                 ))}
@@ -791,15 +791,15 @@ export function AiProfileCard({
           )}
 
           {report.recommendedDefensiveActions && (
-            <div className="p-4 border border-neutral-800 bg-black space-y-2.5">
-              <div className="flex items-center gap-2 text-white font-bold uppercase tracking-wider text-[11px] border-b border-neutral-800 pb-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+            <div className="p-4 border border-rule bg-paper space-y-2.5">
+              <div className="flex items-center gap-2 text-ink font-bold uppercase tracking-wider text-[11px] border-b border-rule pb-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-ink" />
                 Defensive Hardening Recommendations
               </div>
               <ul className="space-y-1.5 pt-1">
                 {report.recommendedDefensiveActions.map((act, i) => (
-                  <li key={i} className="text-neutral-300 font-sans text-xs flex items-start gap-2">
-                    <span className="text-neutral-500 select-none">→</span>
+                  <li key={i} className="text-ink-2 font-sans text-xs flex items-start gap-2">
+                    <span className="text-ink-3 select-none">→</span>
                     <span>{act}</span>
                   </li>
                 ))}
@@ -812,15 +812,15 @@ export function AiProfileCard({
       {/* Attributes Bento Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
         {/* Technical Skills */}
-        <div className="p-4 border border-neutral-800 bg-black space-y-2">
-          <div className="text-[11px] text-neutral-400 uppercase font-bold tracking-wider">
+        <div className="p-4 border border-rule bg-paper space-y-2">
+          <div className="text-[11px] text-ink-3 uppercase font-bold tracking-wider">
             Technical Fingerprint
           </div>
           <div className="flex flex-wrap gap-1.5">
             {report.technicalSkills?.map((skill, i) => (
               <span
                 key={i}
-                className="px-2 py-0.5 border border-neutral-800 bg-neutral-950 text-neutral-300 text-[11px]"
+                className="px-2 py-0.5 border border-rule bg-paper-2 text-ink-2 text-[11px]"
               >
                 {skill}
               </span>
@@ -829,14 +829,14 @@ export function AiProfileCard({
         </div>
 
         {/* Inferred Geo/Language */}
-        <div className="p-4 border border-neutral-800 bg-black space-y-2">
-          <div className="text-[11px] text-neutral-400 uppercase font-bold tracking-wider">
+        <div className="p-4 border border-rule bg-paper space-y-2">
+          <div className="text-[11px] text-ink-3 uppercase font-bold tracking-wider">
             Inferred Locations & Timezone
           </div>
-          <div className="space-y-1 text-neutral-300 text-[11px]">
+          <div className="space-y-1 text-ink-2 text-[11px]">
             {report.inferredLocations?.map((loc, i) => (
               <div key={i} className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 bg-white inline-block" />
+                <span className="w-1.5 h-1.5 bg-signal inline-block" />
                 {loc}
               </div>
             ))}
@@ -844,11 +844,11 @@ export function AiProfileCard({
         </div>
 
         {/* Identity Correlation */}
-        <div className="p-4 border border-neutral-800 bg-black space-y-2 sm:col-span-2 lg:col-span-1">
-          <div className="text-[11px] text-neutral-400 uppercase font-bold tracking-wider">
+        <div className="p-4 border border-rule bg-paper space-y-2 sm:col-span-2 lg:col-span-1">
+          <div className="text-[11px] text-ink-3 uppercase font-bold tracking-wider">
             Identity Correlation
           </div>
-          <p className="text-[11px] text-neutral-400 leading-relaxed font-sans">
+          <p className="text-[11px] text-ink-3 leading-relaxed font-sans">
             {report.identityCorrelation}
           </p>
         </div>
@@ -857,7 +857,7 @@ export function AiProfileCard({
       {/* Investigation Pivots */}
       {report.investigationPivots && report.investigationPivots.length > 0 && (
         <div className="space-y-3 pt-2">
-          <div className="text-xs text-white uppercase font-bold tracking-wider flex items-center gap-2">
+          <div className="text-xs text-ink uppercase font-bold tracking-wider flex items-center gap-2">
             <Compass className="w-4 h-4" />
             Recommended Investigation Pivots (Next Hops)
           </div>
@@ -865,21 +865,21 @@ export function AiProfileCard({
             {report.investigationPivots.map((pivot, i) => (
               <div
                 key={i}
-                className="p-3 border border-neutral-800 bg-black space-y-1.5"
+                className="p-3 border border-rule bg-paper space-y-1.5"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-white font-bold text-xs">{pivot.hop}</span>
-                    <span className="text-[9px] uppercase px-1.5 py-0.2 border border-neutral-800 text-neutral-400">
+                    <span className="text-ink font-bold text-xs">{pivot.hop}</span>
+                    <span className="text-[9px] uppercase px-1.5 py-0.2 border border-rule text-ink-3">
                       {pivot.type}
                     </span>
                   </div>
                 </div>
-                <p className="text-[11px] text-neutral-400 font-sans">{pivot.explanation}</p>
+                <p className="text-[11px] text-ink-3 font-sans">{pivot.explanation}</p>
                 {pivot.recommendedAction && (
-                  <div className="flex items-center gap-2 text-[11px] text-neutral-300 bg-neutral-950 p-1.5 border border-neutral-900">
-                    <Terminal className="w-3.5 h-3.5 text-neutral-500 shrink-0" />
-                    <code className="select-all text-neutral-200">{pivot.recommendedAction}</code>
+                  <div className="flex items-center gap-2 text-[11px] text-ink-2 bg-paper-2 p-1.5 border border-rule">
+                    <Terminal className="w-3.5 h-3.5 text-ink-3 shrink-0" />
+                    <code className="select-all text-ink">{pivot.recommendedAction}</code>
                   </div>
                 )}
               </div>

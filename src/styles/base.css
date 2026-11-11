@@ -1,0 +1,361 @@
+/*
+ * Base e vocabulário de identidade (docs/REFACTOR_PLAN.md, seção 3; referência: LLmInjection site/style.css).
+ * Cores só por token (src/styles/tokens.css). Um único matiz, signal: ação primária, seleção e presença confirmada.
+ * Status (encontrado, incerto, ausente) é dito por rótulo, ícone e estilo de borda, nunca só por cor.
+ *
+ * Ordem: 1 base · 2 rótulos mono · 3 cabeçalho (mast) · 4 abas · 5 cartão, eyebrow, chip · 6 botões e campos
+ *        7 tabela · 8 status · 9 diálogo · 10 animações herdadas · 11 acessibilidade · 12 impressão · 13 movimento
+ */
+
+/* ---------- 1. base */
+@layer base {
+  html { background: var(--paper); }
+  body {
+    margin: 0;
+    min-width: 320px;
+    background: var(--paper);
+    color: var(--ink);
+    font: 15px/1.6 var(--sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  code, pre, kbd, samp { font-family: var(--mono); }
+  h1, h2, h3 { font-family: var(--display); text-wrap: balance; }
+  * { scrollbar-color: var(--rule) var(--paper); }
+  ::selection { background: var(--signal); color: var(--signal-ink); }
+  :focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+}
+
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: var(--paper); }
+::-webkit-scrollbar-thumb { background: var(--rule); border: 1px solid var(--paper); border-radius: var(--pill); }
+::-webkit-scrollbar-thumb:hover { background: var(--ink-3); }
+
+/* ---------- 2. rótulos mono
+   Corpo em sans; mono fica para rótulos, dados, console e números. Um rótulo, no código existente, é texto em
+   maiúsculas com espaçamento (uppercase + tracking-*): essa combinação passa a usar mono sem marcar cada um. */
+@layer components {
+  .uppercase[class*="tracking-"],
+  .tabular-nums,
+  .label-mono {
+    font-family: var(--mono);
+  }
+  .label-mono {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+}
+
+/* ---------- 3. cabeçalho: grade de 32px e halo radial em signal-soft */
+@layer components {
+  .mast {
+    position: relative;
+    background:
+      radial-gradient(900px 340px at 88% -10%, var(--signal-soft), transparent 70%),
+      linear-gradient(var(--grid-line) 1px, transparent 1px) 0 0 / 100% 32px,
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px) 0 0 / 32px 100%,
+      var(--paper);
+  }
+  .mast-glass {
+    background: var(--glass);
+    -webkit-backdrop-filter: saturate(1.4) blur(12px);
+    backdrop-filter: saturate(1.4) blur(12px);
+  }
+  .mast-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--signal);
+    box-shadow: 0 0 0 4px var(--signal-soft);
+    flex: none;
+  }
+}
+
+/* ---------- 4. abas em pílula: ativa em signal */
+@layer components {
+  .tabs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px;
+    background: var(--card);
+    border: 1px solid var(--rule-2);
+    border-radius: var(--pill);
+    box-shadow: var(--shadow-1);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font: 600 11.5px/1 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    background: none;
+    border: 0;
+    border-radius: var(--pill);
+    padding: 9px 14px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+  }
+  .tab:hover { color: var(--ink); background: var(--paper-2); }
+  .tab[aria-selected="true"],
+  .tab[aria-pressed="true"],
+  .tab.is-active { color: var(--signal-ink); background: var(--signal); }
+  .tab .tab-count {
+    font-weight: 700;
+    border-radius: var(--pill);
+    padding: 1px 6px;
+    background: var(--paper-2);
+    color: var(--ink);
+  }
+  .tab[aria-selected="true"] .tab-count,
+  .tab[aria-pressed="true"] .tab-count,
+  .tab.is-active .tab-count { background: var(--signal-ink); color: var(--signal); }
+  /* Seletor segmentado (modo, preset, idioma, filtro): a escolha ativa fica em ink, para que signal continue
+     marcando só a vista ativa e a ação primária. */
+  .tabs-seg .tab[aria-pressed="true"] { color: var(--paper); background: var(--ink); }
+  .tabs-seg .tab[aria-pressed="true"] .tab-count { background: var(--paper); color: var(--ink); }
+  /* Variação compacta (filtros, seletores) */
+  .tabs-sm { padding: 3px; }
+  .tabs-sm .tab { font-size: 10.5px; padding: 6px 11px; }
+}
+
+/* ---------- 5. cartão, eyebrow, chip */
+@layer components {
+  .card {
+    background: var(--card);
+    border: 1px solid var(--rule-2);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-1);
+  }
+  .card-accent { position: relative; overflow: hidden; }
+  .card-accent::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: var(--signal);
+    opacity: 0.85;
+  }
+  .card-title {
+    font: 600 11px/1.3 var(--mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+  .eyebrow {
+    display: inline-block;
+    font: 700 10.5px/1.5 var(--mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--signal);
+    background: var(--signal-soft);
+    border-radius: var(--pill);
+    padding: 3px 10px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font: 600 10.5px/1.4 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: var(--pill);
+    padding: 2px 9px;
+    white-space: nowrap;
+  }
+  .chip-signal { color: var(--signal); border-color: var(--signal); background: var(--signal-soft); }
+  .chip-quiet { color: var(--ink-3); border-color: var(--rule-2); background: transparent; }
+  .stat-num { display: block; font: 700 30px/1 var(--mono); letter-spacing: -0.04em; color: var(--ink); }
+}
+
+/* ---------- 6. botões e campos */
+@layer components {
+  .btn-primary,
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: var(--pill);
+    font: 600 13px/1 var(--sans);
+    padding: 10px 18px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s;
+  }
+  .btn-primary {
+    color: var(--signal-ink);
+    background: var(--signal);
+    border: 1px solid var(--signal);
+    box-shadow: var(--shadow-1);
+  }
+  .btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: var(--shadow-2); }
+  .btn {
+    color: var(--ink-2);
+    background: var(--card);
+    border: 1px solid var(--rule);
+    box-shadow: var(--shadow-1);
+  }
+  .btn:hover:not(:disabled) { color: var(--ink); border-color: var(--ink-3); }
+  .btn-primary:disabled,
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .btn-icon { padding: 9px; }
+  .field {
+    font: 14px var(--sans);
+    color: var(--ink);
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-1);
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .field:focus,
+  .field:focus-within { border-color: var(--signal); box-shadow: 0 0 0 3px var(--signal-soft); }
+  .field::placeholder { color: var(--ink-3); }
+}
+
+/* ---------- 7. tabela: cabeçalho mono maiúsculo */
+@layer components {
+  .tbl-wrap {
+    overflow-x: auto;
+    max-width: 100%;
+    background: var(--card);
+    border: 1px solid var(--rule-2);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-1);
+  }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .tbl th {
+    font: 600 10.5px/1.3 var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    text-align: left;
+    padding: 12px 14px 10px;
+    border-bottom: 1px solid var(--rule);
+    background: var(--card);
+    white-space: nowrap;
+  }
+  .tbl td { padding: 11px 14px; border-bottom: 1px solid var(--rule-2); vertical-align: middle; }
+  .tbl tr:last-child td { border-bottom: 0; }
+  .tbl tbody tr:hover td { background: var(--paper-2); }
+  .tbl .num { font-family: var(--mono); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+}
+
+/* ---------- 8. status: forma e rótulo carregam o significado, nunca o matiz */
+@layer components {
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font: 700 10px/1.4 var(--mono);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: var(--pill);
+    padding: 2px 9px;
+    border: 1px solid var(--rule);
+    white-space: nowrap;
+  }
+  .status-found { color: var(--signal-ink); background: var(--signal); border-style: solid; border-color: var(--signal); }
+  .status-uncertain { color: var(--ink-2); background: transparent; border-style: dashed; border-color: var(--ink-3); }
+  .status-absent { color: var(--ink-3); background: transparent; border-style: dotted; border-color: var(--rule); }
+  .status-pending { color: var(--ink-3); background: transparent; border-style: solid; border-color: var(--rule-2); }
+}
+
+/* ---------- 9. diálogo */
+@layer components {
+  .dialog-backdrop {
+    background: color-mix(in srgb, var(--paper) 72%, transparent);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+  }
+  .dialog {
+    background: var(--card);
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-2);
+  }
+}
+
+/* ---------- 10. animações herdadas (D3 do mapa e cartões em varredura) */
+.radar-scanning-card, .radar-scanning-row {
+  position: relative; overflow: hidden; border-color: var(--signal) !important;
+  background: linear-gradient(180deg, var(--card) 0%, var(--paper) 100%) !important;
+}
+.radar-scanning-card::before, .radar-scanning-row-sweep {
+  content: ''; position: absolute; top: 0; bottom: 0; left: 0; width: 32%;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--signal) 6%, transparent), color-mix(in srgb, var(--signal) 14%, transparent));
+  animation: radarSweepHorizontal 2.2s linear infinite; pointer-events: none; z-index: 1;
+}
+@keyframes radarSweepHorizontal { from { transform: translateX(-120%); } to { transform: translateX(380%); } }
+@keyframes radarPing { 0% { r: 4px; opacity: .9 } 100% { r: 26px; opacity: 0 } }
+@keyframes reconPulseDash { from { stroke-dashoffset: 44 } to { stroke-dashoffset: 0 } }
+@keyframes densityPulse { 0%, 100% { opacity: .65 } 50% { opacity: 1 } }
+
+/* ---------- 11. acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+/* ---------- 12. impressão: tokens claros (tokens.css, @media print) e sem enfeite de tela */
+@media print {
+  html, body { background: var(--paper) !important; color: var(--ink) !important; }
+  .mast { background: var(--paper) !important; }
+  .card, .tbl-wrap, .dialog { box-shadow: none !important; }
+  .no-print { display: none !important; }
+  /* Imprimir o app imprime o dossiê (DossierPrintView), não a tela: o resto do shell sai. */
+  .app-shell > :not(.dossier-print) { display: none !important; }
+  .app-shell { min-height: 0 !important; }
+  .print-only { display: block !important; }
+}
+
+/* ---------- 13. movimento
+ * Referência: LLmInjection (transições de 0,15 s, elevação de 1 px, entrada de vista com 4 px de subida).
+ * Tudo some com prefers-reduced-motion (seção 11) e no smoke visual, que roda com reducedMotion.
+ * Regra: movimento explica mudança de estado (vista nova, resultado chegando, modal abrindo); nada pisca em loop. */
+@layer components {
+  .card { transition: border-color var(--dur-1) var(--ease-out), box-shadow var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out); }
+  :is(a, button).card:hover:not(:disabled),
+  .card-interactive:hover { transform: translateY(-1px); box-shadow: var(--shadow-2); border-color: var(--rule); }
+  .tab { transition: background var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out), box-shadow var(--dur-2) var(--ease-out); }
+  .tab[aria-selected="true"], .tab[aria-pressed="true"], .tab.is-active { box-shadow: 0 6px 18px -10px var(--signal); }
+  .btn, .btn-primary, .chip, .field { transition: background var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out), box-shadow var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out); }
+  .btn-primary:active:not(:disabled), .btn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+  .tbl tbody tr td { transition: background var(--dur-1) var(--ease-out); }
+}
+/* vista nova: cada filho direto da área de vistas entra com fade e 4 px de subida */
+.view-stage > * { animation: atlasRise var(--dur-3) var(--ease-out) both; }
+/* resultado chegando durante o scan: a linha ou o cartão aparece em vez de surgir seco */
+.tbl tbody tr, [id^="platform-card-"] { animation: atlasFade var(--dur-3) var(--ease-out) both; }
+/* modais: fundo esmaece, painel sobe e cresce levemente */
+.dialog-backdrop { animation: atlasFade var(--dur-2) var(--ease-out) both; }
+.dialog-backdrop > .dialog, .dialog-backdrop > div > .dialog { animation: atlasPop var(--dur-3) var(--ease-out) both; }
+/* barra de progresso desliza em vez de pular */
+[role="progressbar"] > div { transition: width var(--dur-4) var(--ease-out); }
+/* troca de tema: cross-fade de cor por 0,45 s (classe posta por src/theme/theme.ts só na troca) */
+html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *::after {
+  transition: background-color var(--dur-4) var(--ease-in-out), color var(--dur-4) var(--ease-in-out),
+              border-color var(--dur-4) var(--ease-in-out), fill var(--dur-4) var(--ease-in-out),
+              stroke var(--dur-4) var(--ease-in-out), box-shadow var(--dur-4) var(--ease-in-out) !important;
+}
+@keyframes atlasRise { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes atlasFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes atlasPop { from { opacity: 0; transform: translateY(6px) scale(0.985); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .view-stage > *, .tbl tbody tr, [id^="platform-card-"], .dialog-backdrop, .dialog { animation: none !important; }
+  html.theme-anim, html.theme-anim * { transition: none !important; }
+}

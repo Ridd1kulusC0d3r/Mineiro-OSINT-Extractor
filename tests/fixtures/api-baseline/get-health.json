@@ -1,0 +1,28 @@
+{
+  "request": {
+    "method": "GET",
+    "path": "/api/health"
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "referrer-policy": "no-referrer",
+    "cross-origin-opener-policy": "same-origin",
+    "permissions-policy": "camera=(), microphone=(), geolocation=()"
+  },
+  "body": {
+    "status": "ok",
+    "service": "Mineiro Username Intelligence · OSINT Investigation Workbench",
+    "version": "1.7.0",
+    "timestamp": "<volatile>",
+    "geminiConfigured": false,
+    "publicMode": false,
+    "supportedDatabases": [
+      "Mineiro Core (local direct probes)",
+      "Mineiro Evidence Engine",
+      "Mineiro Public Recon"
+    ]
+  }
+}

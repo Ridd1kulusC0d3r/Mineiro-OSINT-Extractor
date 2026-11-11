@@ -38,7 +38,7 @@ const forbidden = [
   'mineiro-username-extractor',
 ];
 
-const roots = ['src', 'docs', 'scripts', 'notebooks'];
+const roots = ['src', 'server', 'docs', 'scripts', 'notebooks'];
 const rootFiles = [
   'README.md',
   'index.html',

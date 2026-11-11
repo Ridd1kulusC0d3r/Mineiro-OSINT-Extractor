@@ -20,7 +20,9 @@ import {
   ParsedTarget, 
   generateSampleCsv 
 } from '../utils/csvParser';
-import { CATEGORY_LABELS } from '../data/platforms';
+import { CATEGORY_LABELS, countPlatformsForScope } from '../data/platforms';
+import type { PlatformScope } from '../types';
+import { useI18n } from '../utils/i18n';
 
 interface BulkImportModalProps {
   isOpen: boolean;
@@ -35,6 +37,8 @@ interface BulkImportModalProps {
   ) => void;
   currentCategory?: string;
   currentConcurrency?: number;
+  /** Escopo do preset ativo: é o que o lote executa para cada alvo. */
+  currentScope?: PlatformScope;
 }
 
 export function BulkImportModal({
@@ -43,7 +47,9 @@ export function BulkImportModal({
   onStartBulkScan,
   currentCategory = 'all',
   currentConcurrency = 8,
+  currentScope = 'top20',
 }: BulkImportModalProps) {
+  const { tr } = useI18n();
   const [activeTab, setActiveTab] = useState<'upload' | 'paste'>('upload');
   const [dragActive, setDragActive] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
@@ -56,7 +62,9 @@ export function BulkImportModal({
   // Options
   const [selectedCategory, setSelectedCategory] = useState<string>(currentCategory);
   const [concurrency, setConcurrency] = useState<number>(currentConcurrency);
-  const [autoAiProfile, setAutoAiProfile] = useState<boolean>(true);
+  // O perfil automático por IA está desligado desde a v1.4.1 (App.tsx força enableAutoAiProfile: false); o modal
+  // não oferece mais um interruptor que não tinha efeito (defeito 11).
+  const autoAiProfile = false;
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -168,59 +176,51 @@ export function BulkImportModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-in fade-in duration-200">
+    <div role="dialog" aria-modal="true" aria-labelledby="bulk-import-title" className="dialog-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
       <div 
-        className="bg-black border border-neutral-800 w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden font-mono"
+        className="dialog w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-5 border-b border-neutral-800 flex items-start justify-between bg-neutral-950">
+        <div className="mast p-5 border-b border-rule flex items-start justify-between">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 bg-white inline-block shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
-              <h2 className="text-base font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <FileSpreadsheet className="w-4 h-4 text-white" />
-                BULK TARGET IMPORT // BATCH INVESTIGATION
-              </h2>
-            </div>
-            <p className="text-xs text-neutral-400">
-              Import a list of handles or emails from a local CSV/TXT file to execute sequential batch reconnaissance.
-            </p>
+            <span className="eyebrow">{tr('batchImport.eyebrow')}</span>
+            <h2 id="bulk-import-title" className="text-xl font-semibold tracking-tight text-ink flex items-center gap-2">
+              <FileSpreadsheet className="w-4 h-4 text-ink-2" />
+              {tr('batchImport.title')}
+            </h2>
+            <p className="text-sm text-ink-2">{tr('batchImport.subtitle')}</p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 border border-neutral-800 bg-black text-neutral-400 hover:text-white hover:border-neutral-600 transition-colors"
+            className="btn btn-icon"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="p-5 overflow-y-auto space-y-5 flex-1 text-xs">
+        <div className="p-5 overflow-y-auto space-y-5 flex-1 text-sm">
           {/* Method Tabs & Sample Download */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-900 pb-3">
-            <div className="flex items-center border border-neutral-800 bg-neutral-950 p-0.5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-rule-2 pb-4">
+            <div className="tabs tabs-sm" role="tablist">
               <button
                 type="button"
+                role="tab"
+                aria-selected={activeTab === 'upload'}
                 onClick={() => setActiveTab('upload')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 uppercase transition-colors ${
-                  activeTab === 'upload'
-                    ? 'bg-white text-black font-bold'
-                    : 'text-neutral-400 hover:text-white'
-                }`}
+                className="tab"
               >
                 <Upload className="w-3.5 h-3.5" />
                 Upload CSV File
               </button>
               <button
                 type="button"
+                role="tab"
+                aria-selected={activeTab === 'paste'}
                 onClick={() => setActiveTab('paste')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 uppercase transition-colors ${
-                  activeTab === 'paste'
-                    ? 'bg-white text-black font-bold'
-                    : 'text-neutral-400 hover:text-white'
-                }`}
+                className="tab"
               >
                 <FileText className="w-3.5 h-3.5" />
                 Paste List / Text
@@ -231,7 +231,7 @@ export function BulkImportModal({
               <button
                 type="button"
                 onClick={handleLoadSampleBatch}
-                className="px-2.5 py-1.5 border border-neutral-800 bg-neutral-950 text-neutral-400 hover:text-white hover:border-neutral-700 uppercase text-[11px] transition-colors"
+                className="btn"
                 title="Populate with a ready-to-test sample batch"
               >
                 Load Demo Batch
@@ -239,7 +239,7 @@ export function BulkImportModal({
               <button
                 type="button"
                 onClick={downloadSampleCsvTemplate}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 border border-neutral-800 bg-neutral-950 text-neutral-300 hover:text-white hover:border-neutral-600 uppercase text-[11px] transition-colors"
+                className="btn"
                 title="Download CSV format template"
               >
                 <Download className="w-3 h-3" />
@@ -267,25 +267,25 @@ export function BulkImportModal({
                 onClick={() => fileInputRef.current?.click()}
                 className={`p-8 border-2 border-dashed text-center cursor-pointer transition-colors ${
                   dragActive
-                    ? 'border-white bg-neutral-900/60'
+                    ? 'border-signal bg-rule-2/60'
                     : fileName
-                    ? 'border-neutral-600 bg-neutral-950/80 hover:border-neutral-500'
-                    : 'border-neutral-800 bg-neutral-950/40 hover:border-neutral-700 hover:bg-neutral-950'
+                    ? 'border-ink-3 bg-paper-2/80 hover:border-ink-3'
+                    : 'border-rule bg-paper-2/40 hover:border-rule hover:bg-paper-2'
                 }`}
               >
                 <div className="flex flex-col items-center justify-center space-y-2">
-                  <div className="w-10 h-10 border border-neutral-700 bg-black flex items-center justify-center text-neutral-400">
+                  <div className="w-10 h-10 border border-rule bg-paper flex items-center justify-center text-ink-3">
                     <Upload className="w-5 h-5" />
                   </div>
                   {fileName ? (
                     <div>
-                      <p className="text-white font-bold text-sm">{fileName}</p>
-                      <p className="text-neutral-500 text-[11px] mt-0.5">Click or drag another file to replace</p>
+                      <p className="text-ink font-bold text-sm">{fileName}</p>
+                      <p className="text-ink-3 text-[11px] mt-0.5">Click or drag another file to replace</p>
                     </div>
                   ) : (
                     <div>
-                      <p className="text-white font-bold">Drag & drop CSV or TXT file here</p>
-                      <p className="text-neutral-500 text-[11px] mt-0.5">
+                      <p className="text-ink font-bold">Drag & drop CSV or TXT file here</p>
+                      <p className="text-ink-3 text-[11px] mt-0.5">
                         Supports CSV files or custom target lists
                       </p>
                     </div>
@@ -298,22 +298,22 @@ export function BulkImportModal({
           {/* Tab 2: Paste Text Zone */}
           {activeTab === 'paste' && (
             <div className="space-y-1.5">
-              <label className="text-[11px] uppercase tracking-wider text-neutral-400 block">
-                Target Identifiers (one per line, or comma-separated):
+              <label className="text-[11px] uppercase tracking-wider text-ink-3 block">
+                Target Identifiers (one per line; the first column is used):
               </label>
               <textarea
                 value={rawText}
                 onChange={(e) => handleTextChange(e.target.value)}
                 placeholder="satoshi&#10;vitalik&#10;deivsec&#10;octocat&#10;target@domain.com"
                 rows={6}
-                className="w-full bg-neutral-950 border border-neutral-800 p-3 text-white placeholder:text-neutral-600 focus:outline-none focus:border-white text-xs font-mono leading-relaxed"
+                className="w-full bg-paper-2 border border-rule p-3 text-ink placeholder:text-ink-3 focus:outline-none focus:border-signal text-xs font-mono leading-relaxed"
               />
             </div>
           )}
 
           {/* Errors or Notices */}
           {parseErrors.length > 0 && (
-            <div className="p-3 border border-neutral-800/60 bg-neutral-950/30 text-neutral-300 space-y-1">
+            <div className="p-3 border border-rule/60 bg-paper-2/30 text-ink-2 space-y-1">
               <div className="flex items-center gap-1.5 font-bold">
                 <AlertCircle className="w-3.5 h-3.5" />
                 Parsing Notice
@@ -328,19 +328,19 @@ export function BulkImportModal({
           {parsedTargets.length > 0 && (
             <div className="space-y-3">
               {/* Metric bar */}
-              <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 border border-neutral-800 bg-neutral-950">
-                <div className="flex items-center gap-4 text-neutral-400">
-                  <span>VALID TARGETS: <strong className="text-white">{validTargets.length}</strong></span>
+              <div className="flex flex-wrap items-center justify-between gap-2 p-2.5 border border-rule bg-paper-2">
+                <div className="flex items-center gap-4 text-ink-3">
+                  <span>VALID TARGETS: <strong className="text-ink">{validTargets.length}</strong></span>
                   <span className="flex items-center gap-1">
-                    <AtSign className="w-3 h-3 text-neutral-400" />
-                    USERNAMES: <strong className="text-white">{usernameCount}</strong>
+                    <AtSign className="w-3 h-3 text-ink-3" />
+                    USERNAMES: <strong className="text-ink">{usernameCount}</strong>
                   </span>
                   <span className="flex items-center gap-1">
-                    <Mail className="w-3 h-3 text-neutral-400" />
-                    EMAILS: <strong className="text-white">{emailCount}</strong>
+                    <Mail className="w-3 h-3 text-ink-3" />
+                    EMAILS: <strong className="text-ink">{emailCount}</strong>
                   </span>
                   {duplicateCount > 0 && (
-                    <span className="text-neutral-500">
+                    <span className="text-ink-3">
                       DUPLICATES STRIPPED: {duplicateCount}
                     </span>
                   )}
@@ -349,7 +349,7 @@ export function BulkImportModal({
                 <button
                   type="button"
                   onClick={handleClearAll}
-                  className="text-neutral-500 hover:text-white text-[11px] uppercase flex items-center gap-1"
+                  className="text-ink-3 hover:text-ink text-[11px] uppercase flex items-center gap-1"
                 >
                   <Trash2 className="w-3 h-3" />
                   Clear List
@@ -357,9 +357,9 @@ export function BulkImportModal({
               </div>
 
               {/* Targets Preview Table */}
-              <div className="border border-neutral-800 bg-neutral-950 max-h-56 overflow-y-auto">
+              <div className="border border-rule bg-paper-2 max-h-56 overflow-y-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-black border-b border-neutral-800 text-neutral-400 text-[10px] uppercase sticky top-0">
+                  <thead className="bg-paper border-b border-rule text-ink-3 text-[10px] uppercase sticky top-0">
                     <tr>
                       <th className="py-2 px-3 w-10">#</th>
                       <th className="py-2 px-3">Target Identifier</th>
@@ -368,11 +368,11 @@ export function BulkImportModal({
                       <th className="py-2 px-3 w-16 text-right">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-neutral-900">
+                  <tbody className="divide-y divide-rule">
                     {parsedTargets.map((item, idx) => (
-                      <tr key={item.id} className="hover:bg-neutral-900/50 transition-colors">
-                        <td className="py-1.5 px-3 text-neutral-600 text-[10px]">{idx + 1}</td>
-                        <td className="py-1.5 px-3 font-semibold text-white">
+                      <tr key={item.id} className="hover:bg-rule-2/50 transition-colors">
+                        <td className="py-1.5 px-3 text-ink-3 text-[10px]">{idx + 1}</td>
+                        <td className="py-1.5 px-3 font-semibold text-ink">
                           <span className="font-mono">
                             {item.type === 'username' ? `@${item.target}` : item.target}
                           </span>
@@ -381,8 +381,8 @@ export function BulkImportModal({
                           <span
                             className={`inline-flex items-center gap-1 px-1.5 py-0.2 text-[9px] uppercase border font-bold ${
                               item.type === 'email'
-                                ? 'border-neutral-700/80 bg-neutral-950/40 text-neutral-300'
-                                : 'border-neutral-700 bg-neutral-900 text-neutral-300'
+                                ? 'border-rule/80 bg-paper-2/40 text-ink-2'
+                                : 'border-rule bg-rule-2 text-ink-2'
                             }`}
                           >
                             {item.type === 'email' ? (
@@ -393,14 +393,14 @@ export function BulkImportModal({
                             {item.type}
                           </span>
                         </td>
-                        <td className="py-1.5 px-3 text-neutral-400 text-[11px] truncate max-w-[160px]">
+                        <td className="py-1.5 px-3 text-ink-3 text-[11px] truncate max-w-[160px]">
                           {item.notes || '—'}
                         </td>
                         <td className="py-1.5 px-3 text-right">
                           <button
                             type="button"
                             onClick={() => handleRemoveTarget(item.id)}
-                            className="text-neutral-600 hover:text-neutral-400 p-1 transition-colors"
+                            className="text-ink-3 hover:text-ink-3 p-1 transition-colors"
                             title="Remove target from batch"
                           >
                             <Trash2 className="w-3 h-3" />
@@ -415,8 +415,8 @@ export function BulkImportModal({
           )}
 
           {/* Batch Scan Scope & Execution Configuration */}
-          <div className="p-4 border border-neutral-800 bg-neutral-950 space-y-3">
-            <div className="text-[11px] font-bold text-white uppercase tracking-wider flex items-center gap-1.5 border-b border-neutral-900 pb-2">
+          <div className="card p-4 space-y-3">
+            <div className="text-[11px] font-bold text-ink uppercase tracking-wider flex items-center gap-1.5 border-b border-rule pb-2">
               <Layers className="w-3.5 h-3.5" />
               Batch Execution Parameters
             </div>
@@ -424,17 +424,17 @@ export function BulkImportModal({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Category Scope */}
               <div className="space-y-1.5">
-                <label className="text-[10px] uppercase text-neutral-400 tracking-wider block">
+                <label className="text-[10px] uppercase text-ink-3 tracking-wider block">
                   Recon Platform Category Scope
                 </label>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full bg-black border border-neutral-800 text-white text-xs p-2 focus:border-white focus:outline-none"
+                  className="field w-full text-[13px] p-2"
                 >
                   {Object.entries(CATEGORY_LABELS).map(([catKey, info]) => (
                     <option key={catKey} value={catKey}>
-                      {info.label} ({info.count} platforms)
+                      {info.label} ({tr('modular.detectors', { count: countPlatformsForScope(currentScope, catKey) })})
                     </option>
                   ))}
                 </select>
@@ -442,24 +442,17 @@ export function BulkImportModal({
 
               {/* Concurrency Setting */}
               <div className="space-y-1.5">
-                <label className="text-[10px] uppercase text-neutral-400 tracking-wider block">
+                <label className="text-[10px] uppercase text-ink-3 tracking-wider block">
                   Probe Concurrency Rate
                 </label>
-                <div className="grid grid-cols-3 gap-1">
-                  {[
-                    { label: 'STEALTH (3)', val: 3 },
-                    { label: 'BALANCED (8)', val: 8 },
-                    { label: 'TURBO (16)', val: 16 }
-                  ].map((rate) => (
+                <div className="tabs tabs-sm tabs-seg">
+                  {[...new Set([3, 8, 16, currentConcurrency])].sort((x, y) => x - y).map((val) => ({ label: `${val}x`, val })).map((rate) => (
                     <button
                       key={rate.val}
                       type="button"
                       onClick={() => setConcurrency(rate.val)}
-                      className={`px-2 py-1.5 text-[10px] uppercase border transition-colors ${
-                        concurrency === rate.val
-                          ? 'border-white bg-white text-black font-bold'
-                          : 'border-neutral-800 bg-black text-neutral-400 hover:text-white'
-                      }`}
+                      aria-pressed={concurrency === rate.val}
+                      className="tab justify-center"
                     >
                       {rate.label}
                     </button>
@@ -468,35 +461,26 @@ export function BulkImportModal({
               </div>
             </div>
 
-            {/* AI Profiling Toggle */}
-            <div className="pt-2 border-t border-neutral-900 flex items-center justify-between">
+            {/* O que de fato roda: escopo do preset, categoria escolhida, sem IA automática */}
+            <div className="pt-2 border-t border-rule-2 space-y-1.5 text-[12.5px] text-ink-2">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-3.5 h-3.5 text-neutral-400" />
-                <span className="text-neutral-300 text-xs">
-                  Automate Gemini AI Profiling for discovered targets
-                </span>
+                <Layers className="w-3.5 h-3.5 text-ink-3" />
+                <span>{tr('batch.runsScope', { count: countPlatformsForScope(currentScope, selectedCategory) })}</span>
               </div>
-              <button
-                type="button"
-                onClick={() => setAutoAiProfile(!autoAiProfile)}
-                className={`px-2.5 py-1 text-[10px] uppercase border transition-colors ${
-                  autoAiProfile
-                    ? 'border-neutral-500/70 bg-neutral-950/50 text-neutral-300 font-bold'
-                    : 'border-neutral-800 bg-black text-neutral-500'
-                }`}
-              >
-                {autoAiProfile ? 'ENABLED' : 'DISABLED'}
-              </button>
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-3.5 h-3.5 text-ink-3" />
+                <span>{tr('batch.noAutoAi')}</span>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Footer CTA */}
-        <div className="p-4 border-t border-neutral-800 bg-neutral-950 flex items-center justify-between">
+        <div className="p-4 border-t border-rule flex items-center justify-between">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 border border-neutral-800 bg-black text-neutral-400 hover:text-white text-xs uppercase transition-colors"
+            className="btn"
           >
             Cancel
           </button>
@@ -505,9 +489,9 @@ export function BulkImportModal({
             type="button"
             onClick={handleSubmit}
             disabled={validTargets.length === 0}
-            className="px-6 py-2.5 bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase flex items-center gap-2 border border-white tracking-wider disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-[0_0_15px_rgba(255,255,255,0.15)]"
+            className="btn-primary"
           >
-            <Play className="w-3.5 h-3.5 fill-black" />
+            <Play className="w-3.5 h-3.5" />
             Launch Bulk Reconnaissance ({validTargets.length} Targets)
           </button>
         </div>

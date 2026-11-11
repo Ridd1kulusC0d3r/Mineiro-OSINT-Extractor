@@ -71,14 +71,14 @@ export function LanguageSelector({ variant = 'auto', className = '' }: LanguageS
       {/* Segmented View for Tablet & Desktop (or explicit segmented variant) */}
       <div
         id="language-selector-segmented"
-        className={`hidden sm:flex items-center bg-[#0A0A0A] border border-[#2A2A2A] rounded-md p-0.5 text-xs ${
+        className={`tabs tabs-sm tabs-seg hidden sm:flex ${
           variant === 'dropdown' ? '!hidden' : ''
         }`}
         role="group"
         aria-label={tr('lang.select')}
       >
-        <div className="flex items-center text-[#A3A3A3] px-1.5 py-1" title={tr('lang.select')}>
-          <Globe className="w-3.5 h-3.5 text-[#FFFFFF]" />
+        <div className="flex items-center text-ink-3 pl-2 pr-1" title={tr('lang.select')}>
+          <Globe className="w-3.5 h-3.5" />
         </div>
 
         <div className="flex items-center gap-0.5">
@@ -91,11 +91,7 @@ export function LanguageSelector({ variant = 'auto', className = '' }: LanguageS
                 type="button"
                 onClick={() => handleSelectLanguage(option.code)}
                 aria-pressed={isSelected}
-                className={`px-2 py-1 uppercase rounded-sm text-[11px] font-bold tracking-wider transition-all select-none ${
-                  isSelected
-                    ? 'bg-[#FFFFFF] text-[#050505] shadow-[0_0_8px_rgba(255, 255, 255,0.3)]'
-                    : 'text-[#A3A3A3] hover:text-[#F5F5F5] hover:bg-[#050505]'
-                }`}
+                className="tab select-none"
                 title={`${option.label} (${option.nativeLabel})`}
               >
                 {option.code}
@@ -113,14 +109,14 @@ export function LanguageSelector({ variant = 'auto', className = '' }: LanguageS
           onClick={() => setIsOpen((prev) => !prev)}
           aria-expanded={isOpen}
           aria-haspopup="listbox"
-          className="flex items-center gap-1.5 px-2.5 h-8.5 bg-[#0A0A0A] border border-[#2A2A2A] hover:border-[#737373] rounded-md text-xs text-[#F5F5F5] font-bold tracking-wider transition-colors"
+          className="btn btn-icon gap-1.5 px-3"
           title={`${tr('lang.active')}: ${currentOption.nativeLabel}`}
         >
-          <Globe className="w-3.5 h-3.5 text-[#FFFFFF]" />
+          <Globe className="w-3.5 h-3.5 text-ink" />
           <span className="uppercase text-[11px] font-bold">{currentOption.code}</span>
           <ChevronDown
-            className={`w-3 h-3 text-[#A3A3A3] transition-transform duration-200 ${
-              isOpen ? 'rotate-180 text-[#FFFFFF]' : ''
+            className={`w-3 h-3 text-ink-2 transition-transform duration-200 ${
+              isOpen ? 'rotate-180 text-ink' : ''
             }`}
           />
         </button>
@@ -131,9 +127,9 @@ export function LanguageSelector({ variant = 'auto', className = '' }: LanguageS
             id="language-selector-menu"
             role="listbox"
             aria-label={tr('lang.available')}
-            className="absolute right-0 top-full mt-1.5 w-44 bg-[#0A0A0A] border border-[#2A2A2A] rounded-md shadow-2xl p-1 z-50 animate-in fade-in zoom-in-95 duration-100 divide-y divide-[#2A2A2A]/40"
+            className="dialog absolute right-0 top-full mt-1.5 w-44 p-1 z-50 divide-y divide-rule-2"
           >
-            <div className="px-2.5 py-1.5 text-[10px] text-[#A3A3A3] uppercase tracking-wider font-semibold">
+            <div className="px-2.5 py-1.5 text-[10px] text-ink-2 uppercase tracking-wider font-semibold">
               {tr('lang.select')}
             </div>
             <div className="py-0.5 space-y-0.5">
@@ -149,17 +145,17 @@ export function LanguageSelector({ variant = 'auto', className = '' }: LanguageS
                     onClick={() => handleSelectLanguage(option.code)}
                     className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-sm text-xs text-left transition-colors font-mono ${
                       isSelected
-                        ? 'bg-[#050505] text-[#FFFFFF] font-bold border border-[#FFFFFF]/30'
-                        : 'text-[#F5F5F5] hover:bg-[#111111] hover:text-[#FFFFFF]'
+                        ? 'bg-paper text-ink font-bold border border-ink/30'
+                        : 'text-ink hover:bg-card hover:text-ink'
                     }`}
                   >
                     <div className="flex items-center gap-2">
-                      <span className="uppercase text-[10px] px-1 py-0.2 bg-[#050505] border border-[#2A2A2A] rounded-sm text-[#A3A3A3] font-bold">
+                      <span className="uppercase text-[10px] px-1 py-0.2 bg-paper border border-rule rounded-sm text-ink-2 font-bold">
                         {option.code}
                       </span>
                       <span className="truncate">{option.nativeLabel}</span>
                     </div>
-                    {isSelected && <Check className="w-3.5 h-3.5 text-[#FFFFFF] shrink-0" />}
+                    {isSelected && <Check className="w-3.5 h-3.5 text-ink shrink-0" />}
                   </button>
                 );
               })}

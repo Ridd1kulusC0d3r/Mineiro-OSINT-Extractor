@@ -31,12 +31,11 @@ import { CategoryHeatMap } from './CategoryHeatMap';
 import { RiskMatrix2x2 } from './RiskMatrix2x2';
 import { BatchOverviewCard } from './BatchOverviewCard';
 import { PlatformFavicon } from './PlatformFavicon';
+import { useI18n } from '../utils/i18n';
 import { RegistryOverview } from './RegistryOverview';
 import { useToast } from './Toast';
-import { 
-  CATEGORY_COLORS, 
-  EXPOSURE_COLORS 
-} from '../utils/themeColors';
+import { CATEGORY_COLORS, 
+  EXPOSURE_COLORS, PALETTE } from '../theme/palette';
 
 interface DashboardViewProps {
   target: string;
@@ -83,6 +82,7 @@ export function DashboardView({
   onPauseBatch,
   onResumeBatch,
 }: DashboardViewProps) {
+  const { tr } = useI18n();
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
   const [activeVizTab, setActiveVizTab] = useState<'network' | 'geo' | 'linkage' | 'heatmap' | 'risk_matrix'>('network');
 
@@ -144,13 +144,13 @@ export function DashboardView({
     return { label: 'SEVERE', color: EXPOSURE_COLORS.SEVERE.badge };
   }, [foundResults.length]);
 
-  // Confidence index computed from response and corroboration signals
+  // Parcela conclusiva: encontrado ou ausência explícita sobre o total já verificado. É uma contagem, não uma
+  // taxa de falso positivo (o painel antigo mostrava um "índice" inventado entre 85% e 99,8%; defeito 24).
   const confidenceScore = useMemo(() => {
-    if (scannedTotal === 0) return 99.4;
-    const uncertainRatio = uncertainResults.length / scannedTotal;
-    const score = 99.4 - (uncertainRatio * 15);
-    return Math.max(85, Math.min(99.8, score)).toFixed(1);
-  }, [scannedTotal, uncertainResults.length]);
+    if (scannedTotal === 0) return 0;
+    const conclusive = results.filter((r) => r.status === 'found' || r.status === 'not_found').length;
+    return Math.round((conclusive / scannedTotal) * 100);
+  }, [results, scannedTotal]);
 
   const { showToast } = useToast();
 
@@ -168,17 +168,17 @@ export function DashboardView({
   return (
     <div className="space-y-6 font-mono">
       {/* Dashboard Top Banner */}
-      <div className="border border-[#2A2A2A] bg-[#0A0A0A] p-5 space-y-4 rounded-md">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#2A2A2A] pb-4">
+      <div className="card p-5 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-rule pb-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs text-[#A3A3A3] uppercase tracking-widest">OSINT INVESTIGATION LEDGER:</span>
-              <span className="text-lg font-bold text-[#F5F5F5] tracking-wider">@{target}</span>
-              <span className="text-[10px] uppercase px-2 py-0.5 border border-[#2A2A2A] bg-[#050505] text-[#FFFFFF] rounded-sm font-semibold">
+              <span className="text-xs text-ink-2 uppercase tracking-widest">OSINT INVESTIGATION LEDGER:</span>
+              <span className="text-lg font-bold text-ink tracking-wider">@{target}</span>
+              <span className="text-[10px] uppercase px-2 py-0.5 border border-rule bg-paper text-ink rounded-sm font-semibold">
                 {targetType}
               </span>
             </div>
-            <p className="text-xs text-[#A3A3A3]">
+            <p className="text-xs text-ink-2">
               Evidence-oriented synthesis across the local Mineiro Registry and optional analysis modules.
             </p>
           </div>
@@ -189,7 +189,7 @@ export function DashboardView({
               type="button"
               onClick={onOpenExport}
               disabled={scannedTotal === 0}
-              className="px-3.5 py-2 bg-[#FFFFFF] text-[#050505] font-mono font-bold text-xs uppercase hover:bg-[#FFFFFF]/90 border border-[#FFFFFF] tracking-wider disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center gap-1.5 rounded-sm"
+              className="px-3.5 py-2 bg-signal text-signal-ink font-mono font-bold text-xs uppercase hover:bg-ink/90 border border-signal tracking-wider disabled:opacity-30 disabled:cursor-not-allowed transition-all flex items-center gap-1.5 rounded-sm"
             >
               <Download className="w-3.5 h-3.5" />
               Download Dossier
@@ -198,9 +198,9 @@ export function DashboardView({
               id="dashboard-ai-btn"
               type="button"
               onClick={onViewProfile}
-              className="px-3 py-2 border border-[#2A2A2A] bg-[#050505] text-[#F5F5F5] hover:text-[#FFFFFF] hover:border-[#737373] text-xs uppercase flex items-center gap-1.5 transition-colors rounded-sm"
+              className="px-3 py-2 border border-rule bg-paper text-ink hover:text-ink hover:border-ink-3 text-xs uppercase flex items-center gap-1.5 transition-colors rounded-sm"
             >
-              <Sparkles className="w-3.5 h-3.5 text-[#FFFFFF]" />
+              <Sparkles className="w-3.5 h-3.5 text-ink" />
               AI Profile
             </button>
           </div>
@@ -208,23 +208,23 @@ export function DashboardView({
 
         {/* Unified Database Sources Badge Strip */}
         <div className="space-y-2">
-          <div className="text-[10px] text-[#A3A3A3] uppercase tracking-widest flex items-center gap-1.5">
-            <Database className="w-3 h-3 text-[#FFFFFF]" />
+          <div className="text-[10px] text-ink-2 uppercase tracking-widest flex items-center gap-1.5">
+            <Database className="w-3 h-3 text-ink" />
             Mineiro Registry & Analysis Modules
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
             {UNIFIED_DATABASES.map((db) => (
               <div
                 key={db.id}
-                className="p-2.5 border border-[#2A2A2A] bg-[#050505] rounded-sm flex flex-col justify-between text-[11px]"
+                className="p-2.5 border border-rule bg-paper rounded-sm flex flex-col justify-between text-[11px]"
               >
                 <div className="flex items-center justify-between">
-                  <strong className="text-[#F5F5F5] font-bold">{db.name}</strong>
-                  <span className="text-[9px] px-1 py-0.2 border border-[#2A2A2A] bg-[#0A0A0A] text-[#A3A3A3] rounded-sm">
+                  <strong className="text-ink font-bold">{db.name}</strong>
+                  <span className="text-[9px] px-1 py-0.2 border border-rule bg-paper-2 text-ink-2 rounded-sm">
                     {db.count}
                   </span>
                 </div>
-                <div className="text-[10px] text-[#A3A3A3] mt-1 truncate" title={db.focus}>
+                <div className="text-[10px] text-ink-2 mt-1 truncate" title={db.focus}>
                   {db.focus}
                 </div>
               </div>
@@ -250,99 +250,99 @@ export function DashboardView({
       {/* KPI Stats Grid - Fixed min-height to eliminate visual shift */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Confirmed Hits */}
-        <div className="p-4 sm:p-5 border border-[#2A2A2A] bg-[#0A0A0A] rounded-md flex flex-col justify-between min-h-[148px] space-y-2">
-          <div className="flex items-center justify-between text-[#A3A3A3] text-xs uppercase">
+        <div className="card card-accent p-4 sm:p-5 flex flex-col justify-between min-h-[148px] space-y-2">
+          <div className="flex items-center justify-between label-mono">
             <span>Verified Hits</span>
-            <ShieldCheck className="w-4 h-4 text-[#FFFFFF]" />
+            <ShieldCheck className="w-4 h-4 text-ink" />
           </div>
           <div>
-            <div className="text-3xl font-black text-[#F5F5F5] tabular-nums">{foundResults.length}</div>
-            <div className="text-[11px] text-[#A3A3A3] mt-0.5">
+            <div className="stat-num">{foundResults.length}</div>
+            <div className="text-[11px] text-ink-2 mt-0.5">
               {scannedTotal > 0 ? `${((foundResults.length / scannedTotal) * 100).toFixed(1)}% detection rate` : 'Standby'}
             </div>
           </div>
-          <div className="pt-2 border-t border-[#2A2A2A] flex justify-between items-center text-[10px] text-[#A3A3A3]">
+          <div className="pt-2 border-t border-rule-2 flex justify-between items-center text-[10px] text-ink-2">
             <span>STATUS: CONFIRMED</span>
-            <span className="text-[#FFFFFF] font-bold">200 OK</span>
+            <span className="text-ink font-bold">200 OK</span>
           </div>
         </div>
 
         {/* Mineiro Guard model Uncertain (Cloudflare / WAF / TLS challenge) */}
-        <div className="p-4 sm:p-5 border border-[#2A2A2A] bg-[#0A0A0A] rounded-md flex flex-col justify-between min-h-[148px] space-y-2">
-          <div className="flex items-center justify-between text-[#A3A3A3] text-xs uppercase">
+        <div className="card card-accent p-4 sm:p-5 flex flex-col justify-between min-h-[148px] space-y-2">
+          <div className="flex items-center justify-between label-mono">
             <span>Uncertain / Protected</span>
-            <AlertTriangle className="w-4 h-4 text-[#A3A3A3]" />
+            <AlertTriangle className="w-4 h-4 text-ink-2" />
           </div>
           <div>
-            <div className="text-3xl font-black text-[#F5F5F5] tabular-nums">{uncertainResults.length}</div>
-            <div className="text-[11px] text-[#A3A3A3] mt-0.5">
+            <div className="stat-num">{uncertainResults.length}</div>
+            <div className="text-[11px] text-ink-2 mt-0.5">
               Mineiro Guard Cloudflare/WAF challenge
             </div>
           </div>
-          <div className="pt-2 border-t border-[#2A2A2A] flex justify-between items-center text-[10px] text-[#A3A3A3]">
-            <span>HEADLESS / TOR NEEDED</span>
-            <span className="text-[#A3A3A3]">403/WAF</span>
+          <div className="pt-2 border-t border-rule-2 flex justify-between items-center text-[10px] text-ink-2">
+            <span>{tr('dash.notNegative')}</span>
+            <span className="text-ink-2">403/WAF</span>
           </div>
         </div>
 
         {/* Confidence Rating  */}
-        <div className="p-4 sm:p-5 border border-[#2A2A2A] bg-[#0A0A0A] rounded-md flex flex-col justify-between min-h-[148px] space-y-2">
-          <div className="flex items-center justify-between text-[#A3A3A3] text-xs uppercase">
-            <span>Confidence Index</span>
-            <Activity className="w-4 h-4 text-[#FFFFFF]" />
+        <div className="card card-accent p-4 sm:p-5 flex flex-col justify-between min-h-[148px] space-y-2">
+          <div className="flex items-center justify-between label-mono">
+            <span>{tr('dash.conclusive')}</span>
+            <Activity className="w-4 h-4 text-ink" />
           </div>
           <div>
-            <div className="text-3xl font-black text-[#F5F5F5] tabular-nums">{confidenceScore}%</div>
-            <div className="text-[11px] text-[#A3A3A3] mt-0.5">
-              Zero-false-positive filtering
+            <div className="stat-num">{confidenceScore}%</div>
+            <div className="text-[11px] text-ink-2 mt-0.5">
+              {tr('dash.conclusiveDetail')}
             </div>
           </div>
-          <div className="pt-2 border-t border-[#2A2A2A] flex justify-between items-center text-[10px] text-[#A3A3A3]">
+          <div className="pt-2 border-t border-rule-2 flex justify-between items-center text-[10px] text-ink-2">
             <span>AVG LATENCY</span>
-            <span className="text-[#F5F5F5] font-bold tabular-nums">{avgLatency} ms</span>
+            <span className="text-ink font-bold tabular-nums">{avgLatency} ms</span>
           </div>
         </div>
 
         {/* Public Attack Surface / Exposure Rating */}
-        <div className="p-4 sm:p-5 border border-[#2A2A2A] bg-[#0A0A0A] rounded-md flex flex-col justify-between min-h-[148px] space-y-2">
-          <div className="flex items-center justify-between text-[#A3A3A3] text-xs uppercase">
+        <div className="card card-accent p-4 sm:p-5 flex flex-col justify-between min-h-[148px] space-y-2">
+          <div className="flex items-center justify-between label-mono">
             <span>Attack Surface</span>
-            <Fingerprint className="w-4 h-4 text-[#FFFFFF]" />
+            <Fingerprint className="w-4 h-4 text-ink" />
           </div>
           <div>
             <div className={`text-xl font-black inline-block px-2.5 py-0.5 border rounded-sm ${exposureLevel.color}`}>
               {exposureLevel.label}
             </div>
-            <div className="text-[11px] text-[#A3A3A3] mt-1">
+            <div className="text-[11px] text-ink-2 mt-1">
               Public footprint severity
             </div>
           </div>
-          <div className="pt-2 border-t border-[#2A2A2A] flex justify-between items-center text-[10px] text-[#A3A3A3]">
+          <div className="pt-2 border-t border-rule-2 flex justify-between items-center text-[10px] text-ink-2">
             <span>TOTAL PROBES</span>
-            <span className="text-[#F5F5F5] font-bold tabular-nums">{scannedTotal} sites</span>
+            <span className="text-ink font-bold tabular-nums">{scannedTotal} sites</span>
           </div>
         </div>
       </div>
 
       {/* Multi-Dimensional Analytical Visualizer */}
-      <div className="border border-[#2A2A2A] bg-[#0A0A0A] rounded-md overflow-hidden space-y-0">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#2A2A2A] bg-[#0A0A0A] p-3 sm:p-4">
+      <div className="card overflow-hidden space-y-0">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-rule bg-paper-2 p-3 sm:p-4">
           <div className="flex items-center gap-2">
-            <Activity className="w-4 h-4 text-[#FFFFFF]" />
-            <span className="text-xs font-bold text-[#F5F5F5] uppercase tracking-wider">
+            <Activity className="w-4 h-4 text-ink" />
+            <span className="card-title">
               Analytical OSINT Visualization Engine
             </span>
           </div>
 
-          <div className="flex items-center border border-[#2A2A2A] bg-[#050505] p-0.5 self-start flex-wrap gap-1 rounded-sm">
+          <div className="flex items-center border border-rule bg-paper p-0.5 self-start flex-wrap gap-1 rounded-sm">
             <button
               id="viz-tab-network-btn"
               type="button"
               onClick={() => setActiveVizTab('network')}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase transition-colors rounded-sm ${
                 activeVizTab === 'network'
-                  ? 'bg-[#FFFFFF] text-[#050505] font-bold'
-                  : 'text-[#A3A3A3] hover:text-[#F5F5F5]'
+                  ? 'bg-signal text-signal-ink font-bold'
+                  : 'text-ink-2 hover:text-ink'
               }`}
             >
               <Network className="w-3.5 h-3.5" />
@@ -355,8 +355,8 @@ export function DashboardView({
               onClick={() => setActiveVizTab('geo')}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase transition-colors rounded-sm ${
                 activeVizTab === 'geo'
-                  ? 'bg-[#FFFFFF] text-[#050505] font-bold'
-                  : 'text-[#A3A3A3] hover:text-[#F5F5F5]'
+                  ? 'bg-signal text-signal-ink font-bold'
+                  : 'text-ink-2 hover:text-ink'
               }`}
             >
               <Globe className="w-3.5 h-3.5" />
@@ -369,8 +369,8 @@ export function DashboardView({
               onClick={() => setActiveVizTab('linkage')}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase transition-colors rounded-sm ${
                 activeVizTab === 'linkage'
-                  ? 'bg-[#FFFFFF] text-[#050505] font-bold'
-                  : 'text-[#A3A3A3] hover:text-[#F5F5F5]'
+                  ? 'bg-signal text-signal-ink font-bold'
+                  : 'text-ink-2 hover:text-ink'
               }`}
             >
               <GitFork className="w-3.5 h-3.5" />
@@ -383,8 +383,8 @@ export function DashboardView({
               onClick={() => setActiveVizTab('heatmap')}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase transition-colors rounded-sm ${
                 activeVizTab === 'heatmap'
-                  ? 'bg-[#FFFFFF] text-[#050505] font-bold'
-                  : 'text-[#A3A3A3] hover:text-[#F5F5F5]'
+                  ? 'bg-signal text-signal-ink font-bold'
+                  : 'text-ink-2 hover:text-ink'
               }`}
             >
               <Flame className="w-3.5 h-3.5" />
@@ -397,8 +397,8 @@ export function DashboardView({
               onClick={() => setActiveVizTab('risk_matrix')}
               className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono uppercase transition-colors rounded-sm ${
                 activeVizTab === 'risk_matrix'
-                  ? 'bg-[#FFFFFF] text-[#050505] font-bold'
-                  : 'text-[#A3A3A3] hover:text-[#F5F5F5]'
+                  ? 'bg-signal text-signal-ink font-bold'
+                  : 'text-ink-2 hover:text-ink'
               }`}
             >
               <ShieldAlert className="w-3.5 h-3.5" />
@@ -463,52 +463,52 @@ export function DashboardView({
         <div className="lg:col-span-2 space-y-6">
           {/* AI Intelligence Dossier Brief if available, or on-demand trigger */}
           {aiProfile ? (
-            <div className="border border-[#2A2A2A] bg-[#0A0A0A] p-5 space-y-3 font-mono rounded-md">
-              <div className="flex items-center justify-between border-b border-[#2A2A2A] pb-3">
+            <div className="card p-5 space-y-3 font-mono rounded-md">
+              <div className="flex items-center justify-between border-b border-rule-2 pb-3">
                 <div className="flex items-center gap-2">
-                  <BrainCircuit className="w-4 h-4 text-[#FFFFFF]" />
-                  <span className="text-xs font-bold text-[#F5F5F5] uppercase tracking-wider">
+                  <BrainCircuit className="w-4 h-4 text-ink" />
+                  <span className="card-title">
                     AI Intelligence Dossier Summary
                   </span>
-                  <span className="text-[10px] px-2 py-0.5 border border-[#2A2A2A] bg-[#050505] text-[#A3A3A3] rounded-sm">
+                  <span className="text-[10px] chip">
                     {aiProfile.modelUsed || 'Gemini'}
                   </span>
                 </div>
                 <button
                   type="button"
                   onClick={onViewProfile}
-                  className="text-[11px] text-[#FFFFFF] hover:underline flex items-center gap-1"
+                  className="text-[11px] text-ink hover:underline flex items-center gap-1"
                 >
                   Full Dossier <ArrowRight className="w-3 h-3" />
                 </button>
               </div>
-              <p className="text-xs text-[#F5F5F5] leading-relaxed">
+              <p className="text-xs text-ink leading-relaxed">
                 {aiProfile.summary}
               </p>
               <div className="flex flex-wrap gap-2 pt-1 text-[11px]">
-                <span className="px-2 py-0.5 border border-[#2A2A2A] bg-[#050505] text-[#A3A3A3] rounded-sm">
-                  Archetype: <strong className="text-[#F5F5F5]">{aiProfile.archetype}</strong>
+                <span className="chip">
+                  Archetype: <strong className="text-ink">{aiProfile.archetype}</strong>
                 </span>
-                <span className="px-2 py-0.5 border border-[#2A2A2A] bg-[#050505] text-[#A3A3A3] rounded-sm">
-                  Exposure: <strong className="text-[#F5F5F5]">{aiProfile.threatLevel}</strong>
+                <span className="chip">
+                  Exposure: <strong className="text-ink">{aiProfile.threatLevel}</strong>
                 </span>
-                <span className="px-2 py-0.5 border border-[#2A2A2A] bg-[#050505] text-[#A3A3A3] rounded-sm">
-                  Surface Score: <strong className="text-[#FFFFFF]">{aiProfile.footprintScore} / 100</strong>
+                <span className="chip">
+                  Surface Score: <strong className="text-ink">{aiProfile.footprintScore} / 100</strong>
                 </span>
               </div>
             </div>
           ) : results.some((r) => r.status === 'found') && !isScanning && onRequestAiProfile ? (
-            <div className="border border-[#2A2A2A] bg-[#0A0A0A] p-4 font-mono space-y-2.5 rounded-md">
+            <div className="card p-4 font-mono space-y-2.5 rounded-md">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-7 h-7 border border-[#2A2A2A] bg-[#050505] flex items-center justify-center shrink-0 rounded-sm">
-                    <Sparkles className="w-4 h-4 text-[#FFFFFF]" />
+                  <div className="w-7 h-7 border border-rule bg-paper flex items-center justify-center shrink-0 rounded-sm">
+                    <Sparkles className="w-4 h-4 text-ink" />
                   </div>
                   <div>
-                    <span className="text-xs font-bold text-[#F5F5F5] uppercase tracking-wider block">
+                    <span className="text-xs font-bold text-ink uppercase tracking-wider block">
                       Psychological & OpSec AI Dossier (On-Demand Mode)
                     </span>
-                    <span className="text-[11px] text-[#A3A3A3]">
+                    <span className="text-[11px] text-ink-2">
                       Scan completed. Would you like to synthesize behavioral analysis and exposure risk now?
                     </span>
                   </div>
@@ -517,7 +517,7 @@ export function DashboardView({
                   type="button"
                   onClick={onRequestAiProfile}
                   disabled={isAiLoading}
-                  className="px-3.5 py-1.5 bg-[#FFFFFF] text-[#050505] font-bold border border-[#FFFFFF] hover:bg-[#FFFFFF]/90 text-xs font-mono flex items-center gap-1.5 shrink-0 transition-colors disabled:opacity-50 uppercase rounded-sm"
+                  className="px-3.5 py-1.5 bg-signal text-signal-ink font-bold border border-signal hover:bg-ink/90 text-xs font-mono flex items-center gap-1.5 shrink-0 transition-colors disabled:opacity-50 uppercase rounded-sm"
                 >
                   {isAiLoading ? (
                     <>
@@ -526,7 +526,7 @@ export function DashboardView({
                     </>
                   ) : (
                     <>
-                      <Sparkles className="w-3.5 h-3.5 fill-[#050505]" />
+                      <Sparkles className="w-3.5 h-3.5 fill-paper" />
                       <span>Generate AI Dossier</span>
                     </>
                   )}
@@ -536,15 +536,15 @@ export function DashboardView({
           ) : null}
 
           {/* Category Footprint Breakdown */}
-          <div className="border border-[#2A2A2A] bg-[#0A0A0A] p-5 space-y-4 rounded-md">
-            <div className="flex items-center justify-between border-b border-[#2A2A2A] pb-3">
+          <div className="card p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-rule-2 pb-3">
               <div className="flex items-center gap-2">
-                <Layers className="w-4 h-4 text-[#FFFFFF]" />
-                <span className="text-xs font-bold text-[#F5F5F5] uppercase tracking-wider">
+                <Layers className="w-4 h-4 text-ink" />
+                <span className="card-title">
                   Presence by Category & Attack Vector
                 </span>
               </div>
-              <span className="text-[11px] text-[#A3A3A3] uppercase">
+              <span className="text-[11px] text-ink-2 uppercase">
                 {Object.keys(categoryStats).length} Active Categories
               </span>
             </div>
@@ -559,26 +559,26 @@ export function DashboardView({
                   return (
                     <div key={catKey} className="space-y-1 text-xs">
                       <div className="flex items-center justify-between">
-                        <span className="text-[#F5F5F5] font-semibold flex items-center gap-2">
+                        <span className="text-ink font-semibold flex items-center gap-2">
                           <span 
                             className="w-2 h-2 rounded-full inline-block shrink-0" 
-                            style={{ backgroundColor: CATEGORY_COLORS[catKey] || '#F5F5F5' }} 
+                            style={{ backgroundColor: CATEGORY_COLORS[catKey] || PALETTE.ink }} 
                           />
                           {info.label}
                         </span>
                         <div className="flex items-center gap-3 text-[11px]">
-                          <span className="text-[#A3A3A3]">{info.desc}</span>
-                          <span className="text-[#F5F5F5] font-bold font-mono tabular-nums">
+                          <span className="text-ink-2">{info.desc}</span>
+                          <span className="text-ink font-bold font-mono tabular-nums">
                             {stat.found} / {stat.total}
                           </span>
                         </div>
                       </div>
-                      <div className="w-full bg-[#050505] h-2 border border-[#2A2A2A] rounded-full overflow-hidden">
+                      <div className="w-full bg-paper h-2 border border-rule rounded-full overflow-hidden">
                         <div
                           className="h-full transition-all duration-300"
                           style={{ 
                             width: `${stat.found > 0 ? Math.max(percent, 8) : 0}%`,
-                            backgroundColor: stat.found > 0 ? '#FFFFFF' : '#2A2A2A'
+                            backgroundColor: stat.found > 0 ? PALETTE.ink : PALETTE.rule
                           }}
                         />
                       </div>
@@ -590,42 +590,41 @@ export function DashboardView({
 
 
           {/* Reliability-weighted Digital Footprint Profile */}
-          <div className="border border-[#2A2A2A] bg-[#0A0A0A] p-5 space-y-4 rounded-md">
-            <div className="flex items-center justify-between border-b border-[#2A2A2A] pb-3">
+          <div className="card p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-rule-2 pb-3">
               <div className="flex items-center gap-2">
-                <Fingerprint className="w-4 h-4 text-[#FFFFFF]" />
-                <span className="text-xs font-bold text-[#F5F5F5] uppercase tracking-wider">
+                <Fingerprint className="w-4 h-4 text-ink" />
+                <span className="card-title">
                   Digital Footprint Profile
                 </span>
               </div>
-              <span className="text-[10px] text-[#737373] uppercase">
+              <span className="text-[10px] text-ink-3 uppercase">
                 reliability-weighted
               </span>
             </div>
-            <p className="text-[11px] text-[#A3A3A3] leading-relaxed">
-              Classificação baseada apenas nos tipos de serviços onde o mesmo username foi observado.
-              Não representa personalidade, profissão, intenção ou identidade confirmada.
+            <p className="text-[11px] text-ink-2 leading-relaxed">
+              {tr('dash.footprintNote')}
             </p>
             {footprintProfile.length === 0 ? (
-              <div className="border border-dashed border-[#2A2A2A] p-4 text-[11px] text-[#737373]">
-                Nenhum cluster com presença observada ainda.
+              <div className="border border-dashed border-rule p-4 text-[11px] text-ink-3">
+                {tr('dash.noCluster')}
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 {footprintProfile.slice(0, 3).map((item, index) => (
-                  <div key={item.category} className="border border-[#2A2A2A] bg-[#050505] p-3 space-y-2">
+                  <div key={item.category} className="border border-rule bg-paper p-3 space-y-2">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-[10px] text-[#737373] uppercase">#{index + 1} cluster</span>
-                      <span className="text-xs text-[#FFFFFF] font-bold tabular-nums">{item.score}%</span>
+                      <span className="text-[10px] text-ink-3 uppercase">#{index + 1} cluster</span>
+                      <span className="text-xs text-ink font-bold tabular-nums">{item.score}%</span>
                     </div>
-                    <div className="text-xs text-[#F5F5F5] font-bold uppercase">
+                    <div className="text-xs text-ink font-bold uppercase">
                       {CATEGORY_LABELS[item.category]?.label || item.category}
                     </div>
-                    <div className="text-[10px] text-[#A3A3A3]">
-                      {item.found} presença(s) · detector médio {item.avgDetector}%
+                    <div className="text-[10px] text-ink-2">
+                      {tr('dash.clusterDetail', { found: item.found, detector: item.avgDetector })}
                     </div>
-                    <div className="h-1.5 bg-[#111111] border border-[#2A2A2A] overflow-hidden">
-                      <div className="h-full bg-[#FFFFFF]" style={{ width: `${Math.max(4, item.score)}%` }} />
+                    <div className="h-1.5 bg-card border border-rule overflow-hidden">
+                      <div className="h-full bg-signal" style={{ width: `${Math.max(4, item.score)}%` }} />
                     </div>
                   </div>
                 ))}
@@ -634,25 +633,25 @@ export function DashboardView({
           </div>
 
           {/* Top Confirmed Discoveries Quick Feed */}
-          <div className="border border-[#2A2A2A] bg-[#0A0A0A] p-5 space-y-4 rounded-md">
-            <div className="flex items-center justify-between border-b border-[#2A2A2A] pb-3">
+          <div className="card p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-rule-2 pb-3">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-[#FFFFFF]" />
-                <span className="text-xs font-bold text-[#F5F5F5] uppercase tracking-wider">
+                <ShieldCheck className="w-4 h-4 text-ink" />
+                <span className="card-title">
                   Confirmed Target Profiles ({foundResults.length})
                 </span>
               </div>
               <button
                 type="button"
                 onClick={onViewTable}
-                className="text-[11px] text-[#A3A3A3] hover:text-[#FFFFFF] flex items-center gap-1 transition-colors"
+                className="text-[11px] text-ink-2 hover:text-ink flex items-center gap-1 transition-colors"
               >
                 Inspect in Audit Table <ArrowRight className="w-3 h-3" />
               </button>
             </div>
 
             {foundResults.length === 0 ? (
-              <div className="p-8 text-center border border-dashed border-[#2A2A2A] bg-[#050505] rounded-sm text-[#A3A3A3] text-xs min-h-[140px] flex items-center justify-center">
+              <div className="p-8 text-center border border-dashed border-rule bg-paper rounded-sm text-ink-2 text-xs min-h-[140px] flex items-center justify-center">
                 {isScanning
                   ? 'Reconnaissance in progress. Probing targets across platforms...'
                   : 'No confirmed profiles located in this scan scope. Target may use handle variations.'}
@@ -662,7 +661,7 @@ export function DashboardView({
                 {foundResults.map((item) => (
                   <div
                     key={item.id}
-                    className="p-3 border border-[#2A2A2A] bg-[#050505] rounded-sm flex items-center justify-between hover:border-[#737373] transition-colors"
+                    className="p-3 border border-rule bg-paper rounded-sm flex items-center justify-between hover:border-ink-3 transition-colors"
                   >
                     <div className="flex items-center gap-2.5 min-w-0 pr-2">
                       <PlatformFavicon
@@ -674,12 +673,12 @@ export function DashboardView({
                       />
                       <div className="space-y-0.5 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="text-[#F5F5F5] font-bold text-xs truncate">{item.platformName}</span>
-                          <span className="text-[9px] uppercase px-1 py-0.2 border border-[#2A2A2A] text-[#A3A3A3] rounded-sm">
+                          <span className="text-ink font-bold text-xs truncate">{item.platformName}</span>
+                          <span className="text-[9px] uppercase px-1 py-0.2 border border-rule text-ink-2 rounded-sm">
                             {item.category}
                           </span>
                         </div>
-                        <div className="text-[10px] text-[#A3A3A3] truncate">{item.url}</div>
+                        <div className="text-[10px] text-ink-2 truncate">{item.url}</div>
                       </div>
                     </div>
 
@@ -687,11 +686,11 @@ export function DashboardView({
                       <button
                         type="button"
                         onClick={() => copyToClipboard(item.url)}
-                        className="p-1.5 border border-[#2A2A2A] bg-[#0A0A0A] text-[#A3A3A3] hover:text-[#F5F5F5] hover:border-[#737373] rounded-sm transition-colors"
+                        className="p-1.5 border border-rule bg-paper-2 text-ink-2 hover:text-ink hover:border-ink-3 rounded-sm transition-colors"
                         title="Copy profile link"
                       >
                         {copiedUrl === item.url ? (
-                          <Check className="w-3 h-3 text-[#FFFFFF]" />
+                          <Check className="w-3 h-3 text-ink" />
                         ) : (
                           <Copy className="w-3 h-3" />
                         )}
@@ -700,7 +699,7 @@ export function DashboardView({
                         href={item.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="p-1.5 border border-[#2A2A2A] bg-[#0A0A0A] text-[#A3A3A3] hover:text-[#FFFFFF] hover:border-[#737373] rounded-sm transition-colors"
+                        className="p-1.5 border border-rule bg-paper-2 text-ink-2 hover:text-ink hover:border-ink-3 rounded-sm transition-colors"
                         title="Open external profile"
                       >
                         <ExternalLink className="w-3 h-3" />
@@ -717,80 +716,80 @@ export function DashboardView({
         <div className="space-y-6">
           {/* Email Recon / DNS Metadata */}
           {emailData ? (
-            <div className="border border-[#2A2A2A] bg-[#0A0A0A] p-5 space-y-4 rounded-md">
-              <div className="flex items-center justify-between border-b border-[#2A2A2A] pb-3">
+            <div className="card p-5 space-y-4">
+              <div className="flex items-center justify-between border-b border-rule-2 pb-3">
                 <div className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-[#FFFFFF]" />
-                  <span className="text-xs font-bold text-[#F5F5F5] uppercase tracking-wider">
+                  <Mail className="w-4 h-4 text-ink" />
+                  <span className="card-title">
                     Email Infrastructure
                   </span>
                 </div>
-                <span className="text-[10px] text-[#A3A3A3] uppercase">DNS MX</span>
+                <span className="text-[10px] text-ink-2 uppercase">DNS MX</span>
               </div>
 
               <div className="space-y-3 text-xs">
                 <div>
-                  <div className="text-[10px] text-[#A3A3A3] uppercase">Target Address</div>
-                  <div className="text-[#F5F5F5] font-bold break-all">{emailData.email}</div>
+                  <div className="text-[10px] text-ink-2 uppercase">Target Address</div>
+                  <div className="text-ink font-bold break-all">{emailData.email}</div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 pt-1">
-                  <div className="p-2.5 border border-[#2A2A2A] bg-[#050505] rounded-sm">
-                    <div className="text-[9px] text-[#A3A3A3] uppercase">Domain Type</div>
-                    <div className="text-[#F5F5F5] font-semibold">
+                  <div className="p-2.5 border border-rule bg-paper rounded-sm">
+                    <div className="text-[9px] text-ink-2 uppercase">Domain Type</div>
+                    <div className="text-ink font-semibold">
                       {emailData.isDisposable ? 'Disposable' : emailData.isCommonProvider ? 'Commercial' : 'Enterprise'}
                     </div>
                   </div>
-                  <div className="p-2.5 border border-[#2A2A2A] bg-[#050505] rounded-sm">
-                    <div className="text-[9px] text-[#A3A3A3] uppercase">MX Resolution</div>
-                    <div className="text-[#F5F5F5] font-semibold">
+                  <div className="p-2.5 border border-rule bg-paper rounded-sm">
+                    <div className="text-[9px] text-ink-2 uppercase">MX Resolution</div>
+                    <div className="text-ink font-semibold">
                       {emailData.mxRecordsFound ? 'Active Host' : 'No MX'}
                     </div>
                   </div>
                 </div>
 
                 {emailData.gravatarExists && (
-                  <div className="p-2.5 border border-[#2A2A2A] bg-[#050505] rounded-sm flex items-center gap-2.5">
+                  <div className="p-2.5 border border-rule bg-paper rounded-sm flex items-center gap-2.5">
                     {emailData.gravatarAvatarUrl && (
                       <img
                         src={emailData.gravatarAvatarUrl}
                         alt="Gravatar"
-                        className="w-8 h-8 border border-[#FFFFFF] rounded-sm"
+                        className="w-8 h-8 border border-signal rounded-sm"
                       />
                     )}
                     <div>
-                      <div className="text-[#F5F5F5] font-bold text-[11px]">Gravatar Verified</div>
-                      <div className="text-[10px] text-[#A3A3A3]">Public profile image confirmed</div>
+                      <div className="text-ink font-bold text-[11px]">Gravatar Verified</div>
+                      <div className="text-[10px] text-ink-2">Public profile image confirmed</div>
                     </div>
                   </div>
                 )}
               </div>
             </div>
           ) : (
-            <div className="border border-[#2A2A2A] bg-[#0A0A0A] p-5 space-y-3 rounded-md">
-              <div className="flex items-center gap-2 text-[#F5F5F5] font-bold text-xs uppercase border-b border-[#2A2A2A] pb-2">
-                <Fingerprint className="w-4 h-4 text-[#FFFFFF]" />
+            <div className="card p-5 space-y-3 rounded-md">
+              <div className="flex items-center gap-2 text-ink font-bold text-xs uppercase border-b border-rule pb-2">
+                <Fingerprint className="w-4 h-4 text-ink" />
                 PII & Identity Signature
               </div>
-              <p className="text-xs text-[#A3A3A3] leading-relaxed">
-                Reconnaissance on handle <strong className="text-[#F5F5F5]">@{target}</strong> indicates active digital footprint across multiple distinct service clusters.
+              <p className="text-xs text-ink-2 leading-relaxed">
+                Reconnaissance on handle <strong className="text-ink">@{target}</strong> indicates active digital footprint across multiple distinct service clusters.
               </p>
               <div className="space-y-2 pt-1 text-[11px]">
-                <div className="flex justify-between border-b border-[#2A2A2A] pb-1">
-                  <span className="text-[#A3A3A3]">Handle Cohesion:</span>
-                  <span className="text-[#F5F5F5] font-semibold">
+                <div className="flex justify-between border-b border-rule pb-1">
+                  <span className="text-ink-2">Handle Cohesion:</span>
+                  <span className="text-ink font-semibold">
                     {foundResults.length > 5 ? 'High (Moniker Reuse)' : 'Moderate'}
                   </span>
                 </div>
-                <div className="flex justify-between border-b border-[#2A2A2A] pb-1">
-                  <span className="text-[#A3A3A3]">Dominant Cluster:</span>
-                  <span className="text-[#F5F5F5] font-semibold">
+                <div className="flex justify-between border-b border-rule pb-1">
+                  <span className="text-ink-2">Dominant Cluster:</span>
+                  <span className="text-ink font-semibold">
                     {Object.entries(categoryStats).sort((a, b) => (b[1] as { total: number; found: number; weighted: number; detectorSum: number }).found - (a[1] as { total: number; found: number; weighted: number; detectorSum: number }).found)[0]?.[0] || 'Pending'}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#A3A3A3]">Mineiro Guard Anti-Bot Rate:</span>
-                  <span className="text-[#A3A3A3] tabular-nums">
+                  <span className="text-ink-2">Mineiro Guard Anti-Bot Rate:</span>
+                  <span className="text-ink-2 tabular-nums">
                     {scannedTotal > 0 ? `${((uncertainResults.length / scannedTotal) * 100).toFixed(1)}%` : '0%'}
                   </span>
                 </div>
@@ -799,17 +798,17 @@ export function DashboardView({
           )}
 
           {/* Mineiro Guard Uncertain / Protected Sites Box */}
-          <div className="border border-[#2A2A2A] bg-[#0A0A0A] p-5 space-y-3 rounded-md">
-            <div className="flex items-center justify-between border-b border-[#2A2A2A] pb-2">
-              <div className="flex items-center gap-2 text-[#F5F5F5] font-bold text-xs uppercase">
-                <AlertTriangle className="w-3.5 h-3.5 text-[#A3A3A3]" />
+          <div className="card p-5 space-y-3 rounded-md">
+            <div className="flex items-center justify-between border-b border-rule pb-2">
+              <div className="flex items-center gap-2 text-ink font-bold text-xs uppercase">
+                <AlertTriangle className="w-3.5 h-3.5 text-ink-2" />
                 Mineiro Guard Protection Watchlist
               </div>
-              <span className="text-[10px] text-[#A3A3A3] font-bold tabular-nums">
+              <span className="text-[10px] text-ink-2 font-bold tabular-nums">
                 {uncertainResults.length} SITES
               </span>
             </div>
-            <p className="text-[11px] text-[#A3A3A3] leading-relaxed">
+            <p className="text-[11px] text-ink-2 leading-relaxed">
               These platforms returned Cloudflare WAF challenges or strict anti-bot responses. As per the Mineiro Guard model, they are flagged as <em>Uncertain</em> rather than false negatives.
             </p>
             {uncertainResults.length > 0 ? (
@@ -817,59 +816,59 @@ export function DashboardView({
                 {uncertainResults.map((u) => (
                   <div
                     key={u.id}
-                    className="p-2 border border-[#2A2A2A] bg-[#050505] rounded-sm flex items-center justify-between text-[11px]"
+                    className="p-2 border border-rule bg-paper rounded-sm flex items-center justify-between text-[11px]"
                   >
-                    <span className="text-[#F5F5F5] font-semibold">{u.platformName}</span>
-                    <span className="text-[10px] text-[#A3A3A3]">
+                    <span className="text-ink font-semibold">{u.platformName}</span>
+                    <span className="text-[10px] text-ink-2">
                       HTTP {u.statusCode || 403} WAF
                     </span>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="p-3 border border-[#2A2A2A] bg-[#050505] rounded-sm text-center text-[#A3A3A3] text-[11px]">
+              <div className="p-3 border border-rule bg-paper rounded-sm text-center text-ink-2 text-[11px]">
                 No active Cloudflare/WAF blocks recorded in this scope.
               </div>
             )}
           </div>
 
           {/* Quick Nav Action Shortcuts */}
-          <div className="p-4 border border-[#2A2A2A] bg-[#0A0A0A] rounded-md space-y-2">
-            <div className="text-[11px] text-[#A3A3A3] uppercase tracking-widest">
+          <div className="p-4 card space-y-2">
+            <div className="text-[11px] text-ink-2 uppercase tracking-widest">
               Reconnaissance Workspaces
             </div>
             <div className="grid grid-cols-2 gap-2 text-xs">
               <button
                 type="button"
                 onClick={onViewTable}
-                className="p-2.5 border border-[#2A2A2A] hover:border-[#737373] bg-[#050505] text-[#A3A3A3] hover:text-[#FFFFFF] transition-colors text-left rounded-sm"
+                className="btn !justify-start !rounded-[var(--radius-sm)] !p-2.5 text-left"
               >
-                <div className="font-bold text-[#F5F5F5]">Audit Table</div>
-                <div className="text-[10px] text-[#A3A3A3]">Dense ledger</div>
+                <div className="font-bold text-ink">Audit Table</div>
+                <div className="text-[10px] text-ink-2">Dense ledger</div>
               </button>
               <button
                 type="button"
                 onClick={onViewGrid}
-                className="p-2.5 border border-[#2A2A2A] hover:border-[#737373] bg-[#050505] text-[#A3A3A3] hover:text-[#FFFFFF] transition-colors text-left rounded-sm"
+                className="btn !justify-start !rounded-[var(--radius-sm)] !p-2.5 text-left"
               >
-                <div className="font-bold text-[#F5F5F5]">Grid Matrix</div>
-                <div className="text-[10px] text-[#A3A3A3]">Visual cards</div>
+                <div className="font-bold text-ink">Grid Matrix</div>
+                <div className="text-[10px] text-ink-2">Visual cards</div>
               </button>
               <button
                 type="button"
                 onClick={onViewProfile}
-                className="p-2.5 border border-[#2A2A2A] hover:border-[#737373] bg-[#050505] text-[#A3A3A3] hover:text-[#FFFFFF] transition-colors text-left rounded-sm"
+                className="btn !justify-start !rounded-[var(--radius-sm)] !p-2.5 text-left"
               >
-                <div className="font-bold text-[#F5F5F5]">AI Dossier</div>
-                <div className="text-[10px] text-[#A3A3A3]">Threat profile</div>
+                <div className="font-bold text-ink">AI Dossier</div>
+                <div className="text-[10px] text-ink-2">Threat profile</div>
               </button>
               <button
                 type="button"
                 onClick={onViewTerminal}
-                className="p-2.5 border border-[#2A2A2A] hover:border-[#737373] bg-[#050505] text-[#A3A3A3] hover:text-[#FFFFFF] transition-colors text-left rounded-sm"
+                className="btn !justify-start !rounded-[var(--radius-sm)] !p-2.5 text-left"
               >
-                <div className="font-bold text-[#F5F5F5]">Console CLI</div>
-                <div className="text-[10px] text-[#A3A3A3]">Live streams</div>
+                <div className="font-bold text-ink">Console CLI</div>
+                <div className="text-[10px] text-ink-2">Live streams</div>
               </button>
             </div>
           </div>

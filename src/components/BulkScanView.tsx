@@ -1,3 +1,4 @@
+import { useI18n } from '../utils/i18n';
 import { useState } from 'react';
 import { 
   FileSpreadsheet, 
@@ -46,26 +47,27 @@ export function BulkScanView({
   onRemoveQueuedItem,
   isScanning,
 }: BulkScanViewProps) {
+  const { tr } = useI18n();
   const [exportFormat, setExportFormat] = useState<'csv' | 'json'>('csv');
 
   if (!batch || batch.items.length === 0) {
     return (
       <div className="py-20 text-center space-y-4 font-mono max-w-lg mx-auto">
-        <div className="w-14 h-14 mx-auto border border-dashed border-neutral-700 bg-neutral-950 flex items-center justify-center text-neutral-400">
+        <div className="w-14 h-14 mx-auto border border-dashed border-rule bg-paper-2 flex items-center justify-center text-ink-3">
           <FileSpreadsheet className="w-6 h-6" />
         </div>
         <div className="space-y-1">
-          <h3 className="text-white font-bold text-sm tracking-wider uppercase">
+          <h3 className="text-ink font-bold text-sm tracking-wider uppercase">
             NO BATCH INVESTIGATION QUEUED
           </h3>
-          <p className="text-neutral-500 text-xs leading-relaxed">
+          <p className="text-ink-3 text-xs leading-relaxed">
             Import a list of target usernames or emails from a local CSV file or paste raw identifiers to start automated bulk reconnaissance.
           </p>
         </div>
         <button
           type="button"
           onClick={onOpenImport}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-white hover:bg-neutral-200 text-black font-bold text-xs uppercase border border-white tracking-wider transition-all"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-signal hover:bg-ink text-signal-ink font-bold text-xs uppercase border border-signal tracking-wider transition-all"
         >
           <Upload className="w-3.5 h-3.5" />
           Import Targets CSV
@@ -93,20 +95,14 @@ export function BulkScanView({
   };
 
   return (
-    <div className="space-y-6 font-mono text-xs">
+    <div className="space-y-6 text-sm">
       {/* Top Banner & Batch Controls */}
-      <div className="border border-neutral-800 bg-neutral-950 p-5 space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-900 pb-4">
+      <div className="card p-6 space-y-5">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-rule pb-4">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 bg-white inline-block shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
-              <h2 className="text-sm sm:text-base font-bold text-white uppercase tracking-wider">
-                BULK TARGET INVESTIGATION QUEUE // {batch.name.toUpperCase()}
-              </h2>
-            </div>
-            <p className="text-neutral-400 text-xs">
-              Sequential multi-target OSINT reconnaissance engine with automated forensic hit aggregation.
-            </p>
+            <span className="eyebrow">{tr('batch.eyebrow')}</span>
+            <h2 className="text-2xl font-semibold tracking-tight text-ink">{batch.name}</h2>
+            <p className="text-ink-2 text-sm max-w-2xl">{tr('batch.subtitle')}</p>
           </div>
 
           {/* Action Toolbar */}
@@ -115,7 +111,7 @@ export function BulkScanView({
               <button
                 type="button"
                 onClick={onPauseBatch}
-                className="px-3 py-2 border border-neutral-700 bg-neutral-900 text-neutral-200 hover:text-white flex items-center gap-1.5 uppercase transition-colors"
+                className="px-3 py-2 border border-rule bg-rule-2 text-ink hover:text-ink flex items-center gap-1.5 uppercase transition-colors"
                 title="Pause batch execution"
               >
                 <Pause className="w-3.5 h-3.5" />
@@ -125,10 +121,10 @@ export function BulkScanView({
               <button
                 type="button"
                 onClick={onResumeBatch}
-                className="px-3 py-2 border border-white bg-white text-black font-bold flex items-center gap-1.5 uppercase transition-colors"
+                className="px-3 py-2 border border-signal bg-signal text-signal-ink font-bold flex items-center gap-1.5 uppercase transition-colors"
                 title="Resume batch execution"
               >
-                <Play className="w-3.5 h-3.5 fill-black" />
+                <Play className="w-3.5 h-3.5 fill-paper" />
                 Resume
               </button>
             ) : null}
@@ -138,7 +134,7 @@ export function BulkScanView({
                 <button
                   type="button"
                   onClick={onSkipTarget}
-                  className="px-3 py-2 border border-neutral-800 bg-black text-neutral-400 hover:text-white flex items-center gap-1.5 uppercase transition-colors"
+                  className="px-3 py-2 border border-rule bg-paper text-ink-3 hover:text-ink flex items-center gap-1.5 uppercase transition-colors"
                   title="Skip current target"
                 >
                   <SkipForward className="w-3.5 h-3.5" />
@@ -147,7 +143,7 @@ export function BulkScanView({
                 <button
                   type="button"
                   onClick={onAbortBatch}
-                  className="px-3 py-2 border border-neutral-800 bg-black text-neutral-400 hover:text-neutral-400 flex items-center gap-1.5 uppercase transition-colors"
+                  className="px-3 py-2 border border-rule bg-paper text-ink-3 hover:text-ink-3 flex items-center gap-1.5 uppercase transition-colors"
                   title="Abort all remaining targets in batch"
                 >
                   <Square className="w-3.5 h-3.5" />
@@ -159,18 +155,18 @@ export function BulkScanView({
             <button
               type="button"
               onClick={onOpenImport}
-              className="px-3 py-2 border border-neutral-800 bg-black text-neutral-300 hover:text-white flex items-center gap-1.5 uppercase transition-colors"
+              className="px-3 py-2 border border-rule bg-paper text-ink-2 hover:text-ink flex items-center gap-1.5 uppercase transition-colors"
             >
               <Upload className="w-3.5 h-3.5" />
               Add Targets
             </button>
 
             {/* Consolidated Batch Export */}
-            <div className="flex items-center border border-neutral-800 bg-black">
+            <div className="flex items-center border border-rule bg-paper">
               <button
                 type="button"
                 onClick={handleExport}
-                className="px-3 py-2 text-white font-bold flex items-center gap-1.5 uppercase hover:bg-neutral-900 transition-colors"
+                className="px-3 py-2 text-ink font-bold flex items-center gap-1.5 uppercase hover:bg-rule-2 transition-colors"
                 title="Export consolidated results of all targets in batch"
               >
                 <Download className="w-3.5 h-3.5" />
@@ -179,7 +175,7 @@ export function BulkScanView({
               <select
                 value={exportFormat}
                 onChange={(e) => setExportFormat(e.target.value as 'csv' | 'json')}
-                className="bg-neutral-950 text-neutral-400 border-l border-neutral-800 px-2 py-2 text-[10px] focus:outline-none"
+                className="bg-paper-2 text-ink-3 border-l border-rule px-2 py-2 text-[10px] focus:outline-none"
               >
                 <option value="csv">CSV</option>
                 <option value="json">JSON</option>
@@ -190,20 +186,17 @@ export function BulkScanView({
 
         {/* Global Batch Progress */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-neutral-400 text-xs">
-            <span className="flex items-center gap-2">
-              <span>BATCH PROGRESS:</span>
-              <strong className="text-white">
-                {completedItems.length} / {batch.items.length} TARGETS COMPLETED ({percentComplete}%)
-              </strong>
+          <div className="flex items-center justify-between text-ink-3 text-xs">
+            <span className="text-ink tabular-nums">
+              {tr('batch.progress', { done: completedItems.length, total: batch.items.length, percent: percentComplete })}
             </span>
-            <span>
-              STATUS: <strong className="text-white">{batch.isActive ? (batch.isPaused ? 'PAUSED' : 'SCANNING BATCH') : 'COMPLETED'}</strong>
+            <span className={`chip ${batch.isActive && !batch.isPaused ? 'chip-signal' : 'chip-quiet'}`}>
+              {batch.isActive ? (batch.isPaused ? tr('batch.statusPaused') : tr('batch.statusRunning')) : tr('batch.statusDone')}
             </span>
           </div>
-          <div className="w-full bg-black h-2.5 border border-neutral-800 overflow-hidden">
+          <div className="w-full h-2 rounded-full bg-paper-2 border border-rule-2 overflow-hidden" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percentComplete}>
             <div
-              className={`h-full bg-white transition-all duration-300 ${batch.isActive && !batch.isPaused ? 'animate-pulse' : ''}`}
+              className="h-full rounded-full bg-signal"
               style={{ width: `${percentComplete}%` }}
             />
           </div>
@@ -211,36 +204,36 @@ export function BulkScanView({
 
         {/* Aggregate KPI Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-          <div className="p-3 border border-neutral-800 bg-black space-y-1">
-            <div className="text-[10px] text-neutral-500 uppercase">Total Targets</div>
-            <div className="text-2xl font-black text-white">{batch.items.length}</div>
-            <div className="text-[10px] text-neutral-500">
+          <div className="card p-4 space-y-1.5">
+            <div className="label-mono text-ink-3">Total Targets</div>
+            <div className="stat-num">{batch.items.length}</div>
+            <div className="text-[10px] text-ink-3">
               {queuedItems.length} Queued • {completedItems.length} Done
             </div>
           </div>
 
-          <div className="p-3 border border-neutral-800 bg-black space-y-1">
-            <div className="text-[10px] text-neutral-500 uppercase">Cumulative Hits</div>
-            <div className="text-2xl font-black text-white">{totalHits}</div>
-            <div className="text-[10px] text-neutral-500">
+          <div className="card p-4 space-y-1.5">
+            <div className="label-mono text-ink-3">Cumulative Hits</div>
+            <div className="stat-num">{totalHits}</div>
+            <div className="text-[10px] text-ink-3">
               Discovered profiles
             </div>
           </div>
 
-          <div className="p-3 border border-neutral-800 bg-black space-y-1">
-            <div className="text-[10px] text-neutral-500 uppercase">Platform Probes</div>
-            <div className="text-2xl font-black text-white">{totalScannedPlatforms}</div>
-            <div className="text-[10px] text-neutral-500">
-              Scope: {batch.selectedCategory.toUpperCase()}
+          <div className="card p-4 space-y-1.5">
+            <div className="label-mono text-ink-3">Platform Probes</div>
+            <div className="stat-num">{totalScannedPlatforms}</div>
+            <div className="text-[10px] text-ink-3">
+              {tr('batch.scopeLabel', { scope: batch.platformScope ?? '—', category: batch.selectedCategory })}
             </div>
           </div>
 
-          <div className="p-3 border border-neutral-800 bg-black space-y-1">
-            <div className="text-[10px] text-neutral-500 uppercase">Batch State</div>
-            <div className="text-2xl font-black text-white">
+          <div className="card p-4 space-y-1.5">
+            <div className="label-mono text-ink-3">Batch State</div>
+            <div className="stat-num">
               {batch.isActive ? (batch.isPaused ? 'PAUSED' : 'ACTIVE') : 'DONE'}
             </div>
-            <div className="text-[10px] text-neutral-500">
+            <div className="text-[10px] text-ink-3">
               Concurrency: {batch.concurrency}
             </div>
           </div>
@@ -249,24 +242,23 @@ export function BulkScanView({
 
       {/* Active Target Radar Spotlight */}
       {activeItem && (
-        <div className="p-4 border border-neutral-500/60 bg-neutral-950/20 space-y-3 relative overflow-hidden shadow-[0_0_20px_rgba(16,185,129,0.08)]">
+        <div className="p-4 border border-ink-3/60 bg-paper-2/20 space-y-3 relative overflow-hidden shadow-[0_0_20px_color-mix(in_srgb,var(--ink)_8%,transparent)]">
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
-            <div className="absolute inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-neutral-400/40 to-transparent animate-[radarSweepVertical_2.4s_linear_infinite]" />
+            <div className="absolute inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-ink-3/40 to-transparent animate-[radarSweepVertical_2.4s_linear_infinite]" />
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
             <div className="flex items-center gap-3">
               <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neutral-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-neutral-500"></span>
+                <span className="mast-dot" />
               </span>
               <div>
-                <span className="text-[10px] uppercase text-neutral-400 tracking-wider block font-bold">
-                  ACTIVE RECONNAISSANCE IN PROGRESS
+                <span className="text-[10px] uppercase text-ink-3 tracking-wider block font-bold">
+                  {tr('batch.activeNow')}
                 </span>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <h3 className="text-base font-bold text-ink flex items-center gap-2">
                   <span>{activeItem.type === 'username' ? `@${activeItem.target}` : activeItem.target}</span>
-                  <span className="text-[10px] uppercase px-1.5 py-0.2 border border-neutral-500/60 text-neutral-300">
+                  <span className="text-[10px] uppercase px-1.5 py-0.2 border border-ink-3/60 text-ink-2">
                     {activeItem.type}
                   </span>
                 </h3>
@@ -275,19 +267,19 @@ export function BulkScanView({
 
             <div className="flex items-center gap-4 text-xs">
               <div>
-                <span className="text-neutral-400">DISCOVERED HITS: </span>
-                <span className="text-neutral-300 font-bold text-sm bg-black px-2 py-0.5 border border-neutral-500/60">
+                <span className="text-ink-3">DISCOVERED HITS: </span>
+                <span className="text-ink-2 font-bold text-sm bg-paper px-2 py-0.5 border border-ink-3/60">
                   {activeItem.foundCount}
                 </span>
               </div>
               <div>
-                <span className="text-neutral-400">PROBES: </span>
-                <span className="text-white font-bold">{activeItem.totalScanned}</span>
+                <span className="text-ink-3">PROBES: </span>
+                <span className="text-ink font-bold">{activeItem.totalScanned}</span>
               </div>
               <button
                 type="button"
                 onClick={onSkipTarget}
-                className="px-2.5 py-1 border border-neutral-700 bg-black text-neutral-300 hover:text-white uppercase text-[10px]"
+                className="px-2.5 py-1 border border-rule bg-paper text-ink-2 hover:text-ink uppercase text-[10px]"
               >
                 Skip Target →
               </button>
@@ -297,22 +289,20 @@ export function BulkScanView({
       )}
 
       {/* Target Queue Table */}
-      <div className="border border-neutral-800 bg-neutral-950 space-y-2">
-        <div className="p-4 border-b border-neutral-800 flex items-center justify-between">
+      <div className="tbl-wrap">
+        <div className="p-4 border-b border-rule-2 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Layers className="w-4 h-4 text-white" />
-            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-              BATCH TARGET RECONNAISSANCE QUEUE ({batch.items.length})
-            </h3>
+            <Layers className="w-4 h-4 text-ink" />
+            <h3 className="card-title">{tr('batch.queueTitle', { count: batch.items.length })}</h3>
           </div>
-          <span className="text-neutral-500 text-[11px]">
-            Click "Inspect Dossier" on any target to view detailed analytics & D3 graphs
+          <span className="text-ink-3 text-[11px]">
+            {tr('batch.queueHint')}
           </span>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-black border-b border-neutral-800 text-neutral-400 text-[10px] uppercase">
+          <table className="tbl">
+            <thead>
               <tr>
                 <th className="py-2.5 px-4 w-12">#</th>
                 <th className="py-2.5 px-4">Target Identifier</th>
@@ -324,7 +314,7 @@ export function BulkScanView({
                 <th className="py-2.5 px-4 text-right">Dossier Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-900 font-mono">
+            <tbody>
               {batch.items.map((item, idx) => {
                 const isScanning = item.status === 'scanning';
                 const isCompleted = item.status === 'completed';
@@ -336,15 +326,15 @@ export function BulkScanView({
                     key={item.id}
                     className={`transition-colors ${
                       isScanning
-                        ? 'bg-neutral-950/30 border-l-2 border-neutral-500 text-white'
+                        ? 'bg-paper-2/30 border-l-2 border-ink-3 text-ink'
                         : isCompleted
-                        ? 'hover:bg-neutral-900/40 text-neutral-200'
-                        : 'text-neutral-400 hover:bg-neutral-900/20'
+                        ? 'hover:bg-rule-2/40 text-ink'
+                        : 'text-ink-3 hover:bg-rule-2/20'
                     }`}
                   >
-                    <td className="py-2.5 px-4 text-neutral-600 text-[10px]">{idx + 1}</td>
+                    <td className="py-2.5 px-4 text-ink-3 text-[10px]">{idx + 1}</td>
 
-                    <td className="py-2.5 px-4 font-semibold text-white whitespace-nowrap">
+                    <td className="py-2.5 px-4 font-semibold text-ink whitespace-nowrap">
                       <div className="flex items-center gap-2">
                         <span>{item.type === 'username' ? `@${item.target}` : item.target}</span>
                       </div>
@@ -354,8 +344,8 @@ export function BulkScanView({
                       <span
                         className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[9px] uppercase border font-bold ${
                           item.type === 'email'
-                            ? 'border-neutral-700/80 bg-neutral-950/40 text-neutral-300'
-                            : 'border-neutral-700 bg-neutral-900 text-neutral-300'
+                            ? 'border-rule/80 bg-paper-2/40 text-ink-2'
+                            : 'border-rule bg-rule-2 text-ink-2'
                         }`}
                       >
                         {item.type === 'email' ? (
@@ -369,25 +359,25 @@ export function BulkScanView({
 
                     <td className="py-2.5 px-4 whitespace-nowrap">
                       {isScanning && (
-                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 border border-neutral-500/60 bg-neutral-950/80 text-neutral-300 text-[10px] font-bold animate-pulse">
-                          <span className="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-ping" />
+                        <span className="inline-flex items-center gap-1.5 px-2 py-0.5 border border-ink-3/60 bg-paper-2/80 text-ink-2 text-[10px] font-bold animate-pulse">
+                          <span className="w-1.5 h-1.5 rounded-full bg-ink-3 animate-ping" />
                           PROBING...
                         </span>
                       )}
                       {isCompleted && (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-neutral-900 border border-neutral-700 text-white text-[10px] font-bold uppercase">
-                          <CheckCircle2 className="w-3 h-3 text-neutral-400" />
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-rule-2 border border-rule text-ink text-[10px] font-bold uppercase">
+                          <CheckCircle2 className="w-3 h-3 text-ink-3" />
                           COMPLETED
                         </span>
                       )}
                       {isQueued && (
-                        <span className="inline-flex items-center gap-1 text-neutral-500 text-[10px] uppercase">
+                        <span className="inline-flex items-center gap-1 text-ink-3 text-[10px] uppercase">
                           <Clock className="w-2.5 h-2.5" />
                           QUEUED
                         </span>
                       )}
                       {isFailed && (
-                        <span className="text-neutral-400 text-[10px] uppercase">FAILED</span>
+                        <span className="text-ink-3 text-[10px] uppercase">FAILED</span>
                       )}
                     </td>
 
@@ -396,26 +386,26 @@ export function BulkScanView({
                         <span
                           className={`font-bold px-2 py-0.5 text-xs ${
                             item.foundCount > 0
-                              ? 'bg-white text-black font-mono'
-                              : 'text-neutral-500'
+                              ? 'bg-signal text-signal-ink font-mono'
+                              : 'text-ink-3'
                           }`}
                         >
                           {item.foundCount} hits
                         </span>
                       ) : (
-                        <span className="text-neutral-600">—</span>
+                        <span className="text-ink-3">—</span>
                       )}
                     </td>
 
-                    <td className="py-2.5 px-4 text-neutral-500 whitespace-nowrap">
+                    <td className="py-2.5 px-4 text-ink-3 whitespace-nowrap">
                       {item.uncertainCount > 0 ? (
-                        <span className="text-neutral-400">{item.uncertainCount}</span>
+                        <span className="text-ink-3">{item.uncertainCount}</span>
                       ) : (
                         '0'
                       )}
                     </td>
 
-                    <td className="py-2.5 px-4 text-neutral-400 text-[11px] truncate max-w-[140px]">
+                    <td className="py-2.5 px-4 text-ink-3 text-[11px] truncate max-w-[140px]">
                       {item.notes || '—'}
                     </td>
 
@@ -425,7 +415,7 @@ export function BulkScanView({
                           <button
                             type="button"
                             onClick={() => onInspectTarget(item)}
-                            className="px-2.5 py-1 border border-neutral-700 bg-neutral-900 text-white hover:bg-white hover:text-black transition-colors text-[10px] uppercase flex items-center gap-1 font-bold"
+                            className="px-2.5 py-1 border border-rule bg-rule-2 text-ink hover:bg-signal hover:text-signal-ink transition-colors text-[10px] uppercase flex items-center gap-1 font-bold"
                             title="Inspect full forensic dossier and analytics for this target"
                           >
                             <Eye className="w-3 h-3" />
@@ -436,7 +426,7 @@ export function BulkScanView({
                           <button
                             type="button"
                             onClick={() => onRemoveQueuedItem(item.id)}
-                            className="p-1 text-neutral-600 hover:text-neutral-400 transition-colors"
+                            className="p-1 text-ink-3 hover:text-ink-3 transition-colors"
                             title="Remove from queue"
                           >
                             <Trash2 className="w-3.5 h-3.5" />

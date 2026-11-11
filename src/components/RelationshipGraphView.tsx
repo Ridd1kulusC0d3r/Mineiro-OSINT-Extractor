@@ -6,6 +6,7 @@ import { generateAccountLinkageDossier } from '../data/accountLinkage';
 import { useI18n } from '../utils/i18n';
 import { GraphQueryPanel } from './GraphQueryPanel';
 import type { GraphPivotInvestigation, GraphQueryResult, HuntGraphEdge, HuntGraphNode } from '../graph/types';
+import { PALETTE } from '../theme/palette';
 
 interface RelationshipGraphViewProps {
   target: string;
@@ -23,7 +24,18 @@ interface VisualNode extends HuntGraphNode {
 interface VisualEdge extends HuntGraphEdge {}
 
 const WIDTH = 1120;
-const HEIGHT = 660;
+const HEIGHT = 700;
+/**
+ * Anéis elípticos [raio x, raio y]: a tela é mais larga que alta, então cada anel se abre na horizontal e os
+ * anéis ficam separados por pelo menos ~70 px em y, para que rótulos de anéis vizinhos não se sobreponham
+ * (defeito 10 da linha de base). Candidatos ficam num anel próprio, entre perfis e entidades secundárias.
+ */
+const RINGS: Record<'primary' | 'profile' | 'candidate' | 'secondary', [number, number]> = {
+  primary: [120, 78],
+  profile: [255, 150],
+  candidate: [385, 222],
+  secondary: [505, 300],
+};
 
 export function RelationshipGraphView({ target, results, emailData, onPivotScan, pivotInvestigations }: RelationshipGraphViewProps) {
   const { tr, language } = useI18n();
@@ -96,24 +108,24 @@ export function RelationshipGraphView({ target, results, emailData, onPivotScan,
     const primary = observed.filter((node) => node.type === 'USERNAME' || node.type === 'EMAIL');
     primary.forEach((node, index) => {
       const angle = (Math.PI * 2 * index) / Math.max(1, primary.length);
-      nodes.push({ ...node, x: centerX + Math.cos(angle) * 115, y: centerY + Math.sin(angle) * 115 });
+      nodes.push({ ...node, x: centerX + Math.cos(angle) * RINGS.primary[0], y: centerY + Math.sin(angle) * RINGS.primary[1] });
     });
 
     const profileNodes = observed.filter((node) => node.type === 'PROFILE');
     profileNodes.slice(0, 24).forEach((node, index) => {
       const angle = (Math.PI * 2 * index) / Math.max(1, Math.min(24, profileNodes.length));
-      nodes.push({ ...node, x: centerX + Math.cos(angle) * 230, y: centerY + Math.sin(angle) * 230 });
+      nodes.push({ ...node, x: centerX + Math.cos(angle) * RINGS.profile[0], y: centerY + Math.sin(angle) * RINGS.profile[1] });
     });
 
     const secondary = observed.filter((node) =>
       ['PLATFORM', 'DOMAIN', 'PUBLIC_URL', 'DISPLAY_NAME', 'ORGANIZATION', 'PUBLIC_PROJECT'].includes(node.type)
     );
     secondary.slice(0, 28).forEach((node, index) => {
-      const angle = (Math.PI * 2 * index) / Math.max(1, Math.min(28, secondary.length));
-      nodes.push({ ...node, x: centerX + Math.cos(angle) * 310, y: centerY + Math.sin(angle) * 310 });
+      const step = (Math.PI * 2) / Math.max(1, Math.min(28, secondary.length));
+      const angle = step * index + step / 2; // meio passo de defasagem em relação ao anel de perfis
+      nodes.push({ ...node, x: centerX + Math.cos(angle) * RINGS.secondary[0], y: centerY + Math.sin(angle) * RINGS.secondary[1] });
     });
 
-    const candidateRadius = 285;
     linkage.permutations.slice(0, 16).forEach((item, index) => {
       const angle = -Math.PI / 2 + ((Math.PI * 2) / Math.max(1, Math.min(16, linkage.permutations.length))) * index;
       nodes.push({
@@ -128,8 +140,8 @@ export function RelationshipGraphView({ target, results, emailData, onPivotScan,
           hypothesis: item.hypothesis,
           pivotHandle: item.pivotHandle || item.label,
         },
-        x: centerX + Math.cos(angle) * candidateRadius,
-        y: centerY + Math.sin(angle) * candidateRadius,
+        x: centerX + Math.cos(angle) * RINGS.candidate[0],
+        y: centerY + Math.sin(angle) * RINGS.candidate[1],
       });
     });
 
@@ -253,35 +265,35 @@ export function RelationshipGraphView({ target, results, emailData, onPivotScan,
         }}
       />
 
-      <div className="rounded-[22px] border border-[#2b3035] bg-[#101316] overflow-hidden">
-        <div className="flex flex-col gap-4 border-b border-[#292f34] p-6 lg:flex-row lg:items-start lg:justify-between">
+      <div className="rounded-[22px] border border-rule bg-paper-2 overflow-hidden">
+        <div className="flex flex-col gap-4 border-b border-rule p-6 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <div className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-[#8d949d]">
+            <div className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-ink-3">
               <GitBranch className="h-4 w-4" />
               {tr('graph.title')}
             </div>
-            <h2 className="mt-3 text-2xl font-semibold tracking-[-0.035em] text-[#f3f4f5]">
+            <h2 className="mt-3 text-2xl font-semibold tracking-[-0.035em] text-ink">
               {tr('graph.heading')}
             </h2>
-            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[#9097a0]">
+            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-ink-3">
               {tr('graph.desc')}
             </p>
             {queryResult?.query ? (
-              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-[#858d96]">
-                <span className="rounded-lg border border-[#3a4148] px-2.5 py-1 font-mono">{copy.queryActive}: {queryResult.query}</span>
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-ink-3">
+                <span className="rounded-lg border border-rule px-2.5 py-1 font-mono">{copy.queryActive}: {queryResult.query}</span>
                 <span>{copy.queryHint}</span>
               </div>
             ) : null}
           </div>
           <div className="flex flex-wrap gap-2 text-xs">
-            <span className="rounded-lg border border-[#343a40] px-3 py-2 text-[#b0b6bd]">{observedEdges} {tr('graph.observed')}</span>
-            <span className="rounded-lg border border-dashed border-[#535a62] px-3 py-2 text-[#b0b6bd]">{candidateEdges} {tr('graph.candidate')}</span>
+            <span className="rounded-lg border border-rule px-3 py-2 text-ink-2">{observedEdges} {tr('graph.observed')}</span>
+            <span className="rounded-lg border border-dashed border-ink-3 px-3 py-2 text-ink-2">{candidateEdges} {tr('graph.candidate')}</span>
           </div>
         </div>
 
-        <div className="relative overflow-x-auto bg-[#0b0e10]">
+        <div className="relative overflow-x-auto bg-paper">
           <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="min-w-[900px] w-full">
-            <rect width={WIDTH} height={HEIGHT} fill="#0b0e10" />
+            <rect width={WIDTH} height={HEIGHT} fill={PALETTE.paper} />
             {data.edges.map((edge) => {
               const source = byId.get(edge.source);
               const targetNode = byId.get(edge.target);
@@ -294,7 +306,7 @@ export function RelationshipGraphView({ target, results, emailData, onPivotScan,
                     y1={source.y}
                     x2={targetNode.x}
                     y2={targetNode.y}
-                    stroke={edge.candidate ? '#59616a' : '#343a40'}
+                    stroke={edge.candidate ? PALETTE.ink3 : PALETTE.rule}
                     strokeWidth={edge.candidate ? 1.1 : Math.max(1, edge.confidence / 45)}
                     strokeDasharray={edge.candidate ? '6 6' : undefined}
                     opacity={edge.candidate ? 0.78 : 0.92}
@@ -320,17 +332,28 @@ export function RelationshipGraphView({ target, results, emailData, onPivotScan,
                 >
                   <circle
                     r={radius}
-                    fill={node.candidate ? '#111518' : node.type === 'TARGET' ? '#f1f2f3' : '#171b1f'}
-                    stroke={node.candidate ? '#6b737c' : isSelected ? '#ffffff' : '#555d66'}
+                    fill={node.candidate ? PALETTE.card : node.type === 'TARGET' ? PALETTE.signal : PALETTE.rule2}
+                    stroke={node.candidate ? PALETTE.ink3 : isSelected ? PALETTE.signal : node.type === 'TARGET' ? PALETTE.signal : PALETTE.ink3}
                     strokeWidth={isSelected ? 2.5 : matches && matchedNodes ? 2 : 1.2}
                     strokeDasharray={node.candidate ? '4 3' : undefined}
                   />
-                  {node.type === 'TARGET' && <text textAnchor="middle" dy="4" fontSize="10" fill="#0b0e10" fontWeight="700">TARGET</text>}
-                  <text textAnchor="middle" y={radius + 15} fontSize="10" fill="#a8aeb5">
-                    {node.label.length > 24 ? `${node.label.slice(0, 21)}…` : node.label}
+                  {node.type === 'TARGET' && <text textAnchor="middle" dy="4" fontSize="10" fill={PALETTE.signalInk} fontWeight="700" fontFamily="var(--mono)">TARGET</text>}
+                  <text
+                    textAnchor="middle"
+                    y={radius + 15}
+                    fontSize="10.5"
+                    fontFamily="var(--mono)"
+                    fill={isSelected ? PALETTE.signal : PALETTE.ink}
+                    stroke={PALETTE.paper}
+                    strokeWidth={4}
+                    strokeLinejoin="round"
+                    paintOrder="stroke"
+                  >
+                    <title>{node.label}</title>
+                    {node.label.length > 22 ? `${node.label.slice(0, 20)}…` : node.label}
                   </text>
                   {node.candidate && typeof node.similarityScore === 'number' ? (
-                    <text textAnchor="middle" y={radius + 29} fontSize="9" fill="#737b84">
+                    <text textAnchor="middle" y={radius + 29} fontSize="9" fontFamily="var(--mono)" fill={PALETTE.ink3} stroke={PALETTE.paper} strokeWidth={3} paintOrder="stroke">
                       {node.similarityScore}%
                     </text>
                   ) : null}
@@ -340,22 +363,22 @@ export function RelationshipGraphView({ target, results, emailData, onPivotScan,
           </svg>
         </div>
 
-        <div className="grid gap-4 border-t border-[#292f34] p-5 lg:grid-cols-[1fr_auto]">
+        <div className="grid gap-4 border-t border-rule p-5 lg:grid-cols-[1fr_auto]">
           <div className="min-h-[72px]">
             {selected ? (
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#747c85]">
+                  <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-3">
                     {selected.type} · {selected.candidate ? copy.candidate : copy.observed}
                   </div>
-                  <div className="mt-1 break-all text-sm text-[#e9ebed]">{selected.label}</div>
+                  <div className="mt-1 break-all text-sm text-ink">{selected.label}</div>
                   {typeof selected.similarityScore === 'number' ? (
-                    <div className="mt-1 text-xs text-[#8f969f]">{copy.similarity}: {selected.similarityScore}%</div>
+                    <div className="mt-1 text-xs text-ink-3">{copy.similarity}: {selected.similarityScore}%</div>
                   ) : null}
-                  {selected.evidenceId && <div className="mt-1 text-xs text-[#7f8790]">evidence: {selected.evidenceId}</div>}
-                  {selected.candidate ? <div className="mt-2 max-w-2xl text-xs leading-relaxed text-[#7f8790]">{copy.candidateHelp}</div> : null}
+                  {selected.evidenceId && <div className="mt-1 text-xs text-ink-3">evidence: {selected.evidenceId}</div>}
+                  {selected.candidate ? <div className="mt-2 max-w-2xl text-xs leading-relaxed text-ink-3">{copy.candidateHelp}</div> : null}
                   {selected.candidate && typeof selected.metadata?.totalScanned === 'number' ? (
-                    <div className="mt-2 rounded-lg border border-[#2d3338] bg-[#0b0e10] px-3 py-2 font-mono text-[10px] text-[#959ca4]">
+                    <div className="mt-2 rounded-lg border border-rule bg-paper px-3 py-2 font-mono text-[10px] text-ink-3">
                       {copy.scanComplete} · {String(selected.metadata.foundCount || 0)} {copy.profilesFound} · {String(selected.metadata.totalScanned)} checked
                     </div>
                   ) : null}
@@ -374,23 +397,23 @@ export function RelationshipGraphView({ target, results, emailData, onPivotScan,
                         setScanningCandidate(null);
                       }
                     }}
-                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-[#5a626b] bg-[#181c20] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#20252a] disabled:opacity-50"
+                    className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-ink-3 bg-rule-2 px-4 py-2.5 text-sm font-medium text-ink hover:bg-rule-2 disabled:opacity-50"
                   >
                     <Search className="h-4 w-4" />
                     {scanningCandidate === selected.label ? copy.scanning : copy.scan}
                   </button>
                 ) : selected.type === 'TARGET' ? (
-                  <div className="inline-flex items-center gap-2 rounded-xl border border-[#343a40] px-3 py-2 text-xs text-[#a7adb4]">
+                  <div className="inline-flex items-center gap-2 rounded-xl border border-rule px-3 py-2 text-xs text-ink-2">
                     <Target className="h-4 w-4" />
                     {copy.target}
                   </div>
                 ) : null}
               </div>
             ) : (
-              <div className="flex items-center gap-2 text-sm text-[#7f8790]"><Info className="h-4 w-4" /> {copy.inspect}</div>
+              <div className="flex items-center gap-2 text-sm text-ink-3"><Info className="h-4 w-4" /> {copy.inspect}</div>
             )}
           </div>
-          <div className="flex items-center gap-4 text-[10px] uppercase tracking-[0.12em] text-[#777f88]">
+          <div className="flex items-center gap-4 text-[10px] uppercase tracking-[0.12em] text-ink-3">
             <span>{tr('graph.solid')}</span>
             <span>{tr('graph.dashed')}</span>
           </div>

@@ -34,6 +34,13 @@ Or in the web UI: repository home → the ⚙ next to **About** → paste the de
 
 **Social preview:** *Settings → General → Social preview → Upload* `assets/social-preview.png` (1280×640).
 
+## 1b. Repository settings checklist
+
+- **Security → Private vulnerability reporting:** enable it (SECURITY.md and the Code of Conduct point to it).
+- **Branch protection on `main`:** require the CI jobs `Product validation` and `pip package`, require a pull request, block force pushes.
+- **Actions → General:** allow GitHub Actions; the weekly *Detector health* workflow needs `issues: write` (already declared in the workflow).
+- **Releases:** the *Release* workflow creates them from `v*` tags, so no manual release editing is needed.
+
 ## 2. Cut a release
 
 1. Merge the release branch into `main`.
@@ -66,3 +73,13 @@ npm run check          # full gate
 npm run build:python && pip wheel ./python --no-deps -w /tmp/wheel
 python -m venv /tmp/v && /tmp/v/bin/pip install /tmp/wheel/*.whl && /tmp/v/bin/mineiro --check
 ```
+
+## 5. Regenerating the README visuals
+
+```bash
+npm run build && NODE_ENV=production PORT=3400 HOST=127.0.0.1 node dist/server.cjs &
+node scripts/capture-app-assets.mjs --url http://localhost:3400 --gif   # real screenshots + demo GIF (needs ffmpeg)
+npm run assets:render                                                   # banner, social preview, diagrams, framed screenshots
+```
+
+Use a public, organisational handle for the scan (`--handle forgejo` is the default), never a private individual. Diagram sources live in `assets/src/*.html`. Fonts (Inter, JetBrains Mono, SIL OFL) come from the `@fontsource` dev dependencies.

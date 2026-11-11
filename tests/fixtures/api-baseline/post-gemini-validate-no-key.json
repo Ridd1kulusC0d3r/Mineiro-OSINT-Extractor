@@ -1,0 +1,30 @@
+{
+  "request": {
+    "method": "POST",
+    "path": "/api/osint/gemini-validate",
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": "{}"
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "referrer-policy": "no-referrer",
+    "cross-origin-opener-policy": "same-origin",
+    "permissions-policy": "camera=(), microphone=(), geolocation=()"
+  },
+  "body": {
+    "valid": false,
+    "isConfigured": false,
+    "message": "No API key provided or found in environment.",
+    "supportedModels": [
+      "gemini-3.8-flash",
+      "gemini-3.7-flash",
+      "gemini-3.5-flash-lite",
+      "gemini-flash-latest"
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+# Categories for GitHub's auto-generated release notes (label your PRs accordingly).
+changelog:
+  exclude:
+    labels: [skip-changelog, dependencies]
+  categories:
+    - title: "Security"
+      labels: [security]
+    - title: "Detection quality"
+      labels: [detector, false-positive, registry]
+    - title: "Features"
+      labels: [enhancement, feature]
+    - title: "Fixes"
+      labels: [bug, fix]
+    - title: "Documentation and assets"
+      labels: [documentation, docs]
+    - title: "Maintenance"
+      labels: ["*"]

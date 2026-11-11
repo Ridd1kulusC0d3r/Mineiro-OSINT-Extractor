@@ -17,8 +17,9 @@
     "intelligence:test": "tsx scripts/intelligence-smoke.ts",
     "colab:validate": "node scripts/validate-colab.mjs",
     "docs:validate": "node scripts/validate-docs.mjs",
-    "check": "npm run version:check && npm run brand:validate && npm run i18n:validate && npm run graph:test && npm run case:test && npm run registry:validate && npm run detectors:validate && npm run lint && npm run test && npm run demo && npm run intelligence:test && npm run manual:validate && npm run colab:validate && npm run docs:validate && npm run build",
+    "check": "npm run version:check && npm run brand:validate && npm run tokens:validate && npm run i18n:validate && npm run graph:test && npm run case:test && npm run registry:validate && npm run detectors:validate && npm run lint && npm run test && npm run demo && npm run intelligence:test && npm run manual:validate && npm run colab:validate && npm run docs:validate && npm run build",
     "brand:validate": "node scripts/validate-brand.mjs",
+    "tokens:validate": "node scripts/validate-tokens.mjs",
     "i18n:validate": "tsx scripts/i18n-smoke.ts",
     "graph:test": "tsx scripts/graph-hunting-smoke.ts",
     "case:test": "tsx scripts/case-diff-smoke.ts",
@@ -27,7 +28,13 @@
     "detectors:health": "tsx scripts/detector-health.ts",
     "build:bundle": "esbuild server.ts --bundle --platform=node --format=cjs --external:vite --minify --legal-comments=none --outfile=dist/server.bundle.cjs",
     "build:python": "node scripts/build-python-package.mjs",
-    "version:check": "node scripts/check-version.mjs"
+    "version:check": "node scripts/check-version.mjs",
+    "assets:capture": "node scripts/capture-app-assets.mjs --url http://localhost:3400",
+    "assets:render": "node scripts/render-assets.mjs",
+    "e2e:start": "node scripts/e2e-start-page.mjs --url http://localhost:3400",
+    "gifs": "node scripts/capture-gifs.mjs",
+    "visual": "node scripts/visual-smoke.mjs",
+    "api:baseline": "node scripts/api-baseline.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.30.0",
@@ -48,6 +55,9 @@
     "world-atlas": "^2.0.2"
   },
   "devDependencies": {
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@playwright/test": "1.63.0",
     "@types/d3": "^7.4.3",
     "@types/express": "^5.0.0",
     "@types/node": "^22.14.0",
@@ -56,7 +66,9 @@
     "@types/react-dom": "^19.0.0",
     "@types/topojson-client": "^3.1.5",
     "autoprefixer": "^10.4.21",
+    "axe-core": "^4.13.0",
     "esbuild": "^0.28.2",
+    "playwright-core": "^1.63.0",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.21.0",
     "typescript": "~7.0.2",

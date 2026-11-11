@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { ScanResult, EmailReconData, AiProfileReport } from '../types';
 import { generateAccountLinkageDossier } from '../data/accountLinkage';
-import { CATEGORY_COLORS } from '../utils/themeColors';
+import { CATEGORY_COLORS, PALETTE } from '../theme/palette';
 
 export type SizingMode = 'completeness' | 'density' | 'uniform';
 
@@ -309,7 +309,7 @@ export function NetworkRelationshipGraph({
       label: `@${target}`,
       type: 'target',
       radius: targetNodeRadius,
-      color: '#FFFFFF',
+      color: PALETTE.ink,
       confidence: 100,
       details: 'Primary Investigation Target Core',
       profileCompleteness: aiMetrics.targetCompleteness,
@@ -389,10 +389,10 @@ export function NetworkRelationshipGraph({
       }
 
       const pColor = isFound
-        ? (CATEGORY_COLORS[res.category] || '#FFFFFF')
+        ? PALETTE.signal
         : isUncertain
-        ? '#A3A3A3'
-        : '#737373';
+        ? PALETTE.ink2
+        : PALETTE.ink3;
 
       const pRadius = calculateRadius(
         'platform',
@@ -462,7 +462,7 @@ export function NetworkRelationshipGraph({
           type: 'linkage',
           similarity: perm.similarityScore,
           radius: permRadius,
-          color: '#F5F5F5', // Mineiro Username Intelligence Neutral Light
+          color: PALETTE.ink, // Mineiro Username Intelligence Neutral Light
           details: `Permutation: ${perm.reason} [${perm.similarityScore}% similarity]`,
           profileCompleteness: perm.similarityScore,
           activityDensity: Math.round(perm.similarityScore * 0.8),
@@ -487,7 +487,7 @@ export function NetworkRelationshipGraph({
           type: 'email',
           similarity: ec.similarityScore,
           radius: emailRadius,
-          color: '#FFFFFF', // Mineiro Username Intelligence Cyan Signal
+          color: PALETTE.ink, // Mineiro Username Intelligence Cyan Signal
           details: `Email Correlation: ${ec.reason}`,
           profileCompleteness: ec.similarityScore,
           activityDensity: Math.round(ec.similarityScore * 0.85),
@@ -532,7 +532,7 @@ export function NetworkRelationshipGraph({
       .append('path')
       .attr('d', 'M 24 0 L 0 0 0 24')
       .attr('fill', 'none')
-      .attr('stroke', 'rgba(255, 255, 255, 0.04)')
+      .attr('stroke', 'color-mix(in srgb, var(--ink) 4%, transparent)')
       .attr('stroke-width', 1);
 
     svg.append('rect')
@@ -583,11 +583,11 @@ export function NetworkRelationshipGraph({
       .enter()
       .append('line')
       .attr('stroke', (d: GraphLink) => {
-        if (d.type === 'hub') return 'rgba(255, 255, 255, 0.35)';
-        if (d.type === 'correlation') return 'rgba(255, 255, 255, 0.25)';
-        if (d.type === 'email') return 'rgba(255, 255, 255, 0.25)';
-        if (d.type === 'metadata-cluster') return 'rgba(255, 255, 255, 0.2)';
-        return 'rgba(255, 255, 255, 0.12)';
+        if (d.type === 'hub') return 'color-mix(in srgb, var(--ink) 35%, transparent)';
+        if (d.type === 'correlation') return 'color-mix(in srgb, var(--ink) 25%, transparent)';
+        if (d.type === 'email') return 'color-mix(in srgb, var(--ink) 25%, transparent)';
+        if (d.type === 'metadata-cluster') return 'color-mix(in srgb, var(--ink) 20%, transparent)';
+        return 'color-mix(in srgb, var(--ink) 12%, transparent)';
       })
       .attr('stroke-width', (d: GraphLink) => (d.type === 'hub' ? 1.5 : d.type === 'metadata-cluster' ? 1.2 : 1))
       .attr('stroke-dasharray', (d: GraphLink) => {
@@ -632,7 +632,7 @@ export function NetworkRelationshipGraph({
       .append('circle')
       .attr('r', (d: GraphNode) => d.radius + 8)
       .attr('fill', 'none')
-      .attr('stroke', 'rgba(255, 255, 255, 0.3)')
+      .attr('stroke', 'color-mix(in srgb, var(--ink) 30%, transparent)')
       .attr('stroke-width', 1.5)
       .attr('stroke-dasharray', '4 4')
       .attr('class', 'animate-spin');
@@ -667,7 +667,7 @@ export function NetworkRelationshipGraph({
     // Base Node Circles
     node.append('circle')
       .attr('r', (d: GraphNode) => d.radius)
-      .attr('fill', (d: GraphNode) => (d.type === 'target' ? '#FFFFFF' : '#0A0A0A'))
+      .attr('fill', (d: GraphNode) => (d.type === 'target' ? PALETTE.signal : PALETTE.paper2))
       .attr('stroke', (d: GraphNode) => d.color)
       .attr('stroke-width', (d: GraphNode) => (d.type === 'target' ? 3 : 1.8));
 
@@ -682,12 +682,15 @@ export function NetworkRelationshipGraph({
       .text((d: GraphNode) => d.label)
       .attr('x', (d: GraphNode) => d.radius + 6)
       .attr('y', 3.5)
-      .attr('fill', (d: GraphNode) => (d.type === 'target' ? '#FFFFFF' : '#F5F5F5'))
+      .attr('fill', (d: GraphNode) => (d.type === 'target' ? PALETTE.ink : PALETTE.ink))
       .attr('font-size', (d: GraphNode) => (d.type === 'target' ? '12px' : d.type === 'category' ? '10px' : '9px'))
       .attr('font-weight', (d: GraphNode) => (d.type === 'target' || d.type === 'category' ? 'bold' : 'normal'))
-      .attr('font-family', 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace')
+      .attr('font-family', 'var(--mono)')
       .attr('pointer-events', 'none')
-      .attr('filter', 'drop-shadow(0px 1px 2px rgba(0,0,0,0.9))');
+      .attr('stroke', PALETTE.paper)
+      .attr('stroke-width', 4)
+      .attr('stroke-linejoin', 'round')
+      .attr('paint-order', 'stroke');
 
     // Simulation tick handler
     simulation.on('tick', () => {
@@ -733,23 +736,23 @@ export function NetworkRelationshipGraph({
   return (
     <div 
       ref={containerRef}
-      className={`border border-neutral-800 bg-neutral-950 font-mono transition-all ${
+      className={`border border-rule bg-paper-2 font-mono transition-all ${
         isFullscreen ? 'fixed inset-4 z-50 overflow-hidden shadow-2xl flex flex-col' : 'relative'
       }`}
     >
       {/* Top Header & Interactive Controls */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 p-4 border-b border-neutral-800 bg-black/80 backdrop-blur-sm">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 p-4 border-b border-rule bg-paper/80 backdrop-blur-sm">
         <div className="flex flex-wrap items-center gap-2.5">
-          <Network className="w-4 h-4 text-white" />
-          <span className="text-xs font-bold text-white uppercase tracking-wider">
+          <Network className="w-4 h-4 text-ink" />
+          <span className="text-xs font-bold text-ink uppercase tracking-wider">
             D3.js Relationship & Cluster Graph
           </span>
-          <span className="text-[10px] px-2 py-0.5 border border-neutral-800 bg-neutral-900 text-neutral-400">
+          <span className="text-[10px] px-2 py-0.5 border border-rule bg-rule-2 text-ink-3">
             {nodes.length} Nodes • {links.length} Links
           </span>
           {aiProfile && (
-            <span className="text-[10px] px-2 py-0.5 border border-white/30 bg-neutral-900 text-white flex items-center gap-1">
-              <BrainCircuit className="w-3 h-3 text-white" />
+            <span className="text-[10px] px-2 py-0.5 border border-ink/30 bg-rule-2 text-ink flex items-center gap-1">
+              <BrainCircuit className="w-3 h-3 text-ink" />
               AI Intelligence Grounded
             </span>
           )}
@@ -758,8 +761,8 @@ export function NetworkRelationshipGraph({
         {/* Filter and Sizing Toggles */}
         <div className="flex flex-wrap items-center gap-2 text-xs">
           {/* Node Sizing Mode Selector */}
-          <div className="flex items-center border border-neutral-800 bg-black p-0.5">
-            <span className="text-[10px] text-neutral-500 px-2 uppercase font-semibold hidden xl:inline">
+          <div className="flex items-center border border-rule bg-paper p-0.5">
+            <span className="text-[10px] text-ink-3 px-2 uppercase font-semibold hidden xl:inline">
               Sizing:
             </span>
             <button
@@ -767,7 +770,7 @@ export function NetworkRelationshipGraph({
               id="graph-sizing-completeness-btn"
               onClick={() => setSizingMode('completeness')}
               className={`px-2 py-1 text-[10px] uppercase transition-colors flex items-center gap-1 ${
-                sizingMode === 'completeness' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white'
+                sizingMode === 'completeness' ? 'bg-signal text-signal-ink font-bold' : 'text-ink-3 hover:text-ink'
               }`}
               title="Scale nodes by Profile Completeness extracted from AI analysis"
             >
@@ -779,7 +782,7 @@ export function NetworkRelationshipGraph({
               id="graph-sizing-density-btn"
               onClick={() => setSizingMode('density')}
               className={`px-2 py-1 text-[10px] uppercase transition-colors flex items-center gap-1 ${
-                sizingMode === 'density' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white'
+                sizingMode === 'density' ? 'bg-signal text-signal-ink font-bold' : 'text-ink-3 hover:text-ink'
               }`}
               title="Scale nodes by Activity Density & cluster concentration"
             >
@@ -791,7 +794,7 @@ export function NetworkRelationshipGraph({
               id="graph-sizing-uniform-btn"
               onClick={() => setSizingMode('uniform')}
               className={`px-2 py-1 text-[10px] uppercase transition-colors ${
-                sizingMode === 'uniform' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white'
+                sizingMode === 'uniform' ? 'bg-signal text-signal-ink font-bold' : 'text-ink-3 hover:text-ink'
               }`}
               title="Standard uniform node radii"
             >
@@ -800,13 +803,13 @@ export function NetworkRelationshipGraph({
           </div>
 
           {/* Topology Filter Buttons */}
-          <div className="flex items-center border border-neutral-800 bg-black p-0.5">
+          <div className="flex items-center border border-rule bg-paper p-0.5">
             <button
               type="button"
               id="graph-filter-all-btn"
               onClick={() => setFilterMode('all')}
               className={`px-2.5 py-1 text-[11px] uppercase transition-colors ${
-                filterMode === 'all' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white'
+                filterMode === 'all' ? 'bg-signal text-signal-ink font-bold' : 'text-ink-3 hover:text-ink'
               }`}
             >
               All
@@ -816,7 +819,7 @@ export function NetworkRelationshipGraph({
               id="graph-filter-hits-btn"
               onClick={() => setFilterMode('found_only')}
               className={`px-2.5 py-1 text-[11px] uppercase transition-colors ${
-                filterMode === 'found_only' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white'
+                filterMode === 'found_only' ? 'bg-signal text-signal-ink font-bold' : 'text-ink-3 hover:text-ink'
               }`}
             >
               Hits
@@ -826,7 +829,7 @@ export function NetworkRelationshipGraph({
               id="graph-filter-linkages-btn"
               onClick={() => setFilterMode('linkages')}
               className={`px-2.5 py-1 text-[11px] uppercase transition-colors ${
-                filterMode === 'linkages' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white'
+                filterMode === 'linkages' ? 'bg-signal text-signal-ink font-bold' : 'text-ink-3 hover:text-ink'
               }`}
             >
               Linkage
@@ -836,7 +839,7 @@ export function NetworkRelationshipGraph({
               id="graph-filter-clusters-btn"
               onClick={() => setFilterMode('clusters')}
               className={`px-2.5 py-1 text-[11px] uppercase transition-colors ${
-                filterMode === 'clusters' ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:text-white'
+                filterMode === 'clusters' ? 'bg-signal text-signal-ink font-bold' : 'text-ink-3 hover:text-ink'
               }`}
             >
               Hubs
@@ -844,12 +847,12 @@ export function NetworkRelationshipGraph({
           </div>
 
           {/* Zoom Buttons */}
-          <div className="flex items-center gap-1 border border-neutral-800 bg-black p-0.5">
+          <div className="flex items-center gap-1 border border-rule bg-paper p-0.5">
             <button
               type="button"
               id="graph-zoom-in-btn"
               onClick={() => handleZoom(1.3)}
-              className="p-1 text-neutral-400 hover:text-white hover:bg-neutral-800"
+              className="p-1 text-ink-3 hover:text-ink hover:bg-rule-2"
               title="Zoom In"
             >
               <ZoomIn className="w-3.5 h-3.5" />
@@ -858,7 +861,7 @@ export function NetworkRelationshipGraph({
               type="button"
               id="graph-zoom-out-btn"
               onClick={() => handleZoom(0.7)}
-              className="p-1 text-neutral-400 hover:text-white hover:bg-neutral-800"
+              className="p-1 text-ink-3 hover:text-ink hover:bg-rule-2"
               title="Zoom Out"
             >
               <ZoomOut className="w-3.5 h-3.5" />
@@ -867,7 +870,7 @@ export function NetworkRelationshipGraph({
               type="button"
               id="graph-zoom-reset-btn"
               onClick={handleResetZoom}
-              className="p-1 text-neutral-400 hover:text-white hover:bg-neutral-800"
+              className="p-1 text-ink-3 hover:text-ink hover:bg-rule-2"
               title="Reset View"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -878,7 +881,7 @@ export function NetworkRelationshipGraph({
             type="button"
             id="graph-fullscreen-toggle-btn"
             onClick={() => setIsFullscreen(!isFullscreen)}
-            className="p-1.5 border border-neutral-800 bg-black text-neutral-400 hover:text-white"
+            className="p-1.5 border border-rule bg-paper text-ink-3 hover:text-ink"
             title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
           >
             {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
@@ -887,7 +890,7 @@ export function NetworkRelationshipGraph({
       </div>
 
       {/* SVG Canvas Area */}
-      <div className="relative flex-1 bg-black min-h-[380px]">
+      <div className="relative flex-1 bg-paper min-h-[380px]">
         <svg 
           ref={svgRef} 
           className="w-full h-full block cursor-grab active:cursor-grabbing"
@@ -895,118 +898,118 @@ export function NetworkRelationshipGraph({
         />
 
         {/* Floating Legend & Sizing Metric Indicator */}
-        <div className="absolute bottom-3 left-3 bg-black/90 border border-neutral-800 p-2.5 backdrop-blur-md text-[10px] space-y-1.5 pointer-events-none hidden sm:block">
-          <div className="text-neutral-400 font-bold uppercase tracking-wider flex items-center justify-between gap-4">
+        <div className="absolute bottom-3 left-3 bg-paper/90 border border-rule p-2.5 backdrop-blur-md text-[10px] space-y-1.5 pointer-events-none hidden sm:block">
+          <div className="text-ink-3 font-bold uppercase tracking-wider flex items-center justify-between gap-4">
             <span>Topology Legend</span>
-            <span className="text-white font-normal">
+            <span className="text-ink font-normal">
               Sizing: {sizingMode === 'completeness' ? 'AI Completeness' : sizingMode === 'density' ? 'Activity Density' : 'Uniform'}
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-white inline-block border border-neutral-400" />
-            <span className="text-neutral-300">Target Core (Radius {nodes.find(n => n.type === 'target')?.radius || 22}px)</span>
+            <span className="w-3 h-3 rounded-full bg-signal inline-block border border-ink-3" />
+            <span className="text-ink-2">Target Core (Radius {nodes.find(n => n.type === 'target')?.radius || 22}px)</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-neutral-300 inline-block" />
-            <span className="text-neutral-300">Category Hubs (Dynamic Gauge)</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-ink-2 inline-block" />
+            <span className="text-ink-2">Category Hubs (Dynamic Gauge)</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-white inline-block" />
-            <span className="text-neutral-300">Confirmed Hits (Sized by AI Score)</span>
+            <span className="w-2 h-2 rounded-full bg-signal inline-block" />
+            <span className="text-ink-2">Confirmed Hits (Sized by AI Score)</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-3 h-0.5 bg-white inline-block border-t border-dotted border-white" />
-            <span className="text-neutral-300">Shared Metadata Cluster Links</span>
+            <span className="w-3 h-0.5 bg-signal inline-block border-t border-dotted border-signal" />
+            <span className="text-ink-2">Shared Metadata Cluster Links</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-neutral-400 inline-block" />
-            <span className="text-neutral-300">Account Permutations</span>
+            <span className="w-2 h-2 rounded-full bg-ink-3 inline-block" />
+            <span className="text-ink-2">Account Permutations</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-neutral-300 inline-block" />
-            <span className="text-neutral-300">Email Correlations</span>
+            <span className="w-2 h-2 rounded-full bg-ink-2 inline-block" />
+            <span className="text-ink-2">Email Correlations</span>
           </div>
         </div>
 
         {/* Selected Node Inspector Drawer */}
         {selectedNode && (
-          <div className="absolute top-3 right-3 max-w-sm w-full bg-black/95 border border-neutral-700 p-4 backdrop-blur-md text-xs space-y-3 shadow-2xl z-20">
-            <div className="flex items-start justify-between border-b border-neutral-800 pb-2">
+          <div className="absolute top-3 right-3 max-w-sm w-full bg-paper/95 border border-rule p-4 backdrop-blur-md text-xs space-y-3 shadow-2xl z-20">
+            <div className="flex items-start justify-between border-b border-rule pb-2">
               <div>
-                <span className="text-[10px] uppercase text-neutral-500 tracking-wider">
+                <span className="text-[10px] uppercase text-ink-3 tracking-wider">
                   NODE INSPECTION:
                 </span>
-                <h4 className="text-sm font-bold text-white tracking-wide">
+                <h4 className="text-sm font-bold text-ink tracking-wide">
                   {selectedNode.label}
                 </h4>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedNode(null)}
-                className="text-neutral-500 hover:text-white text-sm"
+                className="text-ink-3 hover:text-ink text-sm"
               >
                 ✕
               </button>
             </div>
 
-            <div className="space-y-2 text-neutral-300 text-[11px]">
+            <div className="space-y-2 text-ink-2 text-[11px]">
               <div className="flex justify-between">
-                <span className="text-neutral-500">Node Type:</span>
-                <span className="text-white font-bold uppercase">{selectedNode.type}</span>
+                <span className="text-ink-3">Node Type:</span>
+                <span className="text-ink font-bold uppercase">{selectedNode.type}</span>
               </div>
               {selectedNode.category && (
                 <div className="flex justify-between">
-                  <span className="text-neutral-500">Category:</span>
-                  <span className="text-white capitalize">{selectedNode.category}</span>
+                  <span className="text-ink-3">Category:</span>
+                  <span className="text-ink capitalize">{selectedNode.category}</span>
                 </div>
               )}
               {selectedNode.status && (
                 <div className="flex justify-between">
-                  <span className="text-neutral-500">Probe Status:</span>
-                  <span className={`font-bold uppercase ${selectedNode.status === 'found' ? 'text-white' : 'text-neutral-400'}`}>
+                  <span className="text-ink-3">Probe Status:</span>
+                  <span className={`font-bold uppercase ${selectedNode.status === 'found' ? 'text-ink' : 'text-ink-3'}`}>
                     {selectedNode.status}
                   </span>
                 </div>
               )}
               {selectedNode.similarity !== undefined && (
                 <div className="flex justify-between">
-                  <span className="text-neutral-500">Correlation Similarity:</span>
-                  <span className="text-white font-bold">{selectedNode.similarity}%</span>
+                  <span className="text-ink-3">Correlation Similarity:</span>
+                  <span className="text-ink font-bold">{selectedNode.similarity}%</span>
                 </div>
               )}
               {selectedNode.confidence !== undefined && (
                 <div className="flex justify-between">
-                  <span className="text-neutral-500">Confidence Score:</span>
-                  <span className="text-white font-bold">{selectedNode.confidence}%</span>
+                  <span className="text-ink-3">Confidence Score:</span>
+                  <span className="text-ink font-bold">{selectedNode.confidence}%</span>
                 </div>
               )}
 
               {/* AI Sizing Metrics Breakdown */}
-              <div className="pt-2 border-t border-neutral-800 space-y-2">
-                <div className="flex items-center justify-between text-[10px] uppercase text-neutral-400 font-semibold">
+              <div className="pt-2 border-t border-rule space-y-2">
+                <div className="flex items-center justify-between text-[10px] uppercase text-ink-3 font-semibold">
                   <span className="flex items-center gap-1">
-                    <Gauge className="w-3 h-3 text-white" />
+                    <Gauge className="w-3 h-3 text-ink" />
                     Profile Completeness:
                   </span>
-                  <span className="text-white font-mono font-bold">{selectedNode.profileCompleteness}%</span>
+                  <span className="text-ink font-mono font-bold">{selectedNode.profileCompleteness}%</span>
                 </div>
-                <div className="w-full bg-neutral-900 h-1.5 border border-neutral-800 overflow-hidden">
+                <div className="w-full bg-rule-2 h-1.5 border border-rule overflow-hidden">
                   <div 
-                    className="bg-white h-full transition-all duration-300" 
+                    className="bg-signal h-full transition-all duration-300" 
                     style={{ width: `${selectedNode.profileCompleteness}%` }}
                   />
                 </div>
 
-                <div className="flex items-center justify-between text-[10px] uppercase text-neutral-400 font-semibold pt-1">
+                <div className="flex items-center justify-between text-[10px] uppercase text-ink-3 font-semibold pt-1">
                   <span className="flex items-center gap-1">
-                    <Activity className="w-3 h-3 text-neutral-300" />
+                    <Activity className="w-3 h-3 text-ink-2" />
                     Activity Density:
                   </span>
-                  <span className="text-white font-mono font-bold">{selectedNode.activityDensity}%</span>
+                  <span className="text-ink font-mono font-bold">{selectedNode.activityDensity}%</span>
                 </div>
-                <div className="w-full bg-neutral-900 h-1.5 border border-neutral-800 overflow-hidden">
+                <div className="w-full bg-rule-2 h-1.5 border border-rule overflow-hidden">
                   <div 
-                    className="bg-neutral-300 h-full transition-all duration-300" 
+                    className="bg-ink-2 h-full transition-all duration-300" 
                     style={{ width: `${selectedNode.activityDensity}%` }}
                   />
                 </div>
@@ -1014,13 +1017,13 @@ export function NetworkRelationshipGraph({
 
               {/* Contributing Factors from AI */}
               {selectedNode.densityFactors && selectedNode.densityFactors.length > 0 && (
-                <div className="pt-2 border-t border-neutral-800 space-y-1">
-                  <span className="text-[10px] uppercase text-neutral-500 font-bold tracking-wider">
+                <div className="pt-2 border-t border-rule space-y-1">
+                  <span className="text-[10px] uppercase text-ink-3 font-bold tracking-wider">
                     Contributing AI Intelligence:
                   </span>
-                  <ul className="space-y-1 text-[10px] text-neutral-300 list-disc list-inside">
+                  <ul className="space-y-1 text-[10px] text-ink-2 list-disc list-inside">
                     {selectedNode.densityFactors.map((factor, idx) => (
-                      <li key={idx} className="leading-snug text-neutral-300">
+                      <li key={idx} className="leading-snug text-ink-2">
                         {factor}
                       </li>
                     ))}
@@ -1029,20 +1032,20 @@ export function NetworkRelationshipGraph({
               )}
 
               {selectedNode.details && (
-                <div className="pt-2 border-t border-neutral-800 text-neutral-400 text-[10px]">
+                <div className="pt-2 border-t border-rule text-ink-3 text-[10px]">
                   {selectedNode.details}
                 </div>
               )}
             </div>
 
             {/* Actions for Selected Node */}
-            <div className="pt-2 border-t border-neutral-800 flex flex-wrap gap-2">
+            <div className="pt-2 border-t border-rule flex flex-wrap gap-2">
               {selectedNode.url && (
                 <a
                   href={selectedNode.url}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="px-2.5 py-1.5 bg-white text-black font-bold uppercase text-[10px] hover:bg-neutral-200 inline-flex items-center gap-1.5 tracking-wider"
+                  className="px-2.5 py-1.5 bg-signal text-signal-ink font-bold uppercase text-[10px] hover:bg-ink inline-flex items-center gap-1.5 tracking-wider"
                 >
                   <ExternalLink className="w-3 h-3" />
                   Audit Profile
@@ -1053,7 +1056,7 @@ export function NetworkRelationshipGraph({
                 <button
                   type="button"
                   onClick={() => onPivotScan(selectedNode.label.replace(/^@/, ''))}
-                  className="px-2.5 py-1.5 border border-white bg-white text-black font-bold uppercase text-[10px] hover:bg-neutral-200 inline-flex items-center gap-1.5 tracking-wider"
+                  className="px-2.5 py-1.5 border border-signal bg-signal text-signal-ink font-bold uppercase text-[10px] hover:bg-ink inline-flex items-center gap-1.5 tracking-wider"
                 >
                   <Search className="w-3 h-3" />
                   Pivot Scan
@@ -1063,9 +1066,9 @@ export function NetworkRelationshipGraph({
               <button
                 type="button"
                 onClick={() => handleCopy(selectedNode.label)}
-                className="px-2 py-1.5 border border-neutral-700 bg-neutral-900 text-neutral-300 hover:text-white text-[10px] inline-flex items-center gap-1"
+                className="px-2 py-1.5 border border-rule bg-rule-2 text-ink-2 hover:text-ink text-[10px] inline-flex items-center gap-1"
               >
-                {copiedText === selectedNode.label ? <Check className="w-3 h-3 text-white" /> : <Copy className="w-3 h-3 text-neutral-400" />}
+                {copiedText === selectedNode.label ? <Check className="w-3 h-3 text-ink" /> : <Copy className="w-3 h-3 text-ink-3" />}
                 {copiedText === selectedNode.label ? 'Copied' : 'Copy'}
               </button>
             </div>
@@ -1074,12 +1077,12 @@ export function NetworkRelationshipGraph({
       </div>
 
       {/* Footer Info Bar */}
-      <div className="px-4 py-2 border-t border-neutral-800 bg-neutral-950 text-[10px] text-neutral-500 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      <div className="px-4 py-2 border-t border-rule bg-paper-2 text-[10px] text-ink-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <span className="flex items-center gap-1.5">
-          <Sparkles className="w-3 h-3 text-white" />
+          <Sparkles className="w-3 h-3 text-ink" />
           Node radius dynamically reflects {sizingMode === 'completeness' ? 'AI Profile Completeness' : sizingMode === 'density' ? 'Cluster Activity Density' : 'Uniform Grid'}. Drag nodes to adjust gravity layout.
         </span>
-        <span className="text-neutral-400">D3.js Force Physics Engine</span>
+        <span className="text-ink-3">D3.js Force Physics Engine</span>
       </div>
     </div>
   );

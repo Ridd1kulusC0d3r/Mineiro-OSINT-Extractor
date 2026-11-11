@@ -1,0 +1,22 @@
+{
+  "request": {
+    "method": "POST",
+    "path": "/api/osint/wayback",
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": "{}"
+  },
+  "status": 400,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "referrer-policy": "no-referrer",
+    "cross-origin-opener-policy": "same-origin",
+    "permissions-policy": "camera=(), microphone=(), geolocation=()"
+  },
+  "body": {
+    "error": "platformId and a matching profile url are required"
+  }
+}

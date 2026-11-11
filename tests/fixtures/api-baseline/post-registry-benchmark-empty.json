@@ -1,0 +1,53 @@
+{
+  "request": {
+    "method": "POST",
+    "path": "/api/registry/benchmark",
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": "{\"detectorIds\":[\"github\",\"gitlab\",\"not-a-detector\"]}"
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "referrer-policy": "no-referrer",
+    "cross-origin-opener-policy": "same-origin",
+    "permissions-policy": "camera=(), microphone=(), geolocation=()"
+  },
+  "body": {
+    "detectors": 2,
+    "observations": 0,
+    "metrics": [
+      {
+        "detectorId": "github",
+        "samples": 0,
+        "truePositive": 0,
+        "trueNegative": 0,
+        "falsePositive": 0,
+        "falseNegative": 0,
+        "inconclusive": 0,
+        "precision": null,
+        "recall": null,
+        "falsePositiveRate": null,
+        "availability": 0,
+        "benchmarkScore": 0
+      },
+      {
+        "detectorId": "gitlab",
+        "samples": 0,
+        "truePositive": 0,
+        "trueNegative": 0,
+        "falsePositive": 0,
+        "falseNegative": 0,
+        "inconclusive": 0,
+        "precision": null,
+        "recall": null,
+        "falsePositiveRate": null,
+        "availability": 0,
+        "benchmarkScore": 0
+      }
+    ]
+  }
+}

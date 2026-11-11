@@ -1,0 +1,22 @@
+{
+  "request": {
+    "method": "POST",
+    "path": "/api/store/claims",
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": "{}"
+  },
+  "status": 400,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "referrer-policy": "no-referrer",
+    "cross-origin-opener-policy": "same-origin",
+    "permissions-policy": "camera=(), microphone=(), geolocation=()"
+  },
+  "body": {
+    "error": "Invalid claim: subject must be { type, value } with a known entity type; predicate must be one of same_operator_as, owns, mentions, linked_to; object must be { type, value } with a known entity type; confidence must be a number; observationIds must be an array of observation ids"
+  }
+}

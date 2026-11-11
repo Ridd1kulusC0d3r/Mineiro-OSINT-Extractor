@@ -4,11 +4,14 @@ import { TargetBar } from './components/TargetBar';
 import { StatsBar } from './components/StatsBar';
 import { DashboardView } from './components/DashboardView';
 import { IntelligenceReportView } from './components/IntelligenceReportView';
+import { HomeView } from './components/HomeView';
+import { readVerifyOutcome } from './core/verifyOutcome';
 import { PlatformGrid } from './components/PlatformGrid';
 import { PlatformTable } from './components/PlatformTable';
 import { EmailReconCard } from './components/EmailReconCard';
 import { TerminalLogs } from './components/TerminalLogs';
 import { IntelligenceExportModal } from './components/IntelligenceExportModal';
+import { AuditViewHeader } from './components/AuditViewHeader';
 import { DossierPrintView } from './components/DossierPrintView';
 import { GeminiConfigModal } from './components/GeminiConfigModal';
 import { CorrelationWorkspace } from './components/CorrelationWorkspace';
@@ -33,6 +36,7 @@ import {
   CachedInvestigation
 } from './types';
 import { ParsedTarget } from './utils/csvParser';
+import { useI18n } from './utils/i18n';
 import type { IntelligenceRequirement } from './intelligence/types';
 import type { GraphPivotInvestigation } from './graph/types';
 import type { CaseCollectionSnapshot, MineiroCase } from './cases/types';
@@ -47,6 +51,7 @@ import {
 } from './utils/scanStorage';
 
 export default function App() {
+  const { tr } = useI18n();
   const [target, setTarget] = useState('');
   const [targetType, setTargetType] = useState<'username' | 'email'>('username');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -371,9 +376,10 @@ export default function App() {
                 }),
               });
 
-              const data = await res.json();
-              item.status = data.status || 'not_found';
-              item.statusCode = data.statusCode;
+              const data = await res.json().catch(() => ({}));
+              const outcome = readVerifyOutcome(res.ok, res.status, data);
+              item.status = outcome.status;
+              item.statusCode = outcome.statusCode;
               item.responseTimeMs = data.responseTimeMs;
               item.confidenceScore = data.confidenceScore || 0;
               item.evidenceLevel = data.evidenceLevel;
@@ -383,7 +389,7 @@ export default function App() {
               item.detectorReliability = data.detectorReliability ?? platform?.detectorReliability;
               item.siteType = platform?.siteType;
               item.reliabilityTier = platform?.reliabilityTier;
-              item.uncertainReason = data.uncertainReason;
+              item.uncertainReason = outcome.uncertainReason;
               item.wafRetried = false;
               item.retryResolved = false;
               item.wafStrategyApplied = 'respect-protection-boundary';
@@ -483,7 +489,8 @@ export default function App() {
     setAiProfile(null);
     setEmailData(null);
 
-    const cleanTarget = target.trim();
+    // A leading @ is decoration, not part of the handle (it would become %40 in every URL).
+    const cleanTarget = targetType === 'username' ? target.trim().replace(/^@+/, '') : target.trim();
     const platforms = getPlatformsForScope(activeCfg.platformScope, activeCfg.selectedCategory, targetType);
     addLog(`=== INITIALIZING MINEIRO OSINT RECON ENGINE ===`, 'info');
     addLog(`Target: @${cleanTarget} | Mode: ${targetType.toUpperCase()} | Preset: ${activeCfg.preset.toUpperCase()} | Scope: ${platforms.length} platforms (${activeCfg.concurrency}x concurrency)`, 'info');
@@ -594,8 +601,9 @@ export default function App() {
       currentIndex: 0,
       isActive: true,
       isPaused: false,
-      autoAiProfile: options.autoAiProfile,
+      autoAiProfile: false,
       selectedCategory: options.category,
+      platformScope: scanConfig.platformScope,
       concurrency: options.concurrency,
       startedAt: new Date().toLocaleTimeString(),
     };
@@ -1063,7 +1071,7 @@ export default function App() {
 
   return (
     <ToastProvider>
-      <div className="min-h-screen bg-[#050505] text-[#F5F5F5] flex flex-col selection:bg-[#FFFFFF] selection:text-[#050505]">
+      <div className="app-shell min-h-screen bg-paper text-ink flex flex-col selection:bg-signal selection:text-signal-ink">
       {/* Top Header */}
       <Header
         onReset={handleReset}
@@ -1132,7 +1140,7 @@ export default function App() {
       />
 
       {/* Main Investigation Canvas */}
-      <main className={`flex-1 w-full py-6 space-y-6 ${activeView === 'intelligence' ? '' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'}`}>
+      <main className={`view-stage flex-1 w-full py-6 space-y-6 ${activeView === 'intelligence' ? '' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'}`}>
         {/* Email Intelligence Card if email mode and active view is not dashboard or batch */}
         {activeView !== 'dashboard' && activeView !== 'intelligence' && activeView !== 'batch' && (targetType === 'email' || emailData || isEmailLoading) && (
           <EmailReconCard data={emailData} isLoading={isEmailLoading} />
@@ -1154,7 +1162,23 @@ export default function App() {
         )}
 
         {/* View: Intelligence Assessment Workspace */}
-        {activeView === 'intelligence' && (
+        {activeView === 'intelligence' && results.length === 0 && !isScanning && (
+          <HomeView
+            target={target}
+            setTarget={setTarget}
+            targetType={targetType}
+            setTargetType={setTargetType}
+            activePreset={scanConfig.preset}
+            onSelectPreset={handleSelectPreset}
+            onStartScan={() => handleStartScan()}
+            recentCases={[...persistentCases].sort((x, y) => y.updatedAt.localeCompare(x.updatedAt)).slice(0, 3)}
+            onOpenCase={loadPersistentCase}
+            onOpenBatch={() => setIsBulkModalOpen(true)}
+            onOpenCases={() => setIsHistoryModalOpen(true)}
+            casesCount={persistentCases.length}
+          />
+        )}
+        {activeView === 'intelligence' && (results.length > 0 || isScanning) && (
           <IntelligenceReportView
             target={target}
             results={results}
@@ -1208,15 +1232,10 @@ export default function App() {
         {/* View: Platforms Grid */}
         {activeView === 'grid' && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between text-xs font-mono text-[#A3A3A3]">
-              <span>
-                DISPLAYING <strong className="text-[#F5F5F5]">{visibleResults.length}</strong> PLATFORMS
-                {searchFilter && ` MATCHING "${searchFilter}"`}
-              </span>
-              <span className="text-[11px] text-[#737373]">
-                CLICK LINK ICON TO AUDIT PROFILE DIRECTLY
-              </span>
-            </div>
+            <AuditViewHeader
+              title={tr('grid.title', { count: visibleResults.length })}
+              hint={searchFilter ? tr('grid.matching', { query: searchFilter }) : tr('grid.hint')}
+            />
             <PlatformGrid results={visibleResults} target={target} />
           </div>
         )}
@@ -1224,10 +1243,7 @@ export default function App() {
         {/* View: Dense Audit Table */}
         {activeView === 'table' && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between text-xs font-mono text-[#A3A3A3]">
-              <span>TABULAR AUDIT LEDGER ({visibleResults.length} records)</span>
-              <span className="text-[11px] text-[#737373]">SORTED BY RECON ENGINE DISCOVERY</span>
-            </div>
+            <AuditViewHeader title={tr('table.title', { count: visibleResults.length })} hint={tr('table.hint')} />
             <PlatformTable results={visibleResults} />
           </div>
         )}
@@ -1283,6 +1299,7 @@ export default function App() {
         onStartBulkScan={handleStartBulkScan}
         currentCategory={selectedCategory}
         currentConcurrency={concurrency}
+        currentScope={scanConfig.platformScope}
       />
 
       {/* Gemini AI Personal Key & Configuration Modal */}
@@ -1347,21 +1364,15 @@ export default function App() {
         onActionTrigger={handleShortcutAction}
       />
 
-      {/* Modern Minimalist Footer */}
-      <footer className="border-t border-[#2A2A2A] bg-[#050505] py-5 font-mono text-xs text-[#A3A3A3]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-1">
-          <div className="flex flex-wrap items-center justify-center gap-x-2 text-[#F5F5F5]">
-            <strong className="text-[#FFFFFF]">Mineiro Username Intelligence UNIFIED OSINT ENGINE</strong>
-            <span className="text-[#737373]">//</span>
-            <span className="text-[#A3A3A3]">LARGE LOCAL PLATFORM CATALOG</span>
-            <span className="text-[#737373]">•</span>
-            <span className="text-[#A3A3A3]">WAF & ANTI-BOT GUARD</span>
-            <span className="text-[#737373]">•</span>
-            <span className="text-[#A3A3A3]">EVIDENCE-BOUNDED AI COPILOT</span>
+      {/* Rodapé */}
+      <footer className="border-t border-rule bg-paper py-6">
+        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-3 px-4 font-mono text-[11.5px] text-ink-3 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2.5">
+            <span className="mast-dot" aria-hidden="true" />
+            <strong className="font-sans text-[13px] font-semibold text-ink">Mineiro Username Intelligence</strong>
+            <span>· OSINT Investigation Workbench</span>
           </div>
-          <div className="text-[10px] text-[#737373]">
-            OSINT INVESTIGATION WORKBENCH · EVIDENCE · CORRELATION · REPORTING
-          </div>
+          <div>{tr('footer.tagline')}</div>
         </div>
       </footer>
     </div>

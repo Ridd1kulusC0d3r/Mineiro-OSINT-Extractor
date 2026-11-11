@@ -1,9 +1,30 @@
 import { Router } from 'express';
 import { buildStixBundle, type StixObservation } from '../../src/core/stix';
-import { addClaim, addObservation, openStore, timeline, type EntityType } from '../db';
+import { addClaim, addObservation, openStore, StoreValidationError, timeline, type ClaimInput, type EntityType } from '../db';
 import { PUBLIC_MODE } from '../security/middleware';
 
 const ENTITY_TYPES = new Set(['username', 'email', 'domain', 'url', 'avatar-hash', 'company']);
+const PREDICATES = new Set(['same_operator_as', 'owns', 'mentions', 'linked_to']);
+const MAX_CLAIM_OBSERVATIONS = 500;
+
+/** Lists what is wrong with a claim body, so a bad request never reaches SQLite. */
+function claimProblems(body: any): string[] {
+  const problems: string[] = [];
+  const isEntity = (v: any) => ENTITY_TYPES.has(v?.type) && typeof v?.value === 'string' && v.value.trim() !== '';
+  if (!isEntity(body?.subject)) problems.push('subject must be { type, value } with a known entity type');
+  if (!PREDICATES.has(body?.predicate)) problems.push(`predicate must be one of ${[...PREDICATES].join(', ')}`);
+  if (!isEntity(body?.object)) problems.push('object must be { type, value } with a known entity type');
+  if (typeof body?.confidence !== 'number' || !Number.isFinite(body.confidence)) problems.push('confidence must be a number');
+  const ids = body?.observationIds;
+  if (!Array.isArray(ids) || !ids.every((id: unknown) => Number.isSafeInteger(id) && (id as number) > 0)) {
+    problems.push('observationIds must be an array of observation ids');
+  } else if (ids.length > MAX_CLAIM_OBSERVATIONS) {
+    problems.push(`observationIds accepts at most ${MAX_CLAIM_OBSERVATIONS} ids`);
+  }
+  if (body?.author !== undefined && typeof body.author !== 'string') problems.push('author must be a string');
+  if (body?.note !== undefined && typeof body.note !== 'string') problems.push('note must be a string');
+  return problems;
+}
 
 export function storeRouter(): Router {
   const router = Router();
@@ -15,7 +36,7 @@ export function storeRouter(): Router {
     next();
   });
 
-  router.post('/api/store/observations', (req, res) => {
+  router.post('/api/store/observations', (req, res, next) => {
     const items = Array.isArray(req.body?.observations) ? req.body.observations : [];
     if (items.length > 2000) return res.status(400).json({ error: 'At most 2000 observations per request.' });
     const store = openStore()!;
@@ -24,24 +45,28 @@ export function storeRouter(): Router {
     try {
       for (const item of items) {
         if (!ENTITY_TYPES.has(item?.entity?.type) || typeof item?.entity?.value !== 'string' || typeof item?.source !== 'string') {
-          throw new Error('Invalid observation shape');
+          throw new StoreValidationError('Invalid observation shape');
         }
         ids.push(addObservation(store, item));
       }
       store.exec('COMMIT');
     } catch (err) {
       store.exec('ROLLBACK');
-      return res.status(400).json({ error: (err as Error).message });
+      if (err instanceof StoreValidationError) return res.status(400).json({ error: err.message });
+      return next(err);
     }
     res.json({ stored: ids.length, ids });
   });
 
-  router.post('/api/store/claims', (req, res) => {
+  router.post('/api/store/claims', (req, res, next) => {
+    const problems = claimProblems(req.body);
+    if (problems.length) return res.status(400).json({ error: `Invalid claim: ${problems.join('; ')}` });
     try {
-      const id = addClaim(openStore()!, req.body);
+      const id = addClaim(openStore()!, req.body as ClaimInput);
       res.json({ id });
     } catch (err) {
-      res.status(400).json({ error: (err as Error).message });
+      if (err instanceof StoreValidationError) return res.status(400).json({ error: err.message });
+      next(err);
     }
   });
 

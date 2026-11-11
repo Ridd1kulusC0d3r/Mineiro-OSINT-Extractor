@@ -1,0 +1,46 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="common.css">
+<style>
+  body { width: 1200px; padding: 28px; background: transparent; }
+  .board { background: var(--black); border: 1px solid var(--line); border-radius: 18px; padding: 40px; }
+  .head { display: flex; justify-content: space-between; align-items: baseline; }
+  h2 { font-weight: 800; font-size: 30px; letter-spacing: -.03em; }
+  .eyebrow { font-size: 12px; }
+  .grid { display: grid; grid-template-columns: 1fr 34px 1.25fr 34px 1fr; margin-top: 30px; align-items: stretch; }
+  .arrow { display: flex; align-items: center; justify-content: center; }
+  .arrow i { width: 14px; height: 14px; border-top: 2px solid var(--line-strong); border-right: 2px solid var(--line-strong); transform: rotate(45deg); }
+  .col { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px; }
+  .col h3 { font-size: 18px; font-weight: 600; letter-spacing: -.01em; }
+  .col .sub { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; color: var(--muted); margin-bottom: 6px; }
+  .box { margin-top: 10px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: var(--ink2); }
+  .box b { display: block; font-family: var(--mono); font-size: 12.5px; font-weight: 600; }
+  .box span { display: block; font-size: 12.5px; color: var(--text2); margin-top: 3px; line-height: 1.4; }
+  .core { border-style: dashed; border-color: var(--line-strong); }
+  .legend { margin-top: 22px; display: flex; gap: 22px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .legend i { display: inline-block; width: 22px; height: 10px; border: 1px solid var(--line-strong); border-radius: 3px; margin-right: 8px; vertical-align: middle; }
+  .legend i.d { border-style: dashed; }
+</style></head>
+<body><div class="board">
+  <div class="head"><h2>Architecture</h2><div class="eyebrow">Local-first · pure core · guarded edges</div></div>
+  <div class="grid">
+    <div class="col"><div class="sub">BROWSER</div><h3>React UI</h3>
+      <div class="box"><b>Intelligence Report</b><span>22 sections, 3 languages</span></div>
+      <div class="box"><b>Evidence · Platforms</b><span>per-detector audit ledger</span></div>
+      <div class="box"><b>Graph hunting · Cases</b><span>IndexedDB snapshots, diff</span></div>
+      <div class="box"><b>Analyst Copilot</b><span>optional, schema-bound, AI_SYNTHESIZED</span></div></div>
+    <div class="arrow"><i></i></div>
+    <div class="col"><div class="sub">LOCAL SERVER (EXPRESS)</div><h3>API and guards</h3>
+      <div class="box"><b>/api/osint/verify</b><span>URL must match a detector pattern · rate limit · per-host cap · result cache</span></div>
+      <div class="box"><b>safeFetch</b><span>public IPs only (rebinding-safe), every redirect re-validated</span></div>
+      <div class="box core"><b>src/core</b><span>evidence · baseline · matchers · net · variants · pivots · phash · stix. Pure functions, unit-tested</span></div>
+      <div class="box"><b>/api/store</b><span>SQLite: Entity → Observation (hash) → Claim (cites observations)</span></div></div>
+    <div class="arrow"><i></i></div>
+    <div class="col"><div class="sub">PUBLIC SURFACES</div><h3>What is queried</h3>
+      <div class="box"><b>985 profile endpoints</b><span>registry + declarative detectors</span></div>
+      <div class="box"><b>Wayback CDX</b><span>first and last capture</span></div>
+      <div class="box"><b>BrasilAPI (CNPJ)</b><span>company-level fields only</span></div>
+      <div class="box"><b>Exports</b><span>HTML · JSON · CSV · STIX 2.1</span></div></div>
+  </div>
+  <div class="legend"><span><i></i>component</span><span><i class="d"></i>pure, side-effect free</span></div>
+</div></body></html>

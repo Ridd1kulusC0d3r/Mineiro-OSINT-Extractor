@@ -337,6 +337,24 @@ export const DEFAULT_SCAN_CONFIGS: Record<ScanPreset, ModularScanConfig> = {
   },
 };
 
+/**
+ * Quantos detectores um escopo realmente executa para o tipo de alvo. A interface mostra este número, e não um
+ * rótulo fixo ("Quick 20", "Full 985"), para que a contagem anunciada e a do escopo sejam sempre a mesma.
+ */
+export function countPlatformsForScope(
+  scope: PlatformScope,
+  category: string = 'all',
+  targetType: 'username' | 'email' = 'username'
+): number {
+  return getPlatformsForScope(scope, category, targetType).length;
+}
+
+/** Contagem do preset (Quick, Standard, Full...) para o tipo de alvo. */
+export function countPlatformsForPreset(preset: ScanPreset, targetType: 'username' | 'email' = 'username'): number {
+  const config = DEFAULT_SCAN_CONFIGS[preset];
+  return countPlatformsForScope(config.platformScope, config.selectedCategory, targetType);
+}
+
 export function getPlatformsForScope(
   scope: PlatformScope,
   category: string = 'all',

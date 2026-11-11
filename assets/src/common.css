@@ -1,0 +1,25 @@
+/* Shared tokens for generated README assets. Same values as src/styles/tokens.css (dark). */
+@font-face { font-family: "Inter"; font-weight: 400; src: url("../../node_modules/@fontsource/inter/files/inter-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 600; src: url("../../node_modules/@fontsource/inter/files/inter-latin-600-normal.woff2") format("woff2"); }
+@font-face { font-family: "Inter"; font-weight: 800; src: url("../../node_modules/@fontsource/inter/files/inter-latin-800-normal.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 400; src: url("../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "JetBrains Mono"; font-weight: 600; src: url("../../node_modules/@fontsource/jetbrains-mono/files/jetbrains-mono-latin-600-normal.woff2") format("woff2"); }
+
+:root {
+  /* Tokens do tema escuro de src/styles/tokens.css (identidade LLmInjection: papel, tinta e um só sinal). */
+  --paper: #100f0d; --paper-2: #1a1916; --card: #1c1b17; --ink-1: #eeebe2; --ink-2: #bdb8aa; --ink-3: #958f81;
+  --rule: #36332b; --rule-2: #26241f; --signal: #f0885a; --signal-ink: #131210; --signal-soft: #3a2418;
+  --grid-line: rgba(238,235,226,.045);
+  /* Nomes antigos usados pelas páginas de assets/src, mapeados para os tokens. */
+  --black: var(--paper); --ink: var(--paper); --ink2: var(--paper-2); --panel: var(--card);
+  --line: var(--rule); --line-strong: var(--rule); --muted: var(--ink-3); --text2: var(--ink-2); --text: var(--ink-1); --white: var(--ink-1);
+  --sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: transparent; }
+body { font-family: var(--sans); color: var(--text); -webkit-font-smoothing: antialiased; }
+.mono { font-family: var(--mono); }
+.eyebrow { font-family: var(--mono); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--signal); }
+.chip { font-family: var(--mono); font-weight: 600; border: 1px solid var(--rule); border-radius: 999px; padding: 7px 16px; color: var(--text); background: var(--card); white-space: nowrap; }
+.chip.signal { color: var(--signal-ink); background: var(--signal); border-color: var(--signal); }

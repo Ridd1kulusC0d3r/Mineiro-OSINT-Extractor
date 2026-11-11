@@ -73,45 +73,45 @@ export function GeminiConfigModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 font-mono">
-      <div className="bg-neutral-950 border border-neutral-700 max-w-xl w-full p-6 space-y-5 text-neutral-300 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+    <div role="dialog" aria-modal="true" aria-labelledby="gemini-config-title" className="dialog-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="dialog max-w-xl w-full p-6 space-y-5 text-ink-2 animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="flex justify-between items-center border-b border-neutral-800 pb-4">
+        <div className="flex justify-between items-center border-b border-rule pb-4">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-white text-black flex items-center justify-center font-bold">
+            <div className="w-9 h-9 rounded-[var(--radius-sm)] bg-signal-soft text-signal flex items-center justify-center font-bold">
               <Key className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+              <h2 id="gemini-config-title" className="text-lg font-bold text-ink">
                 {tr('gemini.title')}
               </h2>
-              <p className="text-[11px] text-neutral-400">
+              <p className="text-[11px] text-ink-3">
                 {tr('gemini.subtitle')}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="text-neutral-500 hover:text-white p-1 transition-colors"
+            className="text-ink-3 hover:text-ink p-1 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Informative Banner */}
-        <div className="p-3 bg-neutral-900/80 border border-neutral-800 text-xs space-y-1.5">
-          <div className="flex items-center gap-2 text-white font-semibold">
-            <ShieldCheck className="w-4 h-4 text-neutral-400" />
+        <div className="p-3 bg-rule-2/80 border border-rule text-xs space-y-1.5">
+          <div className="flex items-center gap-2 text-ink font-semibold">
+            <ShieldCheck className="w-4 h-4 text-ink-3" />
             <span>{tr('gemini.privacy')}</span>
           </div>
-          <p className="text-neutral-400 text-[11px] leading-relaxed">
+          <p className="text-ink-3 text-[11px] leading-relaxed">
             {tr('gemini.privacyDesc')}
           </p>
           <a
             href="https://aistudio.google.com/app/apikey"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-[11px] text-white underline hover:text-neutral-300 pt-1"
+            className="inline-flex items-center gap-1 text-[11px] text-ink underline hover:text-ink-2 pt-1"
           >
             {tr('gemini.obtainKey')} <ExternalLink className="w-3 h-3" />
           </a>
@@ -121,7 +121,7 @@ export function GeminiConfigModal({
         <div className="space-y-4 text-xs">
           {/* API Key */}
           <div className="space-y-1.5">
-            <label className="text-neutral-300 font-semibold block uppercase tracking-wider text-[11px]">
+            <label className="text-ink-2 font-semibold block uppercase tracking-wider text-[11px]">
               Gemini API Key (GEMINI_API_KEY)
             </label>
             <div className="relative">
@@ -135,24 +135,24 @@ export function GeminiConfigModal({
                 placeholder="AIzaSy..."
                 autoComplete="off"
                 spellCheck="false"
-                className="w-full bg-black border border-neutral-700 text-white px-3 py-2.5 pr-20 text-xs font-mono focus:border-white focus:outline-none tracking-wide"
+                className="w-full bg-paper border border-rule text-ink px-3 py-2.5 pr-20 text-xs font-mono focus:border-signal focus:outline-none tracking-wide"
               />
               <button
                 type="button"
                 onClick={() => setShowKey(!showKey)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-white text-[11px]"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-ink-3 hover:text-ink text-[11px]"
               >
                 {showKey ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
               </button>
             </div>
-            <p className="text-[10px] text-neutral-500">
+            <p className="text-[10px] text-ink-3">
               {tr('gemini.blankKey')}
             </p>
           </div>
 
           {/* Model Selector */}
           <div className="space-y-1.5">
-            <label className="text-neutral-300 font-semibold block uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+            <label className="text-ink-2 font-semibold block uppercase tracking-wider text-[11px] flex items-center gap-1.5">
               <Cpu className="w-3.5 h-3.5" />
               Selected Gemini Model
             </label>
@@ -162,7 +162,7 @@ export function GeminiConfigModal({
                 setModelInput(e.target.value);
                 setTestResult(null);
               }}
-              className="w-full bg-black border border-neutral-700 text-white px-3 py-2 text-xs font-mono focus:border-white focus:outline-none"
+              className="w-full bg-paper border border-rule text-ink px-3 py-2 text-xs font-mono focus:border-signal focus:outline-none"
             >
               <option value="gemini-3.8-flash">gemini-3.8-flash (Recommended · Stable)</option>
               <option value="gemini-3.7-flash">gemini-3.7-flash (Stable fallback)</option>
@@ -177,27 +177,27 @@ export function GeminiConfigModal({
           <div
             className={`p-3 border text-xs flex items-start gap-2.5 font-mono ${
               testResult.success
-                ? 'bg-black border-white text-white'
-                : 'bg-black border-neutral-600 text-neutral-300'
+                ? 'bg-paper border-signal text-ink'
+                : 'bg-paper border-ink-3 text-ink-2'
             }`}
           >
             {testResult.success ? (
-              <CheckCircle2 className="w-4 h-4 shrink-0 text-white mt-0.5" />
+              <CheckCircle2 className="w-4 h-4 shrink-0 text-ink mt-0.5" />
             ) : (
-              <XCircle className="w-4 h-4 shrink-0 text-neutral-400 mt-0.5" />
+              <XCircle className="w-4 h-4 shrink-0 text-ink-3 mt-0.5" />
             )}
             <div className="text-[11px] leading-relaxed">{testResult.message}</div>
           </div>
         )}
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 border-t border-neutral-800 pt-4 text-xs">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 border-t border-rule pt-4 text-xs">
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={handleTest}
               disabled={isTesting}
-              className="px-3 py-2 bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-700 hover:border-neutral-500 transition-colors disabled:opacity-50 flex items-center gap-1.5"
+              className="px-3 py-2 bg-rule-2 hover:bg-rule-2 text-ink border border-rule hover:border-ink-3 transition-colors disabled:opacity-50 flex items-center gap-1.5"
             >
               <Sparkles className="w-3.5 h-3.5" />
               {isTesting ? tr('gemini.testing') : tr('gemini.test')}
@@ -206,7 +206,7 @@ export function GeminiConfigModal({
               <button
                 type="button"
                 onClick={handleClear}
-                className="px-3 py-2 text-neutral-400 hover:text-white border border-neutral-800 hover:border-neutral-600 transition-colors"
+                className="px-3 py-2 text-ink-3 hover:text-ink border border-rule hover:border-ink-3 transition-colors"
               >
                 Clear
               </button>
@@ -217,14 +217,14 @@ export function GeminiConfigModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-neutral-400 hover:text-white transition-colors"
+              className="px-4 py-2 text-ink-3 hover:text-ink transition-colors"
             >
               Cancel
             </button>
             <button
               type="button"
               onClick={handleSave}
-              className="px-4 py-2 bg-white text-black font-bold uppercase tracking-wider hover:bg-neutral-200 transition-colors border border-white"
+              className="px-4 py-2 bg-signal text-signal-ink font-bold uppercase tracking-wider hover:bg-ink transition-colors border border-signal"
             >
               Save Configuration
             </button>

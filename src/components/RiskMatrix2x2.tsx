@@ -19,6 +19,7 @@ import {
 import { ScanResult, AiProfileReport } from '../types';
 import { useToast } from './Toast';
 import { PlatformFavicon } from './PlatformFavicon';
+import { PALETTE } from '../theme/palette';
 
 export interface RiskMatrixAccount {
   id: string;
@@ -337,10 +338,10 @@ export function RiskMatrix2x2({
       .attr('y', 0)
       .attr('width', innerWidth - midX)
       .attr('height', midY)
-      .attr('fill', '#FFFFFF')
-      .attr('fill-opacity', activeQuadrantFilter === 'critical' ? 0.14 : 0.05)
-      .attr('stroke', '#FFFFFF')
-      .attr('stroke-opacity', activeQuadrantFilter === 'critical' ? 0.4 : 0.15);
+      .attr('fill', PALETTE.seq3)
+      .attr('fill-opacity', activeQuadrantFilter === 'critical' ? 0.42 : 0.24)
+      .attr('stroke', PALETTE.rule)
+      .attr('stroke-opacity', activeQuadrantFilter === 'critical' ? 1 : 0.6);
 
     // Q2: Top-Left (Latent Vault: High Sensitivity, Low Activity)
     g.append('rect')
@@ -348,10 +349,10 @@ export function RiskMatrix2x2({
       .attr('y', 0)
       .attr('width', midX)
       .attr('height', midY)
-      .attr('fill', '#737373')
-      .attr('fill-opacity', activeQuadrantFilter === 'latent' ? 0.14 : 0.04)
-      .attr('stroke', '#737373')
-      .attr('stroke-opacity', activeQuadrantFilter === 'latent' ? 0.4 : 0.15);
+      .attr('fill', PALETTE.seq2)
+      .attr('fill-opacity', activeQuadrantFilter === 'latent' ? 0.42 : 0.22)
+      .attr('stroke', PALETTE.rule)
+      .attr('stroke-opacity', activeQuadrantFilter === 'latent' ? 1 : 0.6);
 
     // Q3: Bottom-Right (Broad Surface: Low Sensitivity, High Activity)
     g.append('rect')
@@ -359,10 +360,10 @@ export function RiskMatrix2x2({
       .attr('y', midY)
       .attr('width', innerWidth - midX)
       .attr('height', innerHeight - midY)
-      .attr('fill', '#FFFFFF')
-      .attr('fill-opacity', activeQuadrantFilter === 'surface' ? 0.14 : 0.04)
-      .attr('stroke', '#FFFFFF')
-      .attr('stroke-opacity', activeQuadrantFilter === 'surface' ? 0.4 : 0.15);
+      .attr('fill', PALETTE.seq1)
+      .attr('fill-opacity', activeQuadrantFilter === 'surface' ? 0.42 : 0.22)
+      .attr('stroke', PALETTE.rule)
+      .attr('stroke-opacity', activeQuadrantFilter === 'surface' ? 1 : 0.6);
 
     // Q4: Bottom-Left (Peripheral: Low Sensitivity, Low Activity)
     g.append('rect')
@@ -370,17 +371,17 @@ export function RiskMatrix2x2({
       .attr('y', midY)
       .attr('width', midX)
       .attr('height', innerHeight - midY)
-      .attr('fill', '#737373')
-      .attr('fill-opacity', activeQuadrantFilter === 'peripheral' ? 0.14 : 0.03)
-      .attr('stroke', '#2A2A2A')
-      .attr('stroke-opacity', activeQuadrantFilter === 'peripheral' ? 0.4 : 0.15);
+      .attr('fill', PALETTE.seq0)
+      .attr('fill-opacity', activeQuadrantFilter === 'peripheral' ? 0.42 : 0.2)
+      .attr('stroke', PALETTE.rule)
+      .attr('stroke-opacity', activeQuadrantFilter === 'peripheral' ? 1 : 0.6);
 
     // 2. Quadrant Watermark Labels
     const watermarkData = [
-      { text: 'CRITICAL RISK // PRIME TARGET', x: midX + 14, y: 22, color: '#FFFFFF', sub: 'High Sensitivity • High Activity' },
-      { text: 'LATENT VAULT // HIGH PRIVILEGE', x: 14, y: 22, color: '#737373', sub: 'High Sensitivity • Low Activity' },
-      { text: 'BROAD SURFACE // FREQUENT ENGAGEMENT', x: midX + 14, y: midY + 22, color: '#FFFFFF', sub: 'Low Sensitivity • High Activity' },
-      { text: 'PERIPHERAL // LOW EXPOSURE', x: 14, y: midY + 22, color: '#A3A3A3', sub: 'Low Sensitivity • Low Activity' },
+      { text: 'CRITICAL RISK // PRIME TARGET', x: midX + 14, y: 22, color: PALETTE.ink, sub: 'High Sensitivity • High Activity' },
+      { text: 'LATENT VAULT // HIGH PRIVILEGE', x: 14, y: 22, color: PALETTE.ink3, sub: 'High Sensitivity • Low Activity' },
+      { text: 'BROAD SURFACE // FREQUENT ENGAGEMENT', x: midX + 14, y: midY + 22, color: PALETTE.ink, sub: 'Low Sensitivity • High Activity' },
+      { text: 'PERIPHERAL // LOW EXPOSURE', x: 14, y: midY + 22, color: PALETTE.ink2, sub: 'Low Sensitivity • Low Activity' },
     ];
 
     watermarkData.forEach((wm) => {
@@ -397,7 +398,7 @@ export function RiskMatrix2x2({
       g.append('text')
         .attr('x', wm.x)
         .attr('y', wm.y + 12)
-        .attr('fill', '#737373')
+        .attr('fill', PALETTE.ink3)
         .attr('font-size', '9px')
         .attr('font-family', 'monospace')
         .text(wm.sub);
@@ -410,7 +411,7 @@ export function RiskMatrix2x2({
       .attr('y1', 0)
       .attr('x2', midX)
       .attr('y2', innerHeight)
-      .attr('stroke', '#FFFFFF')
+      .attr('stroke', PALETTE.ink)
       .attr('stroke-width', 1.5)
       .attr('stroke-dasharray', '4,4')
       .attr('stroke-opacity', 0.4);
@@ -420,7 +421,7 @@ export function RiskMatrix2x2({
       .attr('y1', midY)
       .attr('x2', innerWidth)
       .attr('y2', midY)
-      .attr('stroke', '#FFFFFF')
+      .attr('stroke', PALETTE.ink)
       .attr('stroke-width', 1.5)
       .attr('stroke-dasharray', '4,4')
       .attr('stroke-opacity', 0.4);
@@ -432,7 +433,7 @@ export function RiskMatrix2x2({
         .attr('y1', 0)
         .attr('x2', xScale(val))
         .attr('y2', innerHeight)
-        .attr('stroke', '#2A2A2A')
+        .attr('stroke', PALETTE.rule)
         .attr('stroke-width', 1)
         .attr('stroke-dasharray', '2,4');
 
@@ -441,7 +442,7 @@ export function RiskMatrix2x2({
         .attr('y1', yScale(val))
         .attr('x2', innerWidth)
         .attr('y2', yScale(val))
-        .attr('stroke', '#2A2A2A')
+        .attr('stroke', PALETTE.rule)
         .attr('stroke-width', 1)
         .attr('stroke-dasharray', '2,4');
     });
@@ -453,7 +454,7 @@ export function RiskMatrix2x2({
       .attr('width', innerWidth)
       .attr('height', innerHeight)
       .attr('fill', 'none')
-      .attr('stroke', '#2A2A2A')
+      .attr('stroke', PALETTE.rule)
       .attr('stroke-width', 1);
 
     // 5. Axis Labels
@@ -462,7 +463,7 @@ export function RiskMatrix2x2({
       .attr('x', margin.left + innerWidth / 2)
       .attr('y', height - 12)
       .attr('text-anchor', 'middle')
-      .attr('fill', '#F5F5F5')
+      .attr('fill', PALETTE.ink)
       .attr('font-size', '11px')
       .attr('font-family', 'monospace')
       .attr('font-weight', 'bold')
@@ -475,7 +476,7 @@ export function RiskMatrix2x2({
       .attr('x', -(margin.top + innerHeight / 2))
       .attr('y', 18)
       .attr('text-anchor', 'middle')
-      .attr('fill', '#F5F5F5')
+      .attr('fill', PALETTE.ink)
       .attr('font-size', '11px')
       .attr('font-family', 'monospace')
       .attr('font-weight', 'bold')
@@ -508,17 +509,17 @@ export function RiskMatrix2x2({
       const isSelected = selectedAccount?.id === node.id;
 
       // Color mapping by quadrant
-      let nodeColor = '#A3A3A3';
-      let ringColor = '#737373';
+      let nodeColor = PALETTE.ink2;
+      let ringColor = PALETTE.ink3;
       if (node.quadrant === 'critical') {
-        nodeColor = '#FFFFFF';
-        ringColor = '#FFFFFF';
+        nodeColor = PALETTE.ink;
+        ringColor = PALETTE.seq4;
       } else if (node.quadrant === 'latent') {
-        nodeColor = '#737373';
-        ringColor = '#737373';
+        nodeColor = PALETTE.ink3;
+        ringColor = PALETTE.seq2;
       } else if (node.quadrant === 'surface') {
-        nodeColor = '#FFFFFF';
-        ringColor = '#FFFFFF';
+        nodeColor = PALETTE.ink;
+        ringColor = PALETTE.seq3;
       }
 
       const clampedX = Math.max(14, Math.min(innerWidth - 14, node.x));
@@ -546,10 +547,10 @@ export function RiskMatrix2x2({
       // Base Node Circle
       accountG.append('circle')
         .attr('r', isSelected ? 10 : 8)
-        .attr('fill', '#0A0A0A')
-        .attr('stroke', isSelected ? '#FFFFFF' : nodeColor)
+        .attr('fill', PALETTE.paper2)
+        .attr('stroke', isSelected ? PALETTE.ink : nodeColor)
         .attr('stroke-width', isSelected ? 2.5 : 1.5)
-        .attr('filter', isSelected ? 'drop-shadow(0 0 6px rgba(255, 255, 255,0.6))' : 'none');
+        .attr('filter', isSelected ? 'drop-shadow(0 0 6px color-mix(in srgb, var(--ink) 60%, transparent))' : 'none');
 
       // Inner color pip
       accountG.append('circle')
@@ -560,7 +561,7 @@ export function RiskMatrix2x2({
       accountG.append('text')
         .attr('x', 11)
         .attr('y', 3.5)
-        .attr('fill', isSelected ? '#FFFFFF' : '#F5F5F5')
+        .attr('fill', isSelected ? PALETTE.ink : PALETTE.ink)
         .attr('font-size', isSelected ? '10px' : '9px')
         .attr('font-family', 'monospace')
         .attr('font-weight', isSelected ? 'bold' : 'normal')
@@ -582,20 +583,20 @@ export function RiskMatrix2x2({
   };
 
   return (
-    <div className="border border-neutral-800 bg-neutral-950 p-5 space-y-5 font-mono text-xs">
+    <div className="border border-rule bg-paper-2 p-5 space-y-5 font-mono text-xs">
       {/* Header & Controls */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-800 pb-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-rule pb-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 bg-neutral-500 inline-block shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
-            <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+            <span className="w-2.5 h-2.5 bg-ink-3 inline-block shadow-[0_0_8px_color-mix(in_srgb,var(--ink-3)_80%,transparent)]" />
+            <h3 className="text-sm font-bold text-ink uppercase tracking-wider">
               2x2 TARGET RISK MATRIX // PLATFORM SENSITIVITY VS. ACTIVITY
             </h3>
-            <span className="px-2 py-0.5 border border-neutral-800 bg-black text-[10px] text-neutral-400">
+            <span className="px-2 py-0.5 border border-rule bg-paper text-[10px] text-ink-3">
               D3.js Vector Engine
             </span>
           </div>
-          <p className="text-neutral-400 text-xs">
+          <p className="text-ink-3 text-xs">
             Bivariate prioritization mapping across confirmed platforms to triage high-value confidential vaults and active exposure surfaces.
           </p>
         </div>
@@ -604,21 +605,21 @@ export function RiskMatrix2x2({
         <div className="flex flex-wrap items-center gap-2">
           {/* Target / Platform Search Bar */}
           <div className="relative flex items-center">
-            <Search className="w-3.5 h-3.5 text-neutral-500 absolute left-2 pointer-events-none" />
+            <Search className="w-3.5 h-3.5 text-ink-3 absolute left-2 pointer-events-none" />
             <input
               id="matrix-search-input"
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search platform/cat..."
-              className="pl-7 pr-6 py-1 bg-black border border-neutral-800 text-white text-[11px] placeholder:text-neutral-600 focus:outline-none focus:border-white w-40 sm:w-48 font-mono"
+              className="pl-7 pr-6 py-1 bg-paper border border-rule text-ink text-[11px] placeholder:text-ink-3 focus:outline-none focus:border-signal w-40 sm:w-48 font-mono"
             />
             {searchQuery && (
               <button
                 type="button"
                 id="matrix-clear-search-btn"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-1.5 text-[10px] text-neutral-500 hover:text-white px-1"
+                className="absolute right-1.5 text-[10px] text-ink-3 hover:text-ink px-1"
                 title="Clear Search"
               >
                 ✕
@@ -634,8 +635,8 @@ export function RiskMatrix2x2({
               onClick={() => setActiveQuadrantFilter('all')}
               className={`px-2.5 py-1 text-[11px] font-mono border transition-all ${
                 activeQuadrantFilter === 'all'
-                  ? 'bg-white text-black font-bold border-white'
-                  : 'bg-black text-neutral-400 border-neutral-800 hover:text-white hover:border-neutral-700'
+                  ? 'bg-signal text-signal-ink font-bold border-signal'
+                  : 'bg-paper text-ink-3 border-rule hover:text-ink hover:border-rule'
               }`}
             >
               All ({counts.all})
@@ -647,8 +648,8 @@ export function RiskMatrix2x2({
               onClick={() => setActiveQuadrantFilter('critical')}
               className={`px-2.5 py-1 text-[11px] font-mono border flex items-center gap-1.5 transition-all ${
                 activeQuadrantFilter === 'critical'
-                  ? 'bg-neutral-500 text-black font-bold border-neutral-500'
-                  : 'bg-black text-neutral-400 border-neutral-950 hover:border-neutral-800'
+                  ? 'bg-ink-3 text-paper font-bold border-ink-3'
+                  : 'bg-paper text-ink-3 border-rule hover:border-rule'
               }`}
             >
               <ShieldAlert className="w-3 h-3" />
@@ -661,8 +662,8 @@ export function RiskMatrix2x2({
               onClick={() => setActiveQuadrantFilter('latent')}
               className={`px-2.5 py-1 text-[11px] font-mono border flex items-center gap-1.5 transition-all ${
                 activeQuadrantFilter === 'latent'
-                  ? 'bg-neutral-500 text-black font-bold border-neutral-500'
-                  : 'bg-black text-neutral-400 border-neutral-950 hover:border-neutral-800'
+                  ? 'bg-ink-3 text-paper font-bold border-ink-3'
+                  : 'bg-paper text-ink-3 border-rule hover:border-rule'
               }`}
             >
               <Lock className="w-3 h-3" />
@@ -675,8 +676,8 @@ export function RiskMatrix2x2({
               onClick={() => setActiveQuadrantFilter('surface')}
               className={`px-2.5 py-1 text-[11px] font-mono border flex items-center gap-1.5 transition-all ${
                 activeQuadrantFilter === 'surface'
-                  ? 'bg-neutral-500 text-black font-bold border-neutral-500'
-                  : 'bg-black text-neutral-400 border-neutral-950 hover:border-neutral-800'
+                  ? 'bg-ink-3 text-paper font-bold border-ink-3'
+                  : 'bg-paper text-ink-3 border-rule hover:border-rule'
               }`}
             >
               <Globe2 className="w-3 h-3" />
@@ -689,8 +690,8 @@ export function RiskMatrix2x2({
               onClick={() => setActiveQuadrantFilter('peripheral')}
               className={`px-2.5 py-1 text-[11px] font-mono border flex items-center gap-1.5 transition-all ${
                 activeQuadrantFilter === 'peripheral'
-                  ? 'bg-neutral-300 text-black font-bold border-neutral-300'
-                  : 'bg-black text-neutral-400 border-neutral-800 hover:text-white'
+                  ? 'bg-ink-2 text-paper font-bold border-ink-2'
+                  : 'bg-paper text-ink-3 border-rule hover:text-ink'
               }`}
             >
               <Layers className="w-3 h-3" />
@@ -706,21 +707,21 @@ export function RiskMatrix2x2({
         <div className="lg:col-span-8 flex flex-col space-y-2">
           <div 
             ref={containerRef} 
-            className="w-full bg-black border border-neutral-900 overflow-hidden relative"
+            className="w-full bg-paper border border-rule overflow-hidden relative"
           >
             {accounts.length === 0 ? (
               <div className="h-96 flex flex-col items-center justify-center text-center p-8 space-y-2">
-                <ShieldAlert className="w-8 h-8 text-neutral-600" />
-                <span className="text-neutral-400 font-bold uppercase">No Confirmed Targets For Risk Plotting</span>
-                <span className="text-[11px] text-neutral-500 max-w-sm">
+                <ShieldAlert className="w-8 h-8 text-ink-3" />
+                <span className="text-ink-3 font-bold uppercase">No Confirmed Targets For Risk Plotting</span>
+                <span className="text-[11px] text-ink-3 max-w-sm">
                   Run a scan to corroborate verified platform identities. Discovered accounts will be automatically prioritized here.
                 </span>
               </div>
             ) : visibleAccounts.length === 0 ? (
               <div className="h-96 flex flex-col items-center justify-center text-center p-8 space-y-3">
-                <Filter className="w-7 h-7 text-neutral-500" />
-                <span className="text-neutral-300 font-bold uppercase">No Platforms Match Current Filter</span>
-                <span className="text-[11px] text-neutral-500 max-w-sm">
+                <Filter className="w-7 h-7 text-ink-3" />
+                <span className="text-ink-2 font-bold uppercase">No Platforms Match Current Filter</span>
+                <span className="text-[11px] text-ink-3 max-w-sm">
                   No confirmed target profiles match quadrant &quot;{activeQuadrantFilter}&quot;{searchQuery ? ` and search &quot;${searchQuery}&quot;` : ''}.
                 </span>
                 <button
@@ -730,7 +731,7 @@ export function RiskMatrix2x2({
                     setActiveQuadrantFilter('all');
                     setSearchQuery('');
                   }}
-                  className="px-3 py-1.5 bg-white text-black font-bold uppercase text-[10px] hover:bg-neutral-200 transition-colors"
+                  className="px-3 py-1.5 bg-signal text-signal-ink font-bold uppercase text-[10px] hover:bg-ink transition-colors"
                 >
                   Reset Filters
                 </button>
@@ -740,12 +741,12 @@ export function RiskMatrix2x2({
             )}
           </div>
 
-          <div className="flex flex-wrap items-center justify-between text-[10px] text-neutral-500 pt-1">
+          <div className="flex flex-wrap items-center justify-between text-[10px] text-ink-3 pt-1">
             <span className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-neutral-500 inline-block" /> Critical Priority (Top Right)
-              <span className="w-2 h-2 rounded-full bg-neutral-500 inline-block ml-2" /> Latent Vault (Top Left)
-              <span className="w-2 h-2 rounded-full bg-neutral-500 inline-block ml-2" /> Broad Surface (Bottom Right)
-              <span className="w-2 h-2 rounded-full bg-neutral-400 inline-block ml-2" /> Peripheral (Bottom Left)
+              <span className="w-2 h-2 rounded-full bg-ink-3 inline-block" /> Critical Priority (Top Right)
+              <span className="w-2 h-2 rounded-full bg-ink-3 inline-block ml-2" /> Latent Vault (Top Left)
+              <span className="w-2 h-2 rounded-full bg-ink-3 inline-block ml-2" /> Broad Surface (Bottom Right)
+              <span className="w-2 h-2 rounded-full bg-ink-3 inline-block ml-2" /> Peripheral (Bottom Left)
             </span>
             <span>Click any node in the vector field to inspect target</span>
           </div>
@@ -753,21 +754,21 @@ export function RiskMatrix2x2({
 
         {/* Selected Target Deep Inspector & Priority Brief (4 cols) */}
         <div className="lg:col-span-4 flex flex-col space-y-3">
-          <div className="border border-neutral-800 bg-black p-4 space-y-4 h-full flex flex-col justify-between">
+          <div className="border border-rule bg-paper p-4 space-y-4 h-full flex flex-col justify-between">
             <div className="space-y-3">
-              <div className="flex items-center justify-between border-b border-neutral-900 pb-2">
-                <span className="text-[10px] text-neutral-500 uppercase tracking-wider font-bold">
+              <div className="flex items-center justify-between border-b border-rule pb-2">
+                <span className="text-[10px] text-ink-3 uppercase tracking-wider font-bold">
                   TARGET INSPECTOR & TRIAGE
                 </span>
                 {selectedAccount && (
                   <span className={`text-[10px] uppercase font-bold px-2 py-0.5 border ${
                     selectedAccount.quadrant === 'critical'
-                      ? 'border-neutral-700 bg-neutral-950/40 text-neutral-300'
+                      ? 'border-rule bg-paper-2/40 text-ink-2'
                       : selectedAccount.quadrant === 'latent'
-                      ? 'border-neutral-700 bg-neutral-950/40 text-neutral-300'
+                      ? 'border-rule bg-paper-2/40 text-ink-2'
                       : selectedAccount.quadrant === 'surface'
-                      ? 'border-neutral-700 bg-neutral-950/40 text-neutral-300'
-                      : 'border-neutral-800 bg-neutral-900 text-neutral-400'
+                      ? 'border-rule bg-paper-2/40 text-ink-2'
+                      : 'border-rule bg-rule-2 text-ink-3'
                   }`}>
                     {selectedAccount.quadrant.toUpperCase()}
                   </span>
@@ -779,36 +780,36 @@ export function RiskMatrix2x2({
                   <div className="flex items-center gap-2.5">
                     <PlatformFavicon platformName={selectedAccount.platformName} url={selectedAccount.url} className="w-7 h-7" />
                     <div>
-                      <h4 className="text-sm font-bold text-white uppercase">{selectedAccount.platformName}</h4>
-                      <span className="text-[11px] text-neutral-400">Category: {selectedAccount.category}</span>
+                      <h4 className="text-sm font-bold text-ink uppercase">{selectedAccount.platformName}</h4>
+                      <span className="text-[11px] text-ink-3">Category: {selectedAccount.category}</span>
                     </div>
                   </div>
 
                   {/* Priority KPI Meters */}
                   <div className="grid grid-cols-2 gap-2 pt-1">
-                    <div className="p-2.5 border border-neutral-900 bg-neutral-950 space-y-1">
-                      <span className="text-[10px] text-neutral-500 uppercase block">Platform Sensitivity</span>
+                    <div className="p-2.5 border border-rule bg-paper-2 space-y-1">
+                      <span className="text-[10px] text-ink-3 uppercase block">Platform Sensitivity</span>
                       <div className="flex items-baseline gap-1.5">
-                        <span className="text-lg font-bold text-white">{selectedAccount.sensitivity}</span>
-                        <span className="text-[10px] text-neutral-500">/ 100</span>
+                        <span className="text-lg font-bold text-ink">{selectedAccount.sensitivity}</span>
+                        <span className="text-[10px] text-ink-3">/ 100</span>
                       </div>
-                      <div className="w-full bg-neutral-900 h-1 overflow-hidden">
+                      <div className="w-full bg-rule-2 h-1 overflow-hidden">
                         <div 
-                          className={`h-full ${selectedAccount.sensitivity >= 50 ? 'bg-neutral-500' : 'bg-neutral-600'}`} 
+                          className={`h-full ${selectedAccount.sensitivity >= 50 ? 'bg-ink-3' : 'bg-ink-3'}`} 
                           style={{ width: `${selectedAccount.sensitivity}%` }} 
                         />
                       </div>
                     </div>
 
-                    <div className="p-2.5 border border-neutral-900 bg-neutral-950 space-y-1">
-                      <span className="text-[10px] text-neutral-500 uppercase block">Activity Frequency</span>
+                    <div className="p-2.5 border border-rule bg-paper-2 space-y-1">
+                      <span className="text-[10px] text-ink-3 uppercase block">Activity Frequency</span>
                       <div className="flex items-baseline gap-1.5">
-                        <span className="text-lg font-bold text-white">{selectedAccount.activity}</span>
-                        <span className="text-[10px] text-neutral-500">/ 100</span>
+                        <span className="text-lg font-bold text-ink">{selectedAccount.activity}</span>
+                        <span className="text-[10px] text-ink-3">/ 100</span>
                       </div>
-                      <div className="w-full bg-neutral-900 h-1 overflow-hidden">
+                      <div className="w-full bg-rule-2 h-1 overflow-hidden">
                         <div 
-                          className={`h-full ${selectedAccount.activity >= 50 ? 'bg-neutral-500' : 'bg-neutral-600'}`} 
+                          className={`h-full ${selectedAccount.activity >= 50 ? 'bg-ink-3' : 'bg-ink-3'}`} 
                           style={{ width: `${selectedAccount.activity}%` }} 
                         />
                       </div>
@@ -816,26 +817,26 @@ export function RiskMatrix2x2({
                   </div>
 
                   {/* Priority Composite Score */}
-                  <div className="p-3 border border-neutral-800 bg-neutral-950 space-y-1.5">
+                  <div className="p-3 border border-rule bg-paper-2 space-y-1.5">
                     <div className="flex items-center justify-between text-[11px]">
-                      <span className="text-neutral-400">Triage Priority Index:</span>
-                      <strong className="text-white font-bold">{selectedAccount.priorityScore} / 100</strong>
+                      <span className="text-ink-3">Triage Priority Index:</span>
+                      <strong className="text-ink font-bold">{selectedAccount.priorityScore} / 100</strong>
                     </div>
-                    <p className="text-[11px] text-neutral-300 leading-relaxed">
+                    <p className="text-[11px] text-ink-2 leading-relaxed">
                       {selectedAccount.description}
                     </p>
                   </div>
 
                   {/* Endpoint URL display */}
                   <div className="space-y-1">
-                    <span className="text-[10px] text-neutral-500 uppercase">Target Endpoint:</span>
-                    <div className="p-2 border border-neutral-900 bg-neutral-950 text-[11px] text-neutral-300 truncate select-all">
+                    <span className="text-[10px] text-ink-3 uppercase">Target Endpoint:</span>
+                    <div className="p-2 border border-rule bg-paper-2 text-[11px] text-ink-2 truncate select-all">
                       {selectedAccount.url}
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="py-12 text-center text-neutral-500 text-xs">
+                <div className="py-12 text-center text-ink-3 text-xs">
                   Select an account node to view forensic triage breakdown.
                 </div>
               )}
@@ -843,14 +844,14 @@ export function RiskMatrix2x2({
 
             {/* Action Bar */}
             {selectedAccount && (
-              <div className="pt-3 border-t border-neutral-900 space-y-2">
+              <div className="pt-3 border-t border-rule space-y-2">
                 <div className="flex items-center gap-2">
                   <a
                     id="matrix-audit-live-url-link"
                     href={selectedAccount.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 py-2 px-3 bg-white text-black font-bold text-center hover:bg-neutral-200 transition-colors flex items-center justify-center gap-1.5 uppercase text-[11px]"
+                    className="flex-1 py-2 px-3 bg-signal text-signal-ink font-bold text-center hover:bg-ink transition-colors flex items-center justify-center gap-1.5 uppercase text-[11px]"
                   >
                     <span>Audit Live URL</span>
                     <ExternalLink className="w-3.5 h-3.5" />
@@ -860,10 +861,10 @@ export function RiskMatrix2x2({
                     type="button"
                     id="matrix-copy-target-url-btn"
                     onClick={() => handleCopyUrl(selectedAccount.url)}
-                    className="py-2 px-3 border border-neutral-800 bg-neutral-950 text-neutral-300 hover:text-white hover:border-neutral-600 transition-colors flex items-center justify-center text-[11px]"
+                    className="py-2 px-3 border border-rule bg-paper-2 text-ink-2 hover:text-ink hover:border-ink-3 transition-colors flex items-center justify-center text-[11px]"
                     title="Copy URL to clipboard"
                   >
-                    {copiedUrl ? <Check className="w-3.5 h-3.5 text-white" /> : <Copy className="w-3.5 h-3.5" />}
+                    {copiedUrl ? <Check className="w-3.5 h-3.5 text-ink" /> : <Copy className="w-3.5 h-3.5" />}
                   </button>
                 </div>
 
@@ -872,7 +873,7 @@ export function RiskMatrix2x2({
                     type="button"
                     id="matrix-deep-pivot-scan-btn"
                     onClick={() => onPivotScan(selectedAccount.platformName)}
-                    className="w-full py-1.5 border border-neutral-900 bg-black text-neutral-400 hover:text-white hover:border-neutral-700 transition-colors text-[10px] uppercase flex items-center justify-center gap-1"
+                    className="w-full py-1.5 border border-rule bg-paper text-ink-3 hover:text-ink hover:border-rule transition-colors text-[10px] uppercase flex items-center justify-center gap-1"
                   >
                     <span>Deep Pivot on Platform</span>
                     <ArrowUpRight className="w-3 h-3" />

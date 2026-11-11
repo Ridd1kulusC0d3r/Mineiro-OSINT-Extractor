@@ -253,6 +253,8 @@ export interface BulkBatchState {
   isPaused: boolean;
   autoAiProfile: boolean;
   selectedCategory: string;
+  /** Escopo de plataformas que o lote executa (o do preset ativo); opcional para lotes antigos. */
+  platformScope?: PlatformScope;
   concurrency: number;
   startedAt?: string;
   completedAt?: string;

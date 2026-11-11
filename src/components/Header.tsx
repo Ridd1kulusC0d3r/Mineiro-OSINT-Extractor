@@ -5,10 +5,11 @@ import {
   Download,
   FileSpreadsheet,
   History,
+  Keyboard,
   LayoutDashboard,
   RefreshCw,
 } from 'lucide-react';
-import { ThemeMode, getSavedTheme, applyTheme } from '../utils/theme';
+import { ThemeMode, getSavedTheme, applyTheme, nextTheme } from '../theme/theme';
 import { LanguageSelector } from './LanguageSelector';
 import { useI18n } from '../utils/i18n';
 
@@ -36,6 +37,7 @@ export function Header({
   onOpenAiWorkspace,
   onOpenBulkImport,
   onOpenHistory,
+  onOpenShortcuts,
   cachedScansCount = 0,
   bulkBatchCount = 0,
   hasPersonalKey = false,
@@ -51,109 +53,97 @@ export function Header({
   }, [theme]);
 
   const toggleTheme = () => {
-    const next: ThemeMode = theme === 'dark' ? 'bone' : theme === 'bone' ? 'high-contrast' : 'dark';
+    const next: ThemeMode = nextTheme(theme);
     setTheme(next);
     applyTheme(next);
   };
 
+  const navButton = 'tab';
+
   return (
-    <header className="sticky top-0 z-50 border-b border-[#252a2f] bg-[#0b0e10]/95 backdrop-blur-xl">
-      <div className="mx-auto flex min-h-[76px] max-w-[1400px] items-center gap-6 px-4 sm:px-6 lg:px-8">
+    <header className="mast-glass sticky top-0 z-50 border-b border-rule">
+      <div className="mx-auto flex min-h-[68px] max-w-[1400px] items-center gap-5 px-4 sm:px-6 lg:px-8">
         <button
           type="button"
           onClick={onGoToDashboard}
-          className="flex min-w-0 items-center gap-3 text-left"
-          title="Abrir Intelligence Report"
+          className="flex min-w-0 items-center gap-3 rounded-xl text-left"
+          title={tr('header.openReport')}
         >
-          <div className="h-11 w-11 shrink-0 overflow-hidden rounded-xl border border-[#3a4046] bg-[#f3f4f5]">
+          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-xl border border-rule bg-ink">
             <img src="/mineiro-logo.png" alt="" className="h-full w-full object-contain grayscale" />
           </div>
           <div className="hidden min-w-0 sm:block">
-            <div className="truncate text-[15px] font-semibold tracking-[-0.02em] text-[#f2f3f4]">
+            <div className="truncate text-[15px] font-semibold leading-tight tracking-[-0.01em] text-ink">
               Mineiro Username Intelligence
             </div>
-            <div className="truncate text-[11px] text-[#888f98]">OSINT Investigation Workbench</div>
+            <div className="mt-1 flex items-center gap-2 truncate font-mono text-[10.5px] font-semibold uppercase leading-none tracking-[0.14em] text-ink-3">
+              <span className="mast-dot" aria-hidden="true" />
+              <span className="truncate">OSINT Investigation Workbench</span>
+            </div>
           </div>
         </button>
 
-        <nav className="hidden flex-1 items-center justify-center gap-1 lg:flex">
+        <nav className="hidden flex-1 items-center justify-center gap-1 lg:flex" aria-label={tr('header.navigation')}>
           {onGoToDashboard && (
-            <button
-              type="button"
-              onClick={onGoToDashboard}
-              className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-[#9aa1aa] hover:bg-[#14181b] hover:text-[#f2f3f4]"
-            >
+            <button type="button" onClick={onGoToDashboard} className={navButton}>
               <LayoutDashboard className="h-3.5 w-3.5" />
-              Report
+              {tr('header.report')}
             </button>
           )}
           {onOpenHistory && (
-            <button
-              type="button"
-              onClick={onOpenHistory}
-              className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-[#9aa1aa] hover:bg-[#14181b] hover:text-[#f2f3f4]"
-            >
+            <button type="button" onClick={onOpenHistory} className={navButton}>
               <History className="h-3.5 w-3.5" />
-              Cases
-              {cachedScansCount > 0 && (
-                <span className="rounded-md border border-[#343a40] px-1.5 text-[10px] text-[#c5cad0]">{cachedScansCount}</span>
-              )}
+              {tr('header.cases')}
+              {cachedScansCount > 0 && <span className="tab-count">{cachedScansCount}</span>}
             </button>
           )}
           {onOpenBulkImport && (
-            <button
-              type="button"
-              onClick={onOpenBulkImport}
-              className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-[#9aa1aa] hover:bg-[#14181b] hover:text-[#f2f3f4]"
-            >
+            <button type="button" onClick={onOpenBulkImport} className={navButton}>
               <FileSpreadsheet className="h-3.5 w-3.5" />
-              Batch
-              {bulkBatchCount > 0 && (
-                <span className="rounded-md border border-[#343a40] px-1.5 text-[10px] text-[#c5cad0]">{bulkBatchCount}</span>
-              )}
+              {tr('header.batch')}
+              {bulkBatchCount > 0 && <span className="tab-count">{bulkBatchCount}</span>}
             </button>
           )}
           {onOpenAiWorkspace && (
-            <button
-              type="button"
-              onClick={onOpenAiWorkspace}
-              className="inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm text-[#9aa1aa] hover:bg-[#14181b] hover:text-[#f2f3f4]"
-            >
+            <button type="button" onClick={onOpenAiWorkspace} className={navButton}>
               <BrainCircuit className="h-3.5 w-3.5" />
-              AI
-              {hasPersonalKey && <span className="h-1.5 w-1.5 rounded-full bg-[#e5e7e9]" />}
+              {tr('header.ai')}
+              {hasPersonalKey && <span className="mast-dot !h-1.5 !w-1.5" aria-label={tr('ai.configured')} />}
             </button>
           )}
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
           {totalScanned > 0 && (
-            <div className="hidden xl:flex items-center gap-2 rounded-xl border border-[#2c3237] px-3 py-2 text-xs text-[#89919a]">
-              <span>{foundCount} {tr('header.found')}</span>
-              <span className="text-[#3f464d]">·</span>
-              <span>{totalScanned} {tr('header.checked')}</span>
-              {isScanning && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />}
+            <div className="chip hidden !py-1.5 xl:inline-flex" aria-live="polite">
+              <span className="text-ink">{foundCount}</span> {tr('header.found')}
+              <span className="text-ink-3" aria-hidden="true">·</span>
+              <span className="text-ink">{totalScanned}</span> {tr('header.checked')}
+              {isScanning && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-signal" />}
             </div>
           )}
 
           <LanguageSelector />
 
-          <button
-            type="button"
-            onClick={toggleTheme}
-            className="inline-flex items-center gap-2 rounded-xl border border-[#2d3339] bg-[#111518] px-3.5 py-2.5 text-sm text-[#c9cdd2] hover:border-[#525961] hover:text-white"
-            title={tr('header.theme')}
-          >
+          <button type="button" onClick={toggleTheme} className="btn btn-icon md:px-3.5" title={tr('header.theme')}>
             <Contrast className="h-4 w-4" />
             <span className="hidden md:inline">{tr('header.theme')}</span>
           </button>
 
-          <button
-            type="button"
-            onClick={onOpenExport}
-            disabled={totalScanned === 0}
-            className="inline-flex items-center gap-2 rounded-xl border border-[#394047] bg-[#15191c] px-3.5 py-2.5 text-sm font-medium text-[#f0f1f2] hover:bg-[#1b2024] disabled:cursor-not-allowed disabled:opacity-35"
-          >
+          {onOpenShortcuts && (
+            <button
+              type="button"
+              onClick={onOpenShortcuts}
+              className="btn btn-icon"
+              title={tr('header.shortcuts')}
+              aria-label={tr('header.shortcuts')}
+              aria-keyshortcuts="Shift+?"
+            >
+              <Keyboard className="h-4 w-4" />
+            </button>
+          )}
+
+          <button type="button" onClick={onOpenExport} disabled={totalScanned === 0} className="btn md:px-3.5">
             <Download className="h-4 w-4" />
             <span className="hidden sm:inline">{tr('header.export')}</span>
           </button>
@@ -161,8 +151,9 @@ export function Header({
           <button
             type="button"
             onClick={onReset}
-            className="rounded-xl border border-[#2d3339] p-2.5 text-[#9098a1] hover:border-[#525961] hover:text-white"
+            className="btn btn-icon"
             title={tr('header.reset')}
+            aria-label={tr('header.reset')}
           >
             <RefreshCw className="h-4 w-4" />
           </button>

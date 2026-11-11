@@ -148,37 +148,35 @@ export function IntelligenceExportModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[80] bg-black/75 backdrop-blur-sm p-4 md:p-8 overflow-y-auto">
-      <div className="mx-auto max-w-6xl rounded-[26px] border border-[#2c3136] bg-[#0e1113] shadow-2xl">
-        <div className="flex items-start justify-between gap-6 border-b border-[#262b30] px-6 py-6 md:px-8">
+    <div role="dialog" aria-modal="true" aria-labelledby="export-title" className="dialog-backdrop fixed inset-0 z-[80] p-4 md:p-8 overflow-y-auto">
+      <div className="dialog mx-auto max-w-6xl">
+        <div className="flex items-start justify-between gap-6 border-b border-rule px-6 py-6 md:px-8">
           <div>
-            <div className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-[#969da7]">
-              Report export · local only · {requirement}
-            </div>
-            <h2 className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[#f4f5f6]">{tr('export.title')}</h2>
-            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[#8f969f]">
+            <span className="eyebrow">{tr('export.eyebrow')} · {requirement}</span>
+            <h2 id="export-title" className="mt-3 text-3xl font-bold tracking-[-0.025em] text-ink">{tr('export.title')}</h2>
+            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-ink-3">
               {tr('export.subtitle')}
             </p>
           </div>
-          <button type="button" onClick={onClose} className="rounded-xl border border-[#30363c] p-2.5 text-[#a7adb5] hover:text-white"><X className="h-4 w-4" /></button>
+          <button type="button" onClick={onClose} className="rounded-xl border border-rule p-2.5 text-ink-2 hover:text-ink"><X className="h-4 w-4" /></button>
         </div>
 
         <div className="grid gap-8 px-6 py-7 md:px-8 lg:grid-cols-[1.25fr_.75fr]">
           <div>
             <div className="flex items-center justify-between gap-3">
-              <div><div className="text-sm font-medium text-[#eff1f2]">{tr('export.content')}</div><div className="mt-1 text-xs text-[#777f89]">{activeCount}/{labels.length} {tr('export.sectionsSelected')}</div></div>
+              <div><div className="text-sm font-medium text-ink">{tr('export.content')}</div><div className="mt-1 text-xs text-ink-3">{activeCount}/{labels.length} {tr('export.sectionsSelected')}</div></div>
               <div className="flex gap-2">
-                <button type="button" onClick={() => setSections(DEFAULT_INTELLIGENCE_EXPORT)} className="rounded-lg border border-[#30363c] px-3 py-2 text-xs text-[#aeb3b9] hover:text-white">{tr('export.default')}</button>
-                <button type="button" onClick={() => setSections(Object.fromEntries(labels.map(([k]) => [k, true])) as unknown as IntelligenceExportSelection)} className="rounded-lg border border-[#30363c] px-3 py-2 text-xs text-[#aeb3b9] hover:text-white">{tr('export.all')}</button>
+                <button type="button" onClick={() => setSections(DEFAULT_INTELLIGENCE_EXPORT)} className="rounded-lg border border-rule px-3 py-2 text-xs text-ink-2 hover:text-ink">{tr('export.default')}</button>
+                <button type="button" onClick={() => setSections(Object.fromEntries(labels.map(([k]) => [k, true])) as unknown as IntelligenceExportSelection)} className="rounded-lg border border-rule px-3 py-2 text-xs text-ink-2 hover:text-ink">{tr('export.all')}</button>
               </div>
             </div>
 
             <div className="mt-5 grid gap-3 md:grid-cols-2">
               {labels.map(([key, title, description]) => (
-                <button key={key} type="button" onClick={() => toggle(key)} className={`rounded-[18px] border p-4 text-left transition ${sections[key] ? 'border-[#555d66] bg-[#15191c]' : 'border-[#262b30] bg-[#0b0e10] opacity-65'}`}>
+                <button key={key} type="button" aria-pressed={!!sections[key]} onClick={() => toggle(key)} className={`rounded-[18px] border p-4 text-left transition ${sections[key] ? 'border-ink-3 bg-rule-2' : 'border-rule bg-paper opacity-65'}`}>
                   <div className="flex items-start justify-between gap-3">
-                    <div><div className="text-sm font-medium text-[#eef0f1]">{title}</div><div className="mt-1.5 text-xs leading-relaxed text-[#7f8790]">{description}</div></div>
-                    <div className={`mt-0.5 flex h-5 w-5 items-center justify-center rounded-md border ${sections[key] ? 'border-[#d8dce0] bg-[#eceff1] text-[#0b0e10]' : 'border-[#4a5159]'}`}>{sections[key] && <Check className="h-3.5 w-3.5" />}</div>
+                    <div><div className="text-sm font-medium text-ink">{title}</div><div className="mt-1.5 text-xs leading-relaxed text-ink-3">{description}</div></div>
+                    <div className={`mt-0.5 flex h-5 w-5 items-center justify-center rounded-md border ${sections[key] ? 'border-ink bg-ink text-paper' : 'border-rule'}`}>{sections[key] && <Check className="h-3.5 w-3.5" />}</div>
                   </div>
                 </button>
               ))}
@@ -186,24 +184,24 @@ export function IntelligenceExportModal({
           </div>
 
           <aside>
-            <div className="sticky top-8 rounded-[22px] border border-[#2b3035] bg-[#101316] p-5">
-              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.17em] text-[#858d96]">{tr('export.formats')}</div>
+            <div className="sticky top-8 rounded-[22px] border border-rule bg-paper-2 p-5">
+              <div className="font-mono text-[10px] font-bold uppercase tracking-[0.17em] text-ink-3">{tr('export.formats')}</div>
               <div className="mt-4 grid gap-3">
-                <button disabled={isExporting} onClick={() => doExport('html','html','text/html;charset=utf-8',()=>generateIntelligenceHtml(target,results,sections,requirement,language))} className="group flex items-center gap-4 rounded-[16px] border border-[#343a40] p-4 text-left hover:border-[#606873] disabled:opacity-50">
-                  <FileCode2 className="h-5 w-5 text-[#cbd0d5]" /><div className="flex-1"><div className="text-sm font-medium text-[#f1f2f3]">{tr('export.html')}</div><div className="mt-1 text-xs text-[#7f8790]">{tr('export.htmlDesc')}</div></div><Download className="h-4 w-4" />
+                <button disabled={isExporting} onClick={() => doExport('html','html','text/html;charset=utf-8',()=>generateIntelligenceHtml(target,results,sections,requirement,language))} className="group flex items-center gap-4 rounded-[16px] border border-rule p-4 text-left hover:border-ink-3 disabled:opacity-50">
+                  <FileCode2 className="h-5 w-5 text-ink" /><div className="flex-1"><div className="text-sm font-medium text-ink">{tr('export.html')}</div><div className="mt-1 text-xs text-ink-3">{tr('export.htmlDesc')}</div></div><Download className="h-4 w-4" />
                 </button>
-                <button disabled={isExporting} onClick={() => doExport('json','json','application/json;charset=utf-8',()=>generateIntelligenceJson(target,results,sections,requirement,language))} className="group flex items-center gap-4 rounded-[16px] border border-[#343a40] p-4 text-left hover:border-[#606873] disabled:opacity-50">
-                  <FileJson2 className="h-5 w-5 text-[#cbd0d5]" /><div className="flex-1"><div className="text-sm font-medium text-[#f1f2f3]">{tr('export.json')}</div><div className="mt-1 text-xs text-[#7f8790]">{tr('export.jsonDesc')}</div></div><Download className="h-4 w-4" />
+                <button disabled={isExporting} onClick={() => doExport('json','json','application/json;charset=utf-8',()=>generateIntelligenceJson(target,results,sections,requirement,language))} className="group flex items-center gap-4 rounded-[16px] border border-rule p-4 text-left hover:border-ink-3 disabled:opacity-50">
+                  <FileJson2 className="h-5 w-5 text-ink" /><div className="flex-1"><div className="text-sm font-medium text-ink">{tr('export.json')}</div><div className="mt-1 text-xs text-ink-3">{tr('export.jsonDesc')}</div></div><Download className="h-4 w-4" />
                 </button>
-                <button disabled={isExporting} onClick={() => doExport('markdown','md','text/markdown;charset=utf-8',()=>generateIntelligenceMarkdown(target,results,sections,requirement,language))} className="group flex items-center gap-4 rounded-[16px] border border-[#343a40] p-4 text-left hover:border-[#606873] disabled:opacity-50">
-                  <FileCode2 className="h-5 w-5 text-[#cbd0d5]" /><div className="flex-1"><div className="text-sm font-medium text-[#f1f2f3]">Markdown</div><div className="mt-1 text-xs text-[#7f8790]">{tr('export.markdownDesc')}</div></div><Download className="h-4 w-4" />
+                <button disabled={isExporting} onClick={() => doExport('markdown','md','text/markdown;charset=utf-8',()=>generateIntelligenceMarkdown(target,results,sections,requirement,language))} className="group flex items-center gap-4 rounded-[16px] border border-rule p-4 text-left hover:border-ink-3 disabled:opacity-50">
+                  <FileCode2 className="h-5 w-5 text-ink" /><div className="flex-1"><div className="text-sm font-medium text-ink">Markdown</div><div className="mt-1 text-xs text-ink-3">{tr('export.markdownDesc')}</div></div><Download className="h-4 w-4" />
                 </button>
-                <button disabled={isExporting} onClick={() => doExport('csv','csv','text/csv;charset=utf-8',()=>generateEvidenceCsv(target,results,requirement,language))} className="group flex items-center gap-4 rounded-[16px] border border-[#343a40] p-4 text-left hover:border-[#606873] disabled:opacity-50">
-                  <FileSpreadsheet className="h-5 w-5 text-[#cbd0d5]" /><div className="flex-1"><div className="text-sm font-medium text-[#f1f2f3]">{tr('export.csv')}</div><div className="mt-1 text-xs text-[#7f8790]">{tr('export.csvDesc')}</div></div><Download className="h-4 w-4" />
+                <button disabled={isExporting} onClick={() => doExport('csv','csv','text/csv;charset=utf-8',()=>generateEvidenceCsv(target,results,requirement,language))} className="group flex items-center gap-4 rounded-[16px] border border-rule p-4 text-left hover:border-ink-3 disabled:opacity-50">
+                  <FileSpreadsheet className="h-5 w-5 text-ink" /><div className="flex-1"><div className="text-sm font-medium text-ink">{tr('export.csv')}</div><div className="mt-1 text-xs text-ink-3">{tr('export.csvDesc')}</div></div><Download className="h-4 w-4" />
                 </button>
               </div>
-              <div className="mt-5 border-t border-[#282d32] pt-4 text-xs leading-relaxed text-[#7f8790]">
-                <b className="text-[#b9bec4]">{tr('export.integrity')}:</b> {tr('export.integrityDesc')}
+              <div className="mt-5 border-t border-rule pt-4 text-xs leading-relaxed text-ink-3">
+                <b className="text-ink-2">{tr('export.integrity')}:</b> {tr('export.integrityDesc')}
               </div>
             </div>
           </aside>

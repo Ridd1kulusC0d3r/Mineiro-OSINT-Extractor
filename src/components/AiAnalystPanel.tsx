@@ -55,21 +55,21 @@ export function AiAnalystPanel({ target, results, apiKey, model, requirement = '
   };
 
   return (
-    <section className="rounded-[24px] border border-[#2b3035] bg-[#101316] p-6 md:p-8">
+    <section className="rounded-[24px] border border-rule bg-paper-2 p-6 md:p-8">
       <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-2xl">
-          <div className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-[#9299a2]">
+          <div className="flex items-center gap-2 font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-ink-3">
             <BrainCircuit className="h-4 w-4" />
             AI Analyst Copilot
           </div>
-          <h3 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-[#f4f5f6]">
+          <h3 className="mt-3 text-2xl font-semibold tracking-[-0.03em] text-ink">
             {tr('ai.copilotTitle')}
           </h3>
-          <p className="mt-3 text-sm leading-relaxed text-[#8f969f]">
+          <p className="mt-3 text-sm leading-relaxed text-ink-3">
             {tr('ai.copilotDesc')}
           </p>
         </div>
-        <div className="rounded-xl border border-[#333941] px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#aeb4bb]">
+        <div className="rounded-xl border border-rule px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-2">
           {tr('ai.optional')}
         </div>
       </div>
@@ -79,13 +79,13 @@ export function AiAnalystPanel({ target, results, apiKey, model, requirement = '
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           placeholder={tr('ai.questionPlaceholder')}
-          className="min-h-11 flex-1 rounded-xl border border-[#30363c] bg-[#0b0e10] px-4 text-sm text-[#eef0f2] outline-none placeholder:text-[#626a73] focus:border-[#646c75]"
+          className="min-h-11 flex-1 rounded-xl border border-rule bg-paper px-4 text-sm text-ink outline-none placeholder:text-ink-3 focus:border-ink-3"
         />
         <button
           type="button"
           onClick={run}
           disabled={isLoading || results.length === 0}
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#49515a] bg-[#171b1f] px-5 text-sm font-medium text-[#f1f2f3] hover:bg-[#1c2125] disabled:opacity-40"
+          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-rule bg-rule-2 px-5 text-sm font-medium text-ink hover:bg-rule-2 disabled:opacity-40"
         >
           {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           Analisar
@@ -93,53 +93,53 @@ export function AiAnalystPanel({ target, results, apiKey, model, requirement = '
       </div>
 
       {error && (
-        <div className="mt-4 rounded-xl border border-[#4a3f3f] bg-[#171313] p-4 text-sm text-[#c7b8b8]">{error}</div>
+        <div className="mt-4 rounded-xl border border-rule bg-card p-4 text-sm text-ink-2">{error}</div>
       )}
 
       {output && (
-        <div className="mt-7 space-y-6 border-t border-[#282d32] pt-6">
+        <div className="mt-7 space-y-6 border-t border-rule pt-6">
           <div>
-            <div className="flex items-center gap-2 text-sm font-medium text-[#f1f2f3]">
+            <div className="flex items-center gap-2 text-sm font-medium text-ink">
               <Sparkles className="h-4 w-4" />
               Executive brief
             </div>
-            <p className="mt-3 max-w-4xl text-base leading-relaxed text-[#a2a8b0]">{output.executiveBrief}</p>
+            <p className="mt-3 max-w-4xl text-base leading-relaxed text-ink-3">{output.executiveBrief}</p>
           </div>
 
           <div className="grid gap-5 lg:grid-cols-3">
             <div>
-              <div className="text-[10px] uppercase tracking-[0.16em] text-[#858c95]">{tr('ai.contradictions')}</div>
+              <div className="text-[10px] uppercase tracking-[0.16em] text-ink-3">{tr('ai.contradictions')}</div>
               <div className="mt-3 space-y-2">
                 {(output.contradictionsToResolve || []).map((item, i) => (
-                  <div key={i} className="border-l border-[#4b525a] pl-3 text-sm leading-relaxed text-[#a1a7af]">{item}</div>
+                  <div key={i} className="border-l border-rule pl-3 text-sm leading-relaxed text-ink-3">{item}</div>
                 ))}
               </div>
             </div>
             <div>
-              <div className="text-[10px] uppercase tracking-[0.16em] text-[#858c95]">{tr('ai.intelligenceGaps')}</div>
+              <div className="text-[10px] uppercase tracking-[0.16em] text-ink-3">{tr('ai.intelligenceGaps')}</div>
               <div className="mt-3 space-y-3">
                 {(output.intelligenceGaps || []).map((item, i) => (
-                  <div key={i} className="rounded-xl border border-[#292f34] p-3">
-                    <div className="text-xs font-medium text-[#dfe2e5]">{item.importance}</div>
-                    <div className="mt-1 text-sm text-[#a0a6ae]">{item.question}</div>
+                  <div key={i} className="rounded-xl border border-rule p-3">
+                    <div className="text-xs font-medium text-ink">{item.importance}</div>
+                    <div className="mt-1 text-sm text-ink-3">{item.question}</div>
                   </div>
                 ))}
               </div>
             </div>
             <div>
-              <div className="text-[10px] uppercase tracking-[0.16em] text-[#858c95]">{tr('ai.recommendedPivots')}</div>
+              <div className="text-[10px] uppercase tracking-[0.16em] text-ink-3">{tr('ai.recommendedPivots')}</div>
               <div className="mt-3 space-y-3">
                 {(output.recommendedPivots || []).map((item, i) => (
-                  <div key={i} className="rounded-xl border border-[#292f34] p-3">
-                    <div className="text-xs font-medium text-[#dfe2e5]">{item.priority}</div>
-                    <div className="mt-1 text-sm text-[#a0a6ae]">{item.action}</div>
+                  <div key={i} className="rounded-xl border border-rule p-3">
+                    <div className="text-xs font-medium text-ink">{item.priority}</div>
+                    <div className="mt-1 text-sm text-ink-3">{item.action}</div>
                   </div>
                 ))}
               </div>
             </div>
           </div>
 
-          <div className="text-[10px] uppercase tracking-[0.15em] text-[#69717a]">
+          <div className="text-[10px] uppercase tracking-[0.15em] text-ink-3">
             Provenance: AI_SYNTHESIZED · factual confidence raised: NO · model: {output.modelUsed || model || 'configured'}
           </div>
         </div>

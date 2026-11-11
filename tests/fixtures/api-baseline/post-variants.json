@@ -1,0 +1,83 @@
+{
+  "request": {
+    "method": "POST",
+    "path": "/api/osint/variants",
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": "{\"username\":\"mineiro\",\"max\":12}"
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "referrer-policy": "no-referrer",
+    "cross-origin-opener-policy": "same-origin",
+    "permissions-policy": "camera=(), microphone=(), geolocation=()"
+  },
+  "body": {
+    "variants": [
+      {
+        "value": "mineiro_",
+        "kind": "suffix",
+        "similarity": 98
+      },
+      {
+        "value": "mineiro1",
+        "kind": "suffix",
+        "similarity": 98
+      },
+      {
+        "value": "mineiro01",
+        "kind": "suffix",
+        "similarity": 96
+      },
+      {
+        "value": "mineirobr",
+        "kind": "suffix",
+        "similarity": 96
+      },
+      {
+        "value": "mine1ro",
+        "kind": "leet",
+        "similarity": 94
+      },
+      {
+        "value": "mineir0",
+        "kind": "leet",
+        "similarity": 94
+      },
+      {
+        "value": "mineiro_br",
+        "kind": "suffix",
+        "similarity": 94
+      },
+      {
+        "value": "mineiro123",
+        "kind": "suffix",
+        "similarity": 94
+      },
+      {
+        "value": "min3iro",
+        "kind": "leet",
+        "similarity": 93
+      },
+      {
+        "value": "mineiro_dev",
+        "kind": "suffix",
+        "similarity": 93
+      },
+      {
+        "value": "mineiro2024",
+        "kind": "suffix",
+        "similarity": 93
+      },
+      {
+        "value": "mineiro2025",
+        "kind": "suffix",
+        "similarity": 93
+      }
+    ]
+  }
+}

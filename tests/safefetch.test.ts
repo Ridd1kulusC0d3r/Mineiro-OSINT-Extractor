@@ -22,6 +22,13 @@ describe('safeFetch', () => {
   it('accepts ordinary public hostnames and public IP literals', () => {
     expect(assertProbeableUrl('https://x.com/pascho').hostname).toBe('x.com');
     expect(assertProbeableUrl('https://8.8.8.8/').hostname).toBe('8.8.8.8');
+    expect(assertProbeableUrl('https://192.0.80.36/').hostname).toBe('192.0.80.36'); // Gravatar range (defect 1)
+  });
+
+  it('rejects IPv4-mapped IPv6 literals, which the URL parser rewrites to hex', () => {
+    for (const url of ['http://[::ffff:127.0.0.1]/', 'http://[::ffff:169.254.169.254]/', 'http://[::ffff:7f00:1]/', 'http://[64:ff9b::a9fe:a9fe]/']) {
+      expect(() => assertProbeableUrl(url), url).toThrow(BlockedTargetError);
+    }
   });
 
   it('blocks a hostname that resolves to a private address (DNS-level guard)', async () => {

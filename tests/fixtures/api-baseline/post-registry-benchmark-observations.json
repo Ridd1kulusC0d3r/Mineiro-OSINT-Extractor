@@ -1,0 +1,39 @@
+{
+  "request": {
+    "method": "POST",
+    "path": "/api/registry/benchmark",
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": "{\"detectorIds\":[\"github\"],\"observations\":[{\"detectorId\":\"github\",\"expected\":\"present\",\"observed\":\"found\"},{\"detectorId\":\"github\",\"expected\":\"absent\",\"observed\":\"not_found\"}]}"
+  },
+  "status": 200,
+  "headers": {
+    "content-type": "application/json; charset=utf-8",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "referrer-policy": "no-referrer",
+    "cross-origin-opener-policy": "same-origin",
+    "permissions-policy": "camera=(), microphone=(), geolocation=()"
+  },
+  "body": {
+    "detectors": 1,
+    "observations": 2,
+    "metrics": [
+      {
+        "detectorId": "github",
+        "samples": 2,
+        "truePositive": 1,
+        "trueNegative": 1,
+        "falsePositive": 0,
+        "falseNegative": 0,
+        "inconclusive": 0,
+        "precision": 1,
+        "recall": 1,
+        "falsePositiveRate": 0,
+        "availability": 100,
+        "benchmarkScore": 100
+      }
+    ]
+  }
+}
