@@ -5,26 +5,28 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Mineiro Username Intelligence — Manual v1.4.3</title>
 <style>
-:root{--bg:#050505;--panel:#0b0b0b;--panel2:#111;--text:#f5f5f5;--muted:#a3a3a3;--line:#2a2a2a;--strong:#fff;--invert:#050505;--shadow:0 18px 50px rgba(0,0,0,.35)}
-html[data-theme="light"]{--bg:#f7f7f7;--panel:#fff;--panel2:#f0f0f0;--text:#111;--muted:#555;--line:#ccc;--strong:#000;--invert:#fff;--shadow:0 16px 45px rgba(0,0,0,.10)}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.62}
-a{color:var(--strong);text-decoration-thickness:1px;text-underline-offset:3px}code,pre,.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+/* Tokens de src/styles/tokens.css (docs/REFACTOR_PLAN.md, seção 3): escuro por padrão, claro no botão Tema e na impressão. */
+:root{color-scheme:dark;--bg:#100f0d;--panel:#1c1b17;--panel2:#1a1916;--text:#eeebe2;--muted:#bdb8aa;--faint:#958f81;--line:#36332b;--line2:#26241f;--strong:#eeebe2;--invert:#100f0d;--signal:#f0885a;--signal-ink:#131210;--signal-soft:#3a2418;--grid-line:rgba(238,235,226,.045);--shadow:0 14px 34px -14px rgba(0,0,0,.7),0 2px 6px rgba(0,0,0,.35);--mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,"Liberation Mono",monospace;--sans:"Inter",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif}
+html[data-theme="light"]{color-scheme:light;--bg:#f6f5f1;--panel:#ffffff;--panel2:#ecebe4;--text:#15140f;--muted:#45423a;--faint:#625e55;--line:#d6d2c6;--line2:#e6e3da;--strong:#15140f;--invert:#ffffff;--signal:#b43c0e;--signal-ink:#ffffff;--signal-soft:#f7e6dc;--grid-line:rgba(21,20,15,.05);--shadow:0 10px 30px -12px rgba(20,18,12,.18),0 2px 6px rgba(20,18,12,.05)}
+@media print{:root,html[data-theme]{color-scheme:light;--bg:#ffffff;--panel:#ffffff;--panel2:#f6f5f1;--text:#15140f;--muted:#45423a;--faint:#625e55;--line:#d6d2c6;--line2:#e6e3da;--strong:#15140f;--invert:#ffffff;--signal:#b43c0e;--signal-ink:#ffffff;--signal-soft:#f7e6dc;--grid-line:transparent;--shadow:none}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.62 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:var(--strong);text-decoration-color:var(--signal);text-decoration-thickness:1.5px;text-underline-offset:3px}a:hover{color:var(--signal)}code,pre,.mono{font-family:var(--mono)}::selection{background:var(--signal);color:var(--signal-ink)}
 .sidebar{position:fixed;inset:0 auto 0 0;width:290px;background:var(--panel);border-right:1px solid var(--line);padding:22px;overflow:auto;z-index:20}
-.brand{display:flex;gap:12px;align-items:center;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:16px}.mark{width:54px;height:54px;border:2px solid var(--strong);display:grid;place-items:center;font-size:30px;font-weight:900;letter-spacing:-4px}.brand b{display:block;letter-spacing:.12em;font-size:13px}.brand small{color:var(--muted)}
-.nav a{display:block;padding:7px 9px;margin:2px 0;border-left:2px solid transparent;color:var(--muted);text-decoration:none;font-size:12px}.nav a.active{border-color:var(--strong);color:var(--strong);background:var(--panel2)}
-.controls{display:flex;gap:8px;margin-top:18px}.controls button,.top-actions button,.copy{background:transparent;color:var(--text);border:1px solid var(--line);padding:8px 10px;cursor:pointer;font-weight:700}.controls button:hover,.top-actions button:hover,.copy:hover{border-color:var(--strong)}
-main{margin-left:290px;max-width:1250px;padding:42px 54px 90px}.section{padding:38px 0;border-bottom:1px solid var(--line)}h1{font-size:clamp(34px,6vw,72px);line-height:1.02;letter-spacing:-.045em;margin:12px 0 18px}h2{font-size:28px;letter-spacing:-.02em;margin:0 0 18px}h3{font-size:17px;margin:26px 0 8px}.eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}.lead{font-size:20px;max-width:850px;color:var(--muted)}.hero{min-height:76vh;display:flex;flex-direction:column;justify-content:center}.hero-logo{display:flex;align-items:center;gap:20px}.hero-logo .mark{width:92px;height:92px;font-size:48px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.card{background:var(--panel);border:1px solid var(--line);padding:18px;border-radius:10px}.card strong{display:block;font-size:14px}.card p{color:var(--muted);margin:6px 0 0}.callout{border:1px solid var(--line);border-left:4px solid var(--strong);padding:14px 16px;margin:16px 0;background:var(--panel)}.callout b{margin-right:8px}
-pre{background:#000;color:#f5f5f5;border:1px solid #333;padding:16px;overflow:auto;border-radius:8px;position:relative}.codewrap{position:relative}.copy{position:absolute;right:8px;top:8px;background:#111;color:white;border-color:#444;font-size:11px;z-index:2}
-.tabs{border:1px solid var(--line);border-radius:10px;overflow:hidden}.tabbar{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--line);background:var(--panel2)}.tabbar button{background:transparent;border:0;border-right:1px solid var(--line);color:var(--muted);padding:12px 16px;cursor:pointer;font-weight:700}.tabbar button.active{background:var(--strong);color:var(--invert)}.tab{display:none;padding:20px}.tab.active{display:block}
+.brand{display:flex;gap:12px;align-items:center;padding-bottom:18px;border-bottom:1px solid var(--line);margin-bottom:16px}.mark{width:54px;height:54px;border-radius:12px;background:var(--text);color:var(--invert);display:grid;place-items:center;font-size:28px;font-weight:900;letter-spacing:-2px;box-shadow:inset 0 -9px 0 -5px var(--signal)}.brand b{display:block;letter-spacing:.12em;font-size:13px}.brand small{color:var(--muted)}
+.nav a{display:block;padding:7px 9px;margin:2px 0;border-left:2px solid transparent;color:var(--muted);text-decoration:none;font-size:12px}.nav a{border-radius:0 8px 8px 0}.nav a.active{border-color:var(--signal);color:var(--strong);background:var(--panel2)}
+.controls{display:flex;gap:8px;margin-top:18px}.controls button,.top-actions button,.copy{background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 13px;cursor:pointer;font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase}.controls button:hover,.top-actions button:hover,.copy:hover{border-color:var(--signal);color:var(--signal)}
+main{margin-left:290px;max-width:1250px;padding:42px 54px 90px}.section{padding:38px 0;border-bottom:1px solid var(--line)}h1{font-size:clamp(34px,6vw,72px);line-height:1.02;letter-spacing:-.045em;margin:12px 0 18px}h2{font-size:28px;letter-spacing:-.02em;margin:0 0 18px}h3{font-size:17px;margin:26px 0 8px}.eyebrow{display:inline-block;font:700 10.5px/1.5 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--signal);background:var(--signal-soft);border-radius:999px;padding:3px 10px}.lead{font-size:20px;max-width:850px;color:var(--muted)}.hero{min-height:76vh;display:flex;flex-direction:column;justify-content:center}.hero-logo{display:flex;align-items:center;gap:20px}.hero-logo .mark{width:92px;height:92px;font-size:48px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.card{background:var(--panel);border:1px solid var(--line2);padding:18px 20px;border-radius:14px;box-shadow:0 1px 2px rgba(0,0,0,.06)}.card strong{display:block;font-size:14px}.card p{color:var(--muted);margin:6px 0 0}.callout{border:1px solid var(--line2);border-left:3px solid var(--signal);border-radius:9px;padding:14px 16px;margin:16px 0;background:var(--panel)}.callout b{margin-right:8px}
+pre{background:var(--panel2);color:var(--text);border:1px solid var(--line2);padding:16px;overflow:auto;border-radius:9px;position:relative;font-size:12.5px}.codewrap{position:relative}.copy{position:absolute;right:8px;top:8px;z-index:2}
+.tabs{border:1px solid var(--line2);border-radius:14px;overflow:hidden;background:var(--panel)}.tabbar{display:flex;flex-wrap:wrap;gap:4px;padding:6px;border-bottom:1px solid var(--line2);background:var(--panel2)}.tabbar button{background:transparent;border:0;border-radius:999px;color:var(--faint);padding:9px 14px;cursor:pointer;font:600 11.5px var(--mono);letter-spacing:.08em;text-transform:uppercase}.tabbar button:hover{color:var(--text);background:var(--panel)}.tabbar button.active{background:var(--signal);color:var(--signal-ink)}.tab{display:none;padding:20px}.tab.active{display:block}
 .figure{margin:22px 0}.figure svg{width:100%;height:auto;background:var(--panel);border:1px solid var(--line);border-radius:12px}.caption{font-size:12px;color:var(--muted);margin-top:8px}.markers{margin:8px 0 0;padding-left:22px;color:var(--muted);font-size:13px}
-table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--strong);background:var(--panel2)}td{color:var(--muted)}
-.badge{display:inline-block;border:1px solid var(--line);padding:3px 7px;font-size:10px;text-transform:uppercase;letter-spacing:.08em}.top-actions{position:fixed;right:18px;bottom:18px;display:flex;gap:8px;z-index:30}.top-actions button{background:var(--panel);box-shadow:var(--shadow)}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-align:top}th{font:600 10.5px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);background:var(--panel);border-bottom-color:var(--line)}td{border-bottom-color:var(--line2)}td{color:var(--muted)}
+.badge{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 9px;font:600 10px var(--mono);text-transform:uppercase;letter-spacing:.08em}.top-actions{position:fixed;right:18px;bottom:18px;display:flex;gap:8px;z-index:30}.top-actions button{background:var(--panel);box-shadow:var(--shadow)}
 details{border:1px solid var(--line);padding:14px 16px;background:var(--panel);border-radius:8px}details+details{margin-top:10px}summary{cursor:pointer;font-weight:800}
-svg text{font-family:Inter,Arial,sans-serif;fill:var(--text)}svg .box{fill:var(--panel2);stroke:var(--line);stroke-width:1.5}svg .arrow{stroke:var(--strong);stroke-width:2;fill:none;marker-end:url(#arrow)}svg .muted{fill:var(--muted)}svg .num{fill:var(--strong)}svg .numtext{fill:var(--invert);font-weight:900}
+svg text{font-family:var(--sans);fill:var(--text)}svg .box{fill:var(--panel2);stroke:var(--line);stroke-width:1.5}svg .arrow{stroke:var(--signal);stroke-width:2;fill:none;marker-end:url(#arrow)}svg .muted{fill:var(--muted)}svg .num{fill:var(--signal)}svg .numtext{fill:var(--signal-ink);font-weight:900}
 .footer{padding-top:30px;color:var(--muted);font-size:12px}
 @media(max-width:900px){.sidebar{position:static;width:auto;height:auto}.nav{display:none}main{margin-left:0;padding:26px 18px}.grid,.grid3{grid-template-columns:1fr}.hero{min-height:auto;padding-top:20px}.top-actions{bottom:10px;right:10px}}
-@media print{.sidebar,.top-actions,.copy,.tabbar{display:none!important}main{margin:0;max-width:none;padding:0;color:#000}.section{break-inside:avoid;border-color:#ccc}body{background:white;color:black}.card,.callout,details{background:white;border-color:#bbb}pre{white-space:pre-wrap}.tab{display:block!important;padding:10px 0}.tabs{border:0}a{color:black}.figure svg{background:white}}
+@media print{.sidebar,.top-actions,.copy,.tabbar{display:none!important}main{margin:0;max-width:none;padding:0}.section{break-inside:avoid}.card,.callout,details{box-shadow:none}pre{white-space:pre-wrap}.tab{display:block!important;padding:10px 0}.tabs{border:0}}
 </style>
 </head>
 <body>
@@ -41,7 +43,7 @@ svg text{font-family:Inter,Arial,sans-serif;fill:var(--text)}svg .box{fill:var(-
 <main>
 <section id="capa" class="section hero">
   <div class="eyebrow">Manual oficial · 26/09/2026</div>
-  <div class="hero-logo"><div class="mark">M</div><div><h1>MINEIRO<br>USERNAME EXTRACTOR</h1></div></div>
+  <div class="hero-logo"><div class="mark">M</div><div><h1>Mineiro Username<br>Intelligence</h1></div></div>
   <p class="lead">Encontre sinais públicos associados a um username, compare detectores por confiabilidade e organize a pegada digital observada sem transformar hipótese em certeza.</p>
   <div class="grid3">
     <div class="card"><strong>985 detectores no Registry</strong><p>Catálogo modular e versionado.</p></div>
@@ -146,17 +148,17 @@ svg text{font-family:Inter,Arial,sans-serif;fill:var(--text)}svg .box{fill:var(-
 
 <div class="figure">
 <svg viewBox="0 0 1000 360" role="img" aria-label="Ilustração da tela principal anotada">
-<rect x="25" y="20" width="950" height="320" rx="12" fill="#050505" stroke="#555"/>
-<rect x="45" y="40" width="910" height="56" fill="#111" stroke="#333"/><text x="72" y="74" fill="#fff" font-weight="800">M  MINEIRO USERNAME INTELLIGENCE</text>
-<rect x="45" y="118" width="620" height="54" fill="#0b0b0b" stroke="#444"/><text x="65" y="151" fill="#aaa">@username</text>
-<rect x="685" y="118" width="270" height="54" fill="#fff"/><text x="820" y="151" fill="#050505" text-anchor="middle" font-weight="800">START SCAN</text>
-<rect x="45" y="194" width="280" height="120" fill="#0b0b0b" stroke="#333"/><text x="65" y="225" fill="#fff">REGISTRY</text><text x="65" y="251" fill="#aaa">985 detectores</text>
-<rect x="345" y="194" width="280" height="120" fill="#0b0b0b" stroke="#333"/><text x="365" y="225" fill="#fff">RESULTS</text><text x="365" y="251" fill="#aaa">found · uncertain · absent</text>
-<rect x="645" y="194" width="310" height="120" fill="#0b0b0b" stroke="#333"/><text x="665" y="225" fill="#fff">RELIABILITY</text><text x="665" y="251" fill="#aaa">qualidade do detector</text>
-<circle cx="648" cy="128" r="16" fill="#fff"/><text x="648" y="134" text-anchor="middle" fill="#000" font-weight="900">①</text>
-<circle cx="935" cy="205" r="16" fill="#fff"/><text x="935" y="211" text-anchor="middle" fill="#000" font-weight="900">②</text>
-<circle cx="335" cy="300" r="16" fill="#fff"/><text x="335" y="306" text-anchor="middle" fill="#000" font-weight="900">③</text>
-<text x="500" y="334" text-anchor="middle" fill="#777" font-size="11">ILUSTRAÇÃO · interface simplificada</text>
+<rect style="fill:var(--bg);stroke:var(--line)" x="25" y="20" width="950" height="320" rx="12"/>
+<rect style="fill:var(--panel2);stroke:var(--line)" x="45" y="40" width="910" height="56"/><text style="fill:var(--text)" x="72" y="74" font-weight="800">M  MINEIRO USERNAME INTELLIGENCE</text>
+<rect style="fill:var(--panel2);stroke:var(--line)" x="45" y="118" width="620" height="54"/><text style="fill:var(--muted)" x="65" y="151">@username</text>
+<rect style="fill:var(--signal)" x="685" y="118" width="270" height="54"/><text style="fill:var(--signal-ink)" x="820" y="151" text-anchor="middle" font-weight="800">START SCAN</text>
+<rect style="fill:var(--panel2);stroke:var(--line)" x="45" y="194" width="280" height="120"/><text style="fill:var(--text)" x="65" y="225">REGISTRY</text><text style="fill:var(--muted)" x="65" y="251">985 detectores</text>
+<rect style="fill:var(--panel2);stroke:var(--line)" x="345" y="194" width="280" height="120"/><text style="fill:var(--text)" x="365" y="225">RESULTS</text><text style="fill:var(--muted)" x="365" y="251">found · uncertain · absent</text>
+<rect style="fill:var(--panel2);stroke:var(--line)" x="645" y="194" width="310" height="120"/><text style="fill:var(--text)" x="665" y="225">RELIABILITY</text><text style="fill:var(--muted)" x="665" y="251">qualidade do detector</text>
+<circle style="fill:var(--signal)" cx="648" cy="128" r="16"/><text style="fill:var(--signal-ink)" x="648" y="134" text-anchor="middle" font-weight="900">①</text>
+<circle style="fill:var(--signal)" cx="935" cy="205" r="16"/><text style="fill:var(--signal-ink)" x="935" y="211" text-anchor="middle" font-weight="900">②</text>
+<circle style="fill:var(--signal)" cx="335" cy="300" r="16"/><text style="fill:var(--signal-ink)" x="335" y="306" text-anchor="middle" font-weight="900">③</text>
+<text style="fill:var(--muted)" x="500" y="334" text-anchor="middle" font-size="11">ILUSTRAÇÃO · interface simplificada</text>
 </svg>
 <div class="caption">Figura 4 — Tela principal anotada. Ilustração fiel ao fluxo geral.</div>
 <ol class="markers"><li>Campo de username.</li><li>Ação de início da varredura.</li><li>Painéis de Registry, resultados e confiabilidade.</li></ol>
@@ -173,14 +175,14 @@ svg text{font-family:Inter,Arial,sans-serif;fill:var(--text)}svg .box{fill:var(-
 <div class="callout"><b>✅ Deu certo</b>O terminal termina com <code>[PASS] Demo sintética validada com sucesso.</code></div>
 <div class="figure">
 <svg viewBox="0 0 1000 310" role="img" aria-label="Ilustração do terminal da demo anotada">
-<rect x="25" y="20" width="950" height="270" rx="12" fill="#000" stroke="#444"/>
-<text x="55" y="65" fill="#f5f5f5" font-family="monospace">Mineiro synthetic Detector Bench demo</text>
-<text x="55" y="100" fill="#aaa" font-family="monospace">github   benchmarkScore: 100</text>
-<text x="55" y="130" fill="#aaa" font-family="monospace">gitlab   benchmarkScore: 83</text>
-<text x="55" y="180" fill="#fff" font-family="monospace">[PASS] Demo sintética validada com sucesso.</text>
-<circle cx="890" cy="170" r="17" fill="#fff"/><text x="890" y="176" text-anchor="middle" fill="#000" font-weight="900">①</text>
-<circle cx="430" cy="94" r="17" fill="#fff"/><text x="430" y="100" text-anchor="middle" fill="#000" font-weight="900">②</text>
-<text x="500" y="275" text-anchor="middle" fill="#777" font-size="11">ILUSTRAÇÃO</text>
+<rect style="fill:var(--bg);stroke:var(--line)" x="25" y="20" width="950" height="270" rx="12"/>
+<text style="fill:var(--text)" x="55" y="65" font-family="monospace">Mineiro synthetic Detector Bench demo</text>
+<text style="fill:var(--muted)" x="55" y="100" font-family="monospace">github   benchmarkScore: 100</text>
+<text style="fill:var(--muted)" x="55" y="130" font-family="monospace">gitlab   benchmarkScore: 83</text>
+<text style="fill:var(--text)" x="55" y="180" font-family="monospace">[PASS] Demo sintética validada com sucesso.</text>
+<circle style="fill:var(--signal)" cx="890" cy="170" r="17"/><text style="fill:var(--signal-ink)" x="890" y="176" text-anchor="middle" font-weight="900">①</text>
+<circle style="fill:var(--signal)" cx="430" cy="94" r="17"/><text style="fill:var(--signal-ink)" x="430" y="100" text-anchor="middle" font-weight="900">②</text>
+<text style="fill:var(--muted)" x="500" y="275" text-anchor="middle" font-size="11">ILUSTRAÇÃO</text>
 </svg>
 <div class="caption">Figura 5 — Resultado esperado da demo. Ilustração.</div>
 <ol class="markers"><li>PASS confirma que o cálculo bateu com o resultado esperado.</li><li>Os scores pertencem a detectores sinteticamente avaliados, não a pessoas.</li></ol>
@@ -210,16 +212,16 @@ svg text{font-family:Inter,Arial,sans-serif;fill:var(--text)}svg .box{fill:var(-
 </tbody></table>
 <div class="figure">
 <svg viewBox="0 0 1000 350" role="img" aria-label="Ilustração de relatório anotado">
-<rect x="25" y="20" width="950" height="310" rx="12" fill="#fafafa" stroke="#333"/>
-<text x="55" y="60" fill="#111" font-weight="900">MINEIRO · INTELLIGENCE REPORT</text>
-<line x1="55" y1="78" x2="945" y2="78" stroke="#bbb"/>
-<text x="55" y="112" fill="#111">Target: synthetic_demo</text>
-<text x="55" y="145" fill="#555">FOUND  4   ·   UNCERTAIN  1   ·   ABSENT  45</text>
-<rect x="55" y="175" width="400" height="110" fill="#fff" stroke="#bbb"/><text x="75" y="208" fill="#111" font-weight="700">Detector Reliability</text><text x="75" y="240" fill="#555">GitHub 92/100 · HIGH</text>
-<rect x="485" y="175" width="460" height="110" fill="#fff" stroke="#bbb"/><text x="505" y="208" fill="#111" font-weight="700">Evidence</text><text x="505" y="240" fill="#555">7/8 logical checks</text>
-<circle cx="438" cy="186" r="16" fill="#111"/><text x="438" y="192" text-anchor="middle" fill="#fff" font-weight="900">①</text>
-<circle cx="925" cy="186" r="16" fill="#111"/><text x="925" y="192" text-anchor="middle" fill="#fff" font-weight="900">②</text>
-<text x="500" y="316" text-anchor="middle" fill="#777" font-size="11">ILUSTRAÇÃO</text>
+<rect style="fill:var(--panel);stroke:var(--line)" x="25" y="20" width="950" height="310" rx="12"/>
+<text style="fill:var(--text)" x="55" y="60" font-weight="900">MINEIRO · INTELLIGENCE REPORT</text>
+<line style="stroke:var(--line)" x1="55" y1="78" x2="945" y2="78"/>
+<text style="fill:var(--text)" x="55" y="112">Target: synthetic_demo</text>
+<text style="fill:var(--muted)" x="55" y="145">FOUND  4   ·   UNCERTAIN  1   ·   ABSENT  45</text>
+<rect style="fill:var(--panel);stroke:var(--line)" x="55" y="175" width="400" height="110"/><text style="fill:var(--text)" x="75" y="208" font-weight="700">Detector Reliability</text><text style="fill:var(--muted)" x="75" y="240">GitHub 92/100 · HIGH</text>
+<rect style="fill:var(--panel);stroke:var(--line)" x="485" y="175" width="460" height="110"/><text style="fill:var(--text)" x="505" y="208" font-weight="700">Evidence</text><text style="fill:var(--muted)" x="505" y="240">7/8 logical checks</text>
+<circle style="fill:var(--signal)" cx="438" cy="186" r="16"/><text style="fill:var(--signal-ink)" x="438" y="192" text-anchor="middle" font-weight="900">①</text>
+<circle style="fill:var(--signal)" cx="925" cy="186" r="16"/><text style="fill:var(--signal-ink)" x="925" y="192" text-anchor="middle" font-weight="900">②</text>
+<text style="fill:var(--muted)" x="500" y="316" text-anchor="middle" font-size="11">ILUSTRAÇÃO</text>
 </svg>
 <div class="caption">Figura 6 — Leitura de relatório. Ilustração.</div>
 <ol class="markers"><li>Score do detector.</li><li>Quantidade de sinais de evidência observados.</li></ol>
