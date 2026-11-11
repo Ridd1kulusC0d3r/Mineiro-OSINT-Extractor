@@ -87,6 +87,8 @@ jobs:
         run: |
           bash -n iniciar-mineiro.sh
           bash -n Iniciar-Mineiro.command
+          bash -n packaging/install-linux.sh
+          shellcheck packaging/install-linux.sh
 
       - name: Build production bundle
         run: npm run build

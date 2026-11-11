@@ -1,0 +1,95 @@
+name: Linux install matrix
+
+# Runs packaging/install-linux.sh --from-source in a clean container of each supported distribution, then boots
+# the installed `mineiro` and checks the page, the API and the CLI.
+on:
+  pull_request:
+    paths:
+      - "packaging/**"
+      - ".github/workflows/linux-matrix.yml"
+      - "package.json"
+      - "python/pyproject.toml"
+  schedule:
+    - cron: "23 5 * * 1" # Mondays 05:23 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: linux-matrix-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  install:
+    name: ${{ matrix.image }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        image:
+          - debian:stable
+          - ubuntu:24.04
+          - kalilinux/kali-rolling
+          - parrotsec/core
+          - amazonlinux:2023
+    container:
+      image: ${{ matrix.image }}
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      # The images have no git, curl or sudo. Install only what the checkout and the smoke test need; the
+      # installer itself must bring in everything the app needs (Python with venv, Node via the package).
+      - name: Bootstrap the container (git, curl, CA certificates)
+        run: |
+          if command -v apt-get >/dev/null 2>&1; then
+            apt-get update
+            DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates curl git
+          else
+            dnf install -y git tar gzip
+            command -v curl >/dev/null 2>&1 || dnf install -y curl-minimal
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Installer dry run
+        run: bash packaging/install-linux.sh --dry-run --from-source --prefix /opt/mineiro
+
+      - name: Install from the checkout
+        run: bash packaging/install-linux.sh --from-source --prefix /opt/mineiro
+
+      - name: CLI --version and --check
+        run: |
+          expected=$(sed -n 's/^  "version": "\(.*\)",$/\1/p' package.json)
+          /opt/mineiro/bin/mineiro --version | tee /tmp/version.txt
+          grep -qx "mineiro ${expected}" /tmp/version.txt
+          /opt/mineiro/bin/mineiro --check
+
+      - name: Smoke test (page and API answer 200)
+        run: |
+          /opt/mineiro/bin/mineiro --no-browser --port 3199 --data-dir /tmp/mineiro-data >/tmp/mineiro.log 2>&1 &
+          pid=$!
+          ok=0
+          for _ in $(seq 1 60); do
+            if curl -sf -o /dev/null http://127.0.0.1:3199/api/health; then ok=1; break; fi
+            sleep 1
+          done
+          if [ "$ok" -ne 1 ]; then cat /tmp/mineiro.log; exit 1; fi
+          for path in / /api/health /api/registry/stats; do
+            code=$(curl -s -o /tmp/body -w '%{http_code}' "http://127.0.0.1:3199${path}")
+            echo "GET ${path} -> ${code}"
+            [ "$code" = "200" ] || { cat /tmp/mineiro.log; exit 1; }
+          done
+          curl -sf http://127.0.0.1:3199/ | grep -q '<div id="root">'
+          curl -sf http://127.0.0.1:3199/api/health | grep -q '"status":"ok"'
+          kill "$pid"
+
+      - name: Uninstall
+        run: |
+          bash packaging/install-linux.sh --uninstall --prefix /opt/mineiro
+          test ! -e /opt/mineiro/bin/mineiro
+          test ! -e /opt/mineiro/share/mineiro-osint
