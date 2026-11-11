@@ -28,7 +28,8 @@ import {
   getHeatmapIntensityColor,
   getContrastTextColor,
   HEATMAP_STOPS,
-  EXPOSURE_COLORS
+  EXPOSURE_COLORS,
+  useThemeVersion
 } from '../theme/palette';
 
 interface CategoryHeatMapProps {
@@ -314,6 +315,9 @@ export function CategoryHeatMap({
   }, [selectedCategory, filteredAndSortedCategories]);
 
   // 2. D3 Heat Map Rendering
+  // A escala térmica usa cores resolvidas do tema: redesenha quando o tema muda.
+  const themeVersion = useThemeVersion();
+
   useEffect(() => {
     if (!svgRef.current || !containerRef.current) return;
     const svgEl = svgRef.current;
@@ -520,7 +524,7 @@ export function CategoryHeatMap({
       .attr('stroke-dasharray', '3 2')
       .attr('class', 'animate-pulse');
 
-  }, [filteredAndSortedCategories, selectedCategory, onSelectCategory, containerWidth]);
+  }, [filteredAndSortedCategories, selectedCategory, onSelectCategory, containerWidth, themeVersion]);
 
   const copyPlatformUrl = (url: string) => {
     navigator.clipboard.writeText(url);
