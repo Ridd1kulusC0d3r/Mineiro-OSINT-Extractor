@@ -687,7 +687,7 @@ export function NetworkRelationshipGraph({
       .attr('font-weight', (d: GraphNode) => (d.type === 'target' || d.type === 'category' ? 'bold' : 'normal'))
       .attr('font-family', 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace')
       .attr('pointer-events', 'none')
-      .attr('filter', 'drop-shadow(0px 1px 2px rgba(0,0,0,0.9))');
+      .attr('filter', 'drop-shadow(0px 1px 2px color-mix(in srgb, var(--paper) 90%, transparent))');
 
     // Simulation tick handler
     simulation.on('tick', () => {

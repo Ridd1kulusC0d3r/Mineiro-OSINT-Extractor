@@ -658,7 +658,7 @@ export function WorldThreatMap({
         .attr('font-size', isSelected ? '10px' : '8.5px')
         .attr('font-family', 'monospace')
         .attr('font-weight', isSelected ? 'bold' : 'normal')
-        .attr('text-shadow', '0 1px 3px rgba(7,7,11,0.95)')
+        .attr('text-shadow', '0 1px 3px color-mix(in srgb, var(--paper) 95%, transparent)')
         .text(`${origin.platformName} [${origin.serverIp}]`);
     });
 

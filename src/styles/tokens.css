@@ -15,7 +15,7 @@
   --ink-2: #bdb8aa;
   --ink-3: #958f81;
   --rule: #36332b;
-  --rule-2: #26241f;
+  --rule-2: #26241f; /* preenchimento de hover/ativo; linhas usam rule */
   --signal: #f0885a;
   --signal-ink: #131210;
   --signal-soft: #3a2418;
@@ -46,7 +46,9 @@
   --seq-4: #7c2406;
 }
 
-/* Preto e branco puros: fundo, texto e bordas mudam. Só as escalas (seq) usam cinza, porque precisam de gradação. */
+/* Preto e branco puros em fundo, texto, bordas e signal. Cinza só em dois lugares: rule-2, que na interface é
+   preenchimento (hover, aba ativa, tecla) com texto ink por cima e por isso não pode ser branco como as linhas,
+   e as escalas seq, que precisam de gradação. */
 :root[data-theme="high-contrast"] {
   color-scheme: dark;
   --paper: #000000;
@@ -56,7 +58,7 @@
   --ink-2: #ffffff;
   --ink-3: #ffffff;
   --rule: #ffffff;
-  --rule-2: #ffffff;
+  --rule-2: #333333;
   --signal: #ffffff;
   --signal-ink: #000000;
   --signal-soft: #000000;

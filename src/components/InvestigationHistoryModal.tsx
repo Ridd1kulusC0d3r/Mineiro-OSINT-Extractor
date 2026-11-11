@@ -206,7 +206,7 @@ export function InvestigationHistoryModal({
                   key={i}
                   className={`w-2.5 h-2.5 inline-block ${
                     i < usedSlots
-                      ? 'bg-ink-3 shadow-[0_0_8px_rgba(52,211,153,0.4)]'
+                      ? 'bg-ink-3 shadow-[0_0_8px_color-mix(in_srgb,var(--ink-3)_40%,transparent)]'
                       : 'bg-rule border border-rule'
                   }`}
                   title={i < usedSlots ? `Slot ${i + 1} occupied` : `Slot ${i + 1} empty`}

@@ -249,7 +249,7 @@ export function BulkScanView({
 
       {/* Active Target Radar Spotlight */}
       {activeItem && (
-        <div className="p-4 border border-ink-3/60 bg-paper-2/20 space-y-3 relative overflow-hidden shadow-[0_0_20px_rgba(16,185,129,0.08)]">
+        <div className="p-4 border border-ink-3/60 bg-paper-2/20 space-y-3 relative overflow-hidden shadow-[0_0_20px_color-mix(in_srgb,var(--ink)_8%,transparent)]">
           <div className="absolute inset-0 pointer-events-none overflow-hidden">
             <div className="absolute inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-ink-3/40 to-transparent animate-[radarSweepVertical_2.4s_linear_infinite]" />
           </div>

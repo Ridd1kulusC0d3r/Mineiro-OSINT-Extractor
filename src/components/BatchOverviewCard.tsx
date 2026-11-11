@@ -204,7 +204,7 @@ export function BatchOverviewCard({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-rule pb-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 bg-ink-3 inline-block shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+            <span className="w-2.5 h-2.5 bg-ink-3 inline-block shadow-[0_0_8px_color-mix(in_srgb,var(--ink-3)_80%,transparent)]" />
             <h3 className="text-sm font-bold text-ink uppercase tracking-wider">
               BATCH OVERVIEW // {batch.name.toUpperCase()}
             </h3>
