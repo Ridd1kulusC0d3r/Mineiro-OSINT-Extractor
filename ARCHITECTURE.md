@@ -301,3 +301,39 @@ Design rules:
 - The server never probes a URL the client invented: the URL must match the detector's `urlPattern`, and the resolved IP must be public at connect time.
 - An observation is a fact with a hash; a claim is an inference and must cite observations.
 - `MINEIRO_PUBLIC=1` removes everything that would let a shared instance act as an open scanner or a database of lookups.
+
+## Server layout
+
+```text
+server.ts                 bootstrap: env, banner, Vite (dev) or dist/ + SPA fallback (production), listen
+server/
+  app.ts                  createApp(): headers, JSON body (2 MB), rate limits, routers, /api 404, error handler
+  config.ts               listenHost() (HOST, default 127.0.0.1) and listenPort() (PORT, default 3000)
+  version.ts              VERSION from package.json (health, User-Agent, banner)
+  errors.ts               apiNotFound (JSON 404 for any unanswered /api path) and the final errorHandler
+  routes/
+    registry.ts           /api/health, /api/registry/{stats,detectors,benchmark}
+    verify.ts             /api/osint/verify
+    extras.ts             variants, pivots, avatar-hash, wayback, br/cnpj
+    email.ts              /api/osint/email-recon
+    gemini.ts             /api/osint/gemini-validate
+    copilot.ts            /api/intelligence/copilot{,/status}
+    profile.ts            /api/osint/profile (legacy, 410 unless MINEIRO_ENABLE_LEGACY_PROFILE=1)
+    store.ts              /api/store/* (SQLite)
+  services/gemini.ts      Gemini client, model list and fallback, JSON parsing, timeouts, profile passes
+  security/               securityHeaders, rateLimit, PUBLIC_MODE; safeFetch (guarded DNS, manual redirects)
+  db.ts, detectors.ts, hostLimiter.ts
+```
+
+- `createApp()` never listens and never touches Vite or `dist/`, so `tests/routes.test.ts` starts it on port 0 and
+  calls it with `fetch`, with the outbound `undici` fetch and DNS stubbed. Each call has its own rate-limit buckets.
+- Errors: body-parser errors become a fixed JSON 4xx (`Malformed JSON body`, `Request body too large`); anything
+  unexpected becomes `500 {"error":"Internal server error"}`. Messages and stacks go to the server log only.
+- Listening: `127.0.0.1` unless `HOST` is set. The Docker image and `docker-compose.yml` set `HOST=0.0.0.0`; the pip
+  `mineiro` command passes its own `--host`.
+- SSRF guard (`src/core/net.ts`, used by `safeFetch` before connecting and at DNS resolution): blocked IPv4 ranges are
+  `0/8`, `10/8`, `100.64/10`, `127/8`, `169.254/16`, `172.16/12`, `192.0.0/24`, `192.0.2/24`, `192.88.99/24`,
+  `192.168/16`, `198.18/15`, `198.51.100/24`, `203.0.113/24` and `224/3` (multicast, reserved, broadcast). For IPv6 only
+  global unicast `2000::/3` is allowed, minus `2001::/23`, `2001:db8::/32`, `2002::/16` and `3fff::/20`; IPv4-mapped
+  addresses follow the IPv4 rule. Anything that does not parse as an IP literal is blocked.
+- `npm run api:baseline -- --check` compares 33 normalized responses with `tests/fixtures/api-baseline/`.
