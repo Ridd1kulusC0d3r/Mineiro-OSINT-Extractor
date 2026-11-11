@@ -12,7 +12,10 @@ interface UseBulkBatchOptions {
   navigate: (view: AppView) => void;
 }
 
-/** The batch queue (BulkScanView): one batch at a time, run by src/scan/batch.ts with the scan engine. */
+/**
+ * The batch queue (BulkScanView): one batch at a time, run by src/scan/batch.ts with the scan engine. A running batch
+ * keeps `isScanning` set, so a single scan cannot start until it ends, but it leaves the single-scan workspace alone.
+ */
 export function useBulkBatch({ addLog, scan, navigate }: UseBulkBatchOptions) {
   const [bulkBatch, setBulkBatch] = useState<BulkBatchState | null>(null);
   const controlRef = useRef<BatchControl>(createBatchControl());
@@ -33,13 +36,11 @@ export function useBulkBatch({ addLog, scan, navigate }: UseBulkBatchOptions) {
       control,
       onLog: addLog,
       onUpdate: setBulkBatch,
-      onItemStart: (item) => {
-        scan.setTarget(item.target);
-        scan.setTargetType(item.type);
-      },
+      // Batch items never touch the single-scan workspace: its target, results and e-mail recon stay as the analyst
+      // left them. Each item's results live in the batch; "Inspect" on a finished item opens it explicitly.
       scanItem: (item, config) => scan.execute(
         { target: item.target, targetType: item.type, config },
-        { publish: true, control: batchScanControl(control) }
+        { publish: false, control: batchScanControl(control) }
       ),
     }).finally(() => scan.setIsScanning(false));
   };
