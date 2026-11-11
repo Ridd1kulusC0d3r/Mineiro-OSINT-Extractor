@@ -31,6 +31,7 @@ import { CategoryHeatMap } from './CategoryHeatMap';
 import { RiskMatrix2x2 } from './RiskMatrix2x2';
 import { BatchOverviewCard } from './BatchOverviewCard';
 import { PlatformFavicon } from './PlatformFavicon';
+import { useI18n } from '../utils/i18n';
 import { RegistryOverview } from './RegistryOverview';
 import { useToast } from './Toast';
 import { CATEGORY_COLORS, 
@@ -81,6 +82,7 @@ export function DashboardView({
   onPauseBatch,
   onResumeBatch,
 }: DashboardViewProps) {
+  const { tr } = useI18n();
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
   const [activeVizTab, setActiveVizTab] = useState<'network' | 'geo' | 'linkage' | 'heatmap' | 'risk_matrix'>('network');
 
@@ -142,13 +144,13 @@ export function DashboardView({
     return { label: 'SEVERE', color: EXPOSURE_COLORS.SEVERE.badge };
   }, [foundResults.length]);
 
-  // Confidence index computed from response and corroboration signals
+  // Parcela conclusiva: encontrado ou ausência explícita sobre o total já verificado. É uma contagem, não uma
+  // taxa de falso positivo (o painel antigo mostrava um "índice" inventado entre 85% e 99,8%; defeito 24).
   const confidenceScore = useMemo(() => {
-    if (scannedTotal === 0) return 99.4;
-    const uncertainRatio = uncertainResults.length / scannedTotal;
-    const score = 99.4 - (uncertainRatio * 15);
-    return Math.max(85, Math.min(99.8, score)).toFixed(1);
-  }, [scannedTotal, uncertainResults.length]);
+    if (scannedTotal === 0) return 0;
+    const conclusive = results.filter((r) => r.status === 'found' || r.status === 'not_found').length;
+    return Math.round((conclusive / scannedTotal) * 100);
+  }, [results, scannedTotal]);
 
   const { showToast } = useToast();
 
@@ -166,7 +168,7 @@ export function DashboardView({
   return (
     <div className="space-y-6 font-mono">
       {/* Dashboard Top Banner */}
-      <div className="border border-rule bg-paper-2 p-5 space-y-4 rounded-md">
+      <div className="card p-5 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-rule pb-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
@@ -248,62 +250,62 @@ export function DashboardView({
       {/* KPI Stats Grid - Fixed min-height to eliminate visual shift */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Confirmed Hits */}
-        <div className="p-4 sm:p-5 border border-rule bg-paper-2 rounded-md flex flex-col justify-between min-h-[148px] space-y-2">
-          <div className="flex items-center justify-between text-ink-2 text-xs uppercase">
+        <div className="card card-accent p-4 sm:p-5 flex flex-col justify-between min-h-[148px] space-y-2">
+          <div className="flex items-center justify-between label-mono">
             <span>Verified Hits</span>
             <ShieldCheck className="w-4 h-4 text-ink" />
           </div>
           <div>
-            <div className="text-3xl font-black text-ink tabular-nums">{foundResults.length}</div>
+            <div className="stat-num">{foundResults.length}</div>
             <div className="text-[11px] text-ink-2 mt-0.5">
               {scannedTotal > 0 ? `${((foundResults.length / scannedTotal) * 100).toFixed(1)}% detection rate` : 'Standby'}
             </div>
           </div>
-          <div className="pt-2 border-t border-rule flex justify-between items-center text-[10px] text-ink-2">
+          <div className="pt-2 border-t border-rule-2 flex justify-between items-center text-[10px] text-ink-2">
             <span>STATUS: CONFIRMED</span>
             <span className="text-ink font-bold">200 OK</span>
           </div>
         </div>
 
         {/* Mineiro Guard model Uncertain (Cloudflare / WAF / TLS challenge) */}
-        <div className="p-4 sm:p-5 border border-rule bg-paper-2 rounded-md flex flex-col justify-between min-h-[148px] space-y-2">
-          <div className="flex items-center justify-between text-ink-2 text-xs uppercase">
+        <div className="card card-accent p-4 sm:p-5 flex flex-col justify-between min-h-[148px] space-y-2">
+          <div className="flex items-center justify-between label-mono">
             <span>Uncertain / Protected</span>
             <AlertTriangle className="w-4 h-4 text-ink-2" />
           </div>
           <div>
-            <div className="text-3xl font-black text-ink tabular-nums">{uncertainResults.length}</div>
+            <div className="stat-num">{uncertainResults.length}</div>
             <div className="text-[11px] text-ink-2 mt-0.5">
               Mineiro Guard Cloudflare/WAF challenge
             </div>
           </div>
-          <div className="pt-2 border-t border-rule flex justify-between items-center text-[10px] text-ink-2">
-            <span>HEADLESS / TOR NEEDED</span>
+          <div className="pt-2 border-t border-rule-2 flex justify-between items-center text-[10px] text-ink-2">
+            <span>{tr('dash.notNegative')}</span>
             <span className="text-ink-2">403/WAF</span>
           </div>
         </div>
 
         {/* Confidence Rating  */}
-        <div className="p-4 sm:p-5 border border-rule bg-paper-2 rounded-md flex flex-col justify-between min-h-[148px] space-y-2">
-          <div className="flex items-center justify-between text-ink-2 text-xs uppercase">
-            <span>Confidence Index</span>
+        <div className="card card-accent p-4 sm:p-5 flex flex-col justify-between min-h-[148px] space-y-2">
+          <div className="flex items-center justify-between label-mono">
+            <span>{tr('dash.conclusive')}</span>
             <Activity className="w-4 h-4 text-ink" />
           </div>
           <div>
-            <div className="text-3xl font-black text-ink tabular-nums">{confidenceScore}%</div>
+            <div className="stat-num">{confidenceScore}%</div>
             <div className="text-[11px] text-ink-2 mt-0.5">
-              Zero-false-positive filtering
+              {tr('dash.conclusiveDetail')}
             </div>
           </div>
-          <div className="pt-2 border-t border-rule flex justify-between items-center text-[10px] text-ink-2">
+          <div className="pt-2 border-t border-rule-2 flex justify-between items-center text-[10px] text-ink-2">
             <span>AVG LATENCY</span>
             <span className="text-ink font-bold tabular-nums">{avgLatency} ms</span>
           </div>
         </div>
 
         {/* Public Attack Surface / Exposure Rating */}
-        <div className="p-4 sm:p-5 border border-rule bg-paper-2 rounded-md flex flex-col justify-between min-h-[148px] space-y-2">
-          <div className="flex items-center justify-between text-ink-2 text-xs uppercase">
+        <div className="card card-accent p-4 sm:p-5 flex flex-col justify-between min-h-[148px] space-y-2">
+          <div className="flex items-center justify-between label-mono">
             <span>Attack Surface</span>
             <Fingerprint className="w-4 h-4 text-ink" />
           </div>
@@ -315,7 +317,7 @@ export function DashboardView({
               Public footprint severity
             </div>
           </div>
-          <div className="pt-2 border-t border-rule flex justify-between items-center text-[10px] text-ink-2">
+          <div className="pt-2 border-t border-rule-2 flex justify-between items-center text-[10px] text-ink-2">
             <span>TOTAL PROBES</span>
             <span className="text-ink font-bold tabular-nums">{scannedTotal} sites</span>
           </div>
@@ -323,11 +325,11 @@ export function DashboardView({
       </div>
 
       {/* Multi-Dimensional Analytical Visualizer */}
-      <div className="border border-rule bg-paper-2 rounded-md overflow-hidden space-y-0">
+      <div className="card overflow-hidden space-y-0">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-rule bg-paper-2 p-3 sm:p-4">
           <div className="flex items-center gap-2">
             <Activity className="w-4 h-4 text-ink" />
-            <span className="text-xs font-bold text-ink uppercase tracking-wider">
+            <span className="card-title">
               Analytical OSINT Visualization Engine
             </span>
           </div>
@@ -461,14 +463,14 @@ export function DashboardView({
         <div className="lg:col-span-2 space-y-6">
           {/* AI Intelligence Dossier Brief if available, or on-demand trigger */}
           {aiProfile ? (
-            <div className="border border-rule bg-paper-2 p-5 space-y-3 font-mono rounded-md">
-              <div className="flex items-center justify-between border-b border-rule pb-3">
+            <div className="card p-5 space-y-3 font-mono rounded-md">
+              <div className="flex items-center justify-between border-b border-rule-2 pb-3">
                 <div className="flex items-center gap-2">
                   <BrainCircuit className="w-4 h-4 text-ink" />
-                  <span className="text-xs font-bold text-ink uppercase tracking-wider">
+                  <span className="card-title">
                     AI Intelligence Dossier Summary
                   </span>
-                  <span className="text-[10px] px-2 py-0.5 border border-rule bg-paper text-ink-2 rounded-sm">
+                  <span className="text-[10px] chip">
                     {aiProfile.modelUsed || 'Gemini'}
                   </span>
                 </div>
@@ -484,19 +486,19 @@ export function DashboardView({
                 {aiProfile.summary}
               </p>
               <div className="flex flex-wrap gap-2 pt-1 text-[11px]">
-                <span className="px-2 py-0.5 border border-rule bg-paper text-ink-2 rounded-sm">
+                <span className="chip">
                   Archetype: <strong className="text-ink">{aiProfile.archetype}</strong>
                 </span>
-                <span className="px-2 py-0.5 border border-rule bg-paper text-ink-2 rounded-sm">
+                <span className="chip">
                   Exposure: <strong className="text-ink">{aiProfile.threatLevel}</strong>
                 </span>
-                <span className="px-2 py-0.5 border border-rule bg-paper text-ink-2 rounded-sm">
+                <span className="chip">
                   Surface Score: <strong className="text-ink">{aiProfile.footprintScore} / 100</strong>
                 </span>
               </div>
             </div>
           ) : results.some((r) => r.status === 'found') && !isScanning && onRequestAiProfile ? (
-            <div className="border border-rule bg-paper-2 p-4 font-mono space-y-2.5 rounded-md">
+            <div className="card p-4 font-mono space-y-2.5 rounded-md">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5">
                   <div className="w-7 h-7 border border-rule bg-paper flex items-center justify-center shrink-0 rounded-sm">
@@ -534,11 +536,11 @@ export function DashboardView({
           ) : null}
 
           {/* Category Footprint Breakdown */}
-          <div className="border border-rule bg-paper-2 p-5 space-y-4 rounded-md">
-            <div className="flex items-center justify-between border-b border-rule pb-3">
+          <div className="card p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-rule-2 pb-3">
               <div className="flex items-center gap-2">
                 <Layers className="w-4 h-4 text-ink" />
-                <span className="text-xs font-bold text-ink uppercase tracking-wider">
+                <span className="card-title">
                   Presence by Category & Attack Vector
                 </span>
               </div>
@@ -588,11 +590,11 @@ export function DashboardView({
 
 
           {/* Reliability-weighted Digital Footprint Profile */}
-          <div className="border border-rule bg-paper-2 p-5 space-y-4 rounded-md">
-            <div className="flex items-center justify-between border-b border-rule pb-3">
+          <div className="card p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-rule-2 pb-3">
               <div className="flex items-center gap-2">
                 <Fingerprint className="w-4 h-4 text-ink" />
-                <span className="text-xs font-bold text-ink uppercase tracking-wider">
+                <span className="card-title">
                   Digital Footprint Profile
                 </span>
               </div>
@@ -601,12 +603,11 @@ export function DashboardView({
               </span>
             </div>
             <p className="text-[11px] text-ink-2 leading-relaxed">
-              Classificação baseada apenas nos tipos de serviços onde o mesmo username foi observado.
-              Não representa personalidade, profissão, intenção ou identidade confirmada.
+              {tr('dash.footprintNote')}
             </p>
             {footprintProfile.length === 0 ? (
               <div className="border border-dashed border-rule p-4 text-[11px] text-ink-3">
-                Nenhum cluster com presença observada ainda.
+                {tr('dash.noCluster')}
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
@@ -620,7 +621,7 @@ export function DashboardView({
                       {CATEGORY_LABELS[item.category]?.label || item.category}
                     </div>
                     <div className="text-[10px] text-ink-2">
-                      {item.found} presença(s) · detector médio {item.avgDetector}%
+                      {tr('dash.clusterDetail', { found: item.found, detector: item.avgDetector })}
                     </div>
                     <div className="h-1.5 bg-card border border-rule overflow-hidden">
                       <div className="h-full bg-signal" style={{ width: `${Math.max(4, item.score)}%` }} />
@@ -632,11 +633,11 @@ export function DashboardView({
           </div>
 
           {/* Top Confirmed Discoveries Quick Feed */}
-          <div className="border border-rule bg-paper-2 p-5 space-y-4 rounded-md">
-            <div className="flex items-center justify-between border-b border-rule pb-3">
+          <div className="card p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-rule-2 pb-3">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-ink" />
-                <span className="text-xs font-bold text-ink uppercase tracking-wider">
+                <span className="card-title">
                   Confirmed Target Profiles ({foundResults.length})
                 </span>
               </div>
@@ -715,11 +716,11 @@ export function DashboardView({
         <div className="space-y-6">
           {/* Email Recon / DNS Metadata */}
           {emailData ? (
-            <div className="border border-rule bg-paper-2 p-5 space-y-4 rounded-md">
-              <div className="flex items-center justify-between border-b border-rule pb-3">
+            <div className="card p-5 space-y-4">
+              <div className="flex items-center justify-between border-b border-rule-2 pb-3">
                 <div className="flex items-center gap-2">
                   <Mail className="w-4 h-4 text-ink" />
-                  <span className="text-xs font-bold text-ink uppercase tracking-wider">
+                  <span className="card-title">
                     Email Infrastructure
                   </span>
                 </div>
@@ -765,7 +766,7 @@ export function DashboardView({
               </div>
             </div>
           ) : (
-            <div className="border border-rule bg-paper-2 p-5 space-y-3 rounded-md">
+            <div className="card p-5 space-y-3 rounded-md">
               <div className="flex items-center gap-2 text-ink font-bold text-xs uppercase border-b border-rule pb-2">
                 <Fingerprint className="w-4 h-4 text-ink" />
                 PII & Identity Signature
@@ -797,7 +798,7 @@ export function DashboardView({
           )}
 
           {/* Mineiro Guard Uncertain / Protected Sites Box */}
-          <div className="border border-rule bg-paper-2 p-5 space-y-3 rounded-md">
+          <div className="card p-5 space-y-3 rounded-md">
             <div className="flex items-center justify-between border-b border-rule pb-2">
               <div className="flex items-center gap-2 text-ink font-bold text-xs uppercase">
                 <AlertTriangle className="w-3.5 h-3.5 text-ink-2" />
@@ -832,7 +833,7 @@ export function DashboardView({
           </div>
 
           {/* Quick Nav Action Shortcuts */}
-          <div className="p-4 border border-rule bg-paper-2 rounded-md space-y-2">
+          <div className="p-4 card space-y-2">
             <div className="text-[11px] text-ink-2 uppercase tracking-widest">
               Reconnaissance Workspaces
             </div>
@@ -840,7 +841,7 @@ export function DashboardView({
               <button
                 type="button"
                 onClick={onViewTable}
-                className="p-2.5 border border-rule hover:border-ink-3 bg-paper text-ink-2 hover:text-ink transition-colors text-left rounded-sm"
+                className="btn !justify-start !rounded-[var(--radius-sm)] !p-2.5 text-left"
               >
                 <div className="font-bold text-ink">Audit Table</div>
                 <div className="text-[10px] text-ink-2">Dense ledger</div>
@@ -848,7 +849,7 @@ export function DashboardView({
               <button
                 type="button"
                 onClick={onViewGrid}
-                className="p-2.5 border border-rule hover:border-ink-3 bg-paper text-ink-2 hover:text-ink transition-colors text-left rounded-sm"
+                className="btn !justify-start !rounded-[var(--radius-sm)] !p-2.5 text-left"
               >
                 <div className="font-bold text-ink">Grid Matrix</div>
                 <div className="text-[10px] text-ink-2">Visual cards</div>
@@ -856,7 +857,7 @@ export function DashboardView({
               <button
                 type="button"
                 onClick={onViewProfile}
-                className="p-2.5 border border-rule hover:border-ink-3 bg-paper text-ink-2 hover:text-ink transition-colors text-left rounded-sm"
+                className="btn !justify-start !rounded-[var(--radius-sm)] !p-2.5 text-left"
               >
                 <div className="font-bold text-ink">AI Dossier</div>
                 <div className="text-[10px] text-ink-2">Threat profile</div>
@@ -864,7 +865,7 @@ export function DashboardView({
               <button
                 type="button"
                 onClick={onViewTerminal}
-                className="p-2.5 border border-rule hover:border-ink-3 bg-paper text-ink-2 hover:text-ink transition-colors text-left rounded-sm"
+                className="btn !justify-start !rounded-[var(--radius-sm)] !p-2.5 text-left"
               >
                 <div className="font-bold text-ink">Console CLI</div>
                 <div className="text-[10px] text-ink-2">Live streams</div>
