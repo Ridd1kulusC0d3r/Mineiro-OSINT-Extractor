@@ -24,6 +24,10 @@
   --seq-2: #a85a30;
   --seq-3: #e07f4e;
   --seq-4: #f6b48f;
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-2: 0 14px 34px -14px rgba(0, 0, 0, 0.7), 0 2px 6px rgba(0, 0, 0, 0.35);
+  --glass: rgba(16, 15, 13, 0.82);
+  --grid-line: rgba(238, 235, 226, 0.045);
 }
 
 :root[data-theme="light"] {
@@ -44,6 +48,10 @@
   --seq-2: #d4804f;
   --seq-3: #b43c0e;
   --seq-4: #7c2406;
+  --shadow-1: 0 1px 2px rgba(20, 18, 12, 0.05), 0 1px 1px rgba(20, 18, 12, 0.03);
+  --shadow-2: 0 10px 30px -12px rgba(20, 18, 12, 0.18), 0 2px 6px rgba(20, 18, 12, 0.05);
+  --glass: rgba(246, 245, 241, 0.86);
+  --grid-line: rgba(21, 20, 15, 0.05);
 }
 
 /* Preto e branco puros em fundo, texto, bordas e signal. Cinza só em dois lugares: rule-2, que na interface é
@@ -67,6 +75,49 @@
   --seq-2: #8c8c8c;
   --seq-3: #bfbfbf;
   --seq-4: #ffffff;
+  --shadow-1: none;
+  --shadow-2: none;
+  --glass: rgba(0, 0, 0, 0.94);
+  --grid-line: rgba(255, 255, 255, 0.09);
+}
+
+/* Tipografia, forma e profundidade: iguais nos três temas (docs/REFACTOR_PLAN.md, seção 3). Sem fonte remota:
+   Inter só é usada se estiver instalada; senão, a fonte do sistema. */
+:root {
+  --sans: "Inter", system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --display: "Inter", system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --radius: 14px;
+  --radius-sm: 9px;
+  --pill: 999px;
+}
+
+/* Impressão: sempre a versão clara, qualquer que seja o tema da tela. Valores iguais aos do tema light, exceto
+   paper (branco do papel) e paper-2 (o paper do light); scripts/validate-tokens.mjs confere. */
+@media print {
+  :root,
+  :root[data-theme] {
+    color-scheme: light;
+    --paper: #ffffff;
+    --paper-2: #f6f5f1;
+    --card: #ffffff;
+    --ink: #15140f;
+    --ink-2: #45423a;
+    --ink-3: #625e55;
+    --rule: #d6d2c6;
+    --rule-2: #e6e3da;
+    --signal: #b43c0e;
+    --signal-ink: #ffffff;
+    --signal-soft: #f7e6dc;
+    --seq-0: #f5ddcf;
+    --seq-1: #e9b394;
+    --seq-2: #d4804f;
+    --seq-3: #b43c0e;
+    --seq-4: #7c2406;
+    --shadow-1: none;
+    --shadow-2: none;
+    --grid-line: transparent;
+  }
 }
 
 /* Classes semânticas do Tailwind: bg-paper, text-ink-2, border-rule, bg-signal/20 etc. */
@@ -87,4 +138,10 @@
   --color-seq-2: var(--seq-2);
   --color-seq-3: var(--seq-3);
   --color-seq-4: var(--seq-4);
+  --font-sans: var(--sans);
+  --font-mono: var(--mono);
+  --radius-md: var(--radius-sm);
+  --radius-lg: var(--radius-sm);
+  --radius-xl: var(--radius);
+  --radius-2xl: var(--radius);
 }
