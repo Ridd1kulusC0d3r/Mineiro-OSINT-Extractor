@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/actions/workflows/ci.yml/badge.svg"></a>
-  <img alt="Version" src="https://img.shields.io/badge/version-1.7.0-111111">
+  <img alt="Version" src="https://img.shields.io/badge/version-1.8.0-111111">
   <img alt="License" src="https://img.shields.io/badge/code-MIT-111111">
   <img alt="Node" src="https://img.shields.io/badge/node-22%2B-111111">
   <img alt="Python" src="https://img.shields.io/badge/pip-installable-111111">
@@ -130,7 +130,7 @@ The package ships the full app (~1.3 MB). It uses your Node.js (>= 22.5) if pres
 **Install from a release** (before the first PyPI publication):
 
 ```bash
-pip install https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/releases/download/v1.7.0/mineiro_osint-1.7.0-py3-none-any.whl
+pip install https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/releases/download/v1.8.0/mineiro_osint-1.8.0-py3-none-any.whl
 ```
 
 </details>
@@ -244,4 +244,4 @@ Original Mineiro code is MIT. The historical catalog has entries still under pro
 
 ---
 
-<p align="center"><sub><b>Mineiro Username Intelligence v1.7.0</b> · OSINT Investigation Workbench · evidence first · local reporting</sub></p>
+<p align="center"><sub><b>Mineiro Username Intelligence v1.8.0</b> · OSINT Investigation Workbench · evidence first · local reporting</sub></p>

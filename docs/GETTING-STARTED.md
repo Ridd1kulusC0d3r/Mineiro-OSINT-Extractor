@@ -50,12 +50,12 @@ mineiro
 
 > [!NOTE]
 > Se `pip install mineiro-osint` ainda não encontrar o pacote no PyPI, instale pela *wheel* da release:
-> `pip install https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/releases/download/v1.7.0/mineiro_osint-1.7.0-py3-none-any.whl`
+> `pip install https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/releases/download/v1.8.0/mineiro_osint-1.8.0-py3-none-any.whl`
 
 O terminal mostra algo como:
 
 ```text
-Mineiro 1.7.0 -> http://127.0.0.1:3000  (Ctrl+C to stop)
+Mineiro 1.8.0 -> http://127.0.0.1:3000  (Ctrl+C to stop)
 Public signals only. Use within a legitimate and authorized purpose.
 ```
 
@@ -119,7 +119,7 @@ curl -s localhost:3000/api/health
 Esperado (resumido):
 
 ```json
-{ "status": "ok", "version": "1.7.0", "geminiConfigured": false, "publicMode": false }
+{ "status": "ok", "version": "1.8.0", "geminiConfigured": false, "publicMode": false }
 ```
 
 E a tela inicial deve aparecer no navegador:

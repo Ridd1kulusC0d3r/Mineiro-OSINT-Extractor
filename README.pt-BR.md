@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/actions/workflows/ci.yml/badge.svg"></a>
-  <img alt="Version" src="https://img.shields.io/badge/version-1.7.0-111111">
+  <img alt="Version" src="https://img.shields.io/badge/version-1.8.0-111111">
   <img alt="Node" src="https://img.shields.io/badge/node-22%2B-111111">
   <img alt="License" src="https://img.shields.io/badge/code-MIT-111111">
   <img alt="Python" src="https://img.shields.io/badge/pip-instal%C3%A1vel-111111">
@@ -114,7 +114,7 @@ mineiro                       # abre http://127.0.0.1:3000
 O pacote leva o app completo (~1,3 MB). Usa o seu Node.js (>= 22.5) se existir; senão instala o próprio via `nodejs-wheel-binaries`. Escuta apenas em `127.0.0.1` e guarda dados em `~/.mineiro`. `mineiro --check` mostra o diagnóstico.
 
 ```bash
-pip install https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/releases/download/v1.7.0/mineiro_osint-1.7.0-py3-none-any.whl
+pip install https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/releases/download/v1.8.0/mineiro_osint-1.8.0-py3-none-any.whl
 ```
 
 ### Google Colab
@@ -363,4 +363,4 @@ O código original do Mineiro é MIT. O catálogo histórico possui entradas em 
 
 ---
 
-**Mineiro Username Intelligence v1.7.0** · OSINT Investigation Workbench · evidence first · local reporting
+**Mineiro Username Intelligence v1.8.0** · OSINT Investigation Workbench · evidence first · local reporting

@@ -15,7 +15,7 @@
   "body": {
     "status": "ok",
     "service": "Mineiro Username Intelligence · OSINT Investigation Workbench",
-    "version": "1.7.0",
+    "version": "1.8.0",
     "timestamp": "<volatile>",
     "geminiConfigured": false,
     "publicMode": false,

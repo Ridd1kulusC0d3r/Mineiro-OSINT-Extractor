@@ -11,7 +11,7 @@ Depois escolha **Runtime → Run all**.
 ## Python (`pip`)
 
 ```bash
-pip install https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/releases/download/v1.7.0/mineiro_osint-1.7.0-py3-none-any.whl
+pip install https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor/releases/download/v1.8.0/mineiro_osint-1.8.0-py3-none-any.whl
 mineiro
 ```
 

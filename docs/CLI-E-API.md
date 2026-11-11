@@ -35,12 +35,12 @@ Sobe o servidor em `http://127.0.0.1:3000` (ou na próxima porta livre) e abre o
 | `--no-browser` | desligado | Não abre o navegador (servidores, SSH, scripts). |
 | `--data-dir CAMINHO` | `~/.mineiro` | Pasta do banco SQLite (`mineiro.sqlite`). |
 | `--check` | | Diagnóstico e saída (veja abaixo). |
-| `--version` | | Imprime `mineiro 1.7.0`. |
+| `--version` | | Imprime `mineiro 1.8.0`. |
 
 ### `mineiro --check`
 
 ```text
-mineiro 1.7.0
+mineiro 1.8.0
 app bundle : ok (/…/site-packages/mineiro_osint/_app)
 node       : /usr/bin/node
 ```
@@ -143,7 +143,7 @@ curl -s localhost:3000/api/health
 {
   "status": "ok",
   "service": "Mineiro Username Intelligence · OSINT Investigation Workbench",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "timestamp": "2026-10-02T04:57:16.355Z",
   "geminiConfigured": false,
   "publicMode": false,

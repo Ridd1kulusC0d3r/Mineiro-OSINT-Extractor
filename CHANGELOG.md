@@ -1,5 +1,44 @@
 # Changelog
 
+## [1.8.0] - 2026-11-11
+
+Architectural refactor and new visual identity (`docs/REFACTOR_PLAN.md`, stages 0 to 6), measured against the baseline in `docs/REFACTOR_BASELINE.md`.
+
+### Linux distribution
+- `packaging/install-linux.sh` for Debian, Ubuntu, Kali, Parrot and Amazon Linux 2023: installs the `mineiro-osint` wheel into its own virtual environment and links `mineiro` into `~/.local/bin` (`--prefix` to change it), so externally managed Pythons (PEP 668) need no `--break-system-packages`. Installs the release wheel checked against `SHA256SUMS.txt`, a local `--wheel`, or a `--from-source` build; Node.js 22+ comes from `nodejs-wheel-binaries` when the system has none; `sudo` is only used for missing distribution packages. `--dry-run` prints every step; `--uninstall` removes it.
+- New workflow `linux-matrix.yml` runs the installer and a smoke test (`mineiro --version`, page and API answer 200) in `debian:stable`, `ubuntu:24.04`, `kalilinux/kali-rolling`, `parrotsec/core` and `amazonlinux:2023`.
+- `mineiro` now stops the Node server on SIGTERM too (it only did on Ctrl+C).
+
+### Baseline and checks (stage 0)
+- `npm run visual`: every screen in the three themes with Playwright, console errors and external requests reported. `npm run api:baseline`: stored replies of every route that answers without network or key, compared with `-- --check`.
+
+### Themes and visual identity (stages 1 and 2)
+- Colour tokens in `src/styles/tokens.css` for dark, light (formerly "bone", saved value migrated) and high contrast; literal colours replaced by tokens with a codemod; `npm run tokens:validate` in `npm run check`.
+- Header, target bar, results, start screen, console, reports, print dossier and `MANUAL.html` in the LLmInjection vocabulary (eyebrow, cards, pill tabs). Correlation graph without overlapping labels.
+- Platform icons are a local monogram by default; remote favicons only when the user turns them on (no Google or DuckDuckGo request otherwise).
+- All dialogs have `role="dialog"` and `aria-modal`; no Portuguese text left in the English UI; the legacy dashboard shows a measured conclusive share instead of a made-up confidence index.
+
+### Server (stage 3)
+- `server.ts` only boots; routes live in `server/routes/`, the app is built by `createApp()` (`server/app.ts`) and covered by `tests/routes.test.ts`.
+- Unknown `/api` routes answer a JSON 404 instead of the app page; malformed JSON and an oversized body get JSON 400/413; unexpected errors a generic JSON 500 without internals.
+- `/api/store/claims` validates the body before touching SQLite.
+- The server listens on `127.0.0.1` by default (`HOST` still overrides it; containers set `0.0.0.0`).
+- The SSRF guard follows the IANA special-purpose address registry instead of blocking all of `192.0.0.0/16`.
+- One version source: server, User-Agent and console banner read `package.json`; `npm run version:check` rejects hard-coded copies.
+- A missing file under `/assets/` answers 404 instead of the app page with 200; `email-recon` and `gemini-validate` answer a POST without a JSON body with a JSON 400 instead of a 500.
+
+### Client (stages 4 and 5)
+- Typed API client for every route the browser calls; scan engine and batch runner as plain TypeScript; `App.tsx` reduced to composition with state in hooks; import boundaries checked by a test.
+- A batch no longer replaces the open single-scan workspace; one shortcut list for the keyboard and the shortcuts sheet.
+- The five largest components split into folders, with data, pure logic (tested) and D3 drawing in their own modules; no component file above 500 lines. Dead `ExportModal.tsx` and `AiProfileCard` removed.
+- Heavy views and closed dialogs load on first use: the entry bundle goes from 1.41 MB to about 0.94 MB (Vite still warns above 500 kB).
+
+### Catalog
+- Site types follow the catalog category and match whole words: Spotify is `music_audio` (was developer platform, from "di*git*al"), Steam `gaming`, Instagram and TikTok `social_network` (were video streaming). New types `entertainment_media` and `finance_payments`.
+
+### Dependencies
+- `dotenv` 18.0.9 and `motion` 14.10.1 (replacing Dependabot PRs #49 and #50); `express` 5.3.0, `lucide-react` 1.58.0 and `@google/genai` 2.30.0 were merged earlier in this cycle.
+
 ### Visual identity and motion
 - Motion tokens (`--ease-out`, `--dur-1..4`) following LLmInjection: views rise in, result rows fade in as the scan streams, dialogs pop, interactive cards lift, the progress bar glides and switching theme cross-fades colours. All of it is off under `prefers-reduced-motion`.
 - Batch queue and batch import dialog moved to the new vocabulary (eyebrow, sans titles, cards, pill tabs) and to i18n in EN/PT/ES; export dialog section toggles expose `aria-pressed`.

@@ -9,6 +9,8 @@ const found = {
   'package-lock.json': JSON.parse(read('package-lock.json')).version,
   'python/pyproject.toml': read('python/pyproject.toml').match(/^version\s*=\s*"([^"]+)"/m)?.[1],
   'python/src/mineiro_osint/__init__.py': read('python/src/mineiro_osint/__init__.py').match(/__version__\s*=\s*"([^"]+)"/)?.[1],
+  // The release the Linux installer downloads by default.
+  'packaging/install-linux.sh': read('packaging/install-linux.sh').match(/^VERSION="([^"]+)"/m)?.[1],
   // The server takes its version from package.json (health, User-Agent, terminal banner).
   'server/version.ts': /from '\.\.\/package\.json'/.test(read('server/version.ts')) && /VERSION[^=]*=\s*pkg\.version/.test(read('server/version.ts')) ? pkg : 'does not read package.json',
   'README.md badge': read('README.md').match(/badge\/version-([\d.]+)-/)?.[1],

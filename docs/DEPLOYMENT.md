@@ -18,7 +18,7 @@ Colab is intentionally **not** the recommended persistent production runtime. Th
 Build:
 
 ~~~bash
-docker build -t mineiro-username-intelligence:1.7.0 .
+docker build -t mineiro-username-intelligence:1.8.0 .
 ~~~
 
 Run:
@@ -27,7 +27,7 @@ Run:
 docker run --rm \
   -p 3000:3000 \
   -e GEMINI_API_KEY="\${GEMINI_API_KEY:-}" \
-  mineiro-username-intelligence:1.7.0
+  mineiro-username-intelligence:1.8.0
 ~~~
 
 Health:
@@ -162,7 +162,7 @@ Those require a server process.
 npm ci --no-audit --no-fund
 npm run check
 npm run build
-docker build -t mineiro-username-intelligence:1.7.0 .
+docker build -t mineiro-username-intelligence:1.8.0 .
 ~~~
 
 Then verify:
