@@ -3,8 +3,8 @@
 //   node scripts/visual-smoke.mjs --theme dark --only report,console
 // Output: artifacts/visual/<theme>/<screen>.png (1440x900 viewport; full page, except modals) and artifacts/visual/report.json.
 //
-// The run is offline and deterministic: /api/osint/verify is answered by canned responses (the real scan path in
-// App.tsx runs, only the network probe is replaced), every request that is not for the local server is blocked and
+// The run is offline and deterministic: /api/osint/verify is answered by canned responses (the real scan path:
+// useScan -> src/scan/engine.ts -> src/api/client.ts runs, only the network probe is replaced), every request that is not for the local server is blocked and
 // recorded, Date is frozen, Math.random is seeded, motion is reduced and the UI language is fixed to English.
 // Exits 1 when a page throws, the console logs an error, a screen cannot be reached, or any request tries to leave
 // the machine (the app is local-first: opening it must not contact third parties).

@@ -337,3 +337,59 @@ server/
   global unicast `2000::/3` is allowed, minus `2001::/23`, `2001:db8::/32`, `2002::/16` and `3fff::/20`; IPv4-mapped
   addresses follow the IPv4 rule. Anything that does not parse as an IP literal is blocked.
 - `npm run api:baseline -- --check` compares 33 normalized responses with `tests/fixtures/api-baseline/`.
+
+## Client layout
+
+```text
+src/main.tsx              mounts <App/> inside the I18nProvider
+src/app/
+  App.tsx                 composition: calls the hooks, lays out Header, TargetBar, StatsBar, MainViews, AppModals, footer
+  MainViews.tsx           the main canvas: one view at a time (report, evidence, platforms, correlation, AI, console, batch,
+                          legacy dashboard)
+  AppModals.tsx           every overlay plus the hidden print layout
+  shortcuts.ts            the one list of keyboard shortcuts: the key handler matches it, the shortcuts sheet renders it
+  useAppShortcuts.ts      runs a shortcut action, from the keyboard or from a row of the sheet
+  views.ts                AppView
+src/hooks/
+  useScan.ts              single-target workspace (target, results, e-mail recon), scan configuration, the engine wired to
+                          the local server, graph pivots, opening saved work into the workspace
+  useCases.ts             persistent cases (IndexedDB `mineiro_cases_v1`) and the last-5 cache (localStorage
+                          `mineiro_cached_scans_v1`), integrity snapshots
+  useSettings.ts          personal Gemini key and model (localStorage `mineiro_gemini_key`, `mineiro_gemini_model`)
+  useBulkBatch.ts         the batch queue; never touches the single-scan workspace
+  useModals.ts            which overlay is open; Esc closes them in a fixed order
+  useScanLog.ts           console event stream; useResultFilters.ts: Evidence/Platforms filters
+  useGlobalShortcuts.ts   keydown listener over src/app/shortcuts.ts
+src/scan/
+  engine.ts               runScan(job, deps): scope, chunked concurrency, two-phase full scan, progress/log callbacks,
+                          stop/pause/skip. No React, DOM or storage.
+  batch.ts                runBatch: the targets of a batch in sequence, with a pause/skip/abort control object
+src/api/
+  client.ts               one typed function per /api route; createApiClient({ baseUrl, fetch }) for non-browser callers
+  errors.ts               ApiError: status (0 = no response), serverMessage, network, aborted, body
+  types.ts                request/response shapes of those routes
+src/components/           presentation only
+src/core, data, registry, intelligence, graph, cases     pure domain (no React, no Express)
+```
+
+Rules, enforced by `tests/boundaries.test.ts`:
+
+- `src/core`, `data`, `registry`, `intelligence`, `graph`, `cases` and `scan` import neither `react`, `react-dom` nor
+  `express`, nor anything from `src/components`, `src/hooks` or `src/app`.
+- `src/components` imports nothing from `server/`.
+- Only `src/api/client.ts` calls `fetch('/api/...')`.
+
+The scan engine takes its collaborators as parameters, so the same module can run where there is no browser:
+
+```ts
+runScan({ target, targetType, config }, {
+  verify,           // (VerifyRequest, { signal }) => Promise<VerifyResponse>; throw ApiError for a server refusal
+  emailRecon,       // optional: (email, { signal }) => Promise<EmailReconData>
+  control,          // { signal, isPaused?, isSkipped?, announceAbort? }
+  onProgress, onLog, onEmailLoading, onEmailData,
+  now, random, sleep, resolveScope,   // defaults: Date.now, Math.random, setTimeout, the bundled catalog
+}) // -> { results, emailData, foundCount, uncertainCount, totalScanned }
+```
+
+`tests/scan-engine.test.ts` drives it with a stubbed verifier: ordering and completeness, the concurrency ceiling,
+cancellation, the two-phase path, refusals, transport errors and rate limits.
