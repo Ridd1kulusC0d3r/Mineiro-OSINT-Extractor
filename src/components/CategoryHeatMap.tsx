@@ -28,7 +28,8 @@ import { CATEGORY_COLORS,
   getContrastTextColor,
   HEATMAP_STOPS,
   EXPOSURE_COLORS,
-  useThemeVersion, PALETTE } from '../theme/palette';
+  PALETTE } from '../theme/palette';
+import { useThemeVersion } from '../theme/useThemeVersion';
 
 interface CategoryHeatMapProps {
   results: ScanResult[];
