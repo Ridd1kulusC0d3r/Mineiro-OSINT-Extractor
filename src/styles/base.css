@@ -4,7 +4,7 @@
  * Status (encontrado, incerto, ausente) é dito por rótulo, ícone e estilo de borda, nunca só por cor.
  *
  * Ordem: 1 base · 2 rótulos mono · 3 cabeçalho (mast) · 4 abas · 5 cartão, eyebrow, chip · 6 botões e campos
- *        7 tabela · 8 status · 9 diálogo · 10 animações herdadas · 11 acessibilidade · 12 impressão
+ *        7 tabela · 8 status · 9 diálogo · 10 animações herdadas · 11 acessibilidade · 12 impressão · 13 movimento
  */
 
 /* ---------- 1. base */
@@ -321,4 +321,41 @@
   .app-shell > :not(.dossier-print) { display: none !important; }
   .app-shell { min-height: 0 !important; }
   .print-only { display: block !important; }
+}
+
+/* ---------- 13. movimento
+ * Referência: LLmInjection (transições de 0,15 s, elevação de 1 px, entrada de vista com 4 px de subida).
+ * Tudo some com prefers-reduced-motion (seção 11) e no smoke visual, que roda com reducedMotion.
+ * Regra: movimento explica mudança de estado (vista nova, resultado chegando, modal abrindo); nada pisca em loop. */
+@layer components {
+  .card { transition: border-color var(--dur-1) var(--ease-out), box-shadow var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out); }
+  :is(a, button).card:hover:not(:disabled),
+  .card-interactive:hover { transform: translateY(-1px); box-shadow: var(--shadow-2); border-color: var(--rule); }
+  .tab { transition: background var(--dur-2) var(--ease-out), color var(--dur-2) var(--ease-out), box-shadow var(--dur-2) var(--ease-out); }
+  .tab[aria-selected="true"], .tab[aria-pressed="true"], .tab.is-active { box-shadow: 0 6px 18px -10px var(--signal); }
+  .btn, .btn-primary, .chip, .field { transition: background var(--dur-1) var(--ease-out), border-color var(--dur-1) var(--ease-out), color var(--dur-1) var(--ease-out), box-shadow var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out); }
+  .btn-primary:active:not(:disabled), .btn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+  .tbl tbody tr td { transition: background var(--dur-1) var(--ease-out); }
+}
+/* vista nova: cada filho direto da área de vistas entra com fade e 4 px de subida */
+.view-stage > * { animation: atlasRise var(--dur-3) var(--ease-out) both; }
+/* resultado chegando durante o scan: a linha ou o cartão aparece em vez de surgir seco */
+.tbl tbody tr, [id^="platform-card-"] { animation: atlasFade var(--dur-3) var(--ease-out) both; }
+/* modais: fundo esmaece, painel sobe e cresce levemente */
+.dialog-backdrop { animation: atlasFade var(--dur-2) var(--ease-out) both; }
+.dialog-backdrop > .dialog, .dialog-backdrop > div > .dialog { animation: atlasPop var(--dur-3) var(--ease-out) both; }
+/* barra de progresso desliza em vez de pular */
+[role="progressbar"] > div { transition: width var(--dur-4) var(--ease-out); }
+/* troca de tema: cross-fade de cor por 0,45 s (classe posta por src/theme/theme.ts só na troca) */
+html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *::after {
+  transition: background-color var(--dur-4) var(--ease-in-out), color var(--dur-4) var(--ease-in-out),
+              border-color var(--dur-4) var(--ease-in-out), fill var(--dur-4) var(--ease-in-out),
+              stroke var(--dur-4) var(--ease-in-out), box-shadow var(--dur-4) var(--ease-in-out) !important;
+}
+@keyframes atlasRise { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes atlasFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes atlasPop { from { opacity: 0; transform: translateY(6px) scale(0.985); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .view-stage > *, .tbl tbody tr, [id^="platform-card-"], .dialog-backdrop, .dialog { animation: none !important; }
+  html.theme-anim, html.theme-anim * { transition: none !important; }
 }

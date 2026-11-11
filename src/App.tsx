@@ -1140,7 +1140,7 @@ export default function App() {
       />
 
       {/* Main Investigation Canvas */}
-      <main className={`flex-1 w-full py-6 space-y-6 ${activeView === 'intelligence' ? '' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'}`}>
+      <main className={`view-stage flex-1 w-full py-6 space-y-6 ${activeView === 'intelligence' ? '' : 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'}`}>
         {/* Email Intelligence Card if email mode and active view is not dashboard or batch */}
         {activeView !== 'dashboard' && activeView !== 'intelligence' && activeView !== 'batch' && (targetType === 'email' || emailData || isEmailLoading) && (
           <EmailReconCard data={emailData} isLoading={isEmailLoading} />

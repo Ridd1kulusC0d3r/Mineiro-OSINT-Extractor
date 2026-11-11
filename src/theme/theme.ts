@@ -66,6 +66,14 @@ export function applyTheme(theme: ThemeMode): void {
   if (typeof document === 'undefined') return;
 
   const root = document.documentElement;
+  // Cross-fade de cor só numa troca de tema de verdade (não na carga inicial) e sem prefers-reduced-motion.
+  const previous = root.getAttribute('data-theme');
+  const reduceMotion = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+    && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (previous && previous !== theme && !reduceMotion) {
+    root.classList.add('theme-anim');
+    window.setTimeout(() => root.classList.remove('theme-anim'), 500);
+  }
   root.classList.remove('high-contrast', 'dark', 'light', 'theme-bone');
 
   if (theme === 'high-contrast') {

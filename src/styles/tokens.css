@@ -99,6 +99,13 @@
   --radius: 14px;
   --radius-sm: 9px;
   --pill: 999px;
+  /* Movimento (mesmo vocabulário do LLmInjection): curto, com saída suave, nunca decorativo em loop. */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-1: 0.12s;  /* hover de cor e borda */
+  --dur-2: 0.18s;  /* elevação, foco, abas */
+  --dur-3: 0.26s;  /* entrada de vista, modal, linha nova */
+  --dur-4: 0.45s;  /* barra de progresso, troca de tema */
 }
 
 /* Impressão: sempre a versão clara, qualquer que seja o tema da tela. Valores iguais aos do tema light, exceto

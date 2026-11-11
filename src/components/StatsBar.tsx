@@ -121,7 +121,7 @@ export function StatsBar({
               aria-label={tr('stats.collected')}
             >
               <div
-                className={`h-full rounded-full bg-signal transition-all ${isScanning ? 'animate-pulse' : ''}`}
+                className={`h-full rounded-full bg-signal ${isScanning ? 'animate-pulse' : ''}`}
                 style={{ width: `${percent}%` }}
               />
             </div>
