@@ -1,6 +1,6 @@
 # Plano de refatoração arquitetural e de identidade visual
 
-Estado: proposta, aguardando aprovação. Branch de trabalho: `claude/brave-wright-d3gpv5`.
+Estado: aprovado, em execução. Etapa 0 concluída (ver `docs/REFACTOR_BASELINE.md`). Branch de trabalho: `claude/brave-wright-d3gpv5`.
 Cada etapa é executada por um agente Opus, uma por vez, e só avança quando o portão da etapa passa.
 
 ## 1. Diagnóstico (medido em `8f64aff`)
@@ -136,6 +136,21 @@ Portão: capturas idênticas às da etapa 2 (diferença de pixel abaixo de 0,5%)
 4. Atualizar `ARCHITECTURE.md`, `CONTRIBUTING.md` e `CHANGELOG.md`; versão 1.8.0.
 
 Portão: matriz verde nas cinco distros; `npm run check` verde.
+
+## 4.1 Ajustes depois da etapa 0
+
+A linha de base (`docs/REFACTOR_BASELINE.md`) listou 24 defeitos. Cada um entra na etapa que já toca o arquivo:
+
+| Etapa | Defeitos da linha de base | Mudança no plano |
+| --- | --- | --- |
+| 1 | 2, 3, 23 | O codemod também mapeia a paleta cinza-fria da tela inicial. O alto contraste passa a trocar fundo e texto, não só bordas. |
+| 2 | 4, 9, 10, 11, 15, 16, 18, 19, 20, 24 | `PlatformFavicon` deixa de chamar Google e DuckDuckGo: monograma local por padrão, favicon remoto só com opção ligada pelo usuário. `KNOWN_EXTERNAL_HOSTS` do smoke fica vazio. Google Fonts já saiu no merge `915b746`. |
+| 3 | 1, 6, 7, 8, 14, 17 | Correções de rota mudam as fixtures de `tests/fixtures/api-baseline/` de propósito, em commit próprio. O defeito 1 (`src/core/net.ts` bloqueia `192.0.0.0/16` inteiro) ganha teste. Padrão de escuta passa a `127.0.0.1`. |
+| 4 | 5, 12 | A comparação de "mesmo resultado" usa o smoke com respostas fixas, não rede real. |
+| 5 | 21, 22 | `ExportModal.tsx` é código morto: apagar em vez de repartir. `DashboardView` é legado: decidir remover ou ligar ao menu. Divisão do bundle por `import()` nas views pesadas. |
+| 6 | 13 | Correção dos tipos de site no catálogo. |
+
+A decisão em aberto 1 está resolvida: a branch `claude/nifty-babbage-3rntpa` foi integrada em `915b746`.
 
 ## 5. Como o Opus executa
 
