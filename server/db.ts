@@ -113,13 +113,21 @@ export interface ClaimInput {
   note?: string;
 }
 
+/** A rejected input whose message is safe to show to the client (unlike an internal SQLite error). */
+export class StoreValidationError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'StoreValidationError';
+  }
+}
+
 /** A claim without supporting observations is rejected: inference must always point at evidence. */
 export function addClaim(store: Db, input: ClaimInput): number {
-  if (!input.observationIds.length) throw new Error('A claim must reference at least one observation.');
+  if (!input.observationIds.length) throw new StoreValidationError('A claim must reference at least one observation.');
   const known = store
     .prepare(`SELECT COUNT(*) AS n FROM observations WHERE id IN (${input.observationIds.map(() => '?').join(',')})`)
     .get(...input.observationIds) as { n: number };
-  if (known.n !== new Set(input.observationIds).size) throw new Error('Claim references unknown observations.');
+  if (known.n !== new Set(input.observationIds).size) throw new StoreValidationError('Claim references unknown observations.');
 
   const result = store.prepare(
     `INSERT INTO claims (subject_id, predicate, object_id, confidence, observation_ids, author, note, created_at)

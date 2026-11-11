@@ -259,6 +259,45 @@ describe('unknown API routes', () => {
   });
 });
 
+describe('POST /api/store/claims (SQLite in memory)', () => {
+  const claim = (observationIds: unknown, extra: Record<string, unknown> = {}) => ({
+    subject: { type: 'username', value: 'routes-a' }, predicate: 'linked_to',
+    object: { type: 'username', value: 'routes-b' }, confidence: 70, observationIds, ...extra,
+  });
+
+  it('rejects an empty body with a validation message, not an internal error (defect 8)', async () => {
+    const res = await json('/api/store/claims', { body: {} });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/^Invalid claim: subject must be/);
+    expect(res.body.error).toMatch(/observationIds must be an array/);
+    expect(res.body.error).not.toMatch(/Cannot read properties|undefined/);
+  });
+
+  it.each([
+    ['a bad predicate', claim([1], { predicate: 'is' }), /predicate must be one of/],
+    ['a non-numeric confidence', claim([1], { confidence: 'high' }), /confidence must be a number/],
+    ['non-integer observation ids', claim(['1']), /observationIds must be an array/],
+    ['an object as note', claim([1], { note: { x: 1 } }), /note must be a string/],
+    ['too many observation ids', claim(Array.from({ length: 501 }, (_, i) => i + 1)), /at most 500/],
+    ['no observations', claim([]), /^A claim must reference at least one observation\.$/],
+    ['unknown observations', claim([999999]), /^Claim references unknown observations\.$/],
+  ])('rejects %s with 400', async (_label, body, message) => {
+    const res = await json('/api/store/claims', { body });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(message);
+  });
+
+  it('stores a claim that cites a stored observation', async () => {
+    const stored = await json('/api/store/observations', {
+      body: { observations: [{ entity: { type: 'username', value: 'routes-b' }, source: 'GitHub', status: 'found' }] },
+    });
+    expect(stored.status).toBe(200);
+    const res = await json('/api/store/claims', { body: claim(stored.body.ids) });
+    expect(res.status).toBe(200);
+    expect(res.body.id).toBeGreaterThan(0);
+  });
+});
+
 describe('error handling', () => {
   const leaks = /SyntaxError|Unexpected token|at .+\(|node_modules|Cannot destructure|req\.body/;
 

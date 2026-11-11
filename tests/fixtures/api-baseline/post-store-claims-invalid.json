@@ -17,6 +17,6 @@
     "permissions-policy": "camera=(), microphone=(), geolocation=()"
   },
   "body": {
-    "error": "Cannot read properties of undefined (reading 'length')"
+    "error": "Invalid claim: subject must be { type, value } with a known entity type; predicate must be one of same_operator_as, owns, mentions, linked_to; object must be { type, value } with a known entity type; confidence must be a number; observationIds must be an array of observation ids"
   }
 }
