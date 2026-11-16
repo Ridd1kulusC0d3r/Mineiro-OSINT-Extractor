@@ -48,7 +48,7 @@
     "motion": "^14.10.1",
     "pngjs": "^7.0.0",
     "react": "^19.0.1",
-    "react-dom": "^19.0.1",
+    "react-dom": "^19.3.1",
     "topojson-client": "^3.1.0",
     "undici": "^8.11.2",
     "vitest": "^5.0.3",
